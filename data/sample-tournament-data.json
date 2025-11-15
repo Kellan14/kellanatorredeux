@@ -1,0 +1,90 @@
+{
+  "tournaments": [
+    {
+      "id": "t001",
+      "name": "Summer Showdown 2025",
+      "date": "2025-08-15",
+      "venue": "Arcade Club",
+      "totalPlayers": 32,
+      "results": {
+        "overall_position": 2,
+        "team_position": 1
+      },
+      "machines_played": [
+        {
+          "name": "Attack from Mars",
+          "score": 2500000000,
+          "position": 1
+        },
+        {
+          "name": "Medieval Madness",
+          "score": 18000000,
+          "position": 3
+        },
+        {
+          "name": "The Addams Family",
+          "score": 95000000,
+          "position": 2
+        }
+      ]
+    },
+    {
+      "id": "t002",
+      "name": "TWC Championship",
+      "date": "2025-07-22",
+      "venue": "Pin Palace",
+      "totalPlayers": 48,
+      "results": {
+        "overall_position": 1,
+        "team_position": 1
+      },
+      "machines_played": [
+        {
+          "name": "Twilight Zone",
+          "score": 450000000,
+          "position": 1
+        },
+        {
+          "name": "Monster Bash",
+          "score": 125000000,
+          "position": 1
+        },
+        {
+          "name": "Theater of Magic",
+          "score": 2800000000,
+          "position": 2
+        }
+      ]
+    }
+  ],
+  "teams": {
+    "The Wrecking Crew": {
+      "members": ["Player1", "Player2", "Player3", "Player4"],
+      "season_points": 245,
+      "ranking": 2
+    }
+  },
+  "machines": [
+    {
+      "name": "Attack from Mars",
+      "manufacturer": "Bally",
+      "year": 1995,
+      "theme": "Sci-Fi",
+      "image": "attack-from-mars.jpg"
+    },
+    {
+      "name": "Medieval Madness",
+      "manufacturer": "Williams",
+      "year": 1997,
+      "theme": "Medieval",
+      "image": "medieval-madness.jpg"
+    },
+    {
+      "name": "The Addams Family",
+      "manufacturer": "Bally",
+      "year": 1992,
+      "theme": "Horror/Comedy",
+      "image": "addams-family.jpg"
+    }
+  ]
+}

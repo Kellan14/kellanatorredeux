@@ -1,0 +1,678 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ChevronUp, ChevronDown, Loader2, Settings } from 'lucide-react'
+import { tournamentDataService } from '@/lib/data-service'
+import { calculateMachineStats, type MachineStats } from '@/lib/tournament-data'
+
+interface Team {
+  key: string
+  name: string
+}
+
+interface Venue {
+  key: string
+  name: string
+  address: string
+  machines: string[]
+}
+
+// Helper function to format numbers (no decimals)
+const formatNumber = (val: number | undefined | null): string => {
+  if (val === undefined || val === null || isNaN(val)) return 'N/A'
+  return Math.round(val).toLocaleString()
+}
+
+// Helper function to format percentages (no decimals)
+const formatPercent = (val: number | undefined | null): string => {
+  if (val === undefined || val === null || isNaN(val)) return 'N/A'
+  return Math.round(val) + '%'
+}
+
+// Helper function to format comparison values
+const formatComparison = (val: string | number | undefined): string => {
+  if (val === undefined) return 'N/A'
+  if (typeof val === 'string') return val // "+", "-", or "N/A"
+  return Math.round(val).toString()
+}
+
+// Column visibility configuration
+interface ColumnVisibility {
+  percentComparison: boolean
+  teamAverage: boolean
+  twcAverage: boolean
+  venueAverage: boolean
+  teamHighestScore: boolean
+  percentOfVenueAvg: boolean
+  twcPercentOfVenueAvg: boolean
+  timesPlayed: boolean
+  twcTimesPlayed: boolean
+  timesPicked: boolean
+  twcTimesPicked: boolean
+  pops: boolean
+  popsPicking: boolean
+  popsResponding: boolean
+  twcPops: boolean
+  twcPopsPicking: boolean
+  twcPopsResponding: boolean
+  popsComparison: boolean
+}
+
+const DEFAULT_COLUMN_VISIBILITY: ColumnVisibility = {
+  percentComparison: true,
+  teamAverage: true,
+  twcAverage: true,
+  venueAverage: true,
+  teamHighestScore: true,
+  percentOfVenueAvg: true,
+  twcPercentOfVenueAvg: true,
+  timesPlayed: true,
+  twcTimesPlayed: true,
+  timesPicked: true,
+  twcTimesPicked: true,
+  pops: true,
+  popsPicking: true,
+  popsResponding: true,
+  twcPops: true,
+  twcPopsPicking: true,
+  twcPopsResponding: true,
+  popsComparison: true,
+}
+
+export default function StatsPage() {
+  // State
+  const [venues, setVenues] = useState<Venue[]>([])
+  const [teams, setTeams] = useState<Team[]>([])
+  const [selectedVenue, setSelectedVenue] = useState<string>('')
+  const [selectedOpponent, setSelectedOpponent] = useState<string>('')
+  const [seasonRange, setSeasonRange] = useState<[number, number]>([20, 22])
+  const [machineStats, setMachineStats] = useState<MachineStats[]>([])
+  const [loading, setLoading] = useState(false)
+  const [loadingDropdowns, setLoadingDropdowns] = useState(true)
+  const [sortColumn, setSortColumn] = useState<string>('machine')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const [optionsOpen, setOptionsOpen] = useState(false)
+  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibility>(DEFAULT_COLUMN_VISIBILITY)
+
+  // Load column visibility from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('columnVisibility')
+    if (saved) {
+      try {
+        setColumnVisibility(JSON.parse(saved))
+      } catch (e) {
+        console.error('Failed to parse saved column visibility')
+      }
+    }
+  }, [])
+
+  // Save column visibility to localStorage when it changes
+  const updateColumnVisibility = (key: keyof ColumnVisibility, value: boolean) => {
+    const newVisibility = { ...columnVisibility, [key]: value }
+    setColumnVisibility(newVisibility)
+    localStorage.setItem('columnVisibility', JSON.stringify(newVisibility))
+  }
+
+  const resetColumnVisibility = () => {
+    setColumnVisibility(DEFAULT_COLUMN_VISIBILITY)
+    localStorage.setItem('columnVisibility', JSON.stringify(DEFAULT_COLUMN_VISIBILITY))
+  }
+
+  // Load venues and teams on mount
+  useEffect(() => {
+    loadVenuesAndTeams()
+  }, [])
+
+  // Load stats when venue or opponent changes
+  useEffect(() => {
+    if (selectedVenue && selectedOpponent) {
+      loadStats()
+    }
+  }, [selectedVenue, selectedOpponent, seasonRange])
+
+  const loadVenuesAndTeams = async () => {
+    setLoadingDropdowns(true)
+    try {
+      // Load venues
+      const venuesResponse = await fetch('/api/venues')
+      const venuesData = await venuesResponse.json()
+      setVenues(venuesData.venues || [])
+
+      // Set default venue to Georgetown Pizza and Arcade
+      const gpa = venuesData.venues.find((v: Venue) =>
+        v.name.toLowerCase().includes('georgetown') && v.name.toLowerCase().includes('pizza')
+      )
+      if (gpa) {
+        setSelectedVenue(gpa.name)
+      } else if (venuesData.venues.length > 0) {
+        setSelectedVenue(venuesData.venues[0].name)
+      }
+
+      // Load teams
+      const teamsResponse = await fetch('/api/teams?season=22')
+      const teamsData = await teamsResponse.json()
+      setTeams(teamsData.teams || [])
+
+      // Set default opponent (first team that's not TWC)
+      const defaultTeam = teamsData.teams.find((t: Team) =>
+        !t.name.toLowerCase().includes('wrecking crew')
+      )
+      if (defaultTeam) {
+        setSelectedOpponent(defaultTeam.name)
+      }
+    } catch (error) {
+      console.error('Error loading venues and teams:', error)
+    } finally {
+      setLoadingDropdowns(false)
+    }
+  }
+
+  const loadStats = async () => {
+    setLoading(true)
+    try {
+      // Generate seasons array from range
+      const seasons = []
+      for (let s = seasonRange[0]; s <= seasonRange[1]; s++) {
+        seasons.push(s)
+      }
+
+      const processed = await tournamentDataService.getProcessedScores(seasons)
+
+      const stats = calculateMachineStats(
+        processed,
+        'The Wrecking Crew',
+        selectedVenue,
+        seasonRange,
+        {
+          includeVenueSpecific: true,
+          includeTWCStats: true,
+          opponentTeam: selectedOpponent
+        }
+      )
+
+      setMachineStats(stats)
+    } catch (error) {
+      console.error('Error loading stats:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortColumn(column)
+      setSortDirection('asc')
+    }
+  }
+
+  const sortedStats = [...machineStats].sort((a, b) => {
+    let aVal: any = (a as any)[sortColumn]
+    let bVal: any = (b as any)[sortColumn]
+
+    if (aVal === undefined || aVal === null || aVal === 'N/A') return 1
+    if (bVal === undefined || bVal === null || bVal === 'N/A') return -1
+
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      return sortDirection === 'asc'
+        ? aVal.localeCompare(bVal)
+        : bVal.localeCompare(aVal)
+    }
+
+    return sortDirection === 'asc' ? aVal - bVal : bVal - aVal
+  })
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortColumn !== column) return null
+    return sortDirection === 'asc' ? <ChevronUp className="inline h-4 w-4" /> : <ChevronDown className="inline h-4 w-4" />
+  }
+
+  if (loadingDropdowns) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardContent className="flex items-center justify-center p-12">
+            <Loader2 className="h-8 w-8 animate-spin mr-2" />
+            <span>Loading venues and teams...</span>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto p-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Machine Statistics</CardTitle>
+          <CardDescription>
+            Analyze machine performance for The Wrecking Crew vs opponents
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {/* Selection Controls */}
+          <div className="flex justify-between items-start mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Venue</label>
+              <Select value={selectedVenue} onValueChange={setSelectedVenue}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select venue" />
+                </SelectTrigger>
+                <SelectContent>
+                  {venues.map((venue) => (
+                    <SelectItem key={venue.key} value={venue.name}>
+                      {venue.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Opponent</label>
+              <Select value={selectedOpponent} onValueChange={setSelectedOpponent}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select opponent" />
+                </SelectTrigger>
+                <SelectContent>
+                  {teams.map((team) => (
+                    <SelectItem key={team.key} value={team.name}>
+                      {team.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Seasons</label>
+              <div className="flex gap-2">
+                <Select
+                  value={String(seasonRange[0])}
+                  onValueChange={(v) => setSeasonRange([parseInt(v), seasonRange[1]])}
+                >
+                  <SelectTrigger className="w-[100px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[14, 15, 16, 17, 18, 19, 20, 21, 22].map(s => (
+                      <SelectItem key={s} value={String(s)}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <span className="flex items-center">to</span>
+                <Select
+                  value={String(seasonRange[1])}
+                  onValueChange={(v) => setSeasonRange([seasonRange[0], parseInt(v)])}
+                >
+                  <SelectTrigger className="w-[100px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[14, 15, 16, 17, 18, 19, 20, 21, 22].map(s => (
+                      <SelectItem key={s} value={String(s)}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+            {/* Options Button */}
+            <Dialog open={optionsOpen} onOpenChange={setOptionsOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="ml-4">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Options
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Statistics Options</DialogTitle>
+                  <DialogDescription>
+                    Customize your statistics view and data filtering
+                  </DialogDescription>
+                </DialogHeader>
+
+                <Tabs defaultValue="columns" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="columns">Column Options</TabsTrigger>
+                    <TabsTrigger value="filters">Filters (Coming Soon)</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="columns" className="space-y-4">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-sm font-medium">Show/Hide Columns</h3>
+                        <Button variant="outline" size="sm" onClick={resetColumnVisibility}>
+                          Reset to Default
+                        </Button>
+                      </div>
+
+                      {/* Comparison Columns */}
+                      <div>
+                        <h4 className="text-sm font-medium mb-2 text-muted-foreground">Comparison</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="percentComparison"
+                              checked={columnVisibility.percentComparison}
+                              onCheckedChange={(checked) => updateColumnVisibility('percentComparison', checked as boolean)}
+                            />
+                            <label htmlFor="percentComparison" className="text-sm cursor-pointer">
+                              % Comparison
+                            </label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="popsComparison"
+                              checked={columnVisibility.popsComparison}
+                              onCheckedChange={(checked) => updateColumnVisibility('popsComparison', checked as boolean)}
+                            />
+                            <label htmlFor="popsComparison" className="text-sm cursor-pointer">
+                              POPS Comparison
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Team Columns */}
+                      <div>
+                        <h4 className="text-sm font-medium mb-2 text-muted-foreground">Team (Opponent)</h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="teamAverage"
+                              checked={columnVisibility.teamAverage}
+                              onCheckedChange={(checked) => updateColumnVisibility('teamAverage', checked as boolean)}
+                            />
+                            <label htmlFor="teamAverage" className="text-sm cursor-pointer">Team Average</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="teamHighestScore"
+                              checked={columnVisibility.teamHighestScore}
+                              onCheckedChange={(checked) => updateColumnVisibility('teamHighestScore', checked as boolean)}
+                            />
+                            <label htmlFor="teamHighestScore" className="text-sm cursor-pointer">Team Highest Score</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="percentOfVenueAvg"
+                              checked={columnVisibility.percentOfVenueAvg}
+                              onCheckedChange={(checked) => updateColumnVisibility('percentOfVenueAvg', checked as boolean)}
+                            />
+                            <label htmlFor="percentOfVenueAvg" className="text-sm cursor-pointer">% of V. Avg.</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="timesPlayed"
+                              checked={columnVisibility.timesPlayed}
+                              onCheckedChange={(checked) => updateColumnVisibility('timesPlayed', checked as boolean)}
+                            />
+                            <label htmlFor="timesPlayed" className="text-sm cursor-pointer">Times Played</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="timesPicked"
+                              checked={columnVisibility.timesPicked}
+                              onCheckedChange={(checked) => updateColumnVisibility('timesPicked', checked as boolean)}
+                            />
+                            <label htmlFor="timesPicked" className="text-sm cursor-pointer">Times Picked</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="pops"
+                              checked={columnVisibility.pops}
+                              onCheckedChange={(checked) => updateColumnVisibility('pops', checked as boolean)}
+                            />
+                            <label htmlFor="pops" className="text-sm cursor-pointer">POPS</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="popsPicking"
+                              checked={columnVisibility.popsPicking}
+                              onCheckedChange={(checked) => updateColumnVisibility('popsPicking', checked as boolean)}
+                            />
+                            <label htmlFor="popsPicking" className="text-sm cursor-pointer">POPS Picking</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="popsResponding"
+                              checked={columnVisibility.popsResponding}
+                              onCheckedChange={(checked) => updateColumnVisibility('popsResponding', checked as boolean)}
+                            />
+                            <label htmlFor="popsResponding" className="text-sm cursor-pointer">POPS Responding</label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Venue Columns */}
+                      <div>
+                        <h4 className="text-sm font-medium mb-2 text-muted-foreground">Venue</h4>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="venueAverage"
+                            checked={columnVisibility.venueAverage}
+                            onCheckedChange={(checked) => updateColumnVisibility('venueAverage', checked as boolean)}
+                          />
+                          <label htmlFor="venueAverage" className="text-sm cursor-pointer">Venue Average</label>
+                        </div>
+                      </div>
+
+                      {/* TWC Columns */}
+                      <div>
+                        <h4 className="text-sm font-medium mb-2 text-muted-foreground">TWC (The Wrecking Crew)</h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="twcAverage"
+                              checked={columnVisibility.twcAverage}
+                              onCheckedChange={(checked) => updateColumnVisibility('twcAverage', checked as boolean)}
+                            />
+                            <label htmlFor="twcAverage" className="text-sm cursor-pointer">TWC Average</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="twcPercentOfVenueAvg"
+                              checked={columnVisibility.twcPercentOfVenueAvg}
+                              onCheckedChange={(checked) => updateColumnVisibility('twcPercentOfVenueAvg', checked as boolean)}
+                            />
+                            <label htmlFor="twcPercentOfVenueAvg" className="text-sm cursor-pointer">TWC % V. Avg.</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="twcTimesPlayed"
+                              checked={columnVisibility.twcTimesPlayed}
+                              onCheckedChange={(checked) => updateColumnVisibility('twcTimesPlayed', checked as boolean)}
+                            />
+                            <label htmlFor="twcTimesPlayed" className="text-sm cursor-pointer">TWC Times Played</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="twcTimesPicked"
+                              checked={columnVisibility.twcTimesPicked}
+                              onCheckedChange={(checked) => updateColumnVisibility('twcTimesPicked', checked as boolean)}
+                            />
+                            <label htmlFor="twcTimesPicked" className="text-sm cursor-pointer">TWC Times Picked</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="twcPops"
+                              checked={columnVisibility.twcPops}
+                              onCheckedChange={(checked) => updateColumnVisibility('twcPops', checked as boolean)}
+                            />
+                            <label htmlFor="twcPops" className="text-sm cursor-pointer">TWC POPS</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="twcPopsPicking"
+                              checked={columnVisibility.twcPopsPicking}
+                              onCheckedChange={(checked) => updateColumnVisibility('twcPopsPicking', checked as boolean)}
+                            />
+                            <label htmlFor="twcPopsPicking" className="text-sm cursor-pointer">TWC POPS Picking</label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="twcPopsResponding"
+                              checked={columnVisibility.twcPopsResponding}
+                              onCheckedChange={(checked) => updateColumnVisibility('twcPopsResponding', checked as boolean)}
+                            />
+                            <label htmlFor="twcPopsResponding" className="text-sm cursor-pointer">TWC POPS Responding</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="filters">
+                    <div className="text-center py-8 text-muted-foreground">
+                      Additional filter options coming soon...
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          {/* Loading State */}
+          {loading && (
+            <div className="flex items-center justify-center p-12">
+              <Loader2 className="h-8 w-8 animate-spin mr-2" />
+              <span>Loading statistics...</span>
+            </div>
+          )}
+
+          {/* Stats Table - EXACT COLUMN ORDER FROM APP.PY */}
+          {!loading && machineStats.length > 0 && (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('machine')}>
+                      Machine <SortIcon column="machine" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('percentComparison')}>
+                      % Comparison <SortIcon column="percentComparison" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('teamAverage')}>
+                      Team Avg <SortIcon column="teamAverage" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('twcAverage')}>
+                      TWC Avg <SortIcon column="twcAverage" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('venueAverage')}>
+                      Venue Avg <SortIcon column="venueAverage" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('teamHighestScore')}>
+                      Team High <SortIcon column="teamHighestScore" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('percentOfVenueAvg')}>
+                      % of V. Avg. <SortIcon column="percentOfVenueAvg" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('twcPercentOfVenueAvg')}>
+                      TWC % V. Avg. <SortIcon column="twcPercentOfVenueAvg" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('timesPlayed')}>
+                      Times Played <SortIcon column="timesPlayed" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('twcTimesPlayed')}>
+                      TWC Played <SortIcon column="twcTimesPlayed" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('timesPicked')}>
+                      Times Picked <SortIcon column="timesPicked" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('twcTimesPicked')}>
+                      TWC Picked <SortIcon column="twcTimesPicked" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('pops')}>
+                      POPS <SortIcon column="pops" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('popsPicking')}>
+                      POPS Pick <SortIcon column="popsPicking" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('popsResponding')}>
+                      POPS Resp <SortIcon column="popsResponding" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('twcPops')}>
+                      TWC POPS <SortIcon column="twcPops" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('twcPopsPicking')}>
+                      TWC POPS Pick <SortIcon column="twcPopsPicking" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('twcPopsResponding')}>
+                      TWC POPS Resp <SortIcon column="twcPopsResponding" />
+                    </TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => handleSort('popsComparison')}>
+                      POPS Comparison <SortIcon column="popsComparison" />
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sortedStats.map((stat) => (
+                    <TableRow key={stat.machine}>
+                      <TableCell className="font-medium">{stat.machine}</TableCell>
+                      <TableCell>{formatComparison(stat.percentComparison)}</TableCell>
+                      <TableCell>{formatNumber(stat.teamAverage)}</TableCell>
+                      <TableCell>{formatNumber(stat.twcAverage)}</TableCell>
+                      <TableCell>{formatNumber(stat.venueAverage)}</TableCell>
+                      <TableCell>{formatNumber(stat.teamHighestScore)}</TableCell>
+                      <TableCell>{formatPercent(stat.percentOfVenueAvg)}</TableCell>
+                      <TableCell>{formatPercent(stat.twcPercentOfVenueAvg)}</TableCell>
+                      <TableCell>{stat.timesPlayed || 0}</TableCell>
+                      <TableCell>{stat.twcTimesPlayed || 0}</TableCell>
+                      <TableCell>{stat.timesPicked || 0}</TableCell>
+                      <TableCell>{stat.twcTimesPicked || 0}</TableCell>
+                      <TableCell>{formatPercent(stat.pops)}</TableCell>
+                      <TableCell>{formatPercent(stat.popsPicking)}</TableCell>
+                      <TableCell>{formatPercent(stat.popsResponding)}</TableCell>
+                      <TableCell>{formatPercent(stat.twcPops)}</TableCell>
+                      <TableCell>{formatPercent(stat.twcPopsPicking)}</TableCell>
+                      <TableCell>{formatPercent(stat.twcPopsResponding)}</TableCell>
+                      <TableCell>{formatComparison(stat.popsComparison)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+
+          {!loading && machineStats.length === 0 && (
+            <div className="text-center p-12 text-muted-foreground">
+              No statistics available for the selected venue and opponent.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

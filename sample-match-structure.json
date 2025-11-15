@@ -1,0 +1,42 @@
+{
+  "description": "Sample MNP Match Structure",
+  "season": 20,
+  "week": 1,
+  "match": "Match 1",
+  "venue": {
+    "name": "Georgetown Pizza and Arcade",
+    "address": "123 Main St"
+  },
+  "home": {
+    "name": "The Wrecking Crew",
+    "key": "TWC"
+  },
+  "away": {
+    "name": "Ball Busters",
+    "key": "BBU"
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "games": [
+        {
+          "machine": "Attack from Mars",
+          "players": [
+            {
+              "name": "Player One",
+              "team": "TWC",
+              "score": 2500000000,
+              "points": 7
+            },
+            {
+              "name": "Player Two",
+              "team": "BBU",
+              "score": 1800000000,
+              "points": 5
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
