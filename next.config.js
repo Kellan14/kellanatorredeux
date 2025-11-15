@@ -5,7 +5,9 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   experimental: {
-    outputFileTracingIgnores: ['mnp-data-archive/**/*'],
+    outputFileTracingExcludes: {
+      '*': ['mnp-data-archive/**/*'],
+    },
   },
 }
 
