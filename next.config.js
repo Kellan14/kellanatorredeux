@@ -4,11 +4,7 @@ const nextConfig = {
     domains: ['localhost'],
     formats: ['image/avif', 'image/webp'],
   },
-  experimental: {
-    outputFileTracingExcludes: {
-      '*': ['mnp-data-archive/**/*'],
-    },
-  },
+  outputFileTracing: false,
 }
 
 module.exports = nextConfig
