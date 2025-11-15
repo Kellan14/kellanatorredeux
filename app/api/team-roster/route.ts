@@ -31,7 +31,7 @@ export async function GET(request: Request) {
     }
 
     // Format the response
-    const players = (data || []).map(p => ({
+    const players = ((data as any[]) || []).map((p: any) => ({
       name: p.player_name,
       key: p.player_key,
       ipr: p.ipr,

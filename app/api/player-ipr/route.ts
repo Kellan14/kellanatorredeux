@@ -33,13 +33,15 @@ export async function GET(request: Request) {
       })
     }
 
+    const playerData = data as any
+
     return NextResponse.json({
-      name: data.player_name,
-      ipr: data.ipr || 0,
-      matchesPlayed: data.matches_played || 0,
+      name: playerData.player_name,
+      ipr: playerData.ipr || 0,
+      matchesPlayed: playerData.matches_played || 0,
       currentSeason: CURRENT_SEASON,
-      lastMatchWeek: data.last_match_week,
-      team: data.team
+      lastMatchWeek: playerData.last_match_week,
+      team: playerData.team
     })
   } catch (error) {
     console.error('Error fetching player stats:', error)
