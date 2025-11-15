@@ -1,0 +1,2 @@
+# Don't bundle data files - fetch from GitHub instead
+mnp-data-archive

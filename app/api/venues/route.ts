@@ -1,13 +1,10 @@
 // API route to serve venue data from mnp-data-archive
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { fetchMNPData } from '@/lib/fetch-mnp-data';
 
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), 'mnp-data-archive', 'venues.json');
-    const content = await fs.readFile(filePath, 'utf-8');
-    const venuesObj = JSON.parse(content);
+    const venuesObj = await fetchMNPData('venues.json');
 
     // Convert to array and sort by name
     const venues = Object.values(venuesObj)
