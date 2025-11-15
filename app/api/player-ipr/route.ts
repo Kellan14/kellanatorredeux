@@ -23,12 +23,12 @@ export async function GET(request: Request) {
       .eq('season', CURRENT_SEASON)
       .single()
 
-    // Query matches to calculate points stats
+    // Query all matches for current season (we'll filter by player in JavaScript)
     const { data: matches, error: matchError } = await supabase
       .from('matches')
       .select('data')
       .eq('season', CURRENT_SEASON)
-      .or(`data->>home.lineup.cs.[{"name":"${playerName}"}],data->>away.lineup.cs.[{"name":"${playerName}"}]`)
+      .eq('state', 'complete')
 
     if (playerError && matchError) {
       return NextResponse.json({
@@ -43,13 +43,20 @@ export async function GET(request: Request) {
       })
     }
 
-    // Find player's hash key from matches
+    // Filter matches to only those with this player and find their hash key
+    const playerMatches = (matches as any[])?.filter((match: any) => {
+      const homePlayer = match.data?.home?.lineup?.find((p: any) => p.name === playerName)
+      const awayPlayer = match.data?.away?.lineup?.find((p: any) => p.name === playerName)
+      return homePlayer || awayPlayer
+    }) || []
+
+    // Find player's hash key and count matches
     let playerKey = ''
     let totalPoints = 0
     let totalPossiblePoints = 0
     let matchesPlayedCount = 0
 
-    for (const match of (matches as any[]) || []) {
+    for (const match of playerMatches) {
       const homePlayer = match.data?.home?.lineup?.find((p: any) => p.name === playerName)
       const awayPlayer = match.data?.away?.lineup?.find((p: any) => p.name === playerName)
 
@@ -64,7 +71,7 @@ export async function GET(request: Request) {
 
     // Calculate points from games
     if (playerKey) {
-      for (const match of (matches as any[]) || []) {
+      for (const match of playerMatches) {
         const rounds = match.data?.rounds || []
         for (const round of rounds) {
           for (const game of round.games || []) {
