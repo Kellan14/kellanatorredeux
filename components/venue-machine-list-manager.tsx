@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { X, Plus, Save, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import machinesData from '@/mnp-data-archive/machines.json'
+import { getMachinesData } from '@/lib/data-loader'
 
 interface VenueMachineListManagerProps {
   open: boolean
@@ -38,6 +38,7 @@ export function VenueMachineListManager({
   // Search for machines as user types
   useEffect(() => {
     if (addMachineInput.length >= 2) {
+      const machinesData = getMachinesData()
       const allMachines = Object.values(machinesData) as Array<{ key: string; name: string }>
       const searchLower = addMachineInput.toLowerCase()
       const results = allMachines.filter(
@@ -118,6 +119,7 @@ export function VenueMachineListManager({
   }
 
   const getMachineName = (machineKey: string) => {
+    const machinesData = getMachinesData()
     const machine = (machinesData as any)[machineKey]
     return machine ? machine.name : machineKey
   }

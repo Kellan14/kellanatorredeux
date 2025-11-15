@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 import { createClient } from '@supabase/supabase-js'
-import machinesData from '@/mnp-data-archive/machines.json'
+import { getMachinesData } from '@/lib/data-loader'
 
 // API to get top 3 scores for a machine
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -10,6 +10,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 export async function GET(request: Request) {
   try {
+    const machinesData = getMachinesData()
     const { searchParams } = new URL(request.url)
     const machineName = searchParams.get('machine')
     const currentSeason = 22 // Update this as needed

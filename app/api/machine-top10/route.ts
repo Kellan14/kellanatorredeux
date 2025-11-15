@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
-import machinesData from '@/mnp-data-archive/machines.json'
+import { getMachinesData } from '@/lib/data-loader'
 
 export async function GET(request: Request) {
   try {
+    const machinesData = getMachinesData()
     const { searchParams } = new URL(request.url)
     const machineKey = searchParams.get('machine')
     const context = searchParams.get('context') // e.g., "League-Wide This Season", "This Season at Venue Name"

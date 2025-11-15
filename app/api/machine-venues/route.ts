@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import machinesData from '@/mnp-data-archive/machines.json'
+import { getMachinesData } from '@/lib/data-loader'
 
 export async function GET(request: Request) {
   try {
@@ -12,6 +12,8 @@ export async function GET(request: Request) {
         { status: 400 }
       )
     }
+
+    const machinesData = getMachinesData()
 
     // Find the machine key from the machine name
     const machineEntry = Object.values(machinesData).find(

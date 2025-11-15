@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, Heart, Info } from 'lucide-react'
 import { getMachineImagePath, getMachineThumbnailPath } from '@/lib/machine-images'
-import machinesData from '@/mnp-data-archive/machines.json'
+import { getMachinesData } from '@/lib/data-loader'
 
 interface Machine {
   key: string
@@ -18,6 +18,7 @@ interface Machine {
 }
 
 // Convert machines.json to array
+const machinesData = getMachinesData()
 const machinesArray: Machine[] = Object.values(machinesData).map((machine: any) => ({
   key: machine.key,
   name: machine.name,
