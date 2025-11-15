@@ -37,7 +37,7 @@ export default function LoginPage() {
         description: "You've successfully logged in.",
       })
 
-      router.push('/profile')
+      router.push('/')
       router.refresh()
     } catch (error: any) {
       toast({

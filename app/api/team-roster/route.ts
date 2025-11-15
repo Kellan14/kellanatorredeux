@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     const rosterPlayers = new Set<string>()
 
     // Read matches from the specified season
-    const seasonDir = path.join(process.cwd(), 'mnp-data-archive', `season-${season}`, 'matches')
+    const seasonDir = path.join(process.cwd(), 'public', 'mnp-data-archive', `season-${season}`, 'matches')
 
     if (!fs.existsSync(seasonDir)) {
       return NextResponse.json({ players: [] })

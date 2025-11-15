@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     const allData: any[] = []
 
     for (let season = seasonStart; season <= seasonEnd; season++) {
-      const seasonDir = path.join(process.cwd(), 'mnp-data-archive', `season-${season}`, 'matches')
+      const seasonDir = path.join(process.cwd(), 'public', 'mnp-data-archive', `season-${season}`, 'matches')
 
       if (!fs.existsSync(seasonDir)) {
         console.log(`Season ${season} directory not found, skipping`)

@@ -41,7 +41,7 @@ export async function GET(request: Request) {
     const endSeason = currentSeason
 
     for (let season = startSeason; season <= endSeason; season++) {
-      const seasonDir = path.join(process.cwd(), 'mnp-data-archive', `season-${season}`, 'matches')
+      const seasonDir = path.join(process.cwd(), 'public', 'mnp-data-archive', `season-${season}`, 'matches')
 
       if (!fs.existsSync(seasonDir)) continue
 

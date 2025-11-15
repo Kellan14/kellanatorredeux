@@ -12,7 +12,7 @@ export function getMachinesData() {
     return dataCache.get(cacheKey)
   }
 
-  const filePath = path.join(process.cwd(), 'mnp-data-archive', 'machines.json')
+  const filePath = path.join(process.cwd(), 'public', 'mnp-data-archive', 'machines.json')
   const fileContents = fs.readFileSync(filePath, 'utf8')
   const data = JSON.parse(fileContents)
 
@@ -27,7 +27,7 @@ export function getSeasonData(season: number) {
     return dataCache.get(cacheKey)
   }
 
-  const filePath = path.join(process.cwd(), 'mnp-data-archive', `${season}.json`)
+  const filePath = path.join(process.cwd(), 'public', 'mnp-data-archive', `${season}.json`)
   const fileContents = fs.readFileSync(filePath, 'utf8')
   const data = JSON.parse(fileContents)
 

@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 
     // Get all scores from match data
     for (let season = 20; season <= 22; season++) {
-      const seasonDir = path.join(process.cwd(), 'mnp-data-archive', `season-${season}`, 'matches')
+      const seasonDir = path.join(process.cwd(), 'public', 'mnp-data-archive', `season-${season}`, 'matches')
 
       if (!fs.existsSync(seasonDir)) continue
 

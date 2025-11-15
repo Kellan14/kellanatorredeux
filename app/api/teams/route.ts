@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const season = searchParams.get('season') || '22'; // Default to latest season
 
   try {
-    const repoDir = path.join(process.cwd(), 'mnp-data-archive');
+    const repoDir = path.join(process.cwd(), 'public', 'mnp-data-archive');
     const seasonDir = path.join(repoDir, `season-${season}`, 'matches');
 
     // Scan JSON files to get team names

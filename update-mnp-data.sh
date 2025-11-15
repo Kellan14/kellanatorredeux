@@ -3,7 +3,7 @@
 # Script to check for and pull MNP data updates
 # Only pulls if there are new commits on the remote
 
-REPO_DIR="/Users/kellankirkland/Documents/kellanator/kellanator/mnp-data-archive"
+REPO_DIR="/Users/kellankirkland/Documents/kellanator/kellanator/public/mnp-data-archive"
 LOG_FILE="/Users/kellankirkland/Documents/kellanator/kellanator/mnp-data-update.log"
 
 # Function to log with timestamp

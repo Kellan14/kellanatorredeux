@@ -53,7 +53,7 @@ export async function GET(request: Request) {
     const machinesAtVenue = new Set<string>()
 
     for (let season = seasonStart; season <= seasonEnd; season++) {
-      const seasonDir = path.join(process.cwd(), 'mnp-data-archive', `season-${season}`, 'matches')
+      const seasonDir = path.join(process.cwd(), 'public', 'mnp-data-archive', `season-${season}`, 'matches')
 
       if (!fs.existsSync(seasonDir)) continue
 
@@ -214,7 +214,7 @@ export async function GET(request: Request) {
     const rosterPlayers = new Set<string>()
 
     for (let season = seasonStart; season <= seasonEnd; season++) {
-      const seasonDir = path.join(process.cwd(), 'mnp-data-archive', `season-${season}`, 'matches')
+      const seasonDir = path.join(process.cwd(), 'public', 'mnp-data-archive', `season-${season}`, 'matches')
 
       if (!fs.existsSync(seasonDir)) continue
 
