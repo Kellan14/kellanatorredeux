@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
 
 export async function GET(request: Request) {
   try {
@@ -14,9 +12,14 @@ export async function GET(request: Request) {
       )
     }
 
-    const mappingsPath = path.join(process.cwd(), 'player-mappings.json')
-    const fileContent = fs.readFileSync(mappingsPath, 'utf-8')
-    const mappings = JSON.parse(fileContent)
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const response = await fetch(`${baseUrl}/player-mappings.json`, { cache: 'no-store' })
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch player mappings')
+    }
+
+    const mappings = await response.json()
 
     const playerData = mappings[uid]
 
