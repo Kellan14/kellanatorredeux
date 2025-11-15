@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// Cache for 1 hour since match data updates weekly
+export const revalidate = 3600;
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const seasons = searchParams.get('seasons');

@@ -35,7 +35,10 @@ export class TournamentDataService {
       }
 
       const data = await response.json();
-      const matches: MNPMatch[] = data.matches || [];
+      // Extract the nested 'data' property from each database row
+      const matches: MNPMatch[] = (data.matches || [])
+        .map((m: any) => m.data)
+        .filter((d: any) => d); // Filter out any null/undefined data
 
       this.mnpMatchCache.set(cacheKey, matches);
       return matches;
