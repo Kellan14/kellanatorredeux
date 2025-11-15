@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
-const GITHUB_BASE = 'https://raw.githubusercontent.com/Invader-Zim/mnp-data-archive/main'
-const CURRENT_SEASON = 23
+const GITHUB_BASE = 'https://raw.githubusercontent.com/Kellan14/kellanatorredeux/main/mnp-data-archive'
+const CURRENT_SEASON = 22
 
 export async function GET() {
   try {
