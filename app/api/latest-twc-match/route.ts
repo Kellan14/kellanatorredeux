@@ -1,56 +1,42 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
+
+const GITHUB_BASE = 'https://raw.githubusercontent.com/Invader-Zim/mnp-data-archive/main'
+const CURRENT_SEASON = 23
 
 export async function GET() {
   try {
-    const matchesDir = path.join(process.cwd(), 'mnp-data-archive', 'season-22', 'matches')
-    const files = fs.readdirSync(matchesDir)
+    // Try weeks 13 down to 1 to find the latest TWC match
+    for (let week = 13; week >= 1; week--) {
+      try {
+        const url = `${GITHUB_BASE}/season-${CURRENT_SEASON}/matches/mnp-${CURRENT_SEASON}-${week}-TWC.json`
+        const response = await fetch(url)
 
-    // Filter for TWC matches and parse their data
-    const twcMatches: Array<{ filename: string; week: number; data: any }> = []
+        if (response.ok) {
+          const matchData = await response.json()
 
-    for (const file of files) {
-      if (file.includes('TWC') && file.endsWith('.json')) {
-        const filePath = path.join(matchesDir, file)
-        const fileContent = fs.readFileSync(filePath, 'utf-8')
-        const matchData = JSON.parse(fileContent)
+          // Determine opponent - TWC could be home or away
+          let opponent = ''
+          if (matchData.home && matchData.home.key === 'TWC') {
+            opponent = matchData.away.name
+          } else if (matchData.away && matchData.away.key === 'TWC') {
+            opponent = matchData.home.name
+          }
 
-        // Extract week number from match data
-        const weekNum = parseInt(matchData.week || '0', 10)
-        twcMatches.push({
-          filename: file,
-          week: weekNum,
-          data: matchData
-        })
+          return NextResponse.json({
+            venue: matchData.venue?.name || 'Georgetown Pizza and Arcade',
+            opponent: opponent,
+            matchKey: matchData.key,
+            week: matchData.week,
+            state: matchData.state
+          })
+        }
+      } catch (err) {
+        // Continue to next week
+        continue
       }
     }
 
-    // Sort by week number descending (most recent first)
-    twcMatches.sort((a, b) => b.week - a.week)
-
-    // Get the most recent match (regardless of state)
-    if (twcMatches.length > 0) {
-      const matchData = twcMatches[0].data
-
-      // Determine opponent - TWC could be home or away
-      let opponent = ''
-      if (matchData.home && matchData.home.key === 'TWC') {
-        opponent = matchData.away.name
-      } else if (matchData.away && matchData.away.key === 'TWC') {
-        opponent = matchData.home.name
-      }
-
-      return NextResponse.json({
-        venue: matchData.venue.name,
-        opponent: opponent,
-        matchKey: matchData.key,
-        week: matchData.week,
-        state: matchData.state
-      })
-    }
-
-    // Fallback to GPA and first non-TWC team if no match found
+    // Fallback if no match found
     return NextResponse.json({
       venue: 'Georgetown Pizza and Arcade',
       opponent: null,

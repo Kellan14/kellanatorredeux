@@ -1,5 +1,5 @@
 // Fetch MNP data from GitHub instead of bundling it
-const DATA_BASE_URL = process.env.MNP_DATA_URL || 'https://raw.githubusercontent.com/Kellan14/kellanatorredeux/main/mnp-data-archive'
+const DATA_BASE_URL = process.env.MNP_DATA_URL || 'https://raw.githubusercontent.com/Invader-Zim/mnp-data-archive/main'
 
 export async function fetchMNPData(path: string) {
   const url = `${DATA_BASE_URL}/${path}`

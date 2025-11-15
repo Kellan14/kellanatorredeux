@@ -1,39 +1,38 @@
 // API route to get unique teams from MNP data
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { fetchMNPData } from '@/lib/fetch-mnp-data';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const season = searchParams.get('season') || '22'; // Default to latest season
+  const season = searchParams.get('season') || '23';
 
   try {
-    const repoDir = path.join(process.cwd(), 'mnp-data-archive');
-    const seasonDir = path.join(repoDir, `season-${season}`, 'matches');
-
-    // Scan JSON files to get team names
+    // Fetch teams from a sample of match files
     const teamMap = new Map<string, string>();
-    const files = await fs.readdir(seasonDir);
-    const jsonFiles = files.filter(f => f.endsWith('.json'));
 
-    // Sample files to get all unique teams (check every 5th file for efficiency)
-    const sampleFiles = jsonFiles.filter((_, i) => i % 5 === 0 || i < 20);
-
-    for (const file of sampleFiles) {
+    // Check first few weeks to get team list
+    for (let week = 1; week <= 3; week++) {
       try {
-        const filePath = path.join(seasonDir, file);
-        const content = await fs.readFile(filePath, 'utf-8');
-        const matchData = JSON.parse(content);
+        // Try different team combinations for each week
+        const teamCodes = ['TWC', 'BOC', 'CPO', 'DSV', 'DTP', 'LAS', 'NLT', 'OLD', 'PGN', 'RMS', 'SHK', 'SSS'];
 
-        // Add home and away teams
-        if (matchData.home?.key && matchData.home?.name) {
-          teamMap.set(matchData.home.key, matchData.home.name);
+        for (const team of teamCodes) {
+          try {
+            const matchData = await fetchMNPData(`season-${season}/matches/mnp-${season}-${week}-${team}.json`);
+
+            if (matchData.home?.key && matchData.home?.name) {
+              teamMap.set(matchData.home.key, matchData.home.name);
+            }
+            if (matchData.away?.key && matchData.away?.name) {
+              teamMap.set(matchData.away.key, matchData.away.name);
+            }
+
+            break; // Found a match for this week, move to next
+          } catch {
+            continue;
+          }
         }
-        if (matchData.away?.key && matchData.away?.name) {
-          teamMap.set(matchData.away.key, matchData.away.name);
-        }
-      } catch (err) {
-        // Skip files with errors
+      } catch {
         continue;
       }
     }
