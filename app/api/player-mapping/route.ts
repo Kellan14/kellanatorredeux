@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
+
+// Hardcoded player mappings (will move to database later)
+const PLAYER_MAPPINGS: Record<string, { name: string; team: string }> = {
+  'dcdbf053-3e71-4f05-a627-70390da8f984': {
+    name: 'Kellan Kirkland',
+    team: 'TWC'
+  }
+}
 
 export async function GET(request: Request) {
   try {
@@ -14,10 +20,7 @@ export async function GET(request: Request) {
       )
     }
 
-    // Read from public folder
-    const filePath = path.join(process.cwd(), 'public', 'player-mappings.json')
-    const fileContent = fs.readFileSync(filePath, 'utf-8')
-    const mappings = JSON.parse(fileContent)
+    const mappings = PLAYER_MAPPINGS
 
     const playerData = mappings[uid]
 
