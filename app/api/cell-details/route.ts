@@ -140,7 +140,7 @@ export async function GET(request: Request) {
       // Team-specific columns
       console.log('Filtering for team:', team)
       filteredData = filteredData.filter(row =>
-        row.team.trim().toLowerCase() === team.trim().toLowerCase() &&
+        team && row.team.trim().toLowerCase() === team.trim().toLowerCase() &&
         row.is_roster_player === true
       )
       console.log('After team filter:', filteredData.length)
