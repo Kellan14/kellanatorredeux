@@ -2,6 +2,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// Cache for 24 hours since teams rarely change
+export const revalidate = 86400
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const season = searchParams.get('season') || '22';

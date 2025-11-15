@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
+// Cache for 1 hour since stats only update weekly
+export const revalidate = 3600
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)

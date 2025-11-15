@@ -3,6 +3,9 @@ import { supabase } from '@/lib/supabase'
 
 const CURRENT_SEASON = 22
 
+// Cache for 1 hour since latest match info updates weekly
+export const revalidate = 3600
+
 export async function GET() {
   try {
     // Query latest TWC match from database

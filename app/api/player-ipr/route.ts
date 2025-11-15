@@ -3,6 +3,9 @@ import { supabase } from '@/lib/supabase'
 
 const CURRENT_SEASON = 22
 
+// Cache for 1 hour (3600 seconds) since stats only update weekly
+export const revalidate = 3600
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
