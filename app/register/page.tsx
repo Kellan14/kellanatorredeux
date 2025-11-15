@@ -56,9 +56,9 @@ export default function RegisterPage() {
           .from('profiles')
           .insert({
             id: authData.user.id,
-            username,
-            full_name: username,
-          })
+            username: username || null,
+            full_name: username || null,
+          } as any)
 
         if (profileError) {
           console.error('Profile creation error:', profileError)
