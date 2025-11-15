@@ -1,39 +1,36 @@
-// API route to get unique teams from MNP data
+// API route to get unique teams from Supabase
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchMNPData } from '@/lib/fetch-mnp-data';
+import { supabase } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const season = searchParams.get('season') || '23';
+  const season = searchParams.get('season') || '22';
 
   try {
-    // Fetch teams from a sample of match files
+    // Query matches from Supabase for this season
+    const { data: matches, error } = await supabase
+      .from('matches')
+      .select('data')
+      .eq('season', parseInt(season))
+      .limit(50); // Get first 50 matches to find all teams
+
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json(
+        { error: 'Failed to load teams', details: error.message },
+        { status: 500 }
+      );
+    }
+
+    // Extract unique teams from match data
     const teamMap = new Map<string, string>();
 
-    // Check first few weeks to get team list
-    for (let week = 1; week <= 3; week++) {
-      try {
-        // Try different team combinations for each week
-        const teamCodes = ['TWC', 'BOC', 'CPO', 'DSV', 'DTP', 'LAS', 'NLT', 'OLD', 'PGN', 'RMS', 'SHK', 'SSS'];
-
-        for (const team of teamCodes) {
-          try {
-            const matchData = await fetchMNPData(`season-${season}/matches/mnp-${season}-${week}-${team}.json`);
-
-            if (matchData.home?.key && matchData.home?.name) {
-              teamMap.set(matchData.home.key, matchData.home.name);
-            }
-            if (matchData.away?.key && matchData.away?.name) {
-              teamMap.set(matchData.away.key, matchData.away.name);
-            }
-
-            break; // Found a match for this week, move to next
-          } catch {
-            continue;
-          }
-        }
-      } catch {
-        continue;
+    for (const match of (matches as any[]) || []) {
+      if (match.data?.home?.key && match.data?.home?.name) {
+        teamMap.set(match.data.home.key, match.data.home.name);
+      }
+      if (match.data?.away?.key && match.data?.away?.name) {
+        teamMap.set(match.data.away.key, match.data.away.name);
       }
     }
 

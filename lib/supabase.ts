@@ -20,6 +20,82 @@ export const createSupabaseClient = () => supabase
 export type Database = {
   public: {
     Tables: {
+      matches: {
+        Row: {
+          id: number
+          match_key: string
+          season: number
+          week: number
+          home_team: string | null
+          away_team: string | null
+          venue_name: string | null
+          state: string | null
+          data: any // JSONB - contains full match data
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          match_key: string
+          season: number
+          week: number
+          home_team?: string | null
+          away_team?: string | null
+          venue_name?: string | null
+          state?: string | null
+          data: any
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          match_key?: string
+          season?: number
+          week?: number
+          home_team?: string | null
+          away_team?: string | null
+          venue_name?: string | null
+          state?: string | null
+          data?: any
+          created_at?: string
+        }
+      }
+      player_stats: {
+        Row: {
+          id: number
+          player_name: string
+          player_key: string | null
+          season: number
+          team: string | null
+          ipr: number | null
+          matches_played: number
+          last_match_week: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          player_name: string
+          player_key?: string | null
+          season: number
+          team?: string | null
+          ipr?: number | null
+          matches_played?: number
+          last_match_week?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          player_name?: string
+          player_key?: string | null
+          season?: number
+          team?: string | null
+          ipr?: number | null
+          matches_played?: number
+          last_match_week?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       profiles: {
         Row: {
           id: string
