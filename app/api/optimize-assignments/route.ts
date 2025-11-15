@@ -171,7 +171,7 @@ export async function POST(request: Request) {
 
             return { player, score }
           })
-          .sort((a, b) => b.score - a.score)
+          .sort((a: { player: string, score: number }, b: { player: string, score: number }) => b.score - a.score)
 
         const bestPlayer = playerScores[0]?.player
         if (bestPlayer) {
@@ -199,7 +199,7 @@ export async function POST(request: Request) {
 
             return { player, score }
           })
-          .sort((a, b) => b.score - a.score)
+          .sort((a: { player: string, score: number }, b: { player: string, score: number }) => b.score - a.score)
           .slice(0, 2)
 
         const pair = playerScores.map(p => p.player)
