@@ -95,7 +95,7 @@ async function importMatches() {
                   player_name: player.name,
                   player_key: player.key,
                   season: season,
-                  team: matchData.home.name,
+                  team: matchData.home.key,
                   ipr: player.IPR || 0,
                   matches_played: player.num_played || 0,
                   last_match_week: week
@@ -113,7 +113,7 @@ async function importMatches() {
                   player_name: player.name,
                   player_key: player.key,
                   season: season,
-                  team: matchData.away.name,
+                  team: matchData.away.key,
                   ipr: player.IPR || 0,
                   matches_played: player.num_played || 0,
                   last_match_week: week

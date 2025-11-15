@@ -8,7 +8,10 @@ cd /Users/kellankirkland/Documents/kellanator/kellanator
 # Load environment variables from .env.local
 export $(cat .env.local | grep -v '^#' | xargs)
 
-# Run the import script
+# Import new matches from GitHub
 node scripts/import-mnp-data.js >> logs/sync-$(date +\%Y-\%m-\%d).log 2>&1
+
+# Update TWC player stats (fast, only processes TWC matches)
+node scripts/import-twc-stats.js >> logs/sync-$(date +\%Y-\%m-\%d).log 2>&1
 
 echo "Sync completed at $(date)"
