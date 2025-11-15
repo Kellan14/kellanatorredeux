@@ -1,0 +1,395 @@
+{
+  "key": "2e39e353b5705520dfbe8f37dd55838fc51bb188",
+  "name": "Jennell Baldwin",
+  "history": [
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 1,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 56124440,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 3,
+      "machine": "BigGuns",
+      "division": 0,
+      "score": 415330,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 4,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 57419960,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "DSV",
+      "match": "mnp-22-10-NMC-DSV",
+      "week": "10",
+      "round": 1,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 321210,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DSV",
+      "match": "mnp-22-10-NMC-DSV",
+      "week": "10",
+      "round": 2,
+      "machine": "FOO",
+      "division": 0,
+      "score": 21515560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DSV",
+      "match": "mnp-22-10-NMC-DSV",
+      "week": "10",
+      "round": 4,
+      "machine": "BM66",
+      "division": 0,
+      "score": 77942830,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2134947240,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 192740,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 4,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 230130,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 1,
+      "machine": "StellarWars",
+      "division": 0,
+      "score": 145150,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 3,
+      "machine": "SB",
+      "division": 0,
+      "score": 2165990,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 4,
+      "machine": "SB",
+      "division": 0,
+      "score": 1801400,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 927910,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 303410,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 151500,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TRL",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 204610,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "TRL",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 2,
+      "machine": "SB",
+      "division": 0,
+      "score": 1281870,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TRL",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 4,
+      "machine": "SB",
+      "division": 0,
+      "score": 2884950,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "HHS",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 1,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 78060,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "HHS",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 2,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 188550,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "HHS",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 369585440,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TTT",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 131020,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TTT",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 3,
+      "machine": "BigGuns",
+      "division": 0,
+      "score": 334360,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TTT",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 4,
+      "machine": "BigGuns",
+      "division": 0,
+      "score": 1169910,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 1,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 274750,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 2,
+      "machine": "BOP",
+      "division": 0,
+      "score": 1559110,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 4,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 105880,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 72373880,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 2,
+      "machine": "BigGuns",
+      "division": 0,
+      "score": 318490,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 4,
+      "machine": "BigGuns",
+      "division": 0,
+      "score": 414290,
+      "points": 1.5,
+      "pops": "0.600"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.456",
+      "num_matches": 10,
+      "ppm": "3.650",
+      "points": {
+        "won": 36.5,
+        "of": 80
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

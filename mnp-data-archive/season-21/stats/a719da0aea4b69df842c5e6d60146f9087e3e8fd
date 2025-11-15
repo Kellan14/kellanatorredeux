@@ -1,0 +1,179 @@
+{
+  "key": "a719da0aea4b69df842c5e6d60146f9087e3e8fd",
+  "name": "Danny Fair",
+  "history": [
+    {
+      "team": "KNR",
+      "opp": "CDC",
+      "match": "mnp-21-1-CDC-KNR",
+      "week": "1",
+      "round": 1,
+      "machine": "GOT",
+      "division": 0,
+      "score": 126000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "KNR",
+      "opp": "CDC",
+      "match": "mnp-21-1-CDC-KNR",
+      "week": "1",
+      "round": 3,
+      "machine": "GOT",
+      "division": 0,
+      "score": 55380480,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KNR",
+      "opp": "CDC",
+      "match": "mnp-21-1-CDC-KNR",
+      "week": "1",
+      "round": 4,
+      "machine": "Ali",
+      "division": 0,
+      "score": 340000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "RMS",
+      "match": "mnp-21-10-RMS-KNR",
+      "week": "10",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 165413960,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "KNR",
+      "opp": "RMS",
+      "match": "mnp-21-10-RMS-KNR",
+      "week": "10",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 851398200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "RMS",
+      "match": "mnp-21-10-RMS-KNR",
+      "week": "10",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1200000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "KNR",
+      "opp": "BAD",
+      "match": "mnp-21-12-BAD-KNR",
+      "week": "12",
+      "round": 1,
+      "machine": "METREM",
+      "division": 0,
+      "score": 14611390,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "KNR",
+      "opp": "BAD",
+      "match": "mnp-21-12-BAD-KNR",
+      "week": "12",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1426651140,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "KNR",
+      "opp": "BAD",
+      "match": "mnp-21-12-BAD-KNR",
+      "week": "12",
+      "round": 3,
+      "machine": "Ali",
+      "division": 0,
+      "score": 42010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PYC",
+      "match": "mnp-21-13-KNR-PYC",
+      "week": "13",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 280150,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "KNR",
+      "opp": "PYC",
+      "match": "mnp-21-13-KNR-PYC",
+      "week": "13",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 723322110,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PYC",
+      "match": "mnp-21-13-KNR-PYC",
+      "week": "13",
+      "round": 4,
+      "machine": "Skateball",
+      "division": 0,
+      "score": 122410,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.384",
+      "num_matches": 4,
+      "ppm": "3.125",
+      "points": {
+        "won": 12.5,
+        "of": 32.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

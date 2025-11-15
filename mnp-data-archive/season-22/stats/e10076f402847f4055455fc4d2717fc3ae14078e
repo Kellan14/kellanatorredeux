@@ -1,0 +1,395 @@
+{
+  "key": "e10076f402847f4055455fc4d2717fc3ae14078e",
+  "name": "Kristin Vick",
+  "history": [
+    {
+      "team": "DTP",
+      "opp": "NLT",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 1,
+      "machine": "TZ",
+      "division": 0,
+      "score": 235981260,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "NLT",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 243015780,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "NLT",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 253482690,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "RMS",
+      "match": "mnp-22-10-RMS-DTP",
+      "week": "10",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 12820940,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "RMS",
+      "match": "mnp-22-10-RMS-DTP",
+      "week": "10",
+      "round": 2,
+      "machine": "Getaway",
+      "division": 0,
+      "score": 335434820,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "RMS",
+      "match": "mnp-22-10-RMS-DTP",
+      "week": "10",
+      "round": 4,
+      "machine": "Getaway",
+      "division": 0,
+      "score": 30550870,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "NMC",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2195680670,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "NMC",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "Getaway",
+      "division": 0,
+      "score": 73000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "NMC",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 10299310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TBT",
+      "match": "mnp-22-3-DTP-TBT",
+      "week": "3",
+      "round": 1,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 255000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TBT",
+      "match": "mnp-22-3-DTP-TBT",
+      "week": "3",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 34000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "TBT",
+      "match": "mnp-22-3-DTP-TBT",
+      "week": "3",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 294549790,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "ETB",
+      "match": "mnp-22-4-ETB-DTP",
+      "week": "4",
+      "round": 2,
+      "machine": "Getaway",
+      "division": 0,
+      "score": 166328490,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "ETB",
+      "match": "mnp-22-4-ETB-DTP",
+      "week": "4",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 56565650,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "ETB",
+      "match": "mnp-22-4-ETB-DTP",
+      "week": "4",
+      "round": 4,
+      "machine": "Getaway",
+      "division": 0,
+      "score": 86000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "SCN",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 182055860,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "SCN",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 144395110,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "SCN",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 170626380,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-22-6-JMF-DTP",
+      "week": "6",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 26208980,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-22-6-JMF-DTP",
+      "week": "6",
+      "round": 2,
+      "machine": "Getaway",
+      "division": 0,
+      "score": 34000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-22-6-JMF-DTP",
+      "week": "6",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 59171490,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "SWL",
+      "match": "mnp-22-7-DTP-SWL",
+      "week": "7",
+      "round": 1,
+      "machine": "LOTR",
+      "division": 0,
+      "score": 48529940,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "SWL",
+      "match": "mnp-22-7-DTP-SWL",
+      "week": "7",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 39278720,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "SWL",
+      "match": "mnp-22-7-DTP-SWL",
+      "week": "7",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 250000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "LAS",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 20697830,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DTP",
+      "opp": "LAS",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 2,
+      "machine": "Getaway",
+      "division": 0,
+      "score": 27000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "LAS",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 4,
+      "machine": "Getaway",
+      "division": 0,
+      "score": 49134610,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "SSS",
+      "match": "mnp-22-9-DTP-SSS",
+      "week": "9",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 3160410,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DTP",
+      "opp": "SSS",
+      "match": "mnp-22-9-DTP-SSS",
+      "week": "9",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 15183530,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "SSS",
+      "match": "mnp-22-9-DTP-SSS",
+      "week": "9",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 146690590,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.687",
+      "num_matches": 10,
+      "ppm": "5.600",
+      "points": {
+        "won": 56,
+        "of": 81.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

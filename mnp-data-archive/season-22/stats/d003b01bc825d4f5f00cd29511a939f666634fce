@@ -1,0 +1,287 @@
+{
+  "key": "d003b01bc825d4f5f00cd29511a939f666634fce",
+  "name": "Hank Duhaime",
+  "history": [
+    {
+      "team": "RTR",
+      "opp": "ICB",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 55096420,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "ICB",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 39760770,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "ICB",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 4,
+      "machine": "VEN",
+      "division": 0,
+      "score": 34434318,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "TBT",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 141174090,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TBT",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 3,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 1047310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TBT",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 7000000,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "RTR",
+      "opp": "PBR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 167355840,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "PBR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 2,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 881110,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "PBR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 6531670,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 1,
+      "machine": "FOO",
+      "division": 0,
+      "score": 109122890,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 2,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 162360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 697980,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "PYC",
+      "match": "mnp-22-6-PYC-RTR",
+      "week": "6",
+      "round": 2,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 317000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "PYC",
+      "match": "mnp-22-6-PYC-RTR",
+      "week": "6",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 15000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "PYC",
+      "match": "mnp-22-6-PYC-RTR",
+      "week": "6",
+      "round": 4,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 3826960,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "KNR",
+      "match": "mnp-22-8-KNR-RTR",
+      "week": "8",
+      "round": 1,
+      "machine": "TOM",
+      "division": 0,
+      "score": 723013620,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "KNR",
+      "match": "mnp-22-8-KNR-RTR",
+      "week": "8",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 53716670,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "KNR",
+      "match": "mnp-22-8-KNR-RTR",
+      "week": "8",
+      "round": 4,
+      "machine": "TZ",
+      "division": 0,
+      "score": 221924100,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 1,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 62545630,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 83088628,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 3,
+      "machine": "BOP",
+      "division": 0,
+      "score": 2254570,
+      "points": 1,
+      "pops": "0.333"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.412",
+      "num_matches": 7,
+      "ppm": "3.357",
+      "points": {
+        "won": 23.5,
+        "of": 57
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

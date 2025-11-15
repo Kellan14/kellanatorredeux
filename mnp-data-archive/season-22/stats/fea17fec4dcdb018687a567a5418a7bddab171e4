@@ -1,0 +1,359 @@
+{
+  "key": "fea17fec4dcdb018687a567a5418a7bddab171e4",
+  "name": "Clay Shelton",
+  "history": [
+    {
+      "team": "FBP",
+      "opp": "JMF",
+      "match": "mnp-22-1-FBP-JMF",
+      "week": "1",
+      "round": 1,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 256260,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "JMF",
+      "match": "mnp-22-1-FBP-JMF",
+      "week": "1",
+      "round": 2,
+      "machine": "Supersonic",
+      "division": 0,
+      "score": 85060,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "FBP",
+      "opp": "JMF",
+      "match": "mnp-22-1-FBP-JMF",
+      "week": "1",
+      "round": 4,
+      "machine": "SpaceInvaders",
+      "division": 0,
+      "score": 60450,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "NLT",
+      "match": "mnp-22-10-NLT-FBP",
+      "week": "10",
+      "round": 1,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 10156930,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "FBP",
+      "opp": "NLT",
+      "match": "mnp-22-10-NLT-FBP",
+      "week": "10",
+      "round": 3,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 29770320,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "FBP",
+      "opp": "NLT",
+      "match": "mnp-22-10-NLT-FBP",
+      "week": "10",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 26130,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "RMS",
+      "match": "mnp-22-2-RMS-FBP",
+      "week": "2",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 12996000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "RMS",
+      "match": "mnp-22-2-RMS-FBP",
+      "week": "2",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 103990110,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "FBP",
+      "opp": "RMS",
+      "match": "mnp-22-2-RMS-FBP",
+      "week": "2",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 4103940,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "DOG",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 2,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 39100000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "DOG",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 3,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 10132630,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "FBP",
+      "opp": "DOG",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 4,
+      "machine": "HW",
+      "division": 0,
+      "score": 24443580,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "FBP",
+      "opp": "SKP",
+      "match": "mnp-22-5-FBP-SKP",
+      "week": "5",
+      "round": 1,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 314370,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SKP",
+      "match": "mnp-22-5-FBP-SKP",
+      "week": "5",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 3678310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SKP",
+      "match": "mnp-22-5-FBP-SKP",
+      "week": "5",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 372230,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "KNR",
+      "match": "mnp-22-6-KNR-FBP",
+      "week": "6",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 11355700,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "FBP",
+      "opp": "KNR",
+      "match": "mnp-22-6-KNR-FBP",
+      "week": "6",
+      "round": 3,
+      "machine": "Metallica",
+      "division": 0,
+      "score": 11259780,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "KNR",
+      "match": "mnp-22-6-KNR-FBP",
+      "week": "6",
+      "round": 4,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 4642850,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "FBP",
+      "opp": "CRA",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 8614400,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "FBP",
+      "opp": "CRA",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 3,
+      "machine": "CA",
+      "division": 0,
+      "score": 64770,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "CRA",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 380630,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "ICB",
+      "match": "mnp-22-8-ICB-FBP",
+      "week": "8",
+      "round": 1,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 228540,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "ICB",
+      "match": "mnp-22-8-ICB-FBP",
+      "week": "8",
+      "round": 2,
+      "machine": "Metallica",
+      "division": 0,
+      "score": 1893880,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "FBP",
+      "opp": "ICB",
+      "match": "mnp-22-8-ICB-FBP",
+      "week": "8",
+      "round": 3,
+      "machine": "POTC",
+      "division": 0,
+      "score": 4809460,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "PBR",
+      "match": "mnp-22-9-FBP-PBR",
+      "week": "9",
+      "round": 1,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 356710,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "PBR",
+      "match": "mnp-22-9-FBP-PBR",
+      "week": "9",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 99002550,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "PBR",
+      "match": "mnp-22-9-FBP-PBR",
+      "week": "9",
+      "round": 3,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 43320,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.486",
+      "num_matches": 9,
+      "ppm": "4.055",
+      "points": {
+        "won": 36.5,
+        "of": 75
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

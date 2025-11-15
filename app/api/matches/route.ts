@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     const allMatches: any[] = [];
 
     // Path to mnp-data-archive directory
-    const repoDir = path.join(process.cwd(), 'public', 'mnp-data-archive');
+    const repoDir = path.join(process.cwd(), 'mnp-data-archive');
 
     // Load matches from each season
     for (const season of seasonNumbers) {
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 // Get available seasons
 export async function OPTIONS() {
   try {
-    const repoDir = path.join(process.cwd(), 'public', 'mnp-data-archive');
+    const repoDir = path.join(process.cwd(), 'mnp-data-archive');
     const entries = await fs.readdir(repoDir);
 
     const seasons = entries

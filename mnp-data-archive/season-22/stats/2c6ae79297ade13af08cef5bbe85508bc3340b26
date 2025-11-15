@@ -1,0 +1,323 @@
+{
+  "key": "2c6ae79297ade13af08cef5bbe85508bc3340b26",
+  "name": "Donna Ruacho",
+  "history": [
+    {
+      "team": "SSD",
+      "opp": "PYC",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 50000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSD",
+      "opp": "PYC",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 62785350,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "PYC",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 13479120,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SSD",
+      "opp": "SSS",
+      "match": "mnp-22-2-SSS-SSD",
+      "week": "2",
+      "round": 1,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 1819440,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SSS",
+      "match": "mnp-22-2-SSS-SSD",
+      "week": "2",
+      "round": 3,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 149450,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SSS",
+      "match": "mnp-22-2-SSS-SSD",
+      "week": "2",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 60457470,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "NMC",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 3001290,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "NMC",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 2,
+      "machine": "007",
+      "division": 0,
+      "score": 2000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "NMC",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 3,
+      "machine": "GF",
+      "division": 0,
+      "score": 4391696,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSD",
+      "opp": "TBT",
+      "match": "mnp-22-5-SSD-TBT",
+      "week": "5",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 16182360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "TBT",
+      "match": "mnp-22-5-SSD-TBT",
+      "week": "5",
+      "round": 3,
+      "machine": "TOM",
+      "division": 0,
+      "score": 44000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "TBT",
+      "match": "mnp-22-5-SSD-TBT",
+      "week": "5",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 51120090,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "ETB",
+      "match": "mnp-22-6-ETB-SSD",
+      "week": "6",
+      "round": 1,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 1701150,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "ETB",
+      "match": "mnp-22-6-ETB-SSD",
+      "week": "6",
+      "round": 2,
+      "machine": "GF",
+      "division": 0,
+      "score": 1874847,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "ETB",
+      "match": "mnp-22-6-ETB-SSD",
+      "week": "6",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 19662710,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 276914820,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 2,
+      "machine": "TWD",
+      "division": 0,
+      "score": 67304850,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 4,
+      "machine": "WOF",
+      "division": 0,
+      "score": 8377320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "DOG",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 1,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 659890,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "DOG",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 3,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 3875960,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "DOG",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 28807570,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSD",
+      "opp": "SWL",
+      "match": "mnp-22-9-SSD-SWL",
+      "week": "9",
+      "round": 1,
+      "machine": "FT",
+      "division": 0,
+      "score": 17664220,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSD",
+      "opp": "SWL",
+      "match": "mnp-22-9-SSD-SWL",
+      "week": "9",
+      "round": 3,
+      "machine": "TAF",
+      "division": 0,
+      "score": 60135090,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSD",
+      "opp": "SWL",
+      "match": "mnp-22-9-SSD-SWL",
+      "week": "9",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 3262480,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.395",
+      "num_matches": 8,
+      "ppm": "3.187",
+      "points": {
+        "won": 25.5,
+        "of": 64.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

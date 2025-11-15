@@ -1,0 +1,143 @@
+{
+  "key": "0e78ab4d527fc72c633824cb62b97b8678ebfcd5",
+  "name": "Jandy Stephens",
+  "history": [
+    {
+      "team": "RMS",
+      "opp": "DTP",
+      "match": "mnp-22-10-RMS-DTP",
+      "week": "10",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2404778850,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "DTP",
+      "match": "mnp-22-10-RMS-DTP",
+      "week": "10",
+      "round": 2,
+      "machine": "Metallica",
+      "division": 0,
+      "score": 3372220,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RMS",
+      "opp": "DTP",
+      "match": "mnp-22-10-RMS-DTP",
+      "week": "10",
+      "round": 3,
+      "machine": "SS",
+      "division": 0,
+      "score": 1624100,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "RMS",
+      "opp": "RTR",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 2,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 37448750,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RMS",
+      "opp": "RTR",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 3,
+      "machine": "TOM",
+      "division": 0,
+      "score": 152272060,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "RTR",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 5107410,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RMS",
+      "opp": "POW",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 1,
+      "machine": "LAB",
+      "division": 0,
+      "score": 2124110,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "POW",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 15854100,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "POW",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 4,
+      "machine": "RR",
+      "division": 0,
+      "score": 198000000,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.200",
+      "num_matches": 3,
+      "ppm": "1.666",
+      "points": {
+        "won": 5,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,395 @@
+{
+  "key": "ed4030914fdc7ca0f52b125a265d5c31c9dc6d81",
+  "name": "Sean Gallagher",
+  "history": [
+    {
+      "team": "SSD",
+      "opp": "LAS",
+      "match": "mnp-22-1-SSD-LAS",
+      "week": "1",
+      "round": 1,
+      "machine": "Congo",
+      "division": 0,
+      "score": 171465860,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "LAS",
+      "match": "mnp-22-1-SSD-LAS",
+      "week": "1",
+      "round": 2,
+      "machine": "GLizard",
+      "division": 0,
+      "score": 6156,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "LAS",
+      "match": "mnp-22-1-SSD-LAS",
+      "week": "1",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 30240170,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSD",
+      "opp": "PYC",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 42919930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "PYC",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 1134830,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "PYC",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 38016570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SSS",
+      "match": "mnp-22-2-SSS-SSD",
+      "week": "2",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 28324550,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SSD",
+      "opp": "SSS",
+      "match": "mnp-22-2-SSS-SSD",
+      "week": "2",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 271740,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SSS",
+      "match": "mnp-22-2-SSS-SSD",
+      "week": "2",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 1914370,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SSD",
+      "opp": "NLT",
+      "match": "mnp-22-3-SSD-NLT",
+      "week": "3",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 325935440,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "SSD",
+      "opp": "NLT",
+      "match": "mnp-22-3-SSD-NLT",
+      "week": "3",
+      "round": 2,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 429710,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "NLT",
+      "match": "mnp-22-3-SSD-NLT",
+      "week": "3",
+      "round": 3,
+      "machine": "GOT",
+      "division": 0,
+      "score": 50745020,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "NMC",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 55750360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "NMC",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 111847380,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "NMC",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 4,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 58320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "TBT",
+      "match": "mnp-22-5-SSD-TBT",
+      "week": "5",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 71516030,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSD",
+      "opp": "TBT",
+      "match": "mnp-22-5-SSD-TBT",
+      "week": "5",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 17583920,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "TBT",
+      "match": "mnp-22-5-SSD-TBT",
+      "week": "5",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 27489790,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSD",
+      "opp": "ETB",
+      "match": "mnp-22-6-ETB-SSD",
+      "week": "6",
+      "round": 1,
+      "machine": "GF",
+      "division": 0,
+      "score": 547095,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "ETB",
+      "match": "mnp-22-6-ETB-SSD",
+      "week": "6",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 51094670,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "ETB",
+      "match": "mnp-22-6-ETB-SSD",
+      "week": "6",
+      "round": 4,
+      "machine": "007",
+      "division": 0,
+      "score": 84859480,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 609000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 3,
+      "machine": "GOT",
+      "division": 0,
+      "score": 93000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 213340780,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSD",
+      "opp": "DOG",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 69810930,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSD",
+      "opp": "DOG",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 73740790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "DOG",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 219773330,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SWL",
+      "match": "mnp-22-9-SSD-SWL",
+      "week": "9",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 8200330,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSD",
+      "opp": "SWL",
+      "match": "mnp-22-9-SSD-SWL",
+      "week": "9",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 12582230,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SWL",
+      "match": "mnp-22-9-SSD-SWL",
+      "week": "9",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 3175210,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.333",
+      "num_matches": 10,
+      "ppm": "2.800",
+      "points": {
+        "won": 28,
+        "of": 84
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

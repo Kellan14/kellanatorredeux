@@ -1,0 +1,359 @@
+{
+  "key": "58e3994c9c84b18915de0fcec5208d08e4acb3c7",
+  "name": "Michael Adcock",
+  "history": [
+    {
+      "team": "SCN",
+      "opp": "TTT",
+      "match": "mnp-22-1-TTT-SCN",
+      "week": "1",
+      "round": 1,
+      "machine": "TWD",
+      "division": 0,
+      "score": 20639850,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SCN",
+      "opp": "TTT",
+      "match": "mnp-22-1-TTT-SCN",
+      "week": "1",
+      "round": 2,
+      "machine": "SC",
+      "division": 0,
+      "score": 459630,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SCN",
+      "opp": "TTT",
+      "match": "mnp-22-1-TTT-SCN",
+      "week": "1",
+      "round": 4,
+      "machine": "GameShow",
+      "division": 0,
+      "score": 2263130,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "TWC",
+      "match": "mnp-22-10-SCN-TWC",
+      "week": "10",
+      "round": 1,
+      "machine": "WOF",
+      "division": 0,
+      "score": 16423250,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SCN",
+      "opp": "TWC",
+      "match": "mnp-22-10-SCN-TWC",
+      "week": "10",
+      "round": 2,
+      "machine": "SC",
+      "division": 0,
+      "score": 296190,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "TWC",
+      "match": "mnp-22-10-SCN-TWC",
+      "week": "10",
+      "round": 3,
+      "machine": "Nascar",
+      "division": 0,
+      "score": 3718200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "ADB",
+      "match": "mnp-22-3-ADB-SCN",
+      "week": "3",
+      "round": 1,
+      "machine": "FOO",
+      "division": 0,
+      "score": 60628340,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SCN",
+      "opp": "ADB",
+      "match": "mnp-22-3-ADB-SCN",
+      "week": "3",
+      "round": 2,
+      "machine": "GameShow",
+      "division": 0,
+      "score": 1322150,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "ADB",
+      "match": "mnp-22-3-ADB-SCN",
+      "week": "3",
+      "round": 3,
+      "machine": "SC",
+      "division": 0,
+      "score": 356250,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SCN",
+      "opp": "BAD",
+      "match": "mnp-22-4-SCN-BAD",
+      "week": "4",
+      "round": 1,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 91092570,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "BAD",
+      "match": "mnp-22-4-SCN-BAD",
+      "week": "4",
+      "round": 3,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 1691950,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "BAD",
+      "match": "mnp-22-4-SCN-BAD",
+      "week": "4",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 363490,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SCN",
+      "opp": "DTP",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 1,
+      "machine": "GameShow",
+      "division": 0,
+      "score": 4937220,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "SCN",
+      "opp": "DTP",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 2,
+      "machine": "GameShow",
+      "division": 0,
+      "score": 9412370,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SCN",
+      "opp": "DTP",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 4,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 1392380,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SHK",
+      "match": "mnp-22-6-SCN-SHK",
+      "week": "6",
+      "round": 1,
+      "machine": "RollerGames",
+      "division": 0,
+      "score": 1835480,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "SCN",
+      "opp": "SHK",
+      "match": "mnp-22-6-SCN-SHK",
+      "week": "6",
+      "round": 2,
+      "machine": "Outer Space",
+      "division": 0,
+      "score": 25190,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SCN",
+      "opp": "SHK",
+      "match": "mnp-22-6-SCN-SHK",
+      "week": "6",
+      "round": 4,
+      "machine": "RollerGames",
+      "division": 0,
+      "score": 1314230,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 1,
+      "machine": "SC",
+      "division": 0,
+      "score": 130900,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 2,
+      "machine": "GameShow",
+      "division": 0,
+      "score": 1536210,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 3,
+      "machine": "SC",
+      "division": 0,
+      "score": 306070,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SCN",
+      "opp": "TRL",
+      "match": "mnp-22-8-SCN-TRL",
+      "week": "8",
+      "round": 1,
+      "machine": "TOM",
+      "division": 0,
+      "score": 754903100,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "TRL",
+      "match": "mnp-22-8-SCN-TRL",
+      "week": "8",
+      "round": 3,
+      "machine": "TOM",
+      "division": 0,
+      "score": 953663530,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "TRL",
+      "match": "mnp-22-8-SCN-TRL",
+      "week": "8",
+      "round": 4,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 3125260,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "HHS",
+      "match": "mnp-22-9-HHS-SCN",
+      "week": "9",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 93705650,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "HHS",
+      "match": "mnp-22-9-HHS-SCN",
+      "week": "9",
+      "round": 2,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 2159660,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SCN",
+      "opp": "HHS",
+      "match": "mnp-22-9-HHS-SCN",
+      "week": "9",
+      "round": 4,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 1546220,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.503",
+      "num_matches": 9,
+      "ppm": "4.111",
+      "points": {
+        "won": 37,
+        "of": 73.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

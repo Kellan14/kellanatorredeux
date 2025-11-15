@@ -1,0 +1,323 @@
+{
+  "key": "fd9784352747498efd00ec5abd77bb2bc9598edf",
+  "name": "Ryan Loftus",
+  "history": [
+    {
+      "team": "DTP",
+      "opp": "NLT",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 73020,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "NLT",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 3,
+      "machine": "ElviraHouseOfHorrors",
+      "division": 0,
+      "score": 5719490,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "NLT",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 4,
+      "machine": "TZ",
+      "division": 0,
+      "score": 53928270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "NMC",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 145913020,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "NMC",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "WCS",
+      "division": 0,
+      "score": 255000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "NMC",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 3,
+      "machine": "TAF",
+      "division": 0,
+      "score": 27200000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "ETB",
+      "match": "mnp-22-4-ETB-DTP",
+      "week": "4",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 7882900,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DTP",
+      "opp": "ETB",
+      "match": "mnp-22-4-ETB-DTP",
+      "week": "4",
+      "round": 3,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 715720,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "ETB",
+      "match": "mnp-22-4-ETB-DTP",
+      "week": "4",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 428000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "SCN",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 76060760,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DTP",
+      "opp": "SCN",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 2,
+      "machine": "TZ",
+      "division": 0,
+      "score": 117000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "SCN",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 5288930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-22-6-JMF-DTP",
+      "week": "6",
+      "round": 1,
+      "machine": "SpaceInvaders",
+      "division": 0,
+      "score": 44300,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-22-6-JMF-DTP",
+      "week": "6",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 8226000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-22-6-JMF-DTP",
+      "week": "6",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 52944370,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "SWL",
+      "match": "mnp-22-7-DTP-SWL",
+      "week": "7",
+      "round": 1,
+      "machine": "ULTRA",
+      "division": 0,
+      "score": 25814170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "SWL",
+      "match": "mnp-22-7-DTP-SWL",
+      "week": "7",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 40315350,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "SWL",
+      "match": "mnp-22-7-DTP-SWL",
+      "week": "7",
+      "round": 4,
+      "machine": "KONG",
+      "division": 0,
+      "score": 53003160,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "LAS",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 126319240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "LAS",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 21000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "LAS",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 3,
+      "machine": "WCS",
+      "division": 0,
+      "score": 311790000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "SSS",
+      "match": "mnp-22-9-DTP-SSS",
+      "week": "9",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 28409310,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "SSS",
+      "match": "mnp-22-9-DTP-SSS",
+      "week": "9",
+      "round": 2,
+      "machine": "Centaur",
+      "division": 0,
+      "score": 1486590,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "SSS",
+      "match": "mnp-22-9-DTP-SSS",
+      "week": "9",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 31377370,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.419",
+      "num_matches": 8,
+      "ppm": "3.437",
+      "points": {
+        "won": 27.5,
+        "of": 65.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

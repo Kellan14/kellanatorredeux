@@ -1,0 +1,359 @@
+{
+  "key": "e196cf3f55b8e332f37ad416a581f26e9f4ba4c9",
+  "name": "Brendan Niebruegge",
+  "history": [
+    {
+      "team": "POW",
+      "opp": "DOG",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 45557410,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "POW",
+      "opp": "DOG",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 2,
+      "machine": "DP",
+      "division": 0,
+      "score": 104051080,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "DOG",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 489827420,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "POW",
+      "opp": "LAS",
+      "match": "mnp-22-10-LAS-POW",
+      "week": "10",
+      "round": 1,
+      "machine": "SG",
+      "division": 0,
+      "score": 314380,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "POW",
+      "opp": "LAS",
+      "match": "mnp-22-10-LAS-POW",
+      "week": "10",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 62000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "POW",
+      "opp": "LAS",
+      "match": "mnp-22-10-LAS-POW",
+      "week": "10",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 165030770,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "PYC",
+      "match": "mnp-22-2-PYC-POW",
+      "week": "2",
+      "round": 1,
+      "machine": "SG",
+      "division": 0,
+      "score": 918820,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "PYC",
+      "match": "mnp-22-2-PYC-POW",
+      "week": "2",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 339831990,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "PYC",
+      "match": "mnp-22-2-PYC-POW",
+      "week": "2",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 218884280,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-22-3-POW-SKP",
+      "week": "3",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 313742740,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-22-3-POW-SKP",
+      "week": "3",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 179584130,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-22-3-POW-SKP",
+      "week": "3",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1138809180,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "KNR",
+      "match": "mnp-22-4-KNR-POW",
+      "week": "4",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 43523270,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "POW",
+      "opp": "KNR",
+      "match": "mnp-22-4-KNR-POW",
+      "week": "4",
+      "round": 3,
+      "machine": "DollyParton",
+      "division": 0,
+      "score": 249970,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "KNR",
+      "match": "mnp-22-4-KNR-POW",
+      "week": "4",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 34813720,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "POW",
+      "opp": "CRA",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 33774950,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "POW",
+      "opp": "CRA",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 2,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 36960960,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "CRA",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 4,
+      "machine": "Jurassic",
+      "division": 0,
+      "score": 90000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "PBR",
+      "match": "mnp-22-7-POW-PBR",
+      "week": "7",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 142436240,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "PBR",
+      "match": "mnp-22-7-POW-PBR",
+      "week": "7",
+      "round": 2,
+      "machine": "EBD",
+      "division": 0,
+      "score": 481060,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "PBR",
+      "match": "mnp-22-7-POW-PBR",
+      "week": "7",
+      "round": 4,
+      "machine": "BM66",
+      "division": 0,
+      "score": 4354883320,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "JMF",
+      "match": "mnp-22-8-JMF-POW",
+      "week": "8",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 33751190,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "POW",
+      "opp": "JMF",
+      "match": "mnp-22-8-JMF-POW",
+      "week": "8",
+      "round": 3,
+      "machine": "DP",
+      "division": 0,
+      "score": 48238740,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "JMF",
+      "match": "mnp-22-8-JMF-POW",
+      "week": "8",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 736338320,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "RMS",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 1,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 185577620,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "POW",
+      "opp": "RMS",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 68443280,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "RMS",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 4,
+      "machine": "KONG",
+      "division": 0,
+      "score": 11450000,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.721",
+      "num_matches": 9,
+      "ppm": "5.888",
+      "points": {
+        "won": 53,
+        "of": 73.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

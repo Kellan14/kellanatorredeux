@@ -1,0 +1,323 @@
+{
+  "key": "3110954e77930042bb9439b0f90830ead962031c",
+  "name": "Bud Lipke",
+  "history": [
+    {
+      "team": "PGN",
+      "opp": "PYC",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "Metallica",
+      "division": 0,
+      "score": 38834250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "PYC",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 3,
+      "machine": "DP",
+      "division": 0,
+      "score": 112600840,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "PYC",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 4,
+      "machine": "Metallica",
+      "division": 0,
+      "score": 27230140,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PGN",
+      "opp": "SWL",
+      "match": "mnp-22-10-SWL-PGN",
+      "week": "10",
+      "round": 1,
+      "machine": "FT",
+      "division": 0,
+      "score": 45047110,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PGN",
+      "opp": "SWL",
+      "match": "mnp-22-10-SWL-PGN",
+      "week": "10",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 200785750,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "SWL",
+      "match": "mnp-22-10-SWL-PGN",
+      "week": "10",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 790922500,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "SKP",
+      "match": "mnp-22-2-SKP-PGN",
+      "week": "2",
+      "round": 1,
+      "machine": "FT",
+      "division": 0,
+      "score": 66616560,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "SKP",
+      "match": "mnp-22-2-SKP-PGN",
+      "week": "2",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 41471640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "SKP",
+      "match": "mnp-22-2-SKP-PGN",
+      "week": "2",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 58767640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "KNR",
+      "match": "mnp-22-3-PGN-KNR",
+      "week": "3",
+      "round": 1,
+      "machine": "METREM",
+      "division": 0,
+      "score": 11000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PGN",
+      "opp": "KNR",
+      "match": "mnp-22-3-PGN-KNR",
+      "week": "3",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1308927890,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "KNR",
+      "match": "mnp-22-3-PGN-KNR",
+      "week": "3",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 937000840,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "CRA",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 1,
+      "machine": "FT",
+      "division": 0,
+      "score": 25354970,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PGN",
+      "opp": "CRA",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 51492220,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PGN",
+      "opp": "CRA",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 145693970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "ICB",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 690955880,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "ICB",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 166616370,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PGN",
+      "opp": "ICB",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 3,
+      "machine": "DP",
+      "division": 0,
+      "score": 240080780,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "RMS",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1379233390,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "RMS",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 2,
+      "machine": "FT",
+      "division": 0,
+      "score": 6015320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "RMS",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 140000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "DOG",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 1,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 9464930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "DOG",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 2,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 316500500,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PGN",
+      "opp": "DOG",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 5272372030,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.515",
+      "num_matches": 8,
+      "ppm": "4.187",
+      "points": {
+        "won": 33.5,
+        "of": 65
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

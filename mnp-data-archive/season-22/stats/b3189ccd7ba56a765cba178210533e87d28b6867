@@ -1,0 +1,395 @@
+{
+  "key": "b3189ccd7ba56a765cba178210533e87d28b6867",
+  "name": "Casey Benton",
+  "history": [
+    {
+      "team": "PBR",
+      "opp": "DSV",
+      "match": "mnp-22-1-DSV-PBR",
+      "week": "1",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 45948040,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PBR",
+      "opp": "DSV",
+      "match": "mnp-22-1-DSV-PBR",
+      "week": "1",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 587505350,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "DSV",
+      "match": "mnp-22-1-DSV-PBR",
+      "week": "1",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 90626100,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-22-10-PBR-ADB",
+      "week": "10",
+      "round": 2,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 100890310,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-22-10-PBR-ADB",
+      "week": "10",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 152231060,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-22-10-PBR-ADB",
+      "week": "10",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 28426590,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PBR",
+      "opp": "RTR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 600040790,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "RTR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 239195150,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "RTR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 339156890,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PBR",
+      "opp": "PKT",
+      "match": "mnp-22-3-PKT-PBR",
+      "week": "3",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 155430970,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "PKT",
+      "match": "mnp-22-3-PKT-PBR",
+      "week": "3",
+      "round": 3,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 153133460,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PBR",
+      "opp": "PKT",
+      "match": "mnp-22-3-PKT-PBR",
+      "week": "3",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 39317780,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "TWC",
+      "match": "mnp-22-4-PBR-TWC",
+      "week": "4",
+      "round": 2,
+      "machine": "SEGAGOD",
+      "division": 0,
+      "score": 68638590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "TWC",
+      "match": "mnp-22-4-PBR-TWC",
+      "week": "4",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 64227650,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "TWC",
+      "match": "mnp-22-4-PBR-TWC",
+      "week": "4",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 9000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-22-5-BAD-PBR",
+      "week": "5",
+      "round": 1,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 248549570,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-22-5-BAD-PBR",
+      "week": "5",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 100478960,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-22-5-BAD-PBR",
+      "week": "5",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 3084150,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PBR",
+      "opp": "PGN",
+      "match": "mnp-22-6-PBR-PGN",
+      "week": "6",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 16018720,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "PGN",
+      "match": "mnp-22-6-PBR-PGN",
+      "week": "6",
+      "round": 2,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 170121230,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "PGN",
+      "match": "mnp-22-6-PBR-PGN",
+      "week": "6",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 544533640,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PBR",
+      "opp": "POW",
+      "match": "mnp-22-7-POW-PBR",
+      "week": "7",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 146483020,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "POW",
+      "match": "mnp-22-7-POW-PBR",
+      "week": "7",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 61552690,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "POW",
+      "match": "mnp-22-7-POW-PBR",
+      "week": "7",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 61899300,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-22-8-PBR-DIH",
+      "week": "8",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 268822520,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-22-8-PBR-DIH",
+      "week": "8",
+      "round": 3,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 4150830,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-22-8-PBR-DIH",
+      "week": "8",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 381206830,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PBR",
+      "opp": "FBP",
+      "match": "mnp-22-9-FBP-PBR",
+      "week": "9",
+      "round": 1,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 97000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PBR",
+      "opp": "FBP",
+      "match": "mnp-22-9-FBP-PBR",
+      "week": "9",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 41226570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "FBP",
+      "match": "mnp-22-9-FBP-PBR",
+      "week": "9",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 52000320,
+      "points": 2,
+      "pops": "0.800"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.566",
+      "num_matches": 10,
+      "ppm": "4.700",
+      "points": {
+        "won": 47,
+        "of": 83
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,395 @@
+{
+  "key": "7d7de12ed7406c728a92ad94c3e9f3f809d5892d",
+  "name": "Chaz Simmons",
+  "history": [
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 20141400,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 2,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 14230780,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 3,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 84072800,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 29595560,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 29015780,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 55379120,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 14259450,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 8186310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 4,
+      "machine": "007",
+      "division": 0,
+      "score": 17848850,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 88000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 2,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 3934640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 190407190,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 2,
+      "machine": "FOO",
+      "division": 0,
+      "score": 13137790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 3,
+      "machine": "MH",
+      "division": 0,
+      "score": 51250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 22232750,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 209110,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 2,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 5416200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 704379540,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DOG",
+      "opp": "PKT",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 960890570,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "DOG",
+      "opp": "PKT",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 221790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "PKT",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 3,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 27504960,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 1,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 35780220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 3,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 14592880,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 59747950,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 1,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 319260,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 1250260,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 4,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 350660,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "PGN",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 1,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 118659320,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "PGN",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 10622550,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "PGN",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 233740,
+      "points": 1,
+      "pops": "0.333"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.357",
+      "num_matches": 10,
+      "ppm": "2.950",
+      "points": {
+        "won": 29.5,
+        "of": 82.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

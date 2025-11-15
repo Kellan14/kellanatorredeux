@@ -1,0 +1,395 @@
+{
+  "key": "3d0e1049aea422f8f1dfb739e5ca97df3bd7da8a",
+  "name": "Ryan Tupper",
+  "history": [
+    {
+      "team": "PGN",
+      "opp": "PYC",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "Stars",
+      "division": 0,
+      "score": 55080,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PGN",
+      "opp": "PYC",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 2,
+      "machine": "EJ",
+      "division": 0,
+      "score": 10973150,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PGN",
+      "opp": "PYC",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 3,
+      "machine": "IronMan",
+      "division": 0,
+      "score": 6548470,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "SWL",
+      "match": "mnp-22-10-SWL-PGN",
+      "week": "10",
+      "round": 1,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 121051650,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "SWL",
+      "match": "mnp-22-10-SWL-PGN",
+      "week": "10",
+      "round": 2,
+      "machine": "LOTR",
+      "division": 0,
+      "score": 11371950,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PGN",
+      "opp": "SWL",
+      "match": "mnp-22-10-SWL-PGN",
+      "week": "10",
+      "round": 3,
+      "machine": "TAF",
+      "division": 0,
+      "score": 15093160,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "SKP",
+      "match": "mnp-22-2-SKP-PGN",
+      "week": "2",
+      "round": 1,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 58484590,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "PGN",
+      "opp": "SKP",
+      "match": "mnp-22-2-SKP-PGN",
+      "week": "2",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 21476940,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PGN",
+      "opp": "SKP",
+      "match": "mnp-22-2-SKP-PGN",
+      "week": "2",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 6609603,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PGN",
+      "opp": "KNR",
+      "match": "mnp-22-3-PGN-KNR",
+      "week": "3",
+      "round": 2,
+      "machine": "Tron",
+      "division": 0,
+      "score": 7765740,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PGN",
+      "opp": "KNR",
+      "match": "mnp-22-3-PGN-KNR",
+      "week": "3",
+      "round": 3,
+      "machine": "TWD",
+      "division": 0,
+      "score": 5000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "KNR",
+      "match": "mnp-22-3-PGN-KNR",
+      "week": "3",
+      "round": 4,
+      "machine": "SEGAGOD",
+      "division": 0,
+      "score": 17505600,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PGN",
+      "opp": "CRA",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 1,
+      "machine": "POTC",
+      "division": 0,
+      "score": 1858080,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "CRA",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 2,
+      "machine": "WOZ",
+      "division": 0,
+      "score": 13465,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "CRA",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 16082500,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "ICB",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 119414240,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "ICB",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 149797990,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PGN",
+      "opp": "ICB",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 165931190,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "PBR",
+      "match": "mnp-22-6-PBR-PGN",
+      "week": "6",
+      "round": 1,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 5206510,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "PBR",
+      "match": "mnp-22-6-PBR-PGN",
+      "week": "6",
+      "round": 2,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 112936090,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PGN",
+      "opp": "PBR",
+      "match": "mnp-22-6-PBR-PGN",
+      "week": "6",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 40252710,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "JMF",
+      "match": "mnp-22-7-PGN-JMF",
+      "week": "7",
+      "round": 2,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 280530,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PGN",
+      "opp": "JMF",
+      "match": "mnp-22-7-PGN-JMF",
+      "week": "7",
+      "round": 3,
+      "machine": "WCS",
+      "division": 0,
+      "score": 579203060,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "JMF",
+      "match": "mnp-22-7-PGN-JMF",
+      "week": "7",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 108590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "RMS",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 2,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 67549170,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PGN",
+      "opp": "RMS",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 35618910,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PGN",
+      "opp": "RMS",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 4,
+      "machine": "Shrek",
+      "division": 0,
+      "score": 11711220,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "DOG",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1559034290,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PGN",
+      "opp": "DOG",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 30518440,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "DOG",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 195909700,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.482",
+      "num_matches": 10,
+      "ppm": "4.050",
+      "points": {
+        "won": 40.5,
+        "of": 84
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,395 @@
+{
+  "key": "e4ed51c2d852ceab20a9b04bfed5961f69847c78",
+  "name": "Colin Curfman",
+  "history": [
+    {
+      "team": "NLT",
+      "opp": "DTP",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 45115230,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "DTP",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 342821680,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "DTP",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 220334970,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NLT",
+      "opp": "FBP",
+      "match": "mnp-22-10-NLT-FBP",
+      "week": "10",
+      "round": 1,
+      "machine": "GOT",
+      "division": 0,
+      "score": 118127910,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NLT",
+      "opp": "FBP",
+      "match": "mnp-22-10-NLT-FBP",
+      "week": "10",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 40843570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "FBP",
+      "match": "mnp-22-10-NLT-FBP",
+      "week": "10",
+      "round": 3,
+      "machine": "SS",
+      "division": 0,
+      "score": 4191350,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NLT",
+      "opp": "SHK",
+      "match": "mnp-22-2-NLT-SHK",
+      "week": "2",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 85557600,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SHK",
+      "match": "mnp-22-2-NLT-SHK",
+      "week": "2",
+      "round": 2,
+      "machine": "SNS",
+      "division": 0,
+      "score": 67840,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SHK",
+      "match": "mnp-22-2-NLT-SHK",
+      "week": "2",
+      "round": 3,
+      "machine": "Outer Space",
+      "division": 0,
+      "score": 35450,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SSD",
+      "match": "mnp-22-3-SSD-NLT",
+      "week": "3",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 189105180,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NLT",
+      "opp": "SSD",
+      "match": "mnp-22-3-SSD-NLT",
+      "week": "3",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 696812610,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SSD",
+      "match": "mnp-22-3-SSD-NLT",
+      "week": "3",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 15782760,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NLT",
+      "opp": "TRL",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 207769990,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "TRL",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 58399840,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "TRL",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 312685380,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NLT",
+      "opp": "HHS",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 408160,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "HHS",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 526510970,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "HHS",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 354170470,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NLT",
+      "opp": "TTT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 143827930,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NLT",
+      "opp": "TTT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 31123090,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NLT",
+      "opp": "TTT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 141377600,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "CPO",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 152780,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "CPO",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 100120910,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NLT",
+      "opp": "CPO",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 3,
+      "machine": "Genie",
+      "division": 0,
+      "score": 61520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "ADB",
+      "match": "mnp-22-8-NLT-ADB",
+      "week": "8",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 151138160,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "ADB",
+      "match": "mnp-22-8-NLT-ADB",
+      "week": "8",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 68176570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "ADB",
+      "match": "mnp-22-8-NLT-ADB",
+      "week": "8",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 44271360,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NLT",
+      "opp": "BAD",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 1,
+      "machine": "GOT",
+      "division": 0,
+      "score": 186017780,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "BAD",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 156967080,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NLT",
+      "opp": "BAD",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 128802280,
+      "points": 1.5,
+      "pops": "0.600"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.536",
+      "num_matches": 10,
+      "ppm": "4.450",
+      "points": {
+        "won": 44.5,
+        "of": 83
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

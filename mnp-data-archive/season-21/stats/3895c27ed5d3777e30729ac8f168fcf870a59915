@@ -1,0 +1,143 @@
+{
+  "key": "3895c27ed5d3777e30729ac8f168fcf870a59915",
+  "name": "Jason Uritescu",
+  "history": [
+    {
+      "team": "KNR",
+      "opp": "RMS",
+      "match": "mnp-21-10-RMS-KNR",
+      "week": "10",
+      "round": 1,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 6800000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "KNR",
+      "opp": "RMS",
+      "match": "mnp-21-10-RMS-KNR",
+      "week": "10",
+      "round": 3,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 12514760,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "RMS",
+      "match": "mnp-21-10-RMS-KNR",
+      "week": "10",
+      "round": 4,
+      "machine": "Ali",
+      "division": 0,
+      "score": 103000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "BAD",
+      "match": "mnp-21-4-KNR-BAD",
+      "week": "4",
+      "round": 1,
+      "machine": "ElviraHouseOfHorrors",
+      "division": 0,
+      "score": 16621460,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "KNR",
+      "opp": "BAD",
+      "match": "mnp-21-4-KNR-BAD",
+      "week": "4",
+      "round": 2,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 11515410,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "BAD",
+      "match": "mnp-21-4-KNR-BAD",
+      "week": "4",
+      "round": 4,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 213270,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DOG",
+      "opp": "ICB",
+      "match": "mnp-21-9-ICB-DOG",
+      "week": "9",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 307637260,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "ICB",
+      "match": "mnp-21-9-ICB-DOG",
+      "week": "9",
+      "round": 3,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 15559230,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "ICB",
+      "match": "mnp-21-9-ICB-DOG",
+      "week": "9",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 164937810,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.755",
+      "num_matches": 3,
+      "ppm": "6.166",
+      "points": {
+        "won": 18.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

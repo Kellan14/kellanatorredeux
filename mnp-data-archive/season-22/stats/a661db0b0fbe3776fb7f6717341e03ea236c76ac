@@ -1,0 +1,143 @@
+{
+  "key": "a661db0b0fbe3776fb7f6717341e03ea236c76ac",
+  "name": "Tre Dauenhauer",
+  "history": [
+    {
+      "team": "HHS",
+      "opp": "SWL",
+      "match": "mnp-22-2-SWL-HHS",
+      "week": "2",
+      "round": 2,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 66960,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "HHS",
+      "opp": "SWL",
+      "match": "mnp-22-2-SWL-HHS",
+      "week": "2",
+      "round": 3,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 7949620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "SWL",
+      "match": "mnp-22-2-SWL-HHS",
+      "week": "2",
+      "round": 4,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 12327170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NMC",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 2,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 10302160,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NMC",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 3,
+      "machine": "FH",
+      "division": 0,
+      "score": 1088330,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NMC",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 4,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 15209230,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "HHS",
+      "opp": "TBT",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 1,
+      "machine": "TOM",
+      "division": 0,
+      "score": 381034810,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "HHS",
+      "opp": "TBT",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 2,
+      "machine": "TOM",
+      "division": 0,
+      "score": 155518110,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "TBT",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 4,
+      "machine": "TOM",
+      "division": 0,
+      "score": 513925810,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.380",
+      "num_matches": 3,
+      "ppm": "3.166",
+      "points": {
+        "won": 9.5,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

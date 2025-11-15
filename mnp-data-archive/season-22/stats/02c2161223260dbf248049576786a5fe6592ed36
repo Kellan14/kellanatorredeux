@@ -1,0 +1,395 @@
+{
+  "key": "02c2161223260dbf248049576786a5fe6592ed36",
+  "name": "Zoe Ackerman",
+  "history": [
+    {
+      "team": "SKP",
+      "opp": "HHS",
+      "match": "mnp-22-1-HHS-SKP",
+      "week": "1",
+      "round": 1,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 53810,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SKP",
+      "opp": "HHS",
+      "match": "mnp-22-1-HHS-SKP",
+      "week": "1",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1484984570,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SKP",
+      "opp": "HHS",
+      "match": "mnp-22-1-HHS-SKP",
+      "week": "1",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 238130,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "TRL",
+      "match": "mnp-22-10-SKP-TRL",
+      "week": "10",
+      "round": 1,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 25727400,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "TRL",
+      "match": "mnp-22-10-SKP-TRL",
+      "week": "10",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 13127680,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "TRL",
+      "match": "mnp-22-10-SKP-TRL",
+      "week": "10",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 2031480,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "PGN",
+      "match": "mnp-22-2-SKP-PGN",
+      "week": "2",
+      "round": 1,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 49251270,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SKP",
+      "opp": "PGN",
+      "match": "mnp-22-2-SKP-PGN",
+      "week": "2",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 489920,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "PGN",
+      "match": "mnp-22-2-SKP-PGN",
+      "week": "2",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 16237030,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-22-3-POW-SKP",
+      "week": "3",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2972641770,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-22-3-POW-SKP",
+      "week": "3",
+      "round": 3,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 144300,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-22-3-POW-SKP",
+      "week": "3",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 15560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "DIH",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 47485400,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SKP",
+      "opp": "DIH",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 30000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "DIH",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 275300,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SKP",
+      "opp": "FBP",
+      "match": "mnp-22-5-FBP-SKP",
+      "week": "5",
+      "round": 1,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 236140,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SKP",
+      "opp": "FBP",
+      "match": "mnp-22-5-FBP-SKP",
+      "week": "5",
+      "round": 2,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 313490,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SKP",
+      "opp": "FBP",
+      "match": "mnp-22-5-FBP-SKP",
+      "week": "5",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 72880,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SKP",
+      "opp": "DSV",
+      "match": "mnp-22-6-SKP-DSV",
+      "week": "6",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 34774680,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SKP",
+      "opp": "DSV",
+      "match": "mnp-22-6-SKP-DSV",
+      "week": "6",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 12616540,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SKP",
+      "opp": "DSV",
+      "match": "mnp-22-6-SKP-DSV",
+      "week": "6",
+      "round": 4,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 121800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "RTR",
+      "match": "mnp-22-7-RTR-SKP",
+      "week": "7",
+      "round": 1,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 97130,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "RTR",
+      "match": "mnp-22-7-RTR-SKP",
+      "week": "7",
+      "round": 3,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 276800,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "RTR",
+      "match": "mnp-22-7-RTR-SKP",
+      "week": "7",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 74940,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SKP",
+      "opp": "PKT",
+      "match": "mnp-22-8-SKP-PKT",
+      "week": "8",
+      "round": 1,
+      "machine": "SS",
+      "division": 0,
+      "score": 6486890,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "PKT",
+      "match": "mnp-22-8-SKP-PKT",
+      "week": "8",
+      "round": 3,
+      "machine": "SS",
+      "division": 0,
+      "score": 14337410,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SKP",
+      "opp": "PKT",
+      "match": "mnp-22-8-SKP-PKT",
+      "week": "8",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 886476990,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "TWC",
+      "match": "mnp-22-9-TWC-SKP",
+      "week": "9",
+      "round": 1,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 330420,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "TWC",
+      "match": "mnp-22-9-TWC-SKP",
+      "week": "9",
+      "round": 3,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 133460,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "TWC",
+      "match": "mnp-22-9-TWC-SKP",
+      "week": "9",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 52910,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.509",
+      "num_matches": 10,
+      "ppm": "4.100",
+      "points": {
+        "won": 41,
+        "of": 80.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "6fb1da26888f3e8c93c1cfd070f703c5abf77def",
+  "name": "Shawn Mandel",
+  "history": [
+    {
+      "team": "SKP",
+      "opp": "DIH",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 1,
+      "machine": "BOPP",
+      "division": 0,
+      "score": 23330,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "DIH",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 2,
+      "machine": "007",
+      "division": 0,
+      "score": 33544020,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SKP",
+      "opp": "DIH",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 29233760,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "PYC",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 1,
+      "machine": "Cheetah",
+      "division": 0,
+      "score": 399070,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PKT",
+      "opp": "PYC",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 3,
+      "machine": "Viking",
+      "division": 0,
+      "score": 29970,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PKT",
+      "opp": "PYC",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 4,
+      "machine": "Skateball",
+      "division": 0,
+      "score": 236750,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "LAS",
+      "opp": "DTP",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 1,
+      "machine": "Fire",
+      "division": 0,
+      "score": 2935700,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "DTP",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 3,
+      "machine": "Fire",
+      "division": 0,
+      "score": 579290,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "DTP",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 4,
+      "machine": "SS",
+      "division": 0,
+      "score": 2565210,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.469",
+      "num_matches": 3,
+      "ppm": "3.833",
+      "points": {
+        "won": 11.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,323 @@
+{
+  "key": "a4ddb3e1951a456861f83242bb5e9b8837c747d0",
+  "name": "Val Gaifoulline",
+  "history": [
+    {
+      "team": "POW",
+      "opp": "DOG",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 197857590,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "DOG",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 549084230,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "DOG",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 339118700,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "LAS",
+      "match": "mnp-22-10-LAS-POW",
+      "week": "10",
+      "round": 2,
+      "machine": "Beatles",
+      "division": 0,
+      "score": 3521140,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "LAS",
+      "match": "mnp-22-10-LAS-POW",
+      "week": "10",
+      "round": 3,
+      "machine": "Dragonfist",
+      "division": 0,
+      "score": 122470,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "LAS",
+      "match": "mnp-22-10-LAS-POW",
+      "week": "10",
+      "round": 4,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 33858280,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-22-3-POW-SKP",
+      "week": "3",
+      "round": 1,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 24434130,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-22-3-POW-SKP",
+      "week": "3",
+      "round": 3,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 131200,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-22-3-POW-SKP",
+      "week": "3",
+      "round": 4,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 282590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "KNR",
+      "match": "mnp-22-4-KNR-POW",
+      "week": "4",
+      "round": 1,
+      "machine": "DH",
+      "division": 0,
+      "score": 286024530,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "KNR",
+      "match": "mnp-22-4-KNR-POW",
+      "week": "4",
+      "round": 2,
+      "machine": "Beatles",
+      "division": 0,
+      "score": 1973460,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "KNR",
+      "match": "mnp-22-4-KNR-POW",
+      "week": "4",
+      "round": 3,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 558150,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "CRA",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 423380,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "POW",
+      "opp": "CRA",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 289008870,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "CRA",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 4,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 13656740,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "POW",
+      "opp": "PBR",
+      "match": "mnp-22-7-POW-PBR",
+      "week": "7",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 73677390,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "PBR",
+      "match": "mnp-22-7-POW-PBR",
+      "week": "7",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 4343590,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "PBR",
+      "match": "mnp-22-7-POW-PBR",
+      "week": "7",
+      "round": 3,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 1083380,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "JMF",
+      "match": "mnp-22-8-JMF-POW",
+      "week": "8",
+      "round": 1,
+      "machine": "DUNE",
+      "division": 0,
+      "score": 71240200,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "POW",
+      "opp": "JMF",
+      "match": "mnp-22-8-JMF-POW",
+      "week": "8",
+      "round": 2,
+      "machine": "Beatles",
+      "division": 0,
+      "score": 1613580,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "JMF",
+      "match": "mnp-22-8-JMF-POW",
+      "week": "8",
+      "round": 4,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 55070160,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "RMS",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 86511750,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "RMS",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 147429680,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "RMS",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 4,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 73330,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.651",
+      "num_matches": 8,
+      "ppm": "5.375",
+      "points": {
+        "won": 43,
+        "of": 66
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

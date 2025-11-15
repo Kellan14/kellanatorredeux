@@ -1,0 +1,395 @@
+{
+  "key": "b51cb230091958b469df161660c44e918ee73ac2",
+  "name": "Jeremy Edwards",
+  "history": [
+    {
+      "team": "ICB",
+      "opp": "RTR",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 379087380,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "RTR",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 3,
+      "machine": "DP",
+      "division": 0,
+      "score": 43387390,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "RTR",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 4,
+      "machine": "VEN",
+      "division": 0,
+      "score": 943620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "CPO",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 1,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 7647550,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "CPO",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 23340230,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "CPO",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 4,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 11440740,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PKT",
+      "match": "mnp-22-2-ICB-PKT",
+      "week": "2",
+      "round": 1,
+      "machine": "BDK",
+      "division": 0,
+      "score": 96481300,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PKT",
+      "match": "mnp-22-2-ICB-PKT",
+      "week": "2",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 780700,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ICB",
+      "opp": "PKT",
+      "match": "mnp-22-2-ICB-PKT",
+      "week": "2",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 578440,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-22-3-TWC-ICB",
+      "week": "3",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 12157310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-22-3-TWC-ICB",
+      "week": "3",
+      "round": 2,
+      "machine": "VEN",
+      "division": 0,
+      "score": 13000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-22-3-TWC-ICB",
+      "week": "3",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 8326860,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "ADB",
+      "match": "mnp-22-4-ICB-ADB",
+      "week": "4",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 32417620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "ADB",
+      "match": "mnp-22-4-ICB-ADB",
+      "week": "4",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 39003530,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "ADB",
+      "match": "mnp-22-4-ICB-ADB",
+      "week": "4",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 34153630,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 69197760,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 35110740,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 24047790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "POW",
+      "match": "mnp-22-6-ICB-POW",
+      "week": "6",
+      "round": 1,
+      "machine": "Congo",
+      "division": 0,
+      "score": 741639690,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "POW",
+      "match": "mnp-22-6-ICB-POW",
+      "week": "6",
+      "round": 2,
+      "machine": "MB",
+      "division": 0,
+      "score": 115459080,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ICB",
+      "opp": "POW",
+      "match": "mnp-22-6-ICB-POW",
+      "week": "6",
+      "round": 4,
+      "machine": "JD",
+      "division": 0,
+      "score": 45470790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "DIH",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 40390000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "DIH",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 33436180,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ICB",
+      "opp": "DIH",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 4,
+      "machine": "KONG",
+      "division": 0,
+      "score": 74436680,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "FBP",
+      "match": "mnp-22-8-ICB-FBP",
+      "week": "8",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 8000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "FBP",
+      "match": "mnp-22-8-ICB-FBP",
+      "week": "8",
+      "round": 3,
+      "machine": "POTC",
+      "division": 0,
+      "score": 13076870,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "FBP",
+      "match": "mnp-22-8-ICB-FBP",
+      "week": "8",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 187780,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "DSV",
+      "match": "mnp-22-9-DSV-ICB",
+      "week": "9",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 159043430,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "DSV",
+      "match": "mnp-22-9-DSV-ICB",
+      "week": "9",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 86207930,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "DSV",
+      "match": "mnp-22-9-DSV-ICB",
+      "week": "9",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 87523510,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.333",
+      "num_matches": 10,
+      "ppm": "2.700",
+      "points": {
+        "won": 27,
+        "of": 81
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

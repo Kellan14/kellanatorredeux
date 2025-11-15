@@ -1,0 +1,323 @@
+{
+  "key": "f4b767b8845afddd8c02b15d8f02df194d05f787",
+  "name": "MJ Moscola",
+  "history": [
+    {
+      "team": "CRA",
+      "opp": "TWC",
+      "match": "mnp-22-2-CRA-TWC",
+      "week": "2",
+      "round": 2,
+      "machine": "Ali",
+      "division": 0,
+      "score": 88790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "TWC",
+      "match": "mnp-22-2-CRA-TWC",
+      "week": "2",
+      "round": 3,
+      "machine": "Ali",
+      "division": 0,
+      "score": 281380,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "TWC",
+      "match": "mnp-22-2-CRA-TWC",
+      "week": "2",
+      "round": 4,
+      "machine": "SEGAGOD",
+      "division": 0,
+      "score": 11070980,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "CPO",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 1577590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "CPO",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 408590,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "CPO",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 4,
+      "machine": "MB",
+      "division": 0,
+      "score": 14612320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "PGN",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 1,
+      "machine": "FT",
+      "division": 0,
+      "score": 11129630,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "CRA",
+      "opp": "PGN",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 141290,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "PGN",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 3177980,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "POW",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 1,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 48000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "POW",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 218670,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "POW",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 4,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 2257280,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DIH",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 375720,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CRA",
+      "opp": "DIH",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 404940,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "DIH",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 185850,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "CRA",
+      "opp": "FBP",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 1,
+      "machine": "CA",
+      "division": 0,
+      "score": 175570,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CRA",
+      "opp": "FBP",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 2,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 57944690,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "FBP",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 4,
+      "machine": "CA",
+      "division": 0,
+      "score": 99000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-22-8-CRA-DSV",
+      "week": "8",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 58124580,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-22-8-CRA-DSV",
+      "week": "8",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 4597150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-22-8-CRA-DSV",
+      "week": "8",
+      "round": 4,
+      "machine": "BadCats",
+      "division": 0,
+      "score": 2382180,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 1,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 24821240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 3,
+      "machine": "BOP",
+      "division": 0,
+      "score": 2328690,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 4,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 80060,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.248",
+      "num_matches": 8,
+      "ppm": "2.000",
+      "points": {
+        "won": 16,
+        "of": 64.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

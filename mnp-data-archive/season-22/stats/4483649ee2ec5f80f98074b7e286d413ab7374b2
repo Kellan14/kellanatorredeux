@@ -1,0 +1,143 @@
+{
+  "key": "4483649ee2ec5f80f98074b7e286d413ab7374b2",
+  "name": "Aaron Brown",
+  "history": [
+    {
+      "team": "KNR",
+      "opp": "HHS",
+      "match": "mnp-22-10-KNR-HHS",
+      "week": "10",
+      "round": 1,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 67660,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "HHS",
+      "match": "mnp-22-10-KNR-HHS",
+      "week": "10",
+      "round": 2,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 75140,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "HHS",
+      "match": "mnp-22-10-KNR-HHS",
+      "week": "10",
+      "round": 3,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 35520,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KNR",
+      "opp": "TTT",
+      "match": "mnp-22-2-KNR-TTT",
+      "week": "2",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 676380,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "KNR",
+      "opp": "TTT",
+      "match": "mnp-22-2-KNR-TTT",
+      "week": "2",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 665387040,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "TTT",
+      "match": "mnp-22-2-KNR-TTT",
+      "week": "2",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 8106160,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "POW",
+      "match": "mnp-22-4-KNR-POW",
+      "week": "4",
+      "round": 1,
+      "machine": "Congo",
+      "division": 0,
+      "score": 33610340,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "POW",
+      "match": "mnp-22-4-KNR-POW",
+      "week": "4",
+      "round": 3,
+      "machine": "SG",
+      "division": 0,
+      "score": 245380,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "POW",
+      "match": "mnp-22-4-KNR-POW",
+      "week": "4",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 7469600,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.204",
+      "num_matches": 3,
+      "ppm": "1.666",
+      "points": {
+        "won": 5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

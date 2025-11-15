@@ -1,0 +1,359 @@
+{
+  "key": "79126ae755c0b8dab65160f75c3afc8dd108b0aa",
+  "name": "Chelsie Hulka",
+  "history": [
+    {
+      "team": "BAD",
+      "opp": "NMC",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 1,
+      "machine": "BigGuns",
+      "division": 0,
+      "score": 538450,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "NMC",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 2,
+      "machine": "StellarWars",
+      "division": 0,
+      "score": 99160,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "BAD",
+      "opp": "NMC",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 3,
+      "machine": "BigGuns",
+      "division": 0,
+      "score": 435120,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "JMF",
+      "match": "mnp-22-10-JMF-BAD",
+      "week": "10",
+      "round": 2,
+      "machine": "MB",
+      "division": 0,
+      "score": 2598820,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "JMF",
+      "match": "mnp-22-10-JMF-BAD",
+      "week": "10",
+      "round": 3,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 96930,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "BAD",
+      "opp": "JMF",
+      "match": "mnp-22-10-JMF-BAD",
+      "week": "10",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 913000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "BAD",
+      "opp": "TBT",
+      "match": "mnp-22-2-TBT-BAD",
+      "week": "2",
+      "round": 1,
+      "machine": "EBD",
+      "division": 0,
+      "score": 1664210,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "BAD",
+      "opp": "TBT",
+      "match": "mnp-22-2-TBT-BAD",
+      "week": "2",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1053279810,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "TBT",
+      "match": "mnp-22-2-TBT-BAD",
+      "week": "2",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 145320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "ETB",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 2,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 110073120,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "ETB",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 76600510,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "BAD",
+      "opp": "ETB",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 96192500,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "BAD",
+      "opp": "SCN",
+      "match": "mnp-22-4-SCN-BAD",
+      "week": "4",
+      "round": 2,
+      "machine": "MB",
+      "division": 0,
+      "score": 37546660,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "SCN",
+      "match": "mnp-22-4-SCN-BAD",
+      "week": "4",
+      "round": 3,
+      "machine": "Lightning",
+      "division": 0,
+      "score": 71850,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "BAD",
+      "opp": "SCN",
+      "match": "mnp-22-4-SCN-BAD",
+      "week": "4",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 30000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-22-5-BAD-PBR",
+      "week": "5",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 29125110,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-22-5-BAD-PBR",
+      "week": "5",
+      "round": 2,
+      "machine": "BM66",
+      "division": 0,
+      "score": 67794240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-22-5-BAD-PBR",
+      "week": "5",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 1987000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "LAS",
+      "match": "mnp-22-7-BAD-LAS",
+      "week": "7",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 18830710,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "LAS",
+      "match": "mnp-22-7-BAD-LAS",
+      "week": "7",
+      "round": 2,
+      "machine": "Frontier",
+      "division": 0,
+      "score": 144520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "LAS",
+      "match": "mnp-22-7-BAD-LAS",
+      "week": "7",
+      "round": 4,
+      "machine": "Stars",
+      "division": 0,
+      "score": 55600,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "BAD",
+      "opp": "SSS",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 1,
+      "machine": "EBD",
+      "division": 0,
+      "score": 963060,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "BAD",
+      "opp": "SSS",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 183003800,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "SSS",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 14259020,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "NLT",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 338650,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "NLT",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 3,
+      "machine": "TZ",
+      "division": 0,
+      "score": 125260310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "NLT",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 4,
+      "machine": "TZ",
+      "division": 0,
+      "score": 72481420,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.412",
+      "num_matches": 9,
+      "ppm": "3.388",
+      "points": {
+        "won": 30.5,
+        "of": 74
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

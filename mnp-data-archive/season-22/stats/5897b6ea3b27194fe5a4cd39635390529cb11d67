@@ -1,0 +1,359 @@
+{
+  "key": "5897b6ea3b27194fe5a4cd39635390529cb11d67",
+  "name": "Jenny Pickens",
+  "history": [
+    {
+      "team": "BAD",
+      "opp": "NMC",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 31906250,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "NMC",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 45725690,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "NMC",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 42748140,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "JMF",
+      "match": "mnp-22-10-JMF-BAD",
+      "week": "10",
+      "round": 1,
+      "machine": "EBD",
+      "division": 0,
+      "score": 212000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "JMF",
+      "match": "mnp-22-10-JMF-BAD",
+      "week": "10",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 18703540,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "JMF",
+      "match": "mnp-22-10-JMF-BAD",
+      "week": "10",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 110000280,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "TBT",
+      "match": "mnp-22-2-TBT-BAD",
+      "week": "2",
+      "round": 1,
+      "machine": "BKISS",
+      "division": 0,
+      "score": 411510,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "TBT",
+      "match": "mnp-22-2-TBT-BAD",
+      "week": "2",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 3160600,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "TBT",
+      "match": "mnp-22-2-TBT-BAD",
+      "week": "2",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 674500,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "ETB",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 16900490,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "ETB",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 25502590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "ETB",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 4799370,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-22-5-BAD-PBR",
+      "week": "5",
+      "round": 1,
+      "machine": "EBD",
+      "division": 0,
+      "score": 625530,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-22-5-BAD-PBR",
+      "week": "5",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 93389420,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-22-5-BAD-PBR",
+      "week": "5",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 13653480,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "SWL",
+      "match": "mnp-22-6-SWL-BAD",
+      "week": "6",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 4079560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "SWL",
+      "match": "mnp-22-6-SWL-BAD",
+      "week": "6",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 10595390,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "SWL",
+      "match": "mnp-22-6-SWL-BAD",
+      "week": "6",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 609060,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "LAS",
+      "match": "mnp-22-7-BAD-LAS",
+      "week": "7",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 80151370,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "LAS",
+      "match": "mnp-22-7-BAD-LAS",
+      "week": "7",
+      "round": 3,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 212910,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "BAD",
+      "opp": "LAS",
+      "match": "mnp-22-7-BAD-LAS",
+      "week": "7",
+      "round": 4,
+      "machine": "DUNE",
+      "division": 0,
+      "score": 18533970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "SSS",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 1,
+      "machine": "EBD",
+      "division": 0,
+      "score": 736030,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "BAD",
+      "opp": "SSS",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 2,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 172290,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "SSS",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 36411080,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "NLT",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 111220,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "BAD",
+      "opp": "NLT",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 2,
+      "machine": "TZ",
+      "division": 0,
+      "score": 190342280,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "NLT",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 182050910,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.394",
+      "num_matches": 9,
+      "ppm": "3.222",
+      "points": {
+        "won": 29,
+        "of": 73.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

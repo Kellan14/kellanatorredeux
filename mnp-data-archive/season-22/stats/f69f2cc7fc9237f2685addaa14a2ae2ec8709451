@@ -1,0 +1,395 @@
+{
+  "key": "f69f2cc7fc9237f2685addaa14a2ae2ec8709451",
+  "name": "Scott Helgason",
+  "history": [
+    {
+      "team": "ADB",
+      "opp": "TBT",
+      "match": "mnp-22-1-ADB-TBT",
+      "week": "1",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 351471110,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "TBT",
+      "match": "mnp-22-1-ADB-TBT",
+      "week": "1",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 194832910,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "TBT",
+      "match": "mnp-22-1-ADB-TBT",
+      "week": "1",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 51413270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "PBR",
+      "match": "mnp-22-10-PBR-ADB",
+      "week": "10",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 14175600,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "PBR",
+      "match": "mnp-22-10-PBR-ADB",
+      "week": "10",
+      "round": 2,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 17868490,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "PBR",
+      "match": "mnp-22-10-PBR-ADB",
+      "week": "10",
+      "round": 4,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 42846770,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "ETB",
+      "match": "mnp-22-2-ETB-ADB",
+      "week": "2",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 2106070,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "ETB",
+      "match": "mnp-22-2-ETB-ADB",
+      "week": "2",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 111155870,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "ETB",
+      "match": "mnp-22-2-ETB-ADB",
+      "week": "2",
+      "round": 4,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 183600350,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "SCN",
+      "match": "mnp-22-3-ADB-SCN",
+      "week": "3",
+      "round": 2,
+      "machine": "TWD",
+      "division": 0,
+      "score": 10181050,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "SCN",
+      "match": "mnp-22-3-ADB-SCN",
+      "week": "3",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 72249220,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ADB",
+      "opp": "SCN",
+      "match": "mnp-22-3-ADB-SCN",
+      "week": "3",
+      "round": 4,
+      "machine": "Ali",
+      "division": 0,
+      "score": 37000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "ICB",
+      "match": "mnp-22-4-ICB-ADB",
+      "week": "4",
+      "round": 1,
+      "machine": "ElviraHouseOfHorrors",
+      "division": 0,
+      "score": 205386780,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "ICB",
+      "match": "mnp-22-4-ICB-ADB",
+      "week": "4",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 365363830,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "ICB",
+      "match": "mnp-22-4-ICB-ADB",
+      "week": "4",
+      "round": 4,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 511464390,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "SWL",
+      "match": "mnp-22-5-ADB-SWL",
+      "week": "5",
+      "round": 1,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 393890410,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ADB",
+      "opp": "SWL",
+      "match": "mnp-22-5-ADB-SWL",
+      "week": "5",
+      "round": 3,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 125136120,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "SWL",
+      "match": "mnp-22-5-ADB-SWL",
+      "week": "5",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 48680760,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "LAS",
+      "match": "mnp-22-6-LAS-ADB",
+      "week": "6",
+      "round": 1,
+      "machine": "ElviraHouseOfHorrors",
+      "division": 0,
+      "score": 254000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "LAS",
+      "match": "mnp-22-6-LAS-ADB",
+      "week": "6",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 200114010,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "LAS",
+      "match": "mnp-22-6-LAS-ADB",
+      "week": "6",
+      "round": 4,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 1007360470,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "SSS",
+      "match": "mnp-22-7-ADB-SSS",
+      "week": "7",
+      "round": 1,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 65622250,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "ADB",
+      "opp": "SSS",
+      "match": "mnp-22-7-ADB-SSS",
+      "week": "7",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 193080,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "SSS",
+      "match": "mnp-22-7-ADB-SSS",
+      "week": "7",
+      "round": 3,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 5366640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "NLT",
+      "match": "mnp-22-8-NLT-ADB",
+      "week": "8",
+      "round": 1,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 93621700,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "NLT",
+      "match": "mnp-22-8-NLT-ADB",
+      "week": "8",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 912034640,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "NLT",
+      "match": "mnp-22-8-NLT-ADB",
+      "week": "8",
+      "round": 4,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 503925130,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "NMC",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 240414910,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "NMC",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 79503610,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "NMC",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 43694350,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.641",
+      "num_matches": 10,
+      "ppm": "5.200",
+      "points": {
+        "won": 52,
+        "of": 81
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

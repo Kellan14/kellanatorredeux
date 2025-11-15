@@ -1,0 +1,395 @@
+{
+  "key": "783a17c9fa1bf37f6129acfe5cd79d74d43c90d8",
+  "name": "Mark McClure",
+  "history": [
+    {
+      "team": "TRL",
+      "opp": "SWL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 1,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 458111850,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TRL",
+      "opp": "SWL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 3,
+      "machine": "RUSH",
+      "division": 0,
+      "score": 16286000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SWL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 107969160,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SKP",
+      "match": "mnp-22-10-SKP-TRL",
+      "week": "10",
+      "round": 1,
+      "machine": "TZ",
+      "division": 0,
+      "score": 153297970,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "SKP",
+      "match": "mnp-22-10-SKP-TRL",
+      "week": "10",
+      "round": 3,
+      "machine": "TOM",
+      "division": 0,
+      "score": 374266910,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TRL",
+      "opp": "SKP",
+      "match": "mnp-22-10-SKP-TRL",
+      "week": "10",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 15064080,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "LAS",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 1,
+      "machine": "TBL",
+      "division": 0,
+      "score": 2112460,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "LAS",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 3,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 3257810,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "LAS",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 21243020,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "TRL",
+      "opp": "SSS",
+      "match": "mnp-22-3-TRL-SSS",
+      "week": "3",
+      "round": 2,
+      "machine": "BOPP",
+      "division": 0,
+      "score": 96480,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SSS",
+      "match": "mnp-22-3-TRL-SSS",
+      "week": "3",
+      "round": 3,
+      "machine": "BOPP",
+      "division": 0,
+      "score": 44740,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TRL",
+      "opp": "SSS",
+      "match": "mnp-22-3-TRL-SSS",
+      "week": "3",
+      "round": 4,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 424700,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "NLT",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 2,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 4381320,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TRL",
+      "opp": "NLT",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 4357050,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "NLT",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 4,
+      "machine": "TBL",
+      "division": 0,
+      "score": 1191940,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "NMC",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 65990,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "NMC",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 2,
+      "machine": "StellarWars",
+      "division": 0,
+      "score": 213400,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "NMC",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 3,
+      "machine": "SB",
+      "division": 0,
+      "score": 2173810,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TRL",
+      "opp": "TBT",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 1,
+      "machine": "TOM",
+      "division": 0,
+      "score": 405000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "TBT",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 2,
+      "machine": "Taxi",
+      "division": 0,
+      "score": 503340,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "TBT",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 4,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 1557720,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "TRL",
+      "opp": "ETB",
+      "match": "mnp-22-7-TRL-ETB",
+      "week": "7",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 31097200,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "ETB",
+      "match": "mnp-22-7-TRL-ETB",
+      "week": "7",
+      "round": 3,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 69000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "ETB",
+      "match": "mnp-22-7-TRL-ETB",
+      "week": "7",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 26112900,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SCN",
+      "match": "mnp-22-8-SCN-TRL",
+      "week": "8",
+      "round": 1,
+      "machine": "TOM",
+      "division": 0,
+      "score": 182605290,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SCN",
+      "match": "mnp-22-8-SCN-TRL",
+      "week": "8",
+      "round": 3,
+      "machine": "F-14",
+      "division": 0,
+      "score": 200000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SCN",
+      "match": "mnp-22-8-SCN-TRL",
+      "week": "8",
+      "round": 4,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 3950690,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "PYC",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 1,
+      "machine": "Skateball",
+      "division": 0,
+      "score": 242890,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "PYC",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 2,
+      "machine": "BSD",
+      "division": 0,
+      "score": 86088830,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "PYC",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 3,
+      "machine": "Mousin",
+      "division": 0,
+      "score": 1440000,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.378",
+      "num_matches": 10,
+      "ppm": "3.100",
+      "points": {
+        "won": 31,
+        "of": 82
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

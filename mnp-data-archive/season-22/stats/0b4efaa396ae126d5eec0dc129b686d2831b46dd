@@ -1,0 +1,359 @@
+{
+  "key": "0b4efaa396ae126d5eec0dc129b686d2831b46dd",
+  "name": "Angie Parker",
+  "history": [
+    {
+      "team": "TRL",
+      "opp": "SWL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 191788520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SWL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 16558620,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TRL",
+      "opp": "SWL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 6454310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SKP",
+      "match": "mnp-22-10-SKP-TRL",
+      "week": "10",
+      "round": 1,
+      "machine": "TZ",
+      "division": 0,
+      "score": 121182380,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "SKP",
+      "match": "mnp-22-10-SKP-TRL",
+      "week": "10",
+      "round": 3,
+      "machine": "TBL",
+      "division": 0,
+      "score": 5533900,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SKP",
+      "match": "mnp-22-10-SKP-TRL",
+      "week": "10",
+      "round": 4,
+      "machine": "007",
+      "division": 0,
+      "score": 111170480,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "LAS",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 1,
+      "machine": "TZ",
+      "division": 0,
+      "score": 64120190,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "LAS",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 2,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 11993200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "LAS",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 4,
+      "machine": "007",
+      "division": 0,
+      "score": 167664260,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SSS",
+      "match": "mnp-22-3-TRL-SSS",
+      "week": "3",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 637260,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "SSS",
+      "match": "mnp-22-3-TRL-SSS",
+      "week": "3",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 72377760,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SSS",
+      "match": "mnp-22-3-TRL-SSS",
+      "week": "3",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 61613150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "NMC",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 373200,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "NMC",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 14273060,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "NMC",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 31836630,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TRL",
+      "opp": "TBT",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 27840970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "TBT",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 3,
+      "machine": "Taxi",
+      "division": 0,
+      "score": 313450,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TRL",
+      "opp": "TBT",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 8863390,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "ETB",
+      "match": "mnp-22-7-TRL-ETB",
+      "week": "7",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 4555680,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "ETB",
+      "match": "mnp-22-7-TRL-ETB",
+      "week": "7",
+      "round": 3,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 26125500,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TRL",
+      "opp": "ETB",
+      "match": "mnp-22-7-TRL-ETB",
+      "week": "7",
+      "round": 4,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 110680,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SCN",
+      "match": "mnp-22-8-SCN-TRL",
+      "week": "8",
+      "round": 1,
+      "machine": "TZ",
+      "division": 0,
+      "score": 129000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SCN",
+      "match": "mnp-22-8-SCN-TRL",
+      "week": "8",
+      "round": 2,
+      "machine": "F-14",
+      "division": 0,
+      "score": 248340,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SCN",
+      "match": "mnp-22-8-SCN-TRL",
+      "week": "8",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 2103300,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "PYC",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 49720750,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "PYC",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 22000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "PYC",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 4,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 116280,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.324",
+      "num_matches": 9,
+      "ppm": "2.611",
+      "points": {
+        "won": 23.5,
+        "of": 72.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

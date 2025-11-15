@@ -1,0 +1,323 @@
+{
+  "key": "7667cb7b78d118b72f26d5b2459bfa875b84e88e",
+  "name": "Andy Yarritu",
+  "history": [
+    {
+      "team": "RTR",
+      "opp": "ICB",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 41383200,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "ICB",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 3,
+      "machine": "FOO",
+      "division": 0,
+      "score": 75138110,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "RTR",
+      "opp": "ICB",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 22129710,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "TBT",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 27965080,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TBT",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 2,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 398000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "TBT",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 36665010,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "PBR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 1,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 384082300,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "PBR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 7075770,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "PBR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 14621360,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 1,
+      "machine": "FOO",
+      "division": 0,
+      "score": 117465610,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 2,
+      "machine": "007",
+      "division": 0,
+      "score": 11864070,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 3483370,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "RTR",
+      "opp": "RMS",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 1,
+      "machine": "TOM",
+      "division": 0,
+      "score": 256446350,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "RMS",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 2,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 1947150,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "RMS",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 4,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 347742038,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "SKP",
+      "match": "mnp-22-7-RTR-SKP",
+      "week": "7",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 28000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "SKP",
+      "match": "mnp-22-7-RTR-SKP",
+      "week": "7",
+      "round": 3,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 69470,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "SKP",
+      "match": "mnp-22-7-RTR-SKP",
+      "week": "7",
+      "round": 4,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 67970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "KNR",
+      "match": "mnp-22-8-KNR-RTR",
+      "week": "8",
+      "round": 1,
+      "machine": "TOM",
+      "division": 0,
+      "score": 121400100,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "RTR",
+      "opp": "KNR",
+      "match": "mnp-22-8-KNR-RTR",
+      "week": "8",
+      "round": 2,
+      "machine": "F-14",
+      "division": 0,
+      "score": 291000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "KNR",
+      "match": "mnp-22-8-KNR-RTR",
+      "week": "8",
+      "round": 3,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 1280000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 1,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 31802990,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 82372060,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 3718960,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.303",
+      "num_matches": 8,
+      "ppm": "2.500",
+      "points": {
+        "won": 20,
+        "of": 66
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

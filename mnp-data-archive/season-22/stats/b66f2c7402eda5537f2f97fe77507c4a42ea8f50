@@ -1,0 +1,323 @@
+{
+  "key": "b66f2c7402eda5537f2f97fe77507c4a42ea8f50",
+  "name": "Lucy Hoffman",
+  "history": [
+    {
+      "team": "DIH",
+      "opp": "RMS",
+      "match": "mnp-22-1-DIH-RMS",
+      "week": "1",
+      "round": 1,
+      "machine": "RR",
+      "division": 0,
+      "score": 225750570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "RMS",
+      "match": "mnp-22-1-DIH-RMS",
+      "week": "1",
+      "round": 2,
+      "machine": "RR",
+      "division": 0,
+      "score": 96143190,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "RMS",
+      "match": "mnp-22-1-DIH-RMS",
+      "week": "1",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 22324190,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSS",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 24041390,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSS",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 22679180,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSS",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 4724410,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "PYC",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 1,
+      "machine": "GLizard",
+      "division": 0,
+      "score": 431570,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DIH",
+      "opp": "PYC",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 2,
+      "machine": "Congo",
+      "division": 0,
+      "score": 297752290,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "PYC",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 4,
+      "machine": "Congo",
+      "division": 0,
+      "score": 200000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DIH",
+      "opp": "SKP",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 51511590,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SKP",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 4935970,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DIH",
+      "opp": "SKP",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 4,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 194960,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "KNR",
+      "match": "mnp-22-5-DIH-KNR",
+      "week": "5",
+      "round": 2,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 183280,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "KNR",
+      "match": "mnp-22-5-DIH-KNR",
+      "week": "5",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 102000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DIH",
+      "opp": "KNR",
+      "match": "mnp-22-5-DIH-KNR",
+      "week": "5",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1222972270,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "CRA",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 31398430,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "CRA",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 6884140,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "CRA",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 5267530,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "ICB",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 20672530,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DIH",
+      "opp": "ICB",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 67288000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DIH",
+      "opp": "ICB",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 21473810,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "JMF",
+      "match": "mnp-22-9-DIH-JMF",
+      "week": "9",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 9494130,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "JMF",
+      "match": "mnp-22-9-DIH-JMF",
+      "week": "9",
+      "round": 2,
+      "machine": "MB",
+      "division": 0,
+      "score": 14433590,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DIH",
+      "opp": "JMF",
+      "match": "mnp-22-9-DIH-JMF",
+      "week": "9",
+      "round": 4,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 4265140,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.453",
+      "num_matches": 8,
+      "ppm": "3.687",
+      "points": {
+        "won": 29.5,
+        "of": 65
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

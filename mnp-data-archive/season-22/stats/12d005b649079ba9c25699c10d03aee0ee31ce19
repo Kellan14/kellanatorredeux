@@ -1,0 +1,287 @@
+{
+  "key": "12d005b649079ba9c25699c10d03aee0ee31ce19",
+  "name": "Corbin Stratton",
+  "history": [
+    {
+      "team": "CRA",
+      "opp": "PKT",
+      "match": "mnp-22-1-PKT-CRA",
+      "week": "1",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 3398590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "PKT",
+      "match": "mnp-22-1-PKT-CRA",
+      "week": "1",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 31393240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "PKT",
+      "match": "mnp-22-1-PKT-CRA",
+      "week": "1",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 446558760,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CRA",
+      "opp": "TTT",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 804660,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "TTT",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 7000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "TTT",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 983990,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "PGN",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 72880730,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "PGN",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 3,
+      "machine": "WOZ",
+      "division": 0,
+      "score": 22204,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "PGN",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 13897210,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DIH",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 35053470,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "DIH",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 12268680,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DIH",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 3,
+      "machine": "SC",
+      "division": 0,
+      "score": 144080,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "FBP",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 14869430,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "FBP",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 3,
+      "machine": "CA",
+      "division": 0,
+      "score": 146540,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "FBP",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 4,
+      "machine": "CA",
+      "division": 0,
+      "score": 116000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-22-8-CRA-DSV",
+      "week": "8",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 860000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-22-8-CRA-DSV",
+      "week": "8",
+      "round": 3,
+      "machine": "Indy",
+      "division": 0,
+      "score": 21362440,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-22-8-CRA-DSV",
+      "week": "8",
+      "round": 4,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 73530,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 3181060,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 3,
+      "machine": "CA",
+      "division": 0,
+      "score": 36120,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 4147390,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.387",
+      "num_matches": 7,
+      "ppm": "3.214",
+      "points": {
+        "won": 22.5,
+        "of": 58
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

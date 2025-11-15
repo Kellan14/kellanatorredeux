@@ -1,0 +1,395 @@
+{
+  "key": "9e94bcf3e818de7f914e53c33f577f991e4f0e20",
+  "name": "Marisa Figueroa",
+  "history": [
+    {
+      "team": "ICB",
+      "opp": "RTR",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 26809320,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "RTR",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 2,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 1380180,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "RTR",
+      "match": "mnp-22-1-RTR-ICB",
+      "week": "1",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 6445010,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ICB",
+      "opp": "CPO",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 8992240,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "CPO",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 2,
+      "machine": "CA",
+      "division": 0,
+      "score": 219340,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ICB",
+      "opp": "CPO",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 3213040,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ICB",
+      "opp": "PKT",
+      "match": "mnp-22-2-ICB-PKT",
+      "week": "2",
+      "round": 1,
+      "machine": "BDK",
+      "division": 0,
+      "score": 3347650,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "ICB",
+      "opp": "PKT",
+      "match": "mnp-22-2-ICB-PKT",
+      "week": "2",
+      "round": 3,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 11057020,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ICB",
+      "opp": "PKT",
+      "match": "mnp-22-2-ICB-PKT",
+      "week": "2",
+      "round": 4,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 3869890,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-22-3-TWC-ICB",
+      "week": "3",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 2217010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-22-3-TWC-ICB",
+      "week": "3",
+      "round": 3,
+      "machine": "DP",
+      "division": 0,
+      "score": 17694410,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-22-3-TWC-ICB",
+      "week": "3",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 77000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "ADB",
+      "match": "mnp-22-4-ICB-ADB",
+      "week": "4",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 7646570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "ADB",
+      "match": "mnp-22-4-ICB-ADB",
+      "week": "4",
+      "round": 3,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 328480,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "ADB",
+      "match": "mnp-22-4-ICB-ADB",
+      "week": "4",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 53170410,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 1,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 1173690,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 5322080,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-22-5-PGN-ICB",
+      "week": "5",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 8964430,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "POW",
+      "match": "mnp-22-6-ICB-POW",
+      "week": "6",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1009080130,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "POW",
+      "match": "mnp-22-6-ICB-POW",
+      "week": "6",
+      "round": 3,
+      "machine": "WCS",
+      "division": 0,
+      "score": 70517640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "POW",
+      "match": "mnp-22-6-ICB-POW",
+      "week": "6",
+      "round": 4,
+      "machine": "AIQ",
+      "division": 0,
+      "score": 2155790,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "ICB",
+      "opp": "DIH",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 111032380,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ICB",
+      "opp": "DIH",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 14231190,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ICB",
+      "opp": "DIH",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 7387250,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "FBP",
+      "match": "mnp-22-8-ICB-FBP",
+      "week": "8",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 295724890,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "FBP",
+      "match": "mnp-22-8-ICB-FBP",
+      "week": "8",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 3493910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "FBP",
+      "match": "mnp-22-8-ICB-FBP",
+      "week": "8",
+      "round": 4,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 15000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "DSV",
+      "match": "mnp-22-9-DSV-ICB",
+      "week": "9",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 29659000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "DSV",
+      "match": "mnp-22-9-DSV-ICB",
+      "week": "9",
+      "round": 2,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 6805170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "DSV",
+      "match": "mnp-22-9-DSV-ICB",
+      "week": "9",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 38849440,
+      "points": 1,
+      "pops": "0.333"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.315",
+      "num_matches": 10,
+      "ppm": "2.600",
+      "points": {
+        "won": 26,
+        "of": 82.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,395 @@
+{
+  "key": "30446d1f0ed7e860051d55d8623119d5dfac5412",
+  "name": "Elliott Johnson",
+  "history": [
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 1,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 78353490,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 2,
+      "machine": "HW",
+      "division": 0,
+      "score": 35573440,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 4,
+      "machine": "HW",
+      "division": 0,
+      "score": 35524910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 1,
+      "machine": "WPT",
+      "division": 0,
+      "score": 12377720,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 2,
+      "machine": "SNS",
+      "division": 0,
+      "score": 61260,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 4,
+      "machine": "TBL",
+      "division": 0,
+      "score": 2339350,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 9376430,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 3,
+      "machine": "BOPP",
+      "division": 0,
+      "score": 39500,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 17760980,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 237839850,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 3,
+      "machine": "CA",
+      "division": 0,
+      "score": 345200,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 66805100,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 1,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 89170,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 2,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 151630,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 266790,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 1,
+      "machine": "DH",
+      "division": 0,
+      "score": 422950870,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 3,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 38916920,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 4,
+      "machine": "HW",
+      "division": 0,
+      "score": 17739990,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DOG",
+      "opp": "PKT",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2039212370,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "PKT",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 3,
+      "machine": "FOO",
+      "division": 0,
+      "score": 49134670,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "PKT",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 4,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 301329980,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 290000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 99000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 186173610,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 187279330,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 54563620,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 67677580,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "PGN",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 1,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 89455870,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "PGN",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 95443710,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "PGN",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 11728850,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.524",
+      "num_matches": 10,
+      "ppm": "4.300",
+      "points": {
+        "won": 43,
+        "of": 82
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,251 @@
+{
+  "key": "8b59e520570da6d430ea85dbbcba98845d80dc81",
+  "name": "Brian Kirk WA",
+  "history": [
+    {
+      "team": "RTR",
+      "opp": "TBT",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 148332310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TBT",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 51000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "TBT",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 154188700,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "PBR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 66877510,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "PBR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 5170970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "PBR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 169841380,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 1,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 16489640,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 2,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 24342890,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 848306320,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "PYC",
+      "match": "mnp-22-6-PYC-RTR",
+      "week": "6",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 22337450,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "PYC",
+      "match": "mnp-22-6-PYC-RTR",
+      "week": "6",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 10551060,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "RTR",
+      "opp": "PYC",
+      "match": "mnp-22-6-PYC-RTR",
+      "week": "6",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 16864260,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "KNR",
+      "match": "mnp-22-8-KNR-RTR",
+      "week": "8",
+      "round": 1,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 1326030,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "KNR",
+      "match": "mnp-22-8-KNR-RTR",
+      "week": "8",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 51838710,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "KNR",
+      "match": "mnp-22-8-KNR-RTR",
+      "week": "8",
+      "round": 4,
+      "machine": "TBL",
+      "division": 0,
+      "score": 3557920,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 12199910,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 122395520,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 2715720,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.525",
+      "num_matches": 6,
+      "ppm": "4.250",
+      "points": {
+        "won": 25.5,
+        "of": 48.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

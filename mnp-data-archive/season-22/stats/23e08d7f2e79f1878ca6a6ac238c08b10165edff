@@ -1,0 +1,323 @@
+{
+  "key": "23e08d7f2e79f1878ca6a6ac238c08b10165edff",
+  "name": "Chase Engdall",
+  "history": [
+    {
+      "team": "PYC",
+      "opp": "PGN",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 2,
+      "machine": "EJ",
+      "division": 0,
+      "score": 12591450,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "PGN",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 3,
+      "machine": "FOO",
+      "division": 0,
+      "score": 47938620,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "PGN",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 4,
+      "machine": "KONG",
+      "division": 0,
+      "score": 64000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 93000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 58529540,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 46295440,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-22-2-PYC-POW",
+      "week": "2",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 63839060,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-22-2-PYC-POW",
+      "week": "2",
+      "round": 3,
+      "machine": "EJ",
+      "division": 0,
+      "score": 123418290,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-22-2-PYC-POW",
+      "week": "2",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 28778060,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "DIH",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 1,
+      "machine": "Mousin",
+      "division": 0,
+      "score": 522040,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "DIH",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 2,
+      "machine": "FOO",
+      "division": 0,
+      "score": 47439010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "DIH",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 4,
+      "machine": "JB60",
+      "division": 0,
+      "score": 8298,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "FBP",
+      "match": "mnp-22-4-PYC-FBP",
+      "week": "4",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 15489230,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "FBP",
+      "match": "mnp-22-4-PYC-FBP",
+      "week": "4",
+      "round": 2,
+      "machine": "FOO",
+      "division": 0,
+      "score": 292000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "FBP",
+      "match": "mnp-22-4-PYC-FBP",
+      "week": "4",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 40791250,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "PKT",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 191664000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "PKT",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 2,
+      "machine": "Mousin",
+      "division": 0,
+      "score": 621630,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "PKT",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 4,
+      "machine": "TS",
+      "division": 0,
+      "score": 249000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TWC",
+      "match": "mnp-22-8-PYC-TWC",
+      "week": "8",
+      "round": 1,
+      "machine": "GameShow",
+      "division": 0,
+      "score": 1184070,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TWC",
+      "match": "mnp-22-8-PYC-TWC",
+      "week": "8",
+      "round": 2,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 161674990,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TWC",
+      "match": "mnp-22-8-PYC-TWC",
+      "week": "8",
+      "round": 4,
+      "machine": "Tron",
+      "division": 0,
+      "score": 35123150,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 359958760,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 2,
+      "machine": "FOO",
+      "division": 0,
+      "score": 207034640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 3,
+      "machine": "Mousin",
+      "division": 0,
+      "score": 7283000,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.595",
+      "num_matches": 8,
+      "ppm": "4.875",
+      "points": {
+        "won": 39,
+        "of": 65.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

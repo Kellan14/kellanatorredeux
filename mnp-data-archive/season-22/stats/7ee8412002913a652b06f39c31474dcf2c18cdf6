@@ -1,0 +1,251 @@
+{
+  "key": "7ee8412002913a652b06f39c31474dcf2c18cdf6",
+  "name": "CLAYTON STETZ",
+  "history": [
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-22-10-PBR-ADB",
+      "week": "10",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 327234380,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-22-10-PBR-ADB",
+      "week": "10",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 35103940,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-22-10-PBR-ADB",
+      "week": "10",
+      "round": 4,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 374706470,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "PBR",
+      "opp": "RTR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 2,
+      "machine": "TOM",
+      "division": 0,
+      "score": 435949090,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "RTR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 3,
+      "machine": "TBL",
+      "division": 0,
+      "score": 3033160,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "RTR",
+      "match": "mnp-22-2-PBR-RTR",
+      "week": "2",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 293783400,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PBR",
+      "opp": "PKT",
+      "match": "mnp-22-3-PKT-PBR",
+      "week": "3",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 32000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "PKT",
+      "match": "mnp-22-3-PKT-PBR",
+      "week": "3",
+      "round": 2,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 210000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PBR",
+      "opp": "PKT",
+      "match": "mnp-22-3-PKT-PBR",
+      "week": "3",
+      "round": 3,
+      "machine": "RR",
+      "division": 0,
+      "score": 237200600,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "TWC",
+      "match": "mnp-22-4-PBR-TWC",
+      "week": "4",
+      "round": 1,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 23000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "TWC",
+      "match": "mnp-22-4-PBR-TWC",
+      "week": "4",
+      "round": 2,
+      "machine": "TZ",
+      "division": 0,
+      "score": 169688160,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "TWC",
+      "match": "mnp-22-4-PBR-TWC",
+      "week": "4",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 95231480,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-22-8-PBR-DIH",
+      "week": "8",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 75647780,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-22-8-PBR-DIH",
+      "week": "8",
+      "round": 2,
+      "machine": "007",
+      "division": 0,
+      "score": 399889110,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-22-8-PBR-DIH",
+      "week": "8",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 12951390,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "FBP",
+      "match": "mnp-22-9-FBP-PBR",
+      "week": "9",
+      "round": 2,
+      "machine": "BM66",
+      "division": 0,
+      "score": 21000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "FBP",
+      "match": "mnp-22-9-FBP-PBR",
+      "week": "9",
+      "round": 3,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 543200,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "FBP",
+      "match": "mnp-22-9-FBP-PBR",
+      "week": "9",
+      "round": 4,
+      "machine": "BM66",
+      "division": 0,
+      "score": 780000000,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.540",
+      "num_matches": 6,
+      "ppm": "4.500",
+      "points": {
+        "won": 27,
+        "of": 50
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

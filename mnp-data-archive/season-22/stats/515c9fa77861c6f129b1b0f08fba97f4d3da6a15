@@ -1,0 +1,311 @@
+{
+  "key": "515c9fa77861c6f129b1b0f08fba97f4d3da6a15",
+  "name": "Ariel Bedolla",
+  "history": [
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 9075720,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 3,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 202280,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 30904170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 135370,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 367935240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 375720,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 140130,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 470170,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 3,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 89615610,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 14676470,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 3,
+      "machine": "Monopoly",
+      "division": 0,
+      "score": 15289660,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 48877630,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 11247100,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 3,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 1479830,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 202670,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CPO",
+      "opp": "SSS",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 172210,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SSS",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 4,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 3785340,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 1,
+      "machine": "TWD",
+      "division": 0,
+      "score": 8426780,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 64945590,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 552067630,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "TBT",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 1,
+      "machine": "TZ",
+      "division": 0,
+      "score": 282673980,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "TBT",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 3404650,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "TBT",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 38000000,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.368",
+      "num_matches": 8,
+      "ppm": "2.875",
+      "points": {
+        "won": 23,
+        "of": 62.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

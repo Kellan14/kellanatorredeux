@@ -1,0 +1,143 @@
+{
+  "key": "5143de1e50d22954c62275f4d704db7222cf36f6",
+  "name": "Ron Hudson",
+  "history": [
+    {
+      "team": "TWC",
+      "opp": "SCN",
+      "match": "mnp-22-10-SCN-TWC",
+      "week": "10",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 1269998500,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "SCN",
+      "match": "mnp-22-10-SCN-TWC",
+      "week": "10",
+      "round": 3,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 12000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "SCN",
+      "match": "mnp-22-10-SCN-TWC",
+      "week": "10",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 275000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SCN",
+      "opp": "DTP",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 27000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SCN",
+      "opp": "DTP",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 245286120,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "DTP",
+      "match": "mnp-22-5-DTP-SCN",
+      "week": "5",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 388638350,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TWC",
+      "opp": "DOG",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 21000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TWC",
+      "opp": "DOG",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1004572310,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TWC",
+      "opp": "DOG",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 32529670,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.510",
+      "num_matches": 3,
+      "ppm": "4.166",
+      "points": {
+        "won": 12.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

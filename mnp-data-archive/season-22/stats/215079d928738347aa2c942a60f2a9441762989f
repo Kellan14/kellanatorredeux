@@ -1,0 +1,359 @@
+{
+  "key": "215079d928738347aa2c942a60f2a9441762989f",
+  "name": "Kali Banks",
+  "history": [
+    {
+      "team": "HHS",
+      "opp": "SKP",
+      "match": "mnp-22-1-HHS-SKP",
+      "week": "1",
+      "round": 1,
+      "machine": "Elvira",
+      "division": 0,
+      "score": 1867740,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "HHS",
+      "opp": "SKP",
+      "match": "mnp-22-1-HHS-SKP",
+      "week": "1",
+      "round": 3,
+      "machine": "FH",
+      "division": 0,
+      "score": 5005370,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "HHS",
+      "opp": "SKP",
+      "match": "mnp-22-1-HHS-SKP",
+      "week": "1",
+      "round": 4,
+      "machine": "Elvira",
+      "division": 0,
+      "score": 605480,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "KNR",
+      "match": "mnp-22-10-KNR-HHS",
+      "week": "10",
+      "round": 1,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 376330,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "KNR",
+      "match": "mnp-22-10-KNR-HHS",
+      "week": "10",
+      "round": 2,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 6000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "KNR",
+      "match": "mnp-22-10-KNR-HHS",
+      "week": "10",
+      "round": 3,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 42000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "SWL",
+      "match": "mnp-22-2-SWL-HHS",
+      "week": "2",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 4114800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "SWL",
+      "match": "mnp-22-2-SWL-HHS",
+      "week": "2",
+      "round": 2,
+      "machine": "FH",
+      "division": 0,
+      "score": 927100,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "SWL",
+      "match": "mnp-22-2-SWL-HHS",
+      "week": "2",
+      "round": 4,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 4795550,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "LAS",
+      "match": "mnp-22-3-HHS-LAS",
+      "week": "3",
+      "round": 1,
+      "machine": "Cheetah",
+      "division": 0,
+      "score": 507210,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "LAS",
+      "match": "mnp-22-3-HHS-LAS",
+      "week": "3",
+      "round": 3,
+      "machine": "Junkyard",
+      "division": 0,
+      "score": 6420300,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "LAS",
+      "match": "mnp-22-3-HHS-LAS",
+      "week": "3",
+      "round": 4,
+      "machine": "Indy500",
+      "division": 0,
+      "score": 54816360,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "HHS",
+      "opp": "NLT",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 1,
+      "machine": "BSD",
+      "division": 0,
+      "score": 7545300,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NLT",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 23116240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NLT",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 4,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 2439590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NMC",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 1,
+      "machine": "FH",
+      "division": 0,
+      "score": 2556550,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NMC",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 3,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 121080,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NMC",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 4,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 4250650,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "HHS",
+      "opp": "TBT",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 1,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 2803040,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "TBT",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 3,
+      "machine": "TZ",
+      "division": 0,
+      "score": 74909140,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "TBT",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 4769610,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "HHS",
+      "opp": "ETB",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 290310,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "HHS",
+      "opp": "ETB",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 3,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 2999640,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "HHS",
+      "opp": "ETB",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 4,
+      "machine": "FH",
+      "division": 0,
+      "score": 2022960,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "HHS",
+      "opp": "SCN",
+      "match": "mnp-22-9-HHS-SCN",
+      "week": "9",
+      "round": 1,
+      "machine": "Tron",
+      "division": 0,
+      "score": 8306060,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "HHS",
+      "opp": "SCN",
+      "match": "mnp-22-9-HHS-SCN",
+      "week": "9",
+      "round": 3,
+      "machine": "Ali",
+      "division": 0,
+      "score": 94030,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "HHS",
+      "opp": "SCN",
+      "match": "mnp-22-9-HHS-SCN",
+      "week": "9",
+      "round": 4,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 515460,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.344",
+      "num_matches": 9,
+      "ppm": "2.777",
+      "points": {
+        "won": 25,
+        "of": 72.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

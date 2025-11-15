@@ -1,0 +1,395 @@
+{
+  "key": "d5ec5a17a62f72bd2c998e6657d4c1def5a7cdd3",
+  "name": "Hunter Vogt",
+  "history": [
+    {
+      "team": "PYC",
+      "opp": "PGN",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "Stars",
+      "division": 0,
+      "score": 47780,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PYC",
+      "opp": "PGN",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 3,
+      "machine": "IronMan",
+      "division": 0,
+      "score": 1833370,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "PGN",
+      "match": "mnp-22-1-PGN-PYC",
+      "week": "1",
+      "round": 4,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 501840,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 33544610,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 43556670,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-22-10-PYC-SSD",
+      "week": "10",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 24823290,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-22-2-PYC-POW",
+      "week": "2",
+      "round": 1,
+      "machine": "DollyParton",
+      "division": 0,
+      "score": 1920,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-22-2-PYC-POW",
+      "week": "2",
+      "round": 2,
+      "machine": "QS",
+      "division": 0,
+      "score": 147360,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-22-2-PYC-POW",
+      "week": "2",
+      "round": 3,
+      "machine": "DollyParton",
+      "division": 0,
+      "score": 71870,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "DIH",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 185408340,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "DIH",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 3,
+      "machine": "WCS",
+      "division": 0,
+      "score": 316178500,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "DIH",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 10646330,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "FBP",
+      "match": "mnp-22-4-PYC-FBP",
+      "week": "4",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 21958570,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "FBP",
+      "match": "mnp-22-4-PYC-FBP",
+      "week": "4",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 16137290,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "FBP",
+      "match": "mnp-22-4-PYC-FBP",
+      "week": "4",
+      "round": 4,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 59910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "DSV",
+      "match": "mnp-22-5-DSV-PYC",
+      "week": "5",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 235283020,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PYC",
+      "opp": "DSV",
+      "match": "mnp-22-5-DSV-PYC",
+      "week": "5",
+      "round": 2,
+      "machine": "IronMan",
+      "division": 0,
+      "score": 11097520,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "DSV",
+      "match": "mnp-22-5-DSV-PYC",
+      "week": "5",
+      "round": 4,
+      "machine": "IronMan",
+      "division": 0,
+      "score": 4157820,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "RTR",
+      "match": "mnp-22-6-PYC-RTR",
+      "week": "6",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 6030360,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "RTR",
+      "match": "mnp-22-6-PYC-RTR",
+      "week": "6",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 6085020,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "RTR",
+      "match": "mnp-22-6-PYC-RTR",
+      "week": "6",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 4817710,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "PKT",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 2,
+      "machine": "WCS",
+      "division": 0,
+      "score": 2132271380,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "PKT",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 3,
+      "machine": "Genesis",
+      "division": 0,
+      "score": 735450,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "PKT",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 282929080,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "TWC",
+      "match": "mnp-22-8-PYC-TWC",
+      "week": "8",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 994077680,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PYC",
+      "opp": "TWC",
+      "match": "mnp-22-8-PYC-TWC",
+      "week": "8",
+      "round": 2,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 7241110,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "TWC",
+      "match": "mnp-22-8-PYC-TWC",
+      "week": "8",
+      "round": 4,
+      "machine": "SEGAGOD",
+      "division": 0,
+      "score": 24335720,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 250287570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 2,
+      "machine": "WCS",
+      "division": 0,
+      "score": 364456080,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-22-9-TRL-PYC",
+      "week": "9",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 231998440,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.384",
+      "num_matches": 10,
+      "ppm": "3.150",
+      "points": {
+        "won": 31.5,
+        "of": 82
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

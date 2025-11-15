@@ -1,0 +1,395 @@
+{
+  "key": "8592fc61c15ab1fdcaafb2e73455e7fa8176b7ee",
+  "name": "Michael Miller",
+  "history": [
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 16327200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 19613010,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 70666500,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 1,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 2234220,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 17090410,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 4,
+      "machine": "CA",
+      "division": 0,
+      "score": 64170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 1,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 1502930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 1654400,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 4,
+      "machine": "Monopoly",
+      "division": 0,
+      "score": 8427380,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 8345700,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 26227240,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 4,
+      "machine": "MB",
+      "division": 0,
+      "score": 35508950,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 148019800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 2,
+      "machine": "MB",
+      "division": 0,
+      "score": 25802450,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 3,
+      "machine": "BM66",
+      "division": 0,
+      "score": 84123660,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "LAS",
+      "match": "mnp-22-5-CPO-LAS",
+      "week": "5",
+      "round": 2,
+      "machine": "TWD",
+      "division": 0,
+      "score": 18480390,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "LAS",
+      "match": "mnp-22-5-CPO-LAS",
+      "week": "5",
+      "round": 3,
+      "machine": "Tron",
+      "division": 0,
+      "score": 21113130,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "LAS",
+      "match": "mnp-22-5-CPO-LAS",
+      "week": "5",
+      "round": 4,
+      "machine": "TWD",
+      "division": 0,
+      "score": 12450170,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SSS",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 1,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 2212110,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "CPO",
+      "opp": "SSS",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 464614820,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SSS",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 4,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 7042250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 186000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 3,
+      "machine": "Indy500",
+      "division": 0,
+      "score": 45451360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 4,
+      "machine": "BSD",
+      "division": 0,
+      "score": 22144310,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NMC",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 1,
+      "machine": "Monopoly",
+      "division": 0,
+      "score": 8073440,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "CPO",
+      "opp": "NMC",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 3,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 4762750,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NMC",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 242043970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "TBT",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 1,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 1896910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "TBT",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 2,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 11568180,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CPO",
+      "opp": "TBT",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 4,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 7727390,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.302",
+      "num_matches": 10,
+      "ppm": "2.450",
+      "points": {
+        "won": 24.5,
+        "of": 81
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

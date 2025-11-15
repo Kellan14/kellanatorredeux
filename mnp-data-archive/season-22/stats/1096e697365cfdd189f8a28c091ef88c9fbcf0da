@@ -1,0 +1,143 @@
+{
+  "key": "1096e697365cfdd189f8a28c091ef88c9fbcf0da",
+  "name": "Cameron Pizzo",
+  "history": [
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 1,
+      "machine": "SS",
+      "division": 0,
+      "score": 4459150,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 5878536250,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 4,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 355270,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "RMS",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 56593560,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "RMS",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 15199560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "RMS",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 8987510,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 7101434410,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 2,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 11849440,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1631386350,
+      "points": 1,
+      "pops": "0.333"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.653",
+      "num_matches": 3,
+      "ppm": "5.333",
+      "points": {
+        "won": 16,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

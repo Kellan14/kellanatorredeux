@@ -1,0 +1,323 @@
+{
+  "key": "0c0a1ea393ce154aeb2484f8d2838bfa5fb88717",
+  "name": "Rinalldo Robinson",
+  "history": [
+    {
+      "team": "HHS",
+      "opp": "KNR",
+      "match": "mnp-22-10-KNR-HHS",
+      "week": "10",
+      "round": 1,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 238040,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "HHS",
+      "opp": "KNR",
+      "match": "mnp-22-10-KNR-HHS",
+      "week": "10",
+      "round": 2,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 88860,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "HHS",
+      "opp": "KNR",
+      "match": "mnp-22-10-KNR-HHS",
+      "week": "10",
+      "round": 4,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 81650,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "SWL",
+      "match": "mnp-22-2-SWL-HHS",
+      "week": "2",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 5059850,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "SWL",
+      "match": "mnp-22-2-SWL-HHS",
+      "week": "2",
+      "round": 2,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 342870,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "SWL",
+      "match": "mnp-22-2-SWL-HHS",
+      "week": "2",
+      "round": 4,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 172350,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "LAS",
+      "match": "mnp-22-3-HHS-LAS",
+      "week": "3",
+      "round": 1,
+      "machine": "Skateball",
+      "division": 0,
+      "score": 63650,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "LAS",
+      "match": "mnp-22-3-HHS-LAS",
+      "week": "3",
+      "round": 2,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 239170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "LAS",
+      "match": "mnp-22-3-HHS-LAS",
+      "week": "3",
+      "round": 4,
+      "machine": "JB60",
+      "division": 0,
+      "score": 4678,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "SSS",
+      "match": "mnp-22-4-SSS-HHS",
+      "week": "4",
+      "round": 1,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 203970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "SSS",
+      "match": "mnp-22-4-SSS-HHS",
+      "week": "4",
+      "round": 3,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 128030,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "SSS",
+      "match": "mnp-22-4-SSS-HHS",
+      "week": "4",
+      "round": 4,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 187530,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NLT",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 53150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NLT",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 3,
+      "machine": "Genie",
+      "division": 0,
+      "score": 115500,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "HHS",
+      "opp": "NLT",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 4,
+      "machine": "DrWho",
+      "division": 0,
+      "score": 81457320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NMC",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 1,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 317150,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "NMC",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 2,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 195000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "HHS",
+      "opp": "NMC",
+      "match": "mnp-22-6-NMC-HHS",
+      "week": "6",
+      "round": 3,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 213210,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "TBT",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 1,
+      "machine": "Taxi",
+      "division": 0,
+      "score": 272360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "TBT",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 2,
+      "machine": "TZ",
+      "division": 0,
+      "score": 66664250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "TBT",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 36885970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "ETB",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 239670,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "HHS",
+      "opp": "ETB",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 3,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 341780,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "HHS",
+      "opp": "ETB",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 4,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 4341210,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.369",
+      "num_matches": 8,
+      "ppm": "3.000",
+      "points": {
+        "won": 24,
+        "of": 65
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

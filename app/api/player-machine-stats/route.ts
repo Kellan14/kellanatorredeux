@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 
     // Search through seasons
     for (let season = seasonStart; season <= seasonEnd; season++) {
-      const seasonDir = path.join(process.cwd(), 'public', 'mnp-data-archive', `season-${season}`, 'matches')
+      const seasonDir = path.join(process.cwd(), 'mnp-data-archive', `season-${season}`, 'matches')
 
       if (!fs.existsSync(seasonDir)) continue
 

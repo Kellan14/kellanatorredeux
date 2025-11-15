@@ -1,0 +1,359 @@
+{
+  "key": "529dfbda46e9dc21bd307981d00993f8d9254024",
+  "name": "Nic Cope",
+  "history": [
+    {
+      "team": "TTT",
+      "opp": "SCN",
+      "match": "mnp-22-1-TTT-SCN",
+      "week": "1",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 430119070,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "SCN",
+      "match": "mnp-22-1-TTT-SCN",
+      "week": "1",
+      "round": 3,
+      "machine": "GOT",
+      "division": 0,
+      "score": 558308120,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "SCN",
+      "match": "mnp-22-1-TTT-SCN",
+      "week": "1",
+      "round": 4,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 575180,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "KNR",
+      "match": "mnp-22-2-KNR-TTT",
+      "week": "2",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 28374900,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "KNR",
+      "match": "mnp-22-2-KNR-TTT",
+      "week": "2",
+      "round": 3,
+      "machine": "VEN",
+      "division": 0,
+      "score": 262407870,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "KNR",
+      "match": "mnp-22-2-KNR-TTT",
+      "week": "2",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 147358340,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TTT",
+      "opp": "SWL",
+      "match": "mnp-22-3-TTT-SWL",
+      "week": "3",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 97125970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "SWL",
+      "match": "mnp-22-3-TTT-SWL",
+      "week": "3",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 24864060,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TTT",
+      "opp": "SWL",
+      "match": "mnp-22-3-TTT-SWL",
+      "week": "3",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 14465820,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "LAS",
+      "match": "mnp-22-4-LAS-TTT",
+      "week": "4",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 377619680,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "LAS",
+      "match": "mnp-22-4-LAS-TTT",
+      "week": "4",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 106204890,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "LAS",
+      "match": "mnp-22-4-LAS-TTT",
+      "week": "4",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 538000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "SSS",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 1,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 172000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "SSS",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 3,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 47066310,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "SSS",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 4,
+      "machine": "Centaur",
+      "division": 0,
+      "score": 383430,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "NLT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 214740030,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NLT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 3,
+      "machine": "VEN",
+      "division": 0,
+      "score": 242501940,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NLT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 15999910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NMC",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 155840,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TTT",
+      "opp": "NMC",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 2,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 113677260,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NMC",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 248695980,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "TBT",
+      "match": "mnp-22-8-TBT-TTT",
+      "week": "8",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 143206360,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "TBT",
+      "match": "mnp-22-8-TBT-TTT",
+      "week": "8",
+      "round": 3,
+      "machine": "VEN",
+      "division": 0,
+      "score": 297542040,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "TBT",
+      "match": "mnp-22-8-TBT-TTT",
+      "week": "8",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 124043810,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 1,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 1468050,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 147298920,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 31652550,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.624",
+      "num_matches": 9,
+      "ppm": "5.166",
+      "points": {
+        "won": 46.5,
+        "of": 74.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

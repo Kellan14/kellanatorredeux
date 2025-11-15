@@ -1,0 +1,323 @@
+{
+  "key": "07f83b866165005e5bfd051b36bfb0e60c814954",
+  "name": "Tim Uomoto",
+  "history": [
+    {
+      "team": "NMC",
+      "opp": "DSV",
+      "match": "mnp-22-10-NMC-DSV",
+      "week": "10",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 103360740,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "DSV",
+      "match": "mnp-22-10-NMC-DSV",
+      "week": "10",
+      "round": 3,
+      "machine": "MH",
+      "division": 0,
+      "score": 168220,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DSV",
+      "match": "mnp-22-10-NMC-DSV",
+      "week": "10",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 103057760,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 67703120,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 2500000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 126971190,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 110548630,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 81253660,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 143972090,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 35795300,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 166553110,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 34684520,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "NMC",
+      "opp": "TRL",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 242000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TRL",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 66600020,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TRL",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 41918220,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "NMC",
+      "opp": "TTT",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 91574170,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TTT",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 3,
+      "machine": "T2",
+      "division": 0,
+      "score": 8000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "TTT",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 221661820,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 1,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 264535690,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 15220180,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 4,
+      "machine": "Monopoly",
+      "division": 0,
+      "score": 8936560,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 56377790,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 105908940,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 4,
+      "machine": "T2",
+      "division": 0,
+      "score": 23789680,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.761",
+      "num_matches": 8,
+      "ppm": "6.187",
+      "points": {
+        "won": 49.5,
+        "of": 65
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

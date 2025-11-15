@@ -1,0 +1,395 @@
+{
+  "key": "3921f875f2bab7032cbaa517511d5dda1fac025b",
+  "name": "Derrick Downing",
+  "history": [
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 799550,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 19278120,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 4,
+      "machine": "CA",
+      "division": 0,
+      "score": 120200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 46541170,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 8509660,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 6637520,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 6104730,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 23168690,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 4,
+      "machine": "007",
+      "division": 0,
+      "score": 3103330,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 798965040,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 2,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 10295000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 4,
+      "machine": "HW",
+      "division": 0,
+      "score": 15588740,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 2,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 192470,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 674304030,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 4,
+      "machine": "Tron",
+      "division": 0,
+      "score": 1285270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 167310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 485613400,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 458150,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "PKT",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 6492840,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "PKT",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 2,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 49667800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "PKT",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 387190,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 290314510,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 93100,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 4,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 10402960,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 2797420,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 28680210,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 4,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 338320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "PGN",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1089133970,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "PGN",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 3,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 52377850,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "PGN",
+      "match": "mnp-22-9-PGN-DOG",
+      "week": "9",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1099160930,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.161",
+      "num_matches": 10,
+      "ppm": "1.350",
+      "points": {
+        "won": 13.5,
+        "of": 83.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

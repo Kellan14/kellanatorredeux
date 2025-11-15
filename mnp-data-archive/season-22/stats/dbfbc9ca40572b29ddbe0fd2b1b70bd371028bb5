@@ -1,0 +1,251 @@
+{
+  "key": "dbfbc9ca40572b29ddbe0fd2b1b70bd371028bb5",
+  "name": "Jerry Duncan",
+  "history": [
+    {
+      "team": "TRL",
+      "opp": "SWL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 24000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SWL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 3,
+      "machine": "VEN",
+      "division": 0,
+      "score": 119664250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SWL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 37392220,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TTT",
+      "opp": "CRA",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 2,
+      "machine": "VEN",
+      "division": 0,
+      "score": 11687140,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "CRA",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 89818850,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TTT",
+      "opp": "CRA",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 948211700,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "LAS",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 55803260,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "LAS",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 9056530,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "LAS",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 1968100,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "NLT",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 45978420,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "NLT",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 229701170,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "NLT",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 3,
+      "machine": "TBL",
+      "division": 0,
+      "score": 4135660,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TRL",
+      "opp": "TBT",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 120692130,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "TBT",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 2,
+      "machine": "TBL",
+      "division": 0,
+      "score": 105077050,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "TBT",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 3,
+      "machine": "TOM",
+      "division": 0,
+      "score": 139125770,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 1,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 169837330,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 2,
+      "machine": "Rush",
+      "division": 0,
+      "score": 32015920,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 3,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 52337020,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.558",
+      "num_matches": 6,
+      "ppm": "4.750",
+      "points": {
+        "won": 28.5,
+        "of": 51
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

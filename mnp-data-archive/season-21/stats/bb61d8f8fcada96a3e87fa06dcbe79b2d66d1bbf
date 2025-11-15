@@ -1,0 +1,359 @@
+{
+  "key": "bb61d8f8fcada96a3e87fa06dcbe79b2d66d1bbf",
+  "name": "Gage Glupker",
+  "history": [
+    {
+      "team": "HHS",
+      "opp": "CRA",
+      "match": "mnp-21-1-HHS-CRA",
+      "week": "1",
+      "round": 1,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 260710,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "CRA",
+      "match": "mnp-21-1-HHS-CRA",
+      "week": "1",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 19127780,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "CRA",
+      "match": "mnp-21-1-HHS-CRA",
+      "week": "1",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 10535360,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "BAD",
+      "match": "mnp-21-10-BAD-HHS",
+      "week": "10",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 580374540,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "BAD",
+      "match": "mnp-21-10-BAD-HHS",
+      "week": "10",
+      "round": 3,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 123870,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "BAD",
+      "match": "mnp-21-10-BAD-HHS",
+      "week": "10",
+      "round": 4,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 304300,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "NLT",
+      "match": "mnp-21-11-KNR-NLT",
+      "week": "11",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 448780,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "NLT",
+      "match": "mnp-21-11-KNR-NLT",
+      "week": "11",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 49320170,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KNR",
+      "opp": "NLT",
+      "match": "mnp-21-11-KNR-NLT",
+      "week": "11",
+      "round": 4,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 5683080,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PYC",
+      "match": "mnp-21-13-KNR-PYC",
+      "week": "13",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 125010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PYC",
+      "match": "mnp-21-13-KNR-PYC",
+      "week": "13",
+      "round": 2,
+      "machine": "AS",
+      "division": 0,
+      "score": 141760,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PYC",
+      "match": "mnp-21-13-KNR-PYC",
+      "week": "13",
+      "round": 4,
+      "machine": "JB60",
+      "division": 0,
+      "score": 2692,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TTT",
+      "opp": "PBR",
+      "match": "mnp-21-2-PBR-TTT",
+      "week": "2",
+      "round": 1,
+      "machine": "BDK",
+      "division": 0,
+      "score": 6547550,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "PBR",
+      "match": "mnp-21-2-PBR-TTT",
+      "week": "2",
+      "round": 2,
+      "machine": "IronMan",
+      "division": 0,
+      "score": 9782910,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TTT",
+      "opp": "PBR",
+      "match": "mnp-21-2-PBR-TTT",
+      "week": "2",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 34759860,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "HHS",
+      "opp": "JMF",
+      "match": "mnp-21-5-HHS-JMF",
+      "week": "5",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 36164240,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "HHS",
+      "opp": "JMF",
+      "match": "mnp-21-5-HHS-JMF",
+      "week": "5",
+      "round": 2,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 84830,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "JMF",
+      "match": "mnp-21-5-HHS-JMF",
+      "week": "5",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 93420,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PYC",
+      "opp": "CDC",
+      "match": "mnp-21-6-PYC-CDC",
+      "week": "6",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 13659990,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "CDC",
+      "match": "mnp-21-6-PYC-CDC",
+      "week": "6",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 3317200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "CDC",
+      "match": "mnp-21-6-PYC-CDC",
+      "week": "6",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 16940170,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "KNR",
+      "opp": "ADB",
+      "match": "mnp-21-7-KNR-ADB",
+      "week": "7",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 7960560,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "KNR",
+      "opp": "ADB",
+      "match": "mnp-21-7-KNR-ADB",
+      "week": "7",
+      "round": 2,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 38299830,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "ADB",
+      "match": "mnp-21-7-KNR-ADB",
+      "week": "7",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 175995700,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "HHS",
+      "opp": "KNR",
+      "match": "mnp-21-8-HHS-KNR",
+      "week": "8",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2998906820,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "HHS",
+      "opp": "KNR",
+      "match": "mnp-21-8-HHS-KNR",
+      "week": "8",
+      "round": 2,
+      "machine": "Breakshot",
+      "division": 0,
+      "score": 6045400,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "HHS",
+      "opp": "KNR",
+      "match": "mnp-21-8-HHS-KNR",
+      "week": "8",
+      "round": 3,
+      "machine": "SEGAGOD",
+      "division": 0,
+      "score": 6802670,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.273",
+      "num_matches": 9,
+      "ppm": "2.222",
+      "points": {
+        "won": 20,
+        "of": 73
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

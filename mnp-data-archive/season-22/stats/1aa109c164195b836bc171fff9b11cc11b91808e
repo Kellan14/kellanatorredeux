@@ -1,0 +1,323 @@
+{
+  "key": "1aa109c164195b836bc171fff9b11cc11b91808e",
+  "name": "Richard Scott",
+  "history": [
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1298867110,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 49792220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "POW",
+      "match": "mnp-22-1-POW-DOG",
+      "week": "1",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 762908240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 1,
+      "machine": "WPT",
+      "division": 0,
+      "score": 12579560,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 4264040,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "SHK",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 3,
+      "machine": "WPT",
+      "division": 0,
+      "score": 19896840,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 1,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 16792490,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 30692040,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DIH",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 27531720,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 266358870,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 81502740,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "FBP",
+      "match": "mnp-22-3-FBP-DOG",
+      "week": "3",
+      "round": 3,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 9887700,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 1,
+      "machine": "Dragonfist",
+      "division": 0,
+      "score": 909020,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 47374940,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-22-4-DOG-DSV",
+      "week": "4",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 48748000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 1,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 14891560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 2,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 3877040,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-22-5-RTR-DOG",
+      "week": "5",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 27642280,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 1,
+      "machine": "DH",
+      "division": 0,
+      "score": 286129490,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 2,
+      "machine": "Cactus Canyon Remake",
+      "division": 0,
+      "score": 35155260,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "TWC",
+      "match": "mnp-22-7-TWC-DOG",
+      "week": "7",
+      "round": 3,
+      "machine": "CA",
+      "division": 0,
+      "score": 186640,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 1,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 245280,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 2,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 1671960,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSD",
+      "match": "mnp-22-8-DOG-SSD",
+      "week": "8",
+      "round": 3,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 858170,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.367",
+      "num_matches": 8,
+      "ppm": "3.125",
+      "points": {
+        "won": 25,
+        "of": 68
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

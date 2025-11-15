@@ -1,0 +1,359 @@
+{
+  "key": "4bab73c0602e525904b8d3e1e99952cc083bdf49",
+  "name": "William Scott Jordan",
+  "history": [
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 4958600,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 210421610,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 10014940,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 5959760,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 6123920,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 199990,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 10264240,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 20016000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 273010,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "CA",
+      "division": 0,
+      "score": 214890,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 297670,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 3,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 302410,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 36247360,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 536270,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 159700,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CPO",
+      "opp": "LAS",
+      "match": "mnp-22-5-CPO-LAS",
+      "week": "5",
+      "round": 1,
+      "machine": "Stars",
+      "division": 0,
+      "score": 126720,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CPO",
+      "opp": "LAS",
+      "match": "mnp-22-5-CPO-LAS",
+      "week": "5",
+      "round": 2,
+      "machine": "PHAR",
+      "division": 0,
+      "score": 689260,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "LAS",
+      "match": "mnp-22-5-CPO-LAS",
+      "week": "5",
+      "round": 4,
+      "machine": "DollyParton",
+      "division": 0,
+      "score": 119810,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SSS",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 16788230,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SSS",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 17436620,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SSS",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 3,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 5907530,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 1,
+      "machine": "Taxi",
+      "division": 0,
+      "score": 930670,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 2,
+      "machine": "BSD",
+      "division": 0,
+      "score": 54563320,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 3,
+      "machine": "Taxi",
+      "division": 0,
+      "score": 941140,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "TBT",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 20000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "TBT",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 3,
+      "machine": "Indy",
+      "division": 0,
+      "score": 68000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CPO",
+      "opp": "TBT",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 43000000,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.639",
+      "num_matches": 9,
+      "ppm": "5.222",
+      "points": {
+        "won": 47,
+        "of": 73.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

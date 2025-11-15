@@ -1,0 +1,287 @@
+{
+  "key": "f404eda16ed70611ea4dc67f98e97fff7dd21991",
+  "name": "Stephen Frontis ",
+  "history": [
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-22-10-ETB-PKT",
+      "week": "10",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 201292500,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-22-10-ETB-PKT",
+      "week": "10",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 83283690,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-22-10-ETB-PKT",
+      "week": "10",
+      "round": 4,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 127833190,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "ADB",
+      "match": "mnp-22-2-ETB-ADB",
+      "week": "2",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 28848910,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "ADB",
+      "match": "mnp-22-2-ETB-ADB",
+      "week": "2",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 11053650,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ETB",
+      "opp": "ADB",
+      "match": "mnp-22-2-ETB-ADB",
+      "week": "2",
+      "round": 4,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 71878110,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ETB",
+      "opp": "BAD",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 135540330,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "BAD",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 85219360,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ETB",
+      "opp": "BAD",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 129594080,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "SHK",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 130253710,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ETB",
+      "opp": "SHK",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 2,
+      "machine": "DP",
+      "division": 0,
+      "score": 84032620,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "SHK",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 212269820,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "ETB",
+      "opp": "SSD",
+      "match": "mnp-22-6-ETB-SSD",
+      "week": "6",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 56677570,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "SSD",
+      "match": "mnp-22-6-ETB-SSD",
+      "week": "6",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 80518530,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ETB",
+      "opp": "SSD",
+      "match": "mnp-22-6-ETB-SSD",
+      "week": "6",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 14636860,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "ETB",
+      "opp": "HHS",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 89879360,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ETB",
+      "opp": "HHS",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 19015220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "HHS",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 16942280,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "ETB",
+      "opp": "TTT",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 3823990,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "ETB",
+      "opp": "TTT",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 129023460,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "TTT",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 183475590,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.681",
+      "num_matches": 7,
+      "ppm": "5.642",
+      "points": {
+        "won": 39.5,
+        "of": 58
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

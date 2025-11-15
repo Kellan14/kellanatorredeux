@@ -1,0 +1,395 @@
+{
+  "key": "4bcb9035f1fed3ba72933a7734c251a10a816362",
+  "name": "Vincent Sperrazza",
+  "history": [
+    {
+      "team": "SSS",
+      "opp": "SHK",
+      "match": "mnp-22-1-SHK-SSS",
+      "week": "1",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 125780,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "SHK",
+      "match": "mnp-22-1-SHK-SSS",
+      "week": "1",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 142950,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "SHK",
+      "match": "mnp-22-1-SHK-SSS",
+      "week": "1",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 148674310,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "DIH",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 2,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 86140620,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "DIH",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 797881500,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "DIH",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 147072980,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "SSD",
+      "match": "mnp-22-2-SSS-SSD",
+      "week": "2",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 6655880,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "SSD",
+      "match": "mnp-22-2-SSS-SSD",
+      "week": "2",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 1596110,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSS",
+      "opp": "SSD",
+      "match": "mnp-22-2-SSS-SSD",
+      "week": "2",
+      "round": 4,
+      "machine": "GF",
+      "division": 0,
+      "score": 25756227,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TRL",
+      "match": "mnp-22-3-TRL-SSS",
+      "week": "3",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 15767290,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSS",
+      "opp": "TRL",
+      "match": "mnp-22-3-TRL-SSS",
+      "week": "3",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 217000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TRL",
+      "match": "mnp-22-3-TRL-SSS",
+      "week": "3",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 32631750,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "SSS",
+      "opp": "HHS",
+      "match": "mnp-22-4-SSS-HHS",
+      "week": "4",
+      "round": 2,
+      "machine": "FH",
+      "division": 0,
+      "score": 2989520,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "HHS",
+      "match": "mnp-22-4-SSS-HHS",
+      "week": "4",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 697978250,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "HHS",
+      "match": "mnp-22-4-SSS-HHS",
+      "week": "4",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 703713720,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 1,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 159000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 596825880,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 78717430,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "CPO",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 1,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 16131330,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSS",
+      "opp": "CPO",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 2,
+      "machine": "BOP",
+      "division": 0,
+      "score": 9270970,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "CPO",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 669302940,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSS",
+      "opp": "ADB",
+      "match": "mnp-22-7-ADB-SSS",
+      "week": "7",
+      "round": 1,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 66509740,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSS",
+      "opp": "ADB",
+      "match": "mnp-22-7-ADB-SSS",
+      "week": "7",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 400090,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "ADB",
+      "match": "mnp-22-7-ADB-SSS",
+      "week": "7",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 62855110,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "BAD",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 2,
+      "machine": "RR",
+      "division": 0,
+      "score": 1281265610,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "BAD",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 3,
+      "machine": "RR",
+      "division": 0,
+      "score": 857328990,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "BAD",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 4,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 456660,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "DTP",
+      "match": "mnp-22-9-DTP-SSS",
+      "week": "9",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 143731410,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSS",
+      "opp": "DTP",
+      "match": "mnp-22-9-DTP-SSS",
+      "week": "9",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 231553850,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSS",
+      "opp": "DTP",
+      "match": "mnp-22-9-DTP-SSS",
+      "week": "9",
+      "round": 4,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 130196360,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.698",
+      "num_matches": 10,
+      "ppm": "5.800",
+      "points": {
+        "won": 58,
+        "of": 83
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

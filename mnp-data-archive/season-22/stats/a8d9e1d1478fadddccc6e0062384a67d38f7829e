@@ -1,0 +1,359 @@
+{
+  "key": "a8d9e1d1478fadddccc6e0062384a67d38f7829e",
+  "name": "Mattie Stephens",
+  "history": [
+    {
+      "team": "SHK",
+      "opp": "SSS",
+      "match": "mnp-22-1-SHK-SSS",
+      "week": "1",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 6551230,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "SSS",
+      "match": "mnp-22-1-SHK-SSS",
+      "week": "1",
+      "round": 2,
+      "machine": "BOPP",
+      "division": 0,
+      "score": 46850,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "SSS",
+      "match": "mnp-22-1-SHK-SSS",
+      "week": "1",
+      "round": 4,
+      "machine": "Centaur",
+      "division": 0,
+      "score": 327270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "DOG",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 1,
+      "machine": "WPT",
+      "division": 0,
+      "score": 10694010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "DOG",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 15180230,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SHK",
+      "opp": "DOG",
+      "match": "mnp-22-10-DOG-SHK",
+      "week": "10",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 17742700,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SHK",
+      "opp": "NLT",
+      "match": "mnp-22-2-NLT-SHK",
+      "week": "2",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 3631080,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "NLT",
+      "match": "mnp-22-2-NLT-SHK",
+      "week": "2",
+      "round": 2,
+      "machine": "SpaceStation",
+      "division": 0,
+      "score": 383610,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SHK",
+      "opp": "NLT",
+      "match": "mnp-22-2-NLT-SHK",
+      "week": "2",
+      "round": 4,
+      "machine": "SpaceStation",
+      "division": 0,
+      "score": 544210,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 1,
+      "machine": "StellarWars",
+      "division": 0,
+      "score": 59800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 2,
+      "machine": "T2",
+      "division": 0,
+      "score": 11000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 4,
+      "machine": "StellarWars",
+      "division": 0,
+      "score": 44510,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "TBT",
+      "match": "mnp-22-4-TBT-SHK",
+      "week": "4",
+      "round": 1,
+      "machine": "Xenon",
+      "division": 0,
+      "score": 62420,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SHK",
+      "opp": "TBT",
+      "match": "mnp-22-4-TBT-SHK",
+      "week": "4",
+      "round": 2,
+      "machine": "Xenon",
+      "division": 0,
+      "score": 41390,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "TBT",
+      "match": "mnp-22-4-TBT-SHK",
+      "week": "4",
+      "round": 4,
+      "machine": "SNS",
+      "division": 0,
+      "score": 48090,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "ETB",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 4624120,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SHK",
+      "opp": "ETB",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 2,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 57000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "ETB",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 232492270,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "SHK",
+      "opp": "SCN",
+      "match": "mnp-22-6-SCN-SHK",
+      "week": "6",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 191350,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SHK",
+      "opp": "SCN",
+      "match": "mnp-22-6-SCN-SHK",
+      "week": "6",
+      "round": 2,
+      "machine": "Outer Space",
+      "division": 0,
+      "score": 43130,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SHK",
+      "opp": "SCN",
+      "match": "mnp-22-6-SCN-SHK",
+      "week": "6",
+      "round": 4,
+      "machine": "SoF",
+      "division": 0,
+      "score": 275110,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "SWL",
+      "match": "mnp-22-8-SWL-SHK",
+      "week": "8",
+      "round": 1,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 6402940,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "SWL",
+      "match": "mnp-22-8-SWL-SHK",
+      "week": "8",
+      "round": 2,
+      "machine": "TBL",
+      "division": 0,
+      "score": 3855570,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SHK",
+      "opp": "SWL",
+      "match": "mnp-22-8-SWL-SHK",
+      "week": "8",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 10745520,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SHK",
+      "opp": "LAS",
+      "match": "mnp-22-9-SHK-LAS",
+      "week": "9",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 134789940,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "LAS",
+      "match": "mnp-22-9-SHK-LAS",
+      "week": "9",
+      "round": 2,
+      "machine": "AS",
+      "division": 0,
+      "score": 131490,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "LAS",
+      "match": "mnp-22-9-SHK-LAS",
+      "week": "9",
+      "round": 4,
+      "machine": "Congo",
+      "division": 0,
+      "score": 111116840,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.201",
+      "num_matches": 9,
+      "ppm": "1.611",
+      "points": {
+        "won": 14.5,
+        "of": 72
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

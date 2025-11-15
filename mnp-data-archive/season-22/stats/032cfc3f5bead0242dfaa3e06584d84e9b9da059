@@ -1,0 +1,359 @@
+{
+  "key": "032cfc3f5bead0242dfaa3e06584d84e9b9da059",
+  "name": "Randy Huynh",
+  "history": [
+    {
+      "team": "RMS",
+      "opp": "DIH",
+      "match": "mnp-22-1-DIH-RMS",
+      "week": "1",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 637444630,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RMS",
+      "opp": "DIH",
+      "match": "mnp-22-1-DIH-RMS",
+      "week": "1",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 150000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "DIH",
+      "match": "mnp-22-1-DIH-RMS",
+      "week": "1",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 14413220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "DTP",
+      "match": "mnp-22-10-RMS-DTP",
+      "week": "10",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 12146140,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "DTP",
+      "match": "mnp-22-10-RMS-DTP",
+      "week": "10",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 2002240,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RMS",
+      "opp": "DTP",
+      "match": "mnp-22-10-RMS-DTP",
+      "week": "10",
+      "round": 4,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 32240330,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "FBP",
+      "match": "mnp-22-2-RMS-FBP",
+      "week": "2",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 5869260,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "FBP",
+      "match": "mnp-22-2-RMS-FBP",
+      "week": "2",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 23549480,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "FBP",
+      "match": "mnp-22-2-RMS-FBP",
+      "week": "2",
+      "round": 4,
+      "machine": "Fire",
+      "division": 0,
+      "score": 852240,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "RMS",
+      "opp": "DSV",
+      "match": "mnp-22-3-DSV-RMS",
+      "week": "3",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 25000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "DSV",
+      "match": "mnp-22-3-DSV-RMS",
+      "week": "3",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 18339920,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "DSV",
+      "match": "mnp-22-3-DSV-RMS",
+      "week": "3",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1746257360,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "RTR",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 6913340,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RMS",
+      "opp": "RTR",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 23920130,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "RTR",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 4,
+      "machine": "TOM",
+      "division": 0,
+      "score": 781019860,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "PKT",
+      "match": "mnp-22-5-PKT-RMS",
+      "week": "5",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2937197108,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "PKT",
+      "match": "mnp-22-5-PKT-RMS",
+      "week": "5",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 923782920,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RMS",
+      "opp": "PKT",
+      "match": "mnp-22-5-PKT-RMS",
+      "week": "5",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 9360170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "TWC",
+      "match": "mnp-22-6-RMS-TWC",
+      "week": "6",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 3991710360,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "TWC",
+      "match": "mnp-22-6-RMS-TWC",
+      "week": "6",
+      "round": 2,
+      "machine": "SEGAGOD",
+      "division": 0,
+      "score": 6476760,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "TWC",
+      "match": "mnp-22-6-RMS-TWC",
+      "week": "6",
+      "round": 4,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 12809220,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "SHK",
+      "match": "mnp-22-7-SHK-RMS",
+      "week": "7",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1215723400,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RMS",
+      "opp": "SHK",
+      "match": "mnp-22-7-SHK-RMS",
+      "week": "7",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1118342540,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "RMS",
+      "opp": "SHK",
+      "match": "mnp-22-7-SHK-RMS",
+      "week": "7",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 4182731370,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "PGN",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2041149570,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "PGN",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 310133730,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "PGN",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 4,
+      "machine": "WOZ",
+      "division": 0,
+      "score": 77702,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.606",
+      "num_matches": 9,
+      "ppm": "4.888",
+      "points": {
+        "won": 44,
+        "of": 72.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "key": "f9903e03d3a853701192079b7a904ad93c039f3d",
+  "name": "Todd Brown",
+  "history": [
+    {
+      "team": "NMC",
+      "opp": "NLT",
+      "match": "mnp-21-10-NLT-NMC",
+      "week": "10",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 637790,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "NLT",
+      "match": "mnp-21-10-NLT-NMC",
+      "week": "10",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 186580,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "DIH",
+      "match": "mnp-21-4-NMC-DIH",
+      "week": "4",
+      "round": 2,
+      "machine": "SC",
+      "division": 0,
+      "score": 241230,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DIH",
+      "match": "mnp-21-4-NMC-DIH",
+      "week": "4",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 32022290,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "DIH",
+      "match": "mnp-21-4-NMC-DIH",
+      "week": "4",
+      "round": 4,
+      "machine": "SC",
+      "division": 0,
+      "score": 198200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "POW",
+      "match": "mnp-21-5-POW-NMC",
+      "week": "5",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 27293330,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "POW",
+      "match": "mnp-21-5-POW-NMC",
+      "week": "5",
+      "round": 3,
+      "machine": "BigGuns",
+      "division": 0,
+      "score": 419140,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "POW",
+      "match": "mnp-21-5-POW-NMC",
+      "week": "5",
+      "round": 4,
+      "machine": "WOZ",
+      "division": 0,
+      "score": 10791,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "RTR",
+      "match": "mnp-21-8-RTR-NMC",
+      "week": "8",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 1403030,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "RTR",
+      "match": "mnp-21-8-RTR-NMC",
+      "week": "8",
+      "round": 2,
+      "machine": "BigGuns",
+      "division": 0,
+      "score": 1015510,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NMC",
+      "opp": "RTR",
+      "match": "mnp-21-8-RTR-NMC",
+      "week": "8",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 433030,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.416",
+      "num_matches": 4,
+      "ppm": "3.125",
+      "points": {
+        "won": 12.5,
+        "of": 30
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

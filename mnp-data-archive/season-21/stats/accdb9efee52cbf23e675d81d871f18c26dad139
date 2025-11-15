@@ -1,0 +1,323 @@
+{
+  "key": "accdb9efee52cbf23e675d81d871f18c26dad139",
+  "name": "Chloe LeGrow",
+  "history": [
+    {
+      "team": "BAD",
+      "opp": "HHS",
+      "match": "mnp-21-10-BAD-HHS",
+      "week": "10",
+      "round": 1,
+      "machine": "EBD",
+      "division": 0,
+      "score": 239680,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "HHS",
+      "match": "mnp-21-10-BAD-HHS",
+      "week": "10",
+      "round": 2,
+      "machine": "Elvira",
+      "division": 0,
+      "score": 1684080,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "HHS",
+      "match": "mnp-21-10-BAD-HHS",
+      "week": "10",
+      "round": 4,
+      "machine": "Elvira",
+      "division": 0,
+      "score": 501360,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "BAD",
+      "opp": "POW",
+      "match": "mnp-21-11-BAD-POW",
+      "week": "11",
+      "round": 1,
+      "machine": "Dragonfist",
+      "division": 0,
+      "score": 498080,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "POW",
+      "match": "mnp-21-11-BAD-POW",
+      "week": "11",
+      "round": 3,
+      "machine": "JB60",
+      "division": 0,
+      "score": 2872,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "POW",
+      "match": "mnp-21-11-BAD-POW",
+      "week": "11",
+      "round": 4,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 523820,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "KNR",
+      "match": "mnp-21-12-BAD-KNR",
+      "week": "12",
+      "round": 2,
+      "machine": "WOF",
+      "division": 0,
+      "score": 2885930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "KNR",
+      "match": "mnp-21-12-BAD-KNR",
+      "week": "12",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 551103050,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "KNR",
+      "match": "mnp-21-12-BAD-KNR",
+      "week": "12",
+      "round": 4,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 367720,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "BAD",
+      "opp": "KNR",
+      "match": "mnp-21-4-KNR-BAD",
+      "week": "4",
+      "round": 1,
+      "machine": "ElviraHouseOfHorrors",
+      "division": 0,
+      "score": 15701470,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "BAD",
+      "opp": "KNR",
+      "match": "mnp-21-4-KNR-BAD",
+      "week": "4",
+      "round": 3,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 209990,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "KNR",
+      "match": "mnp-21-4-KNR-BAD",
+      "week": "4",
+      "round": 4,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 51570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-21-6-PBR-BAD",
+      "week": "6",
+      "round": 1,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 455230,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-21-6-PBR-BAD",
+      "week": "6",
+      "round": 2,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 130070,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-21-6-PBR-BAD",
+      "week": "6",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 817560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "CRA",
+      "match": "mnp-21-7-CRA-BAD",
+      "week": "7",
+      "round": 2,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 76090,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "CRA",
+      "match": "mnp-21-7-CRA-BAD",
+      "week": "7",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 5564110,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "CRA",
+      "match": "mnp-21-7-CRA-BAD",
+      "week": "7",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 1516620,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "BAD",
+      "opp": "JMF",
+      "match": "mnp-21-8-BAD-JMF",
+      "week": "8",
+      "round": 2,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 42200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "JMF",
+      "match": "mnp-21-8-BAD-JMF",
+      "week": "8",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 3972020,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "BAD",
+      "opp": "JMF",
+      "match": "mnp-21-8-BAD-JMF",
+      "week": "8",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 175520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "CDC",
+      "match": "mnp-21-9-CDC-BAD",
+      "week": "9",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 1352000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "CDC",
+      "match": "mnp-21-9-CDC-BAD",
+      "week": "9",
+      "round": 2,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 388790,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "CDC",
+      "match": "mnp-21-9-CDC-BAD",
+      "week": "9",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 425830,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.412",
+      "num_matches": 8,
+      "ppm": "3.375",
+      "points": {
+        "won": 27,
+        "of": 65.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

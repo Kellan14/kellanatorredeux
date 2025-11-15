@@ -4,7 +4,7 @@ import path from 'path'
 
 export async function GET() {
   try {
-    const matchesDir = path.join(process.cwd(), 'public', 'mnp-data-archive', 'season-22', 'matches')
+    const matchesDir = path.join(process.cwd(), 'mnp-data-archive', 'season-22', 'matches')
     const files = fs.readdirSync(matchesDir)
 
     // Filter for TWC matches and parse their data

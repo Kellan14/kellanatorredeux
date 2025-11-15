@@ -1,0 +1,371 @@
+{
+  "key": "79eeabbb7131d20e3af025b91a02f877fa7f6530",
+  "name": "Curtis Granger",
+  "history": [
+    {
+      "team": "SHK",
+      "opp": "PYC",
+      "match": "mnp-21-1-SHK-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 97158790,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SHK",
+      "opp": "PYC",
+      "match": "mnp-21-1-SHK-PYC",
+      "week": "1",
+      "round": 2,
+      "machine": "FOO",
+      "division": 0,
+      "score": 88351010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "PYC",
+      "match": "mnp-21-1-SHK-PYC",
+      "week": "1",
+      "round": 3,
+      "machine": "DP",
+      "division": 0,
+      "score": 78249160,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "PYC",
+      "match": "mnp-21-1-SHK-PYC",
+      "week": "1",
+      "round": 4,
+      "machine": "FOO",
+      "division": 0,
+      "score": 100745970,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "JMF",
+      "match": "mnp-21-10-JMF-SHK",
+      "week": "10",
+      "round": 1,
+      "machine": "TBL",
+      "division": 0,
+      "score": 867660,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "JMF",
+      "match": "mnp-21-10-JMF-SHK",
+      "week": "10",
+      "round": 3,
+      "machine": "Metallica",
+      "division": 0,
+      "score": 606340,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "JMF",
+      "match": "mnp-21-10-JMF-SHK",
+      "week": "10",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 64295910,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SHK",
+      "opp": "KNR",
+      "match": "mnp-21-3-SHK-KNR",
+      "week": "3",
+      "round": 1,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 8000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SHK",
+      "opp": "KNR",
+      "match": "mnp-21-3-SHK-KNR",
+      "week": "3",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 36399960,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "KNR",
+      "match": "mnp-21-3-SHK-KNR",
+      "week": "3",
+      "round": 4,
+      "machine": "Tron",
+      "division": 0,
+      "score": 6000210,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SHK",
+      "opp": "ICB",
+      "match": "mnp-21-4-ICB-SHK",
+      "week": "4",
+      "round": 1,
+      "machine": "AIQ",
+      "division": 0,
+      "score": 6068760,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SHK",
+      "opp": "ICB",
+      "match": "mnp-21-4-ICB-SHK",
+      "week": "4",
+      "round": 3,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 134983220,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SHK",
+      "opp": "ICB",
+      "match": "mnp-21-4-ICB-SHK",
+      "week": "4",
+      "round": 4,
+      "machine": "F-14",
+      "division": 0,
+      "score": 440350,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "CRA",
+      "match": "mnp-21-5-SHK-CRA",
+      "week": "5",
+      "round": 1,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 38065310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "CRA",
+      "match": "mnp-21-5-SHK-CRA",
+      "week": "5",
+      "round": 2,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 175810,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "CRA",
+      "match": "mnp-21-5-SHK-CRA",
+      "week": "5",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 91535150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "RMS",
+      "match": "mnp-21-6-RMS-SHK",
+      "week": "6",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 15495690,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SHK",
+      "opp": "RMS",
+      "match": "mnp-21-6-RMS-SHK",
+      "week": "6",
+      "round": 2,
+      "machine": "TBL",
+      "division": 0,
+      "score": 2054010,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SHK",
+      "opp": "RMS",
+      "match": "mnp-21-6-RMS-SHK",
+      "week": "6",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 11357930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "PBR",
+      "match": "mnp-21-7-PBR-SHK",
+      "week": "7",
+      "round": 1,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 6011170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "PBR",
+      "match": "mnp-21-7-PBR-SHK",
+      "week": "7",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 797820,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "PBR",
+      "match": "mnp-21-7-PBR-SHK",
+      "week": "7",
+      "round": 4,
+      "machine": "TBL",
+      "division": 0,
+      "score": 1270740,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "DOG",
+      "match": "mnp-21-8-SHK-DOG",
+      "week": "8",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 51442430,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SHK",
+      "opp": "DOG",
+      "match": "mnp-21-8-SHK-DOG",
+      "week": "8",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 92443870,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "DOG",
+      "match": "mnp-21-8-SHK-DOG",
+      "week": "8",
+      "round": 4,
+      "machine": "HW",
+      "division": 0,
+      "score": 54602040,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "CPO",
+      "match": "mnp-21-9-SHK-CPO",
+      "week": "9",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2093008660,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SHK",
+      "opp": "CPO",
+      "match": "mnp-21-9-SHK-CPO",
+      "week": "9",
+      "round": 2,
+      "machine": "Monopoly",
+      "division": 0,
+      "score": 554570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "CPO",
+      "match": "mnp-21-9-SHK-CPO",
+      "week": "9",
+      "round": 4,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 2296760,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.353",
+      "num_matches": 9,
+      "ppm": "2.944",
+      "points": {
+        "won": 26.5,
+        "of": 75
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,287 @@
+{
+  "key": "90c5bc282adefdf513101a651c9e1b88d84cdfc0",
+  "name": "Matt Slater",
+  "history": [
+    {
+      "team": "SSS",
+      "opp": "SHK",
+      "match": "mnp-22-1-SHK-SSS",
+      "week": "1",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 131963810,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "SHK",
+      "match": "mnp-22-1-SHK-SSS",
+      "week": "1",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 8721100,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "SHK",
+      "match": "mnp-22-1-SHK-SSS",
+      "week": "1",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 94315840,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "DIH",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 179763680,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "DIH",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 206846790,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "DIH",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 71744530,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "HHS",
+      "match": "mnp-22-4-SSS-HHS",
+      "week": "4",
+      "round": 1,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 5366120,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSS",
+      "opp": "HHS",
+      "match": "mnp-22-4-SSS-HHS",
+      "week": "4",
+      "round": 2,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 86900,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SSS",
+      "opp": "HHS",
+      "match": "mnp-22-4-SSS-HHS",
+      "week": "4",
+      "round": 3,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 1499320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 361602280,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 130480320,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 44681610,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SSS",
+      "opp": "CPO",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 85428920,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "CPO",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 407320,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "CPO",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 4,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 12518780,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "ADB",
+      "match": "mnp-22-7-ADB-SSS",
+      "week": "7",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 336493690,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSS",
+      "opp": "ADB",
+      "match": "mnp-22-7-ADB-SSS",
+      "week": "7",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 143480660,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "ADB",
+      "match": "mnp-22-7-ADB-SSS",
+      "week": "7",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 186202510,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "BAD",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 1,
+      "machine": "Indy",
+      "division": 0,
+      "score": 30184550,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSS",
+      "opp": "BAD",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 2,
+      "machine": "EBD",
+      "division": 0,
+      "score": 190560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "BAD",
+      "match": "mnp-22-8-SSS-BAD",
+      "week": "8",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 94566530,
+      "points": 1,
+      "pops": "0.333"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.632",
+      "num_matches": 7,
+      "ppm": "5.285",
+      "points": {
+        "won": 37,
+        "of": 58.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

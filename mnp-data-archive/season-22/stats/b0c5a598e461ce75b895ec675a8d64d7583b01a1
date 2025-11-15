@@ -1,0 +1,143 @@
+{
+  "key": "b0c5a598e461ce75b895ec675a8d64d7583b01a1",
+  "name": "Corbin Sheffels",
+  "history": [
+    {
+      "team": "SCN",
+      "opp": "TWC",
+      "match": "mnp-22-10-SCN-TWC",
+      "week": "10",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 172057000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "TWC",
+      "match": "mnp-22-10-SCN-TWC",
+      "week": "10",
+      "round": 3,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 795620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "TWC",
+      "match": "mnp-22-10-SCN-TWC",
+      "week": "10",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 55000000,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 507602340,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 3,
+      "machine": "WCS",
+      "division": 0,
+      "score": 556000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-22-7-SSD-SCN",
+      "week": "7",
+      "round": 4,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 461000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-22-9-PKT-KNR",
+      "week": "9",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 155015790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-22-9-PKT-KNR",
+      "week": "9",
+      "round": 2,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 32050,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-22-9-PKT-KNR",
+      "week": "9",
+      "round": 4,
+      "machine": "Tron",
+      "division": 0,
+      "score": 4368670,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.367",
+      "num_matches": 3,
+      "ppm": "3.000",
+      "points": {
+        "won": 9,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

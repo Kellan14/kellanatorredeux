@@ -1,0 +1,431 @@
+{
+  "key": "39bc227c791448c6223f3a57c767d5cdca83ca3c",
+  "name": "Douglas Hansen",
+  "history": [
+    {
+      "team": "DSV",
+      "opp": "SSS",
+      "match": "mnp-21-1-DSV-SSS",
+      "week": "1",
+      "round": 1,
+      "machine": "FOO",
+      "division": 0,
+      "score": 134000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DSV",
+      "opp": "SSS",
+      "match": "mnp-21-1-DSV-SSS",
+      "week": "1",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 11366740,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DSV",
+      "opp": "SSS",
+      "match": "mnp-21-1-DSV-SSS",
+      "week": "1",
+      "round": 4,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 4908350,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "FBP",
+      "match": "mnp-21-10-DSV-FBP",
+      "week": "10",
+      "round": 2,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 39200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "FBP",
+      "match": "mnp-21-10-DSV-FBP",
+      "week": "10",
+      "round": 3,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 133070,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DSV",
+      "opp": "FBP",
+      "match": "mnp-21-10-DSV-FBP",
+      "week": "10",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 25526790,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "DTP",
+      "match": "mnp-21-11-DTP-DSV",
+      "week": "11",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 82000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "DTP",
+      "match": "mnp-21-11-DTP-DSV",
+      "week": "11",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 30000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "DTP",
+      "match": "mnp-21-11-DTP-DSV",
+      "week": "11",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 59351250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "LAS",
+      "match": "mnp-21-2-LAS-DSV",
+      "week": "2",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 3233710,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DSV",
+      "opp": "LAS",
+      "match": "mnp-21-2-LAS-DSV",
+      "week": "2",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 62254890,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "LAS",
+      "match": "mnp-21-2-LAS-DSV",
+      "week": "2",
+      "round": 4,
+      "machine": "FOO",
+      "division": 0,
+      "score": 6166350,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DSV",
+      "opp": "SWL",
+      "match": "mnp-21-3-DSV-SWL",
+      "week": "3",
+      "round": 1,
+      "machine": "Scooby Doo",
+      "division": 0,
+      "score": 16962910,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DSV",
+      "opp": "SWL",
+      "match": "mnp-21-3-DSV-SWL",
+      "week": "3",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 7873440,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "SWL",
+      "match": "mnp-21-3-DSV-SWL",
+      "week": "3",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 5581580,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DSV",
+      "opp": "ETB",
+      "match": "mnp-21-4-ETB-DSV",
+      "week": "4",
+      "round": 1,
+      "machine": "Tron",
+      "division": 0,
+      "score": 4791610,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "ETB",
+      "match": "mnp-21-4-ETB-DSV",
+      "week": "4",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 233353240,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "ETB",
+      "match": "mnp-21-4-ETB-DSV",
+      "week": "4",
+      "round": 4,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 133550070,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "SCN",
+      "match": "mnp-21-5-DSV-SCN",
+      "week": "5",
+      "round": 1,
+      "machine": "WOF",
+      "division": 0,
+      "score": 13953370,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DSV",
+      "opp": "SCN",
+      "match": "mnp-21-5-DSV-SCN",
+      "week": "5",
+      "round": 2,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 2902510,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "SCN",
+      "match": "mnp-21-5-DSV-SCN",
+      "week": "5",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 131313370,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DSV",
+      "opp": "NMC",
+      "match": "mnp-21-6-NMC-DSV",
+      "week": "6",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 95643390,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DSV",
+      "opp": "NMC",
+      "match": "mnp-21-6-NMC-DSV",
+      "week": "6",
+      "round": 2,
+      "machine": "Tron",
+      "division": 0,
+      "score": 11056460,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DSV",
+      "opp": "NMC",
+      "match": "mnp-21-6-NMC-DSV",
+      "week": "6",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 28754530,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DSV",
+      "opp": "TBT",
+      "match": "mnp-21-7-TBT-DSV",
+      "week": "7",
+      "round": 1,
+      "machine": "Tron",
+      "division": 0,
+      "score": 3829150,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DSV",
+      "opp": "TBT",
+      "match": "mnp-21-7-TBT-DSV",
+      "week": "7",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 50217690,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DSV",
+      "opp": "TBT",
+      "match": "mnp-21-7-TBT-DSV",
+      "week": "7",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 45901640,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DSV",
+      "opp": "NLT",
+      "match": "mnp-21-8-DSV-NLT",
+      "week": "8",
+      "round": 2,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 796423250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "NLT",
+      "match": "mnp-21-8-DSV-NLT",
+      "week": "8",
+      "round": 3,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 6389630,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DSV",
+      "opp": "NLT",
+      "match": "mnp-21-8-DSV-NLT",
+      "week": "8",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 779873840,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DSV",
+      "opp": "PGN",
+      "match": "mnp-21-9-PGN-DSV",
+      "week": "9",
+      "round": 1,
+      "machine": "EBD",
+      "division": 0,
+      "score": 945220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "PGN",
+      "match": "mnp-21-9-PGN-DSV",
+      "week": "9",
+      "round": 2,
+      "machine": "007",
+      "division": 0,
+      "score": 4049320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "PGN",
+      "match": "mnp-21-9-PGN-DSV",
+      "week": "9",
+      "round": 4,
+      "machine": "Tron",
+      "division": 0,
+      "score": 10093450,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.419",
+      "num_matches": 11,
+      "ppm": "3.454",
+      "points": {
+        "won": 38,
+        "of": 90.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

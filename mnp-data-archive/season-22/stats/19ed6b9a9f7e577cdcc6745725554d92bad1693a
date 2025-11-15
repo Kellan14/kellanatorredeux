@@ -1,0 +1,107 @@
+{
+  "key": "19ed6b9a9f7e577cdcc6745725554d92bad1693a",
+  "name": "Lars Rehe",
+  "history": [
+    {
+      "team": "SCN",
+      "opp": "CPO",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 1,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 11209080,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "CPO",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 3,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 17972308,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "CPO",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 195040,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SHK",
+      "opp": "ETB",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 2,
+      "machine": "VEN",
+      "division": 0,
+      "score": 109205360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "ETB",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 3,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 10970360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "ETB",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 26903880,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.454",
+      "num_matches": 2,
+      "ppm": "3.750",
+      "points": {
+        "won": 7.5,
+        "of": 16.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

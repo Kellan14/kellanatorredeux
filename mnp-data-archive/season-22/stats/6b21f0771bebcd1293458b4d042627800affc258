@@ -1,0 +1,323 @@
+{
+  "key": "6b21f0771bebcd1293458b4d042627800affc258",
+  "name": "Greg balducci",
+  "history": [
+    {
+      "team": "TTT",
+      "opp": "SCN",
+      "match": "mnp-22-1-TTT-SCN",
+      "week": "1",
+      "round": 1,
+      "machine": "TWD",
+      "division": 0,
+      "score": 11255530,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "SCN",
+      "match": "mnp-22-1-TTT-SCN",
+      "week": "1",
+      "round": 2,
+      "machine": "SC",
+      "division": 0,
+      "score": 704690,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "SCN",
+      "match": "mnp-22-1-TTT-SCN",
+      "week": "1",
+      "round": 4,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 4492950,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "CRA",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 27937860,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "CRA",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2976291870,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "CRA",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 13113130,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TTT",
+      "opp": "SWL",
+      "match": "mnp-22-3-TTT-SWL",
+      "week": "3",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1636597440,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "SWL",
+      "match": "mnp-22-3-TTT-SWL",
+      "week": "3",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 48465880,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "SWL",
+      "match": "mnp-22-3-TTT-SWL",
+      "week": "3",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 69832490,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "LAS",
+      "match": "mnp-22-4-LAS-TTT",
+      "week": "4",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1388009960,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "TTT",
+      "opp": "LAS",
+      "match": "mnp-22-4-LAS-TTT",
+      "week": "4",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 2611030,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "LAS",
+      "match": "mnp-22-4-LAS-TTT",
+      "week": "4",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1589400870,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "SSS",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 28206660,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "SSS",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 3,
+      "machine": "FH",
+      "division": 0,
+      "score": 1807040,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "SSS",
+      "match": "mnp-22-5-TTT-SSS",
+      "week": "5",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 67887330,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "NLT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 1,
+      "machine": "VEN",
+      "division": 0,
+      "score": 25254740,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NLT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 672352600,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "NLT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 5742780,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NMC",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 60358220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NMC",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 61124420,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TTT",
+      "opp": "NMC",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 4,
+      "machine": "BigGuns",
+      "division": 0,
+      "score": 292130,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "TBT",
+      "match": "mnp-22-8-TBT-TTT",
+      "week": "8",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 40588610,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "TBT",
+      "match": "mnp-22-8-TBT-TTT",
+      "week": "8",
+      "round": 2,
+      "machine": "VEN",
+      "division": 0,
+      "score": 28841980,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "TBT",
+      "match": "mnp-22-8-TBT-TTT",
+      "week": "8",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 7580390,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.310",
+      "num_matches": 8,
+      "ppm": "2.500",
+      "points": {
+        "won": 20,
+        "of": 64.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

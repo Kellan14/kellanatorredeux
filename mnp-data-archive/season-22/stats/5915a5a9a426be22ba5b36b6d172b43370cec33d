@@ -1,0 +1,359 @@
+{
+  "key": "5915a5a9a426be22ba5b36b6d172b43370cec33d",
+  "name": "Michael Fricke",
+  "history": [
+    {
+      "team": "LAS",
+      "opp": "SSD",
+      "match": "mnp-22-1-SSD-LAS",
+      "week": "1",
+      "round": 2,
+      "machine": "GLizard",
+      "division": 0,
+      "score": 202150,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "SSD",
+      "match": "mnp-22-1-SSD-LAS",
+      "week": "1",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 41000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "LAS",
+      "opp": "SSD",
+      "match": "mnp-22-1-SSD-LAS",
+      "week": "1",
+      "round": 4,
+      "machine": "JB60",
+      "division": 0,
+      "score": 2038,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "LAS",
+      "opp": "POW",
+      "match": "mnp-22-10-LAS-POW",
+      "week": "10",
+      "round": 1,
+      "machine": "JB60",
+      "division": 0,
+      "score": 4633,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "LAS",
+      "opp": "POW",
+      "match": "mnp-22-10-LAS-POW",
+      "week": "10",
+      "round": 2,
+      "machine": "JB60",
+      "division": 0,
+      "score": 3002,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "LAS",
+      "opp": "POW",
+      "match": "mnp-22-10-LAS-POW",
+      "week": "10",
+      "round": 3,
+      "machine": "GLizard",
+      "division": 0,
+      "score": 703730,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "TRL",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 135163910,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "TRL",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 2,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 26786990,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "TRL",
+      "match": "mnp-22-2-LAS-TRL",
+      "week": "2",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 63000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "HHS",
+      "match": "mnp-22-3-HHS-LAS",
+      "week": "3",
+      "round": 2,
+      "machine": "GLizard",
+      "division": 0,
+      "score": 297940,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "LAS",
+      "opp": "HHS",
+      "match": "mnp-22-3-HHS-LAS",
+      "week": "3",
+      "round": 3,
+      "machine": "PHAR",
+      "division": 0,
+      "score": 640770,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "HHS",
+      "match": "mnp-22-3-HHS-LAS",
+      "week": "3",
+      "round": 4,
+      "machine": "JB60",
+      "division": 0,
+      "score": 2279,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "TTT",
+      "match": "mnp-22-4-LAS-TTT",
+      "week": "4",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 85419690,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "TTT",
+      "match": "mnp-22-4-LAS-TTT",
+      "week": "4",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 8523000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "TTT",
+      "match": "mnp-22-4-LAS-TTT",
+      "week": "4",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 945853590,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "LAS",
+      "opp": "CPO",
+      "match": "mnp-22-5-CPO-LAS",
+      "week": "5",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 946065500,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "LAS",
+      "opp": "CPO",
+      "match": "mnp-22-5-CPO-LAS",
+      "week": "5",
+      "round": 2,
+      "machine": "PHAR",
+      "division": 0,
+      "score": 147120,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "CPO",
+      "match": "mnp-22-5-CPO-LAS",
+      "week": "5",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1850546010,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "LAS",
+      "opp": "BAD",
+      "match": "mnp-22-7-BAD-LAS",
+      "week": "7",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 46591290,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "BAD",
+      "match": "mnp-22-7-BAD-LAS",
+      "week": "7",
+      "round": 2,
+      "machine": "PHAR",
+      "division": 0,
+      "score": 165460,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "LAS",
+      "opp": "BAD",
+      "match": "mnp-22-7-BAD-LAS",
+      "week": "7",
+      "round": 4,
+      "machine": "Congo",
+      "division": 0,
+      "score": 250000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "DTP",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 301528680,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "DTP",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 3,
+      "machine": "WCS",
+      "division": 0,
+      "score": 40552000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "DTP",
+      "match": "mnp-22-8-LAS-DTP",
+      "week": "8",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 10748580,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "LAS",
+      "opp": "SHK",
+      "match": "mnp-22-9-SHK-LAS",
+      "week": "9",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 359200740,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "SHK",
+      "match": "mnp-22-9-SHK-LAS",
+      "week": "9",
+      "round": 2,
+      "machine": "GLizard",
+      "division": 0,
+      "score": 435550,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "LAS",
+      "opp": "SHK",
+      "match": "mnp-22-9-SHK-LAS",
+      "week": "9",
+      "round": 3,
+      "machine": "PHAR",
+      "division": 0,
+      "score": 140080,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.469",
+      "num_matches": 9,
+      "ppm": "3.888",
+      "points": {
+        "won": 35,
+        "of": 74.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

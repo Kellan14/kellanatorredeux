@@ -1,0 +1,215 @@
+{
+  "key": "84c806877749da9b10c0581ec1677ea5809e2e27",
+  "name": "Brian Baskoff",
+  "history": [
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 1,
+      "machine": "Supersonic",
+      "division": 0,
+      "score": 228120,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 109000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 147540,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 2,
+      "machine": "StellarWars",
+      "division": 0,
+      "score": 155460,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 63442580,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-22-3-SHK-NMC",
+      "week": "3",
+      "round": 4,
+      "machine": "StellarWars",
+      "division": 0,
+      "score": 118590,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 2,
+      "machine": "Indy",
+      "division": 0,
+      "score": 35327070,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 3,
+      "machine": "Indy",
+      "division": 0,
+      "score": 12158440,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 4,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 119250,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 1,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 116150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 3,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 2218830,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1307052440,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 2,
+      "machine": "StellarWars",
+      "division": 0,
+      "score": 141950,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 11080370,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 4,
+      "machine": "StellarWars",
+      "division": 0,
+      "score": 70520,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.373",
+      "num_matches": 5,
+      "ppm": "3.100",
+      "points": {
+        "won": 15.5,
+        "of": 41.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

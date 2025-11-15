@@ -1,0 +1,323 @@
+{
+  "key": "82784da0837881b3cc555a4978fe5575cfac2d25",
+  "name": "Michelle Loprieno",
+  "history": [
+    {
+      "team": "RMS",
+      "opp": "FBP",
+      "match": "mnp-22-2-RMS-FBP",
+      "week": "2",
+      "round": 1,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 133540,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RMS",
+      "opp": "FBP",
+      "match": "mnp-22-2-RMS-FBP",
+      "week": "2",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 43175810,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "FBP",
+      "match": "mnp-22-2-RMS-FBP",
+      "week": "2",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 34725970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "DSV",
+      "match": "mnp-22-3-DSV-RMS",
+      "week": "3",
+      "round": 1,
+      "machine": "MarsTrek",
+      "division": 0,
+      "score": 196700,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "DSV",
+      "match": "mnp-22-3-DSV-RMS",
+      "week": "3",
+      "round": 2,
+      "machine": "LAB",
+      "division": 0,
+      "score": 4591160,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RMS",
+      "opp": "DSV",
+      "match": "mnp-22-3-DSV-RMS",
+      "week": "3",
+      "round": 4,
+      "machine": "RR",
+      "division": 0,
+      "score": 124340710,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RMS",
+      "opp": "RTR",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 8781610,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RMS",
+      "opp": "RTR",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 40060890,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "RTR",
+      "match": "mnp-22-4-RMS-RTR",
+      "week": "4",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 1734090,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "PKT",
+      "match": "mnp-22-5-PKT-RMS",
+      "week": "5",
+      "round": 1,
+      "machine": "RR",
+      "division": 0,
+      "score": 51750840,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "RMS",
+      "opp": "PKT",
+      "match": "mnp-22-5-PKT-RMS",
+      "week": "5",
+      "round": 2,
+      "machine": "MarsTrek",
+      "division": 0,
+      "score": 386700,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RMS",
+      "opp": "PKT",
+      "match": "mnp-22-5-PKT-RMS",
+      "week": "5",
+      "round": 4,
+      "machine": "MarsTrek",
+      "division": 0,
+      "score": 293200,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RMS",
+      "opp": "TWC",
+      "match": "mnp-22-6-RMS-TWC",
+      "week": "6",
+      "round": 1,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 107790,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "RMS",
+      "opp": "TWC",
+      "match": "mnp-22-6-RMS-TWC",
+      "week": "6",
+      "round": 3,
+      "machine": "SC",
+      "division": 0,
+      "score": 251550,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "TWC",
+      "match": "mnp-22-6-RMS-TWC",
+      "week": "6",
+      "round": 4,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 32408690,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RMS",
+      "opp": "SHK",
+      "match": "mnp-22-7-SHK-RMS",
+      "week": "7",
+      "round": 1,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 58510,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RMS",
+      "opp": "SHK",
+      "match": "mnp-22-7-SHK-RMS",
+      "week": "7",
+      "round": 2,
+      "machine": "LAB",
+      "division": 0,
+      "score": 1710790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "SHK",
+      "match": "mnp-22-7-SHK-RMS",
+      "week": "7",
+      "round": 4,
+      "machine": "RR",
+      "division": 0,
+      "score": 113839710,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RMS",
+      "opp": "PGN",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 4160150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "PGN",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 135930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "PGN",
+      "match": "mnp-22-8-RMS-PGN",
+      "week": "8",
+      "round": 4,
+      "machine": "WOZ",
+      "division": 0,
+      "score": 15772,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "RMS",
+      "opp": "POW",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 1,
+      "machine": "LAB",
+      "division": 0,
+      "score": 2679910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "POW",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 3,
+      "machine": "LAB",
+      "division": 0,
+      "score": 1778600,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RMS",
+      "opp": "POW",
+      "match": "mnp-22-9-POW-RMS",
+      "week": "9",
+      "round": 4,
+      "machine": "RR",
+      "division": 0,
+      "score": 72000000,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.242",
+      "num_matches": 8,
+      "ppm": "1.937",
+      "points": {
+        "won": 15.5,
+        "of": 64
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

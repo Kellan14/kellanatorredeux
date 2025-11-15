@@ -1,0 +1,359 @@
+{
+  "key": "44ff2c1d706b41518d461bac6da2510fae9f6e2e",
+  "name": "Andrew Furdell",
+  "history": [
+    {
+      "team": "PKT",
+      "opp": "CRA",
+      "match": "mnp-22-1-PKT-CRA",
+      "week": "1",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 18606980,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "CRA",
+      "match": "mnp-22-1-PKT-CRA",
+      "week": "1",
+      "round": 2,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 21495930,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PKT",
+      "opp": "CRA",
+      "match": "mnp-22-1-PKT-CRA",
+      "week": "1",
+      "round": 4,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 11879270,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PKT",
+      "opp": "ETB",
+      "match": "mnp-22-10-ETB-PKT",
+      "week": "10",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 1854280,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "ETB",
+      "match": "mnp-22-10-ETB-PKT",
+      "week": "10",
+      "round": 2,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 716326750,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PKT",
+      "opp": "ETB",
+      "match": "mnp-22-10-ETB-PKT",
+      "week": "10",
+      "round": 4,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 888777130,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "ICB",
+      "match": "mnp-22-2-ICB-PKT",
+      "week": "2",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 21198380,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PKT",
+      "opp": "ICB",
+      "match": "mnp-22-2-ICB-PKT",
+      "week": "2",
+      "round": 3,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 710796320,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "ICB",
+      "match": "mnp-22-2-ICB-PKT",
+      "week": "2",
+      "round": 4,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 849239970,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "PBR",
+      "match": "mnp-22-3-PKT-PBR",
+      "week": "3",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 66054600,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PKT",
+      "opp": "PBR",
+      "match": "mnp-22-3-PKT-PBR",
+      "week": "3",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 123545890,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PKT",
+      "opp": "PBR",
+      "match": "mnp-22-3-PKT-PBR",
+      "week": "3",
+      "round": 4,
+      "machine": "Tron",
+      "division": 0,
+      "score": 21840620,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "JMF",
+      "match": "mnp-22-4-JMF-PKT",
+      "week": "4",
+      "round": 1,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 351095740,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "JMF",
+      "match": "mnp-22-4-JMF-PKT",
+      "week": "4",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 31202700,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "JMF",
+      "match": "mnp-22-4-JMF-PKT",
+      "week": "4",
+      "round": 4,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 387742920,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "RMS",
+      "match": "mnp-22-5-PKT-RMS",
+      "week": "5",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 74373580,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PKT",
+      "opp": "RMS",
+      "match": "mnp-22-5-PKT-RMS",
+      "week": "5",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 29138760,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PKT",
+      "opp": "RMS",
+      "match": "mnp-22-5-PKT-RMS",
+      "week": "5",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 20729170,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "DOG",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 1,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 1535009600,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "DOG",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 2,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 1507825430,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "DOG",
+      "match": "mnp-22-6-DOG-PKT",
+      "week": "6",
+      "round": 4,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 334860180,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "PYC",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 563160,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "PYC",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 3,
+      "machine": "JB60",
+      "division": 0,
+      "score": 8301,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "PYC",
+      "match": "mnp-22-7-PKT-PYC",
+      "week": "7",
+      "round": 4,
+      "machine": "Metallica",
+      "division": 0,
+      "score": 27566180,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-22-9-PKT-KNR",
+      "week": "9",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 187863360,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-22-9-PKT-KNR",
+      "week": "9",
+      "round": 3,
+      "machine": "SEGAGOD",
+      "division": 0,
+      "score": 40654100,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-22-9-PKT-KNR",
+      "week": "9",
+      "round": 4,
+      "machine": "WOF",
+      "division": 0,
+      "score": 2284650,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.772",
+      "num_matches": 9,
+      "ppm": "6.222",
+      "points": {
+        "won": 56,
+        "of": 72.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

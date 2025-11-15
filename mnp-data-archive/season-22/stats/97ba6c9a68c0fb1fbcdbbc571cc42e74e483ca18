@@ -1,0 +1,395 @@
+{
+  "key": "97ba6c9a68c0fb1fbcdbbc571cc42e74e483ca18",
+  "name": "Sam Stiles",
+  "history": [
+    {
+      "team": "JMF",
+      "opp": "FBP",
+      "match": "mnp-22-1-FBP-JMF",
+      "week": "1",
+      "round": 2,
+      "machine": "Supersonic",
+      "division": 0,
+      "score": 69590,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "JMF",
+      "opp": "FBP",
+      "match": "mnp-22-1-FBP-JMF",
+      "week": "1",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 83793800,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "FBP",
+      "match": "mnp-22-1-FBP-JMF",
+      "week": "1",
+      "round": 4,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 346300,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "JMF",
+      "opp": "BAD",
+      "match": "mnp-22-10-JMF-BAD",
+      "week": "10",
+      "round": 1,
+      "machine": "EBD",
+      "division": 0,
+      "score": 647530,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "JMF",
+      "opp": "BAD",
+      "match": "mnp-22-10-JMF-BAD",
+      "week": "10",
+      "round": 2,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 20630990,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "BAD",
+      "match": "mnp-22-10-JMF-BAD",
+      "week": "10",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 1211000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "JMF",
+      "opp": "DSV",
+      "match": "mnp-22-2-JMF-DSV",
+      "week": "2",
+      "round": 1,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 450380,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "JMF",
+      "opp": "DSV",
+      "match": "mnp-22-2-JMF-DSV",
+      "week": "2",
+      "round": 2,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 598320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "DSV",
+      "match": "mnp-22-2-JMF-DSV",
+      "week": "2",
+      "round": 3,
+      "machine": "EBD",
+      "division": 0,
+      "score": 321000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "RTR",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 1,
+      "machine": "SS",
+      "division": 0,
+      "score": 4361210,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "RTR",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 107980470,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "RTR",
+      "match": "mnp-22-3-RTR-JMF",
+      "week": "3",
+      "round": 4,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 390350,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "JMF",
+      "opp": "PKT",
+      "match": "mnp-22-4-JMF-PKT",
+      "week": "4",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 34528000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "PKT",
+      "match": "mnp-22-4-JMF-PKT",
+      "week": "4",
+      "round": 3,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 69247910,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "JMF",
+      "opp": "PKT",
+      "match": "mnp-22-4-JMF-PKT",
+      "week": "4",
+      "round": 4,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 385355670,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "TWC",
+      "match": "mnp-22-5-TWC-JMF",
+      "week": "5",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 32897240,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "TWC",
+      "match": "mnp-22-5-TWC-JMF",
+      "week": "5",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 3780392320,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "TWC",
+      "match": "mnp-22-5-TWC-JMF",
+      "week": "5",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1762647200,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "DTP",
+      "match": "mnp-22-6-JMF-DTP",
+      "week": "6",
+      "round": 1,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 255710,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "DTP",
+      "match": "mnp-22-6-JMF-DTP",
+      "week": "6",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 4939863810,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "JMF",
+      "opp": "DTP",
+      "match": "mnp-22-6-JMF-DTP",
+      "week": "6",
+      "round": 4,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 83770,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "JMF",
+      "opp": "PGN",
+      "match": "mnp-22-7-PGN-JMF",
+      "week": "7",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 3012688590,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "PGN",
+      "match": "mnp-22-7-PGN-JMF",
+      "week": "7",
+      "round": 3,
+      "machine": "FOO",
+      "division": 0,
+      "score": 7834270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "PGN",
+      "match": "mnp-22-7-PGN-JMF",
+      "week": "7",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1198012370,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "JMF",
+      "opp": "POW",
+      "match": "mnp-22-8-JMF-POW",
+      "week": "8",
+      "round": 1,
+      "machine": "Congo",
+      "division": 0,
+      "score": 291358020,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "POW",
+      "match": "mnp-22-8-JMF-POW",
+      "week": "8",
+      "round": 3,
+      "machine": "BSD",
+      "division": 0,
+      "score": 13541330,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "POW",
+      "match": "mnp-22-8-JMF-POW",
+      "week": "8",
+      "round": 4,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 19314260,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "DIH",
+      "match": "mnp-22-9-DIH-JMF",
+      "week": "9",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2582332370,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "DIH",
+      "match": "mnp-22-9-DIH-JMF",
+      "week": "9",
+      "round": 3,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 106270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "DIH",
+      "match": "mnp-22-9-DIH-JMF",
+      "week": "9",
+      "round": 4,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 61256640,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.469",
+      "num_matches": 10,
+      "ppm": "3.850",
+      "points": {
+        "won": 38.5,
+        "of": 82
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

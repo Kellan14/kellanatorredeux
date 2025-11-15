@@ -1,0 +1,143 @@
+{
+  "key": "9e94bcf3e818de7f914e53c33f577f991e4f0e20",
+  "name": "Marisa Figueroa",
+  "history": [
+    {
+      "team": "ICB",
+      "opp": "PYC",
+      "match": "mnp-21-10-PYC-ICB",
+      "week": "10",
+      "round": 2,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 389640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PYC",
+      "match": "mnp-21-10-PYC-ICB",
+      "week": "10",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 2791010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PYC",
+      "match": "mnp-21-10-PYC-ICB",
+      "week": "10",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 23890790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "SSD",
+      "match": "mnp-21-5-SSD-ICB",
+      "week": "5",
+      "round": 1,
+      "machine": "Munsters",
+      "division": 0,
+      "score": 4929780,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "ICB",
+      "opp": "SSD",
+      "match": "mnp-21-5-SSD-ICB",
+      "week": "5",
+      "round": 2,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 616180,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "SSD",
+      "match": "mnp-21-5-SSD-ICB",
+      "week": "5",
+      "round": 3,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 10212620,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "ADB",
+      "match": "mnp-21-6-ICB-ADB",
+      "week": "6",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 19804570,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "ICB",
+      "opp": "ADB",
+      "match": "mnp-21-6-ICB-ADB",
+      "week": "6",
+      "round": 2,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 349430,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "ADB",
+      "match": "mnp-21-6-ICB-ADB",
+      "week": "6",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 2754210,
+      "points": 1.5,
+      "pops": "0.600"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.260",
+      "num_matches": 3,
+      "ppm": "2.166",
+      "points": {
+        "won": 6.5,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

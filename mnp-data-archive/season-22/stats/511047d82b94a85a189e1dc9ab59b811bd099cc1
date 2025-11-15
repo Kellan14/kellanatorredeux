@@ -1,0 +1,359 @@
+{
+  "key": "511047d82b94a85a189e1dc9ab59b811bd099cc1",
+  "name": "Ashley Weaver",
+  "history": [
+    {
+      "team": "SWL",
+      "opp": "TRL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 1,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 614694330,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SWL",
+      "opp": "TRL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 536495720,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "TRL",
+      "match": "mnp-22-1-TRL-SWL",
+      "week": "1",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 289766590,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "PGN",
+      "match": "mnp-22-10-SWL-PGN",
+      "week": "10",
+      "round": 1,
+      "machine": "FT",
+      "division": 0,
+      "score": 105823770,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SWL",
+      "opp": "PGN",
+      "match": "mnp-22-10-SWL-PGN",
+      "week": "10",
+      "round": 3,
+      "machine": "FOO",
+      "division": 0,
+      "score": 68485040,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "PGN",
+      "match": "mnp-22-10-SWL-PGN",
+      "week": "10",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 56560330,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "TTT",
+      "match": "mnp-22-3-TTT-SWL",
+      "week": "3",
+      "round": 1,
+      "machine": "FOO",
+      "division": 0,
+      "score": 86764100,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "TTT",
+      "match": "mnp-22-3-TTT-SWL",
+      "week": "3",
+      "round": 3,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 7351400,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SWL",
+      "opp": "TTT",
+      "match": "mnp-22-3-TTT-SWL",
+      "week": "3",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 269819270,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "CPO",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 152700040,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "CPO",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 3,
+      "machine": "BM66",
+      "division": 0,
+      "score": 1039389440,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "CPO",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 4,
+      "machine": "Jurassic",
+      "division": 0,
+      "score": 290261380,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "ADB",
+      "match": "mnp-22-5-ADB-SWL",
+      "week": "5",
+      "round": 1,
+      "machine": "FOO",
+      "division": 0,
+      "score": 19628110,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SWL",
+      "opp": "ADB",
+      "match": "mnp-22-5-ADB-SWL",
+      "week": "5",
+      "round": 3,
+      "machine": "FOO",
+      "division": 0,
+      "score": 267504490,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SWL",
+      "opp": "ADB",
+      "match": "mnp-22-5-ADB-SWL",
+      "week": "5",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 69183150,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-22-6-SWL-BAD",
+      "week": "6",
+      "round": 1,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 220020,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-22-6-SWL-BAD",
+      "week": "6",
+      "round": 2,
+      "machine": "FOO",
+      "division": 0,
+      "score": 137643090,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-22-6-SWL-BAD",
+      "week": "6",
+      "round": 4,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 144750,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "DTP",
+      "match": "mnp-22-7-DTP-SWL",
+      "week": "7",
+      "round": 1,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 57680920,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SWL",
+      "opp": "DTP",
+      "match": "mnp-22-7-DTP-SWL",
+      "week": "7",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 120219990,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "DTP",
+      "match": "mnp-22-7-DTP-SWL",
+      "week": "7",
+      "round": 4,
+      "machine": "KONG",
+      "division": 0,
+      "score": 162536450,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SWL",
+      "opp": "SHK",
+      "match": "mnp-22-8-SWL-SHK",
+      "week": "8",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 79861730,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "SHK",
+      "match": "mnp-22-8-SWL-SHK",
+      "week": "8",
+      "round": 2,
+      "machine": "RollerGames",
+      "division": 0,
+      "score": 1155040,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "SHK",
+      "match": "mnp-22-8-SWL-SHK",
+      "week": "8",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 29582070,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SWL",
+      "opp": "SSD",
+      "match": "mnp-22-9-SSD-SWL",
+      "week": "9",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 54337550,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SWL",
+      "opp": "SSD",
+      "match": "mnp-22-9-SSD-SWL",
+      "week": "9",
+      "round": 3,
+      "machine": "FOO",
+      "division": 0,
+      "score": 589139310,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "SSD",
+      "match": "mnp-22-9-SSD-SWL",
+      "week": "9",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 328103610,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.744",
+      "num_matches": 9,
+      "ppm": "6.000",
+      "points": {
+        "won": 54,
+        "of": 72.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

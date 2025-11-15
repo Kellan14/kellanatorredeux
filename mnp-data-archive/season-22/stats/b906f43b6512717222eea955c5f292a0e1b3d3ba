@@ -1,0 +1,323 @@
+{
+  "key": "b906f43b6512717222eea955c5f292a0e1b3d3ba",
+  "name": "Owen Weyland",
+  "history": [
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 1,
+      "machine": "Rush",
+      "division": 0,
+      "score": 1104230,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 2,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 22477240,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CPO",
+      "opp": "ETB",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 68231180,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 51113490,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 3,
+      "machine": "Jurassic",
+      "division": 0,
+      "score": 88844940,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ICB",
+      "match": "mnp-22-10-ICB-CPO",
+      "week": "10",
+      "round": 4,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 101944270,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 1,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 4306280,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 405000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "SCN",
+      "match": "mnp-22-2-SCN-CPO",
+      "week": "2",
+      "round": 4,
+      "machine": "Jurassic",
+      "division": 0,
+      "score": 101556000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "CA",
+      "division": 0,
+      "score": 162190,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 2,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 9687570,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "CRA",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 1279197550,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 1,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 10441940,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 243870,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "SWL",
+      "match": "mnp-22-4-SWL-CPO",
+      "week": "4",
+      "round": 4,
+      "machine": "Jurassic",
+      "division": 0,
+      "score": 139947620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SSS",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 1,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 25123890,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SSS",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 2,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 209948960,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SSS",
+      "match": "mnp-22-6-SSS-CPO",
+      "week": "6",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 3227303370,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 1,
+      "machine": "TWD",
+      "division": 0,
+      "score": 22319190,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 83659990,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 4,
+      "machine": "DrWho",
+      "division": 0,
+      "score": 29290730,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NMC",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 1,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 1722728740,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NMC",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 3,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 1500000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NMC",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 4,
+      "machine": "BM66",
+      "division": 0,
+      "score": 236238290,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.523",
+      "num_matches": 8,
+      "ppm": "4.187",
+      "points": {
+        "won": 33.5,
+        "of": 64
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

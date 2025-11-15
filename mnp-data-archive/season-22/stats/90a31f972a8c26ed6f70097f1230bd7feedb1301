@@ -1,0 +1,359 @@
+{
+  "key": "90a31f972a8c26ed6f70097f1230bd7feedb1301",
+  "name": "John McConnell",
+  "history": [
+    {
+      "team": "ETB",
+      "opp": "CPO",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 2,
+      "machine": "DP",
+      "division": 0,
+      "score": 110738840,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "CPO",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 3,
+      "machine": "DP",
+      "division": 0,
+      "score": 39417700,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ETB",
+      "opp": "CPO",
+      "match": "mnp-22-1-CPO-ETB",
+      "week": "1",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 56533900,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-22-10-ETB-PKT",
+      "week": "10",
+      "round": 1,
+      "machine": "BDK",
+      "division": 0,
+      "score": 3617770,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-22-10-ETB-PKT",
+      "week": "10",
+      "round": 2,
+      "machine": "SS",
+      "division": 0,
+      "score": 3192310,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-22-10-ETB-PKT",
+      "week": "10",
+      "round": 4,
+      "machine": "BDK",
+      "division": 0,
+      "score": 23065520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "ADB",
+      "match": "mnp-22-2-ETB-ADB",
+      "week": "2",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 5154910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "ADB",
+      "match": "mnp-22-2-ETB-ADB",
+      "week": "2",
+      "round": 3,
+      "machine": "DP",
+      "division": 0,
+      "score": 65238350,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "ADB",
+      "match": "mnp-22-2-ETB-ADB",
+      "week": "2",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 19494810,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "BAD",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 156070360,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "BAD",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 2,
+      "machine": "DP",
+      "division": 0,
+      "score": 26776800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "BAD",
+      "match": "mnp-22-3-BAD-ETB",
+      "week": "3",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 13684210,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "DTP",
+      "match": "mnp-22-4-ETB-DTP",
+      "week": "4",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 28323130,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "DTP",
+      "match": "mnp-22-4-ETB-DTP",
+      "week": "4",
+      "round": 3,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 46000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "DTP",
+      "match": "mnp-22-4-ETB-DTP",
+      "week": "4",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 57672640,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "SHK",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 6422010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "SHK",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 4386950,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "SHK",
+      "match": "mnp-22-5-SHK-ETB",
+      "week": "5",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 10929370,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ETB",
+      "opp": "TRL",
+      "match": "mnp-22-7-TRL-ETB",
+      "week": "7",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 67384430,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "TRL",
+      "match": "mnp-22-7-TRL-ETB",
+      "week": "7",
+      "round": 3,
+      "machine": "DP",
+      "division": 0,
+      "score": 134465640,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "TRL",
+      "match": "mnp-22-7-TRL-ETB",
+      "week": "7",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 55704040,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "HHS",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 563340,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "HHS",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 2,
+      "machine": "FH",
+      "division": 0,
+      "score": 3428180,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ETB",
+      "opp": "HHS",
+      "match": "mnp-22-8-ETB-HHS",
+      "week": "8",
+      "round": 4,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 18234700,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ETB",
+      "opp": "TTT",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 201637830,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "TTT",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 2,
+      "machine": "DP",
+      "division": 0,
+      "score": 70477370,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "TTT",
+      "match": "mnp-22-9-TTT-ETB",
+      "week": "9",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 1521540,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.506",
+      "num_matches": 9,
+      "ppm": "4.166",
+      "points": {
+        "won": 37.5,
+        "of": 74
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

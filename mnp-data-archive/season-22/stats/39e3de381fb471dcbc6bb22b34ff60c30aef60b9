@@ -1,0 +1,395 @@
+{
+  "key": "39e3de381fb471dcbc6bb22b34ff60c30aef60b9",
+  "name": "Armand Go",
+  "history": [
+    {
+      "team": "CRA",
+      "opp": "PKT",
+      "match": "mnp-22-1-PKT-CRA",
+      "week": "1",
+      "round": 1,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 614181880,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "PKT",
+      "match": "mnp-22-1-PKT-CRA",
+      "week": "1",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 91829160,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "PKT",
+      "match": "mnp-22-1-PKT-CRA",
+      "week": "1",
+      "round": 4,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 22785040,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "TTT",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 11713150,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "TTT",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 122219040,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "TTT",
+      "match": "mnp-22-10-CRA-TTT",
+      "week": "10",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 99664280,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "TWC",
+      "match": "mnp-22-2-CRA-TWC",
+      "week": "2",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 47357870,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "TWC",
+      "match": "mnp-22-2-CRA-TWC",
+      "week": "2",
+      "round": 2,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 37502930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "TWC",
+      "match": "mnp-22-2-CRA-TWC",
+      "week": "2",
+      "round": 4,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 79405190,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "CPO",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "CA",
+      "division": 0,
+      "score": 236950,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "CPO",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 2,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 2152463860,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "CPO",
+      "match": "mnp-22-3-CPO-CRA",
+      "week": "3",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 865757646,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "PGN",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 1,
+      "machine": "POTC",
+      "division": 0,
+      "score": 45038020,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "PGN",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 3,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 187589730,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "PGN",
+      "match": "mnp-22-4-CRA-PGN",
+      "week": "4",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 206496900,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "POW",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 2,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 60220120,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "POW",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 203663550,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "POW",
+      "match": "mnp-22-5-POW-CRA",
+      "week": "5",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 703200,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DIH",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 78571060,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DIH",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 75938650,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "DIH",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 218048690,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "FBP",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 269300,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "FBP",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 3,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 447100,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "FBP",
+      "match": "mnp-22-7-FBP-CRA",
+      "week": "7",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 639780,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-22-8-CRA-DSV",
+      "week": "8",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 142137710,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-22-8-CRA-DSV",
+      "week": "8",
+      "round": 2,
+      "machine": "Dragonfist",
+      "division": 0,
+      "score": 153670,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-22-8-CRA-DSV",
+      "week": "8",
+      "round": 3,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 258210,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 1,
+      "machine": "CA",
+      "division": 0,
+      "score": 301120,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 522100,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-22-9-RTR-CRA",
+      "week": "9",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 350719370,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.736",
+      "num_matches": 10,
+      "ppm": "6.000",
+      "points": {
+        "won": 60,
+        "of": 81.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

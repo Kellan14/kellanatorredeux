@@ -1,0 +1,395 @@
+{
+  "key": "4291fe5aeceae8bf0027d62d9f4293d5c457994d",
+  "name": "Gus Voss",
+  "history": [
+    {
+      "team": "DIH",
+      "opp": "RMS",
+      "match": "mnp-22-1-DIH-RMS",
+      "week": "1",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 23853140,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "RMS",
+      "match": "mnp-22-1-DIH-RMS",
+      "week": "1",
+      "round": 3,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 541296310,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DIH",
+      "opp": "RMS",
+      "match": "mnp-22-1-DIH-RMS",
+      "week": "1",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 132506090,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSS",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 2,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 42042620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSS",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 130092730,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSS",
+      "match": "mnp-22-10-SSS-DIH",
+      "week": "10",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 490590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "DOG",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 84926520,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "DOG",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 64000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "DOG",
+      "match": "mnp-22-2-DOG-DIH",
+      "week": "2",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 92273250,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "PYC",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 1,
+      "machine": "Mousin",
+      "division": 0,
+      "score": 7317940,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "PYC",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 2,
+      "machine": "Junkyard",
+      "division": 0,
+      "score": 1805560,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DIH",
+      "opp": "PYC",
+      "match": "mnp-22-3-DIH-PYC",
+      "week": "3",
+      "round": 3,
+      "machine": "Cheetah",
+      "division": 0,
+      "score": 261580,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DIH",
+      "opp": "SKP",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 3901690,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SKP",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 2535960,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SKP",
+      "match": "mnp-22-4-SKP-DIH",
+      "week": "4",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 391750,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DIH",
+      "opp": "KNR",
+      "match": "mnp-22-5-DIH-KNR",
+      "week": "5",
+      "round": 2,
+      "machine": "GameShow",
+      "division": 0,
+      "score": 3356420,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "KNR",
+      "match": "mnp-22-5-DIH-KNR",
+      "week": "5",
+      "round": 3,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 13410880,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "KNR",
+      "match": "mnp-22-5-DIH-KNR",
+      "week": "5",
+      "round": 4,
+      "machine": "GameShow",
+      "division": 0,
+      "score": 8819200,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "CRA",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 708310,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "CRA",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 58026790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "CRA",
+      "match": "mnp-22-6-CRA-DIH",
+      "week": "6",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 611000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DIH",
+      "opp": "ICB",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 1,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 566121200,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "ICB",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 3,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 51141930,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "ICB",
+      "match": "mnp-22-7-DIH-ICB",
+      "week": "7",
+      "round": 4,
+      "machine": "KONG",
+      "division": 0,
+      "score": 246560950,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "PBR",
+      "match": "mnp-22-8-PBR-DIH",
+      "week": "8",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 837590,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "PBR",
+      "match": "mnp-22-8-PBR-DIH",
+      "week": "8",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 72622110,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "PBR",
+      "match": "mnp-22-8-PBR-DIH",
+      "week": "8",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 204960,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "JMF",
+      "match": "mnp-22-9-DIH-JMF",
+      "week": "9",
+      "round": 2,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 480010,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "JMF",
+      "match": "mnp-22-9-DIH-JMF",
+      "week": "9",
+      "round": 3,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 25782830,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DIH",
+      "opp": "JMF",
+      "match": "mnp-22-9-DIH-JMF",
+      "week": "9",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 287750,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.640",
+      "num_matches": 10,
+      "ppm": "5.350",
+      "points": {
+        "won": 53.5,
+        "of": 83.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

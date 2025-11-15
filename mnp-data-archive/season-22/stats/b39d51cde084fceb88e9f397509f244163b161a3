@@ -1,0 +1,359 @@
+{
+  "key": "b39d51cde084fceb88e9f397509f244163b161a3",
+  "name": "Alex Singleterry",
+  "history": [
+    {
+      "team": "TBT",
+      "opp": "ADB",
+      "match": "mnp-22-1-ADB-TBT",
+      "week": "1",
+      "round": 2,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 932538820,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "ADB",
+      "match": "mnp-22-1-ADB-TBT",
+      "week": "1",
+      "round": 3,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 40000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "ADB",
+      "match": "mnp-22-1-ADB-TBT",
+      "week": "1",
+      "round": 4,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 551933760,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 140041350,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 2,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 633000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-22-10-TBT-RTR",
+      "week": "10",
+      "round": 4,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 362572150,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TBT",
+      "opp": "DTP",
+      "match": "mnp-22-3-DTP-TBT",
+      "week": "3",
+      "round": 2,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 129224970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "DTP",
+      "match": "mnp-22-3-DTP-TBT",
+      "week": "3",
+      "round": 3,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 255436730,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "DTP",
+      "match": "mnp-22-3-DTP-TBT",
+      "week": "3",
+      "round": 4,
+      "machine": "TBL",
+      "division": 0,
+      "score": 1600000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TBT",
+      "opp": "SHK",
+      "match": "mnp-22-4-TBT-SHK",
+      "week": "4",
+      "round": 1,
+      "machine": "Xenon",
+      "division": 0,
+      "score": 60270,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TBT",
+      "opp": "SHK",
+      "match": "mnp-22-4-TBT-SHK",
+      "week": "4",
+      "round": 2,
+      "machine": "SoF",
+      "division": 0,
+      "score": 1165140,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "SHK",
+      "match": "mnp-22-4-TBT-SHK",
+      "week": "4",
+      "round": 4,
+      "machine": "TBL",
+      "division": 0,
+      "score": 1041010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "SSD",
+      "match": "mnp-22-5-SSD-TBT",
+      "week": "5",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 14180620,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TBT",
+      "opp": "SSD",
+      "match": "mnp-22-5-SSD-TBT",
+      "week": "5",
+      "round": 2,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 455000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TBT",
+      "opp": "SSD",
+      "match": "mnp-22-5-SSD-TBT",
+      "week": "5",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 39230910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "TRL",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 15456500,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "TRL",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 3,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 269643080,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "TRL",
+      "match": "mnp-22-6-TBT-TRL",
+      "week": "6",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 10638600,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TBT",
+      "opp": "HHS",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 1,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 154785410,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "HHS",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 19247150,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "HHS",
+      "match": "mnp-22-7-HHS-TBT",
+      "week": "7",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 12599690,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "TBT",
+      "opp": "TTT",
+      "match": "mnp-22-8-TBT-TTT",
+      "week": "8",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 4476780,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "TTT",
+      "match": "mnp-22-8-TBT-TTT",
+      "week": "8",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 32047270,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "TTT",
+      "match": "mnp-22-8-TBT-TTT",
+      "week": "8",
+      "round": 4,
+      "machine": "VEN",
+      "division": 0,
+      "score": 12601230,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "CPO",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 118000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "CPO",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 6466180,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TBT",
+      "opp": "CPO",
+      "match": "mnp-22-9-CPO-TBT",
+      "week": "9",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 15000000,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.557",
+      "num_matches": 9,
+      "ppm": "4.555",
+      "points": {
+        "won": 41,
+        "of": 73.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,287 @@
+{
+  "key": "eb7b0c41578672eedf2601ef1c0b5c7240b6d1ac",
+  "name": "Joe Ricci",
+  "history": [
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 1,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 481246640,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 2,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 360144290,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-22-1-BAD-NMC",
+      "week": "1",
+      "round": 4,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 679103640,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 164859830,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 76000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DTP",
+      "match": "mnp-22-2-NMC-DTP",
+      "week": "2",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 36414990,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 146767960,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 121754810,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NMC",
+      "opp": "SSD",
+      "match": "mnp-22-4-NMC-SSD",
+      "week": "4",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 38772630,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TRL",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 32000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "TRL",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 2,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 166378450,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TRL",
+      "match": "mnp-22-5-TRL-NMC",
+      "week": "5",
+      "round": 4,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 176096910,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TTT",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 187471640,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "TTT",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 120489370,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "TTT",
+      "match": "mnp-22-7-TTT-NMC",
+      "week": "7",
+      "round": 4,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 31792320,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 190363510,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 134359550,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "CPO",
+      "match": "mnp-22-8-NMC-CPO",
+      "week": "8",
+      "round": 4,
+      "machine": "Monopoly",
+      "division": 0,
+      "score": 9341000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 49878090,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 69012620,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-22-9-ADB-NMC",
+      "week": "9",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 277218770,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.695",
+      "num_matches": 7,
+      "ppm": "5.714",
+      "points": {
+        "won": 40,
+        "of": 57.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

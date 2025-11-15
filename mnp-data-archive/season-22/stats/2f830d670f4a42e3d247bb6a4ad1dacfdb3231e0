@@ -1,0 +1,395 @@
+{
+  "key": "2f830d670f4a42e3d247bb6a4ad1dacfdb3231e0",
+  "name": "Brett Wolfe",
+  "history": [
+    {
+      "team": "NLT",
+      "opp": "DTP",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 2,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 7813730,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NLT",
+      "opp": "DTP",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 3,
+      "machine": "Genie",
+      "division": 0,
+      "score": 272680,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "DTP",
+      "match": "mnp-22-1-DTP-NLT",
+      "week": "1",
+      "round": 4,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 7238700,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "FBP",
+      "match": "mnp-22-10-NLT-FBP",
+      "week": "10",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 157657180,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NLT",
+      "opp": "FBP",
+      "match": "mnp-22-10-NLT-FBP",
+      "week": "10",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 163223560,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "FBP",
+      "match": "mnp-22-10-NLT-FBP",
+      "week": "10",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 64887080,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SHK",
+      "match": "mnp-22-2-NLT-SHK",
+      "week": "2",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 49018210,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SHK",
+      "match": "mnp-22-2-NLT-SHK",
+      "week": "2",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 109036580,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SHK",
+      "match": "mnp-22-2-NLT-SHK",
+      "week": "2",
+      "round": 4,
+      "machine": "TBL",
+      "division": 0,
+      "score": 3261290,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SSD",
+      "match": "mnp-22-3-SSD-NLT",
+      "week": "3",
+      "round": 2,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 2187460,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NLT",
+      "opp": "SSD",
+      "match": "mnp-22-3-SSD-NLT",
+      "week": "3",
+      "round": 3,
+      "machine": "Taxi",
+      "division": 0,
+      "score": 1479740,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SSD",
+      "match": "mnp-22-3-SSD-NLT",
+      "week": "3",
+      "round": 4,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 10294540,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "TRL",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 2,
+      "machine": "TBL",
+      "division": 0,
+      "score": 3526830,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "TRL",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 3,
+      "machine": "TBL",
+      "division": 0,
+      "score": 3428180,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NLT",
+      "opp": "TRL",
+      "match": "mnp-22-4-NLT-TRL",
+      "week": "4",
+      "round": 4,
+      "machine": "TBL",
+      "division": 0,
+      "score": 1169080,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "NLT",
+      "opp": "HHS",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 2,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 11665670,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "HHS",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 3,
+      "machine": "Taxi",
+      "division": 0,
+      "score": 1712320,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NLT",
+      "opp": "HHS",
+      "match": "mnp-22-5-HHS-NLT",
+      "week": "5",
+      "round": 4,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 8922920,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "TTT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 55095460,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "TTT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 3,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 26167510,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "TTT",
+      "match": "mnp-22-6-NLT-TTT",
+      "week": "6",
+      "round": 4,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 41143450,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "CPO",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 2,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 11681930,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "CPO",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 3,
+      "machine": "Taxi",
+      "division": 0,
+      "score": 1436440,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NLT",
+      "opp": "CPO",
+      "match": "mnp-22-7-CPO-NLT",
+      "week": "7",
+      "round": 4,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 21653340,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "ADB",
+      "match": "mnp-22-8-NLT-ADB",
+      "week": "8",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 423462000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "ADB",
+      "match": "mnp-22-8-NLT-ADB",
+      "week": "8",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 48727310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "ADB",
+      "match": "mnp-22-8-NLT-ADB",
+      "week": "8",
+      "round": 4,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 48497830,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "BAD",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 1,
+      "machine": "Genie",
+      "division": 0,
+      "score": 216640,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NLT",
+      "opp": "BAD",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 3,
+      "machine": "DrWho",
+      "division": 0,
+      "score": 14877560,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "BAD",
+      "match": "mnp-22-9-BAD-NLT",
+      "week": "9",
+      "round": 4,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 21467250,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.790",
+      "num_matches": 10,
+      "ppm": "6.600",
+      "points": {
+        "won": 66,
+        "of": 83.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}
