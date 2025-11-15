@@ -209,7 +209,9 @@ export default function HomePage() {
 
         if (playersResponse.ok) {
           const playersData = await playersResponse.json()
-          setOpponentPlayers(playersData.players || [])
+          // Extract just the names from player objects
+          const playerNames = (playersData.players || []).map((p: any) => p.name)
+          setOpponentPlayers(playerNames)
         }
 
         // Also fetch machines at venue for machine selection dialog
