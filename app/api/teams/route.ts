@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // API route to get unique teams from Supabase
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';

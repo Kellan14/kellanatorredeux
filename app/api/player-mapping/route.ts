@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic';
+
 // Hardcoded player mappings (will move to database later)
 const PLAYER_MAPPINGS: Record<string, { name: string; team: string }> = {
   'dcdbf053-3e71-4f05-a627-70390da8f984': {

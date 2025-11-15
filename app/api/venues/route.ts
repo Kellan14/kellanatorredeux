@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // API route to serve venue data from mnp-data-archive
 import { NextResponse } from 'next/server';
 import { fetchMNPData } from '@/lib/fetch-mnp-data';

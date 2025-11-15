@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic';
+
 const CURRENT_SEASON = 22
 
 // Cache for 1 hour (3600 seconds) since stats only update weekly
