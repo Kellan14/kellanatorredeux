@@ -1,16 +1,21 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { createClient } from '@supabase/supabase-js'
 
-// For client components
-export const createSupabaseClient = () => {
-  return createClientComponentClient()
-}
+// Singleton instance - only create once
+let supabaseInstance: ReturnType<typeof createClient> | null = null
 
-// For server-side operations
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+// Get the Supabase client (creates only once)
+export const supabase = (() => {
+  if (!supabaseInstance) {
+    supabaseInstance = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+  }
+  return supabaseInstance
+})()
+
+// Export the same instance for compatibility
+export const createSupabaseClient = () => supabase
 
 export type Database = {
   public: {
