@@ -512,7 +512,7 @@ export default function HomePage() {
                 <BarChart3 className="h-3 w-3 md:h-4 md:w-4 text-neon-purple" />
               </CardHeader>
               <CardContent className="p-3 pt-0 md:p-6 md:pt-0">
-                <div className="text-lg md:text-2xl font-bold">{playerStats.pointsPerMatch.toFixed(1)}</div>
+                <div className="text-lg md:text-2xl font-bold">{(playerStats.pointsPerMatch || 0).toFixed(1)}</div>
                 <p className="text-[10px] md:text-xs text-muted-foreground">
                   Average per match
                 </p>
@@ -527,7 +527,7 @@ export default function HomePage() {
                 <Percent className="h-3 w-3 md:h-4 md:w-4 text-neon-pink" />
               </CardHeader>
               <CardContent className="p-3 pt-0 md:p-6 md:pt-0">
-                <div className="text-lg md:text-2xl font-bold">{playerStats.pops.toFixed(1)}%</div>
+                <div className="text-lg md:text-2xl font-bold">{(playerStats.pops || 0).toFixed(1)}%</div>
                 <p className="text-[10px] md:text-xs text-muted-foreground">
                   Percent of points scored
                 </p>
@@ -626,7 +626,7 @@ export default function HomePage() {
                               machine.pctOfVenue >= 90 ? 'text-yellow-600' :
                               'text-muted-foreground'
                             }>
-                              {machine.pctOfVenue.toFixed(1)}%
+                              {(machine.pctOfVenue || 0).toFixed(1)}%
                             </span>
                           </TableCell>
                           <TableCell>{machine.timesPlayed}</TableCell>
@@ -646,7 +646,7 @@ export default function HomePage() {
                             <div className="text-sm text-muted-foreground">#{index + 1}</div>
                             <div className="font-semibold text-lg">{machine.machine}</div>
                             <div className="text-sm text-muted-foreground mt-1">
-                              {machine.pctOfVenue.toFixed(1)}% of venue avg
+                              {(machine.pctOfVenue || 0).toFixed(1)}% of venue avg
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {machine.timesPlayed} play{machine.timesPlayed !== 1 ? 's' : ''}
