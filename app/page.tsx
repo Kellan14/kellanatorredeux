@@ -619,7 +619,7 @@ export default function HomePage() {
                       {playerPerformance.machinePerformance.slice(0, 10).map((machine: any) => (
                         <TableRow key={machine.machine}>
                           <TableCell className="font-medium">{machine.machine}</TableCell>
-                          <TableCell>{machine.avgScore.toLocaleString(undefined, { maximumFractionDigits: 0 })}</TableCell>
+                          <TableCell>{(machine.avgScore || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</TableCell>
                           <TableCell>
                             <span className={
                               machine.pctOfVenue >= 100 ? 'text-green-600 font-semibold' :
@@ -702,7 +702,7 @@ export default function HomePage() {
                       <div className="flex-1">
                         <div className="font-semibold">{achievement.machine}</div>
                         <div className="text-sm text-muted-foreground mt-1">
-                          {achievement.score.toLocaleString()} points • #{achievement.rank} {achievement.context}
+                          {(achievement.score || 0).toLocaleString()} points • #{achievement.rank} {achievement.context}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0 ml-4">
@@ -819,15 +819,15 @@ export default function HomePage() {
                       <>
                         <div>
                           <div className="text-xs text-muted-foreground">Mean</div>
-                          <div className="text-lg font-semibold">{stats.mean.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                          <div className="text-lg font-semibold">{(stats.mean || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
                         </div>
                         <div>
                           <div className="text-xs text-muted-foreground">Median</div>
-                          <div className="text-lg font-semibold">{stats.median.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                          <div className="text-lg font-semibold">{(stats.median || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
                         </div>
                         <div>
                           <div className="text-xs text-muted-foreground">IQR</div>
-                          <div className="text-lg font-semibold">{stats.iqr.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                          <div className="text-lg font-semibold">{(stats.iqr || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
                         </div>
                       </>
                     )
@@ -918,7 +918,7 @@ export default function HomePage() {
                     <tbody>
                       {getSortedStats().map((stat, index) => (
                         <tr key={index} className="border-b hover:bg-muted/50">
-                          <td className="p-2 font-medium">{stat.score.toLocaleString()}</td>
+                          <td className="p-2 font-medium">{(stat.score || 0).toLocaleString()}</td>
                           <td className="p-2">{stat.match}</td>
                           <td className="p-2">{stat.round}</td>
                           <td className="p-2">{stat.season}</td>
@@ -980,7 +980,7 @@ export default function HomePage() {
                       </div>
                       <div className="text-right">
                         <div className="font-bold text-lg">
-                          {entry.score.toLocaleString()}
+                          {(entry.score || 0).toLocaleString()}
                         </div>
                         <div className="text-xs text-muted-foreground">points</div>
                       </div>
