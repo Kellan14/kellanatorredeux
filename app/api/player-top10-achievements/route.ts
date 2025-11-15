@@ -12,9 +12,10 @@ export async function GET(request: Request) {
       )
     }
 
+    // TODO: Implement top-10 achievements calculation
+    // Requires querying match rounds/games data for player's best performances
     return NextResponse.json({
-      achievements: [],
-      message: 'Feature temporarily disabled - GitHub data fetching in progress'
+      achievements: []
     })
   } catch (error) {
     console.error('Error fetching player achievements:', error)
