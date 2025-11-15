@@ -202,8 +202,8 @@ export async function POST(request: Request) {
           .sort((a: { player: string, score: number }, b: { player: string, score: number }) => b.score - a.score)
           .slice(0, 2)
 
-        const pair = playerScores.map(p => p.player)
-        pair.forEach(p => usedPlayers.add(p))
+        const pair = playerScores.map((p: { player: string, score: number }) => p.player)
+        pair.forEach((p: string) => usedPlayers.add(p))
 
         assignments.push({
           machine,

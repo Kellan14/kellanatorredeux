@@ -806,7 +806,7 @@ export default function HomePage() {
               </div>
 
               {/* Debug - show stats count */}
-              {typeof window !== 'undefined' && console.log('Dialog rendering with stats:', playerMachineStats)}
+              {typeof window !== 'undefined' && (console.log('Dialog rendering with stats:', playerMachineStats), null)}
 
               {/* Statistical Summary */}
               {playerMachineStats.length > 0 && (

@@ -764,7 +764,7 @@ export default function StrategyPage() {
                                           <div><strong>Opponent % of Venue:</strong> {machineData.opponentPctOfVenue.toFixed(1)}%</div>
                                           <div><strong>Statistical Advantage:</strong> {machineData.statisticalAdvantage.toFixed(1)}</div>
                                           <div><strong>Experience Advantage:</strong> {machineData.experienceAdvantage} plays</div>
-                                          <div><strong>TWC Plays:</strong> {machineData.twcPlays}</div>
+                                          <div><strong>TWC Plays:</strong> {(machineData as any).twcPlays || 0}</div>
                                         </div>
                                         {machineData.topTwcPlayers && machineData.topTwcPlayers.length > 0 && (
                                           <div className="mt-3">
@@ -860,7 +860,7 @@ export default function StrategyPage() {
                                           <div><strong>Opponent % of Venue:</strong> {machineData.opponentPctOfVenue.toFixed(1)}%</div>
                                           <div><strong>Statistical Advantage:</strong> {machineData.statisticalAdvantage.toFixed(1)}</div>
                                           <div><strong>Experience Advantage:</strong> {machineData.experienceAdvantage} plays</div>
-                                          <div><strong>TWC Plays:</strong> {machineData.twcPlays}</div>
+                                          <div><strong>TWC Plays:</strong> {(machineData as any).twcPlays || 0}</div>
                                         </div>
                                         {machineData.topTwcPlayers && machineData.topTwcPlayers.length > 0 && (
                                           <div className="mt-3">

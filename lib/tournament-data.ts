@@ -233,7 +233,7 @@ export function processMNPMatchData(matches: MNPMatch[]): ProcessedScore[] {
             : playerTeam.key === match.away.key;
 
           processedScores.push({
-            season: match.season,
+            season: match.season || 0,
             week: week,
             match: match.name,
             round: round.n,
@@ -273,7 +273,7 @@ export function processMatchData(matches: Match[]): ProcessedScore[] {
           const opponent = game.players.find(p => p.team !== player.team);
           
           processedScores.push({
-            season: match.season,
+            season: match.season || 0,
             week: match.week,
             match: match.match,
             round: round.round,
@@ -339,7 +339,7 @@ export function calculateMachineStats(
   const recentMachines = new Set(latestSeasonVenueData.map(d => d.machine));
 
   // Get unique machines from venue, but only those that appear in the most recent season
-  let machines = [...recentMachines].sort();
+  let machines = Array.from(recentMachines).sort();
 
   // Apply venue machine list overrides (included/excluded machines)
   machines = applyVenueMachineListOverrides(venueName, machines);
