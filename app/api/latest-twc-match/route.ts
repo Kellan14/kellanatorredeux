@@ -23,20 +23,23 @@ export async function GET() {
       })
     }
 
+    // Type assertion for the match data
+    const match = data as any
+
     // Determine opponent - TWC could be home or away
     let opponent = ''
-    if (data.home_team === 'TWC') {
-      opponent = data.data.away?.name || data.away_team
+    if (match.home_team === 'TWC') {
+      opponent = match.data?.away?.name || match.away_team
     } else {
-      opponent = data.data.home?.name || data.home_team
+      opponent = match.data?.home?.name || match.home_team
     }
 
     return NextResponse.json({
-      venue: data.venue_name || 'Georgetown Pizza and Arcade',
+      venue: match.venue_name || 'Georgetown Pizza and Arcade',
       opponent: opponent,
-      matchKey: data.match_key,
-      week: data.week,
-      state: data.state
+      matchKey: match.match_key,
+      week: match.week,
+      state: match.state
     })
   } catch (error) {
     console.error('Error finding latest TWC match:', error)
