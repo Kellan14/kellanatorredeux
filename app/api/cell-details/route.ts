@@ -156,7 +156,7 @@ export async function GET(request: Request) {
       // Venue average - all teams at this venue
       console.log('Filtering for venue:', venue)
       filteredData = filteredData.filter(row =>
-        row.venue.trim().toLowerCase() === venue.trim().toLowerCase()
+        venue && row.venue.trim().toLowerCase() === venue.trim().toLowerCase()
       )
       console.log('After venue filter:', filteredData.length)
     } else if (column.includes('%')) {
@@ -168,7 +168,7 @@ export async function GET(request: Request) {
         )
       } else {
         filteredData = filteredData.filter(row =>
-          row.team.trim().toLowerCase() === team.trim().toLowerCase() &&
+          team && row.team.trim().toLowerCase() === team.trim().toLowerCase() &&
           row.is_roster_player === true
         )
       }
