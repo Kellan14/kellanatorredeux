@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { X, Plus, Save, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { getMachinesData } from '@/lib/data-loader'
 
 interface VenueMachineListManagerProps {
   open: boolean
@@ -27,6 +26,22 @@ export function VenueMachineListManager({
   const [addMachineInput, setAddMachineInput] = useState('')
   const [saving, setSaving] = useState(false)
   const [searchResults, setSearchResults] = useState<Array<{ key: string; name: string }>>([])
+  const [machinesData, setMachinesData] = useState<Record<string, any>>({})
+
+  // Fetch machines data from API
+  useEffect(() => {
+    const fetchMachines = async () => {
+      try {
+        const response = await fetch('/api/machines')
+        const data = await response.json()
+        setMachinesData(data)
+      } catch (error) {
+        console.error('Error fetching machines:', error)
+      }
+    }
+
+    fetchMachines()
+  }, [])
 
   // Load current overrides when dialog opens
   useEffect(() => {
@@ -37,8 +52,7 @@ export function VenueMachineListManager({
 
   // Search for machines as user types
   useEffect(() => {
-    if (addMachineInput.length >= 2) {
-      const machinesData = getMachinesData()
+    if (addMachineInput.length >= 2 && Object.keys(machinesData).length > 0) {
       const allMachines = Object.values(machinesData) as Array<{ key: string; name: string }>
       const searchLower = addMachineInput.toLowerCase()
       const results = allMachines.filter(
@@ -50,7 +64,7 @@ export function VenueMachineListManager({
     } else {
       setSearchResults([])
     }
-  }, [addMachineInput])
+  }, [addMachineInput, machinesData])
 
   const loadVenueMachineLists = async () => {
     try {
@@ -119,8 +133,7 @@ export function VenueMachineListManager({
   }
 
   const getMachineName = (machineKey: string) => {
-    const machinesData = getMachinesData()
-    const machine = (machinesData as any)[machineKey]
+    const machine = machinesData[machineKey]
     return machine ? machine.name : machineKey
   }
 

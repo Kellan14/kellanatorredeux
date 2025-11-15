@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, Heart, Info } from 'lucide-react'
 import { getMachineImagePath, getMachineThumbnailPath } from '@/lib/machine-images'
-import { getMachinesData } from '@/lib/data-loader'
 
 interface Machine {
   key: string
@@ -17,18 +16,37 @@ interface Machine {
   thumbnail: string
 }
 
-// Convert machines.json to array
-const machinesData = getMachinesData()
-const machinesArray: Machine[] = Object.values(machinesData).map((machine: any) => ({
-  key: machine.key,
-  name: machine.name,
-  image: getMachineImagePath(machine.key, machine.name),
-  thumbnail: getMachineThumbnailPath(machine.key, machine.name),
-}))
-
 export default function MachinesPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [favorites, setFavorites] = useState<string[]>([])
+  const [machinesData, setMachinesData] = useState<Record<string, any>>({})
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Fetch machines data from API
+  useEffect(() => {
+    const fetchMachines = async () => {
+      try {
+        setIsLoading(true)
+        const response = await fetch('/api/machines')
+        const data = await response.json()
+        setMachinesData(data)
+      } catch (error) {
+        console.error('Error fetching machines:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchMachines()
+  }, [])
+
+  // Convert machines.json to array
+  const machinesArray: Machine[] = Object.values(machinesData).map((machine: any) => ({
+    key: machine.key,
+    name: machine.name,
+    image: getMachineImagePath(machine.key, machine.name),
+    thumbnail: getMachineThumbnailPath(machine.key, machine.name),
+  }))
 
   const filteredMachines = machinesArray.filter(machine =>
     machine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -67,8 +85,16 @@ export default function MachinesPage() {
         </div>
       </div>
 
+      {/* Loading State */}
+      {isLoading && (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Loading machines...</p>
+        </div>
+      )}
+
       {/* Machine Grid */}
-      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 md:gap-4">
+      {!isLoading && (
+        <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 md:gap-4">
         {filteredMachines.map((machine) => (
           <Link key={machine.key} href={`/machines/${encodeURIComponent(machine.name)}`}>
             <Card className="overflow-hidden hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
@@ -116,10 +142,11 @@ export default function MachinesPage() {
             </Card>
           </Link>
         ))}
-      </div>
+        </div>
+      )}
 
       {/* Empty state */}
-      {filteredMachines.length === 0 && (
+      {!isLoading && filteredMachines.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">No machines found matching "{searchTerm}"</p>
         </div>
