@@ -1,12 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 
 // Singleton instance - only create once
-let supabaseInstance: ReturnType<typeof createClient> | null = null
+let supabaseInstance: ReturnType<typeof createClient<Database>> | null = null
 
 // Get the Supabase client (creates only once)
 export const supabase = (() => {
   if (!supabaseInstance) {
-    supabaseInstance = createClient(
+    supabaseInstance = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )

@@ -58,8 +58,6 @@ export default function RegisterPage() {
             id: authData.user.id,
             username,
             full_name: username,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
           })
 
         if (profileError) {
