@@ -36,13 +36,13 @@ export function MainNav() {
   }
 
   const navItems = [
-    { href: '/', label: 'Dashboard' },
-    { href: '/stats', label: 'Statistics' },
-    { href: '/machines', label: 'Machines' },
+    { href: '/' as const, label: 'Dashboard' },
+    { href: '/stats' as const, label: 'Statistics' },
+    { href: '/machines' as const, label: 'Machines' },
     ...(user ? [
-      { href: '/strategy', label: 'Strategy' },
+      { href: '/strategy' as const, label: 'Strategy' },
     ] : []),
-  ]
+  ] as const
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
