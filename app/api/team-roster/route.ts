@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase'
 
 export async function GET(request: Request) {
   try {
@@ -14,9 +15,32 @@ export async function GET(request: Request) {
       )
     }
 
+    // Query player stats for this team
+    const { data, error } = await supabase
+      .from('player_stats')
+      .select('*')
+      .eq('season', parseInt(season))
+      .eq('team', team)
+      .order('ipr', { ascending: false })
+
+    if (error) {
+      console.error('Database error:', error)
+      return NextResponse.json({
+        players: []
+      })
+    }
+
+    // Format the response
+    const players = (data || []).map(p => ({
+      name: p.player_name,
+      key: p.player_key,
+      ipr: p.ipr,
+      matchesPlayed: p.matches_played,
+      sub: false // We can enhance this later if needed
+    }))
+
     return NextResponse.json({
-      players: [],
-      message: 'Feature temporarily disabled - GitHub data fetching in progress'
+      players: players
     })
   } catch (error) {
     console.error('Error fetching team roster:', error)
