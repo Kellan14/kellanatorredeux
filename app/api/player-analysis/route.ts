@@ -17,35 +17,15 @@ export async function GET(request: Request) {
       )
     }
 
-    // Query matches from database
-    let query = supabase
-      .from('matches')
-      .select('data, venue_name')
-      .gte('season', seasonStart)
-      .lte('season', seasonEnd)
+    // Get player's key from player_stats
+    const { data: playerData } = await supabase
+      .from('player_stats')
+      .select('player_key')
+      .eq('player_name', player)
+      .limit(1)
+      .single<{ player_key: string | null }>()
 
-    if (!allVenues && venue) {
-      query = query.eq('venue_name', venue)
-    }
-
-    const { data: matches, error } = await query
-
-    if (error) {
-      console.error('Supabase error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-
-    // Find player's key
-    let playerKey = ''
-    for (const match of (matches as any[]) || []) {
-      const homePlayer = match.data?.home?.lineup?.find((p: any) => p.name === player)
-      const awayPlayer = match.data?.away?.lineup?.find((p: any) => p.name === player)
-      if (homePlayer) playerKey = homePlayer.key
-      if (awayPlayer) playerKey = awayPlayer.key
-      if (playerKey) break
-    }
-
-    if (!playerKey) {
+    if (!playerData?.player_key) {
       return NextResponse.json({
         player,
         totalGames: 0,
@@ -56,44 +36,84 @@ export async function GET(request: Request) {
       })
     }
 
+    const playerKey = playerData.player_key
+
+    // Query games table directly with SQL filters
+    let query = supabase
+      .from('games')
+      .select('machine, venue, player_1_key, player_1_score, player_1_points, player_2_key, player_2_score, player_2_points, player_3_key, player_3_score, player_3_points, player_4_key, player_4_score, player_4_points')
+      .gte('season', seasonStart)
+      .lte('season', seasonEnd)
+      .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
+
+    if (!allVenues && venue) {
+      query = query.eq('venue', venue)
+    }
+
+    const { data: gamesData, error } = await query.returns<Array<{
+      machine: string
+      venue: string | null
+      player_1_key: string | null
+      player_1_score: number | null
+      player_1_points: number | null
+      player_2_key: string | null
+      player_2_score: number | null
+      player_2_points: number | null
+      player_3_key: string | null
+      player_3_score: number | null
+      player_3_points: number | null
+      player_4_key: string | null
+      player_4_score: number | null
+      player_4_points: number | null
+    }>>()
+
+    if (error) {
+      console.error('Supabase error:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
     // Analyze performance
     const machineStats = new Map()
     const venuesSet = new Set()
     let totalGames = 0
 
-    for (const match of (matches as any[]) || []) {
-      if (match.venue_name) venuesSet.add(match.venue_name)
+    for (const game of gamesData || []) {
+      if (game.venue) venuesSet.add(game.venue)
 
-      const rounds = match.data.rounds || []
-      for (const round of rounds) {
-        for (const game of round.games || []) {
-          const playerPosition = ['player_1', 'player_2', 'player_3', 'player_4']
-            .find(pos => game[pos] === playerKey)
+      let points = 0
+      let score = 0
 
-          if (playerPosition) {
-            const posNum = playerPosition.split('_')[1]
-            const machine = game.machine
-            const points = game[`points_${posNum}`] || 0
-            const score = game[`score_${posNum}`] || 0
-
-            if (!machineStats.has(machine)) {
-              machineStats.set(machine, {
-                machine,
-                gamesPlayed: 0,
-                totalPoints: 0,
-                avgPoints: 0,
-                bestScore: 0
-              })
-            }
-
-            const stats = machineStats.get(machine)
-            stats.gamesPlayed++
-            stats.totalPoints += points
-            stats.bestScore = Math.max(stats.bestScore, score)
-            totalGames++
-          }
-        }
+      if (game.player_1_key === playerKey) {
+        points = game.player_1_points || 0
+        score = game.player_1_score || 0
+      } else if (game.player_2_key === playerKey) {
+        points = game.player_2_points || 0
+        score = game.player_2_score || 0
+      } else if (game.player_3_key === playerKey) {
+        points = game.player_3_points || 0
+        score = game.player_3_score || 0
+      } else if (game.player_4_key === playerKey) {
+        points = game.player_4_points || 0
+        score = game.player_4_score || 0
       }
+
+      const machine = game.machine
+
+      if (!machineStats.has(machine)) {
+        machineStats.set(machine, {
+          machine,
+          gamesPlayed: 0,
+          totalPoints: 0,
+          avgPoints: 0,
+          bestScore: 0
+        })
+      }
+
+      const stats = machineStats.get(machine)
+      stats.gamesPlayed++
+      stats.totalPoints += points
+      stats.bestScore = Math.max(stats.bestScore, score)
+      totalGames++
     }
 
     const machinePerformance = Array.from(machineStats.values()).map(stats => ({

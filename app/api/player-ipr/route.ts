@@ -15,22 +15,20 @@ export async function GET(request: Request) {
       )
     }
 
-    // Query player stats from database for IPR
+    // Query player stats from database for IPR and player_key
     const { data: playerData, error: playerError } = await supabase
       .from('player_stats')
       .select('*')
       .eq('player_name', playerName)
       .eq('season', CURRENT_SEASON)
-      .single()
+      .single<{
+        player_key: string | null
+        ipr: number | null
+        last_match_week: number | null
+        team: string | null
+      }>()
 
-    // Query all matches for current season (we'll filter by player in JavaScript)
-    const { data: matches, error: matchError } = await supabase
-      .from('matches')
-      .select('data')
-      .eq('season', CURRENT_SEASON)
-      .eq('state', 'complete')
-
-    if (playerError && matchError) {
+    if (playerError || !playerData?.player_key) {
       return NextResponse.json({
         name: playerName,
         ipr: 0,
@@ -43,55 +41,50 @@ export async function GET(request: Request) {
       })
     }
 
-    // Filter matches to only those with this player and find their hash key
-    const playerMatches = (matches as any[])?.filter((match: any) => {
-      const homePlayer = match.data?.home?.lineup?.find((p: any) => p.name === playerName)
-      const awayPlayer = match.data?.away?.lineup?.find((p: any) => p.name === playerName)
-      return homePlayer || awayPlayer
-    }) || []
+    const playerKey = playerData.player_key
 
-    // Find player's hash key and count matches
-    let playerKey = ''
+    // Get matches played count from player_match_participation
+    const { data: participationData } = await supabase
+      .from('player_match_participation')
+      .select('match_id')
+      .eq('player_key', playerKey)
+      .eq('season', CURRENT_SEASON)
+      .gt('num_played', 0)
+
+    const matchesPlayedCount = participationData?.length || 0
+
+    // Calculate total points won by this player using SQL aggregation
+    // We need to check all 4 player positions
+    const { data: gamesData } = await supabase
+      .from('games')
+      .select('player_1_key, player_1_points, player_2_key, player_2_points, player_3_key, player_3_points, player_4_key, player_4_points')
+      .eq('season', CURRENT_SEASON)
+      .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
+      .returns<Array<{
+        player_1_key: string | null
+        player_1_points: number | null
+        player_2_key: string | null
+        player_2_points: number | null
+        player_3_key: string | null
+        player_3_points: number | null
+        player_4_key: string | null
+        player_4_points: number | null
+      }>>()
+
     let totalPoints = 0
     let totalPossiblePoints = 0
-    let matchesPlayedCount = 0
 
-    for (const match of playerMatches) {
-      const homePlayer = match.data?.home?.lineup?.find((p: any) => p.name === playerName)
-      const awayPlayer = match.data?.away?.lineup?.find((p: any) => p.name === playerName)
+    for (const game of gamesData || []) {
+      // Calculate total possible points in this game
+      const gameTotal = (game.player_1_points || 0) + (game.player_2_points || 0) +
+                       (game.player_3_points || 0) + (game.player_4_points || 0)
+      totalPossiblePoints += gameTotal
 
-      if (homePlayer && !playerKey) playerKey = homePlayer.key
-      if (awayPlayer && !playerKey) playerKey = awayPlayer.key
-
-      // Count matches where player was in lineup and played
-      if ((homePlayer && homePlayer.num_played > 0) || (awayPlayer && awayPlayer.num_played > 0)) {
-        matchesPlayedCount++
-      }
-    }
-
-    // Calculate points from games
-    if (playerKey) {
-      for (const match of playerMatches) {
-        const rounds = match.data?.rounds || []
-        for (const round of rounds) {
-          for (const game of round.games || []) {
-            const playerPosition = ['player_1', 'player_2', 'player_3', 'player_4']
-              .find(pos => game[pos] === playerKey)
-
-            if (playerPosition) {
-              const posNum = playerPosition.split('_')[1]
-              const points = game[`points_${posNum}`] || 0
-              totalPoints += points
-
-              // Each game has max 5 points possible (in best case)
-              // More accurate: sum of all points in the game
-              const gamePoints = (game.points_1 || 0) + (game.points_2 || 0) +
-                                (game.points_3 || 0) + (game.points_4 || 0)
-              totalPossiblePoints += gamePoints
-            }
-          }
-        }
-      }
+      // Add this player's points
+      if (game.player_1_key === playerKey) totalPoints += game.player_1_points || 0
+      if (game.player_2_key === playerKey) totalPoints += game.player_2_points || 0
+      if (game.player_3_key === playerKey) totalPoints += game.player_3_points || 0
+      if (game.player_4_key === playerKey) totalPoints += game.player_4_points || 0
     }
 
     const pointsPerMatch = matchesPlayedCount > 0 ? totalPoints / matchesPlayedCount : 0
@@ -99,14 +92,14 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       name: playerName,
-      ipr: playerData?.ipr || 0,
+      ipr: playerData.ipr || 0,
       matchesPlayed: matchesPlayedCount,
       pointsWon: totalPoints,
       pointsPerMatch: pointsPerMatch,
       pops: pops,
       currentSeason: CURRENT_SEASON,
-      lastMatchWeek: playerData?.last_match_week,
-      team: playerData?.team || 'TWC'
+      lastMatchWeek: playerData.last_match_week,
+      team: playerData.team || 'TWC'
     })
   } catch (error) {
     console.error('Error fetching player stats:', error)

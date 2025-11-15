@@ -13,55 +13,77 @@ export async function GET(request: Request) {
       )
     }
 
-    // Query all matches to find player's top performances
-    const { data: matches, error } = await supabase
-      .from('matches')
-      .select('data, season, week')
+    // Get player's key from player_stats
+    const { data: playerData } = await supabase
+      .from('player_stats')
+      .select('player_key')
+      .eq('player_name', playerName)
+      .limit(1)
+      .single<{ player_key: string | null }>()
+
+    if (!playerData?.player_key) {
+      return NextResponse.json({ achievements: [] })
+    }
+
+    const playerKey = playerData.player_key
+
+    // Query games table for all player's games
+    const { data: gamesData, error } = await supabase
+      .from('games')
+      .select('machine, season, week, venue, player_1_key, player_1_score, player_1_points, player_2_key, player_2_score, player_2_points, player_3_key, player_3_score, player_3_points, player_4_key, player_4_score, player_4_points')
+      .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
+      .returns<Array<{
+        machine: string
+        season: number
+        week: number
+        venue: string | null
+        player_1_key: string | null
+        player_1_score: number | null
+        player_1_points: number | null
+        player_2_key: string | null
+        player_2_score: number | null
+        player_2_points: number | null
+        player_3_key: string | null
+        player_3_score: number | null
+        player_3_points: number | null
+        player_4_key: string | null
+        player_4_score: number | null
+        player_4_points: number | null
+      }>>()
 
     if (error) {
       console.error('Supabase error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Find player's key
-    let playerKey = ''
-    for (const match of (matches as any[]) || []) {
-      const homePlayer = match.data?.home?.lineup?.find((p: any) => p.name === playerName)
-      const awayPlayer = match.data?.away?.lineup?.find((p: any) => p.name === playerName)
-      if (homePlayer) playerKey = homePlayer.key
-      if (awayPlayer) playerKey = awayPlayer.key
-      if (playerKey) break
-    }
+    // Collect performances
+    const performances = (gamesData || []).map(game => {
+      let score = 0
+      let points = 0
 
-    if (!playerKey) {
-      return NextResponse.json({ achievements: [] })
-    }
-
-    // Collect all player's game performances
-    const performances: any[] = []
-
-    for (const match of (matches as any[]) || []) {
-      const rounds = match.data.rounds || []
-
-      for (const round of rounds) {
-        for (const game of round.games || []) {
-          const playerPosition = ['player_1', 'player_2', 'player_3', 'player_4']
-            .find(pos => game[pos] === playerKey)
-
-          if (playerPosition) {
-            const posNum = playerPosition.split('_')[1]
-            performances.push({
-              machine: game.machine,
-              score: game[`score_${posNum}`] || 0,
-              points: game[`points_${posNum}`] || 0,
-              season: match.season,
-              week: match.week,
-              venue: match.data.venue?.name
-            })
-          }
-        }
+      if (game.player_1_key === playerKey) {
+        score = game.player_1_score || 0
+        points = game.player_1_points || 0
+      } else if (game.player_2_key === playerKey) {
+        score = game.player_2_score || 0
+        points = game.player_2_points || 0
+      } else if (game.player_3_key === playerKey) {
+        score = game.player_3_score || 0
+        points = game.player_3_points || 0
+      } else if (game.player_4_key === playerKey) {
+        score = game.player_4_score || 0
+        points = game.player_4_points || 0
       }
-    }
+
+      return {
+        machine: game.machine,
+        score,
+        points,
+        season: game.season,
+        week: game.week,
+        venue: game.venue
+      }
+    })
 
     // Sort by score and get top 10
     const top10 = performances
