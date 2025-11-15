@@ -3,7 +3,7 @@ import { getMachinesData } from '@/lib/data-loader'
 
 export async function GET() {
   try {
-    const machinesData = getMachinesData()
+    const machinesData = await getMachinesData()
     return NextResponse.json(machinesData)
   } catch (error) {
     console.error('Error loading machines data:', error)

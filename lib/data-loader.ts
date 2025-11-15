@@ -1,36 +1,36 @@
-// Server-side data loader using filesystem
-import fs from 'fs'
-import path from 'path'
-
+// Server-side data loader
 // Cache for loaded data to avoid reading files multiple times
 const dataCache = new Map<string, any>()
 
-export function getMachinesData() {
+async function fetchData(path: string) {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const response = await fetch(`${baseUrl}${path}`, { cache: 'force-cache' })
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${path}: ${response.statusText}`)
+  }
+  return response.json()
+}
+
+export async function getMachinesData() {
   const cacheKey = 'machines'
 
   if (dataCache.has(cacheKey)) {
     return dataCache.get(cacheKey)
   }
 
-  const filePath = path.join(process.cwd(), 'public', 'mnp-data-archive', 'machines.json')
-  const fileContents = fs.readFileSync(filePath, 'utf8')
-  const data = JSON.parse(fileContents)
-
+  const data = await fetchData('/mnp-data-archive/machines.json')
   dataCache.set(cacheKey, data)
   return data
 }
 
-export function getSeasonData(season: number) {
+export async function getSeasonData(season: number) {
   const cacheKey = `season-${season}`
 
   if (dataCache.has(cacheKey)) {
     return dataCache.get(cacheKey)
   }
 
-  const filePath = path.join(process.cwd(), 'public', 'mnp-data-archive', `${season}.json`)
-  const fileContents = fs.readFileSync(filePath, 'utf8')
-  const data = JSON.parse(fileContents)
-
+  const data = await fetchData(`/mnp-data-archive/${season}.json`)
   dataCache.set(cacheKey, data)
   return data
 }

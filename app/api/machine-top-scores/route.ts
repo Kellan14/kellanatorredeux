@@ -10,7 +10,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 export async function GET(request: Request) {
   try {
-    const machinesData = getMachinesData()
+    const machinesData = await getMachinesData()
     const { searchParams } = new URL(request.url)
     const machineName = searchParams.get('machine')
     const currentSeason = 22 // Update this as needed

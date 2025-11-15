@@ -13,7 +13,7 @@ export async function GET(request: Request) {
       )
     }
 
-    const machinesData = getMachinesData()
+    const machinesData = await getMachinesData()
 
     // Find the machine key from the machine name
     const machineEntry = Object.values(machinesData).find(

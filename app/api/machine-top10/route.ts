@@ -5,7 +5,7 @@ import { getMachinesData } from '@/lib/data-loader'
 
 export async function GET(request: Request) {
   try {
-    const machinesData = getMachinesData()
+    const machinesData = await getMachinesData()
     const { searchParams } = new URL(request.url)
     const machineKey = searchParams.get('machine')
     const context = searchParams.get('context') // e.g., "League-Wide This Season", "This Season at Venue Name"
