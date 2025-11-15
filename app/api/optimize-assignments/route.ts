@@ -159,8 +159,8 @@ export async function POST(request: Request) {
       for (const machine of machines) {
         // Find best available player for this machine
         const playerScores = availablePlayers
-          .filter(player => !usedPlayers.has(player))
-          .map(player => {
+          .filter((player: string) => !usedPlayers.has(player))
+          .map((player: string) => {
             const stats = playerMachineStats[player]?.[machine]
             let score = stats?.pctOfVenue || playerOverallAvg[player] || 100
 
@@ -187,8 +187,8 @@ export async function POST(request: Request) {
       for (const machine of machines) {
         // Find best available pair for this machine
         const playerScores = availablePlayers
-          .filter(player => !usedPlayers.has(player))
-          .map(player => {
+          .filter((player: string) => !usedPlayers.has(player))
+          .map((player: string) => {
             const stats = playerMachineStats[player]?.[machine]
             let score = stats?.pctOfVenue || playerOverallAvg[player] || 100
 
