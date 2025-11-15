@@ -25,9 +25,9 @@ export async function GET(request: Request) {
 
     // Find player's key
     let playerKey = ''
-    for (const match of matches || []) {
-      const homePlayer = match.data.home?.lineup?.find((p: any) => p.name === playerName)
-      const awayPlayer = match.data.away?.lineup?.find((p: any) => p.name === playerName)
+    for (const match of (matches as any[]) || []) {
+      const homePlayer = match.data?.home?.lineup?.find((p: any) => p.name === playerName)
+      const awayPlayer = match.data?.away?.lineup?.find((p: any) => p.name === playerName)
       if (homePlayer) playerKey = homePlayer.key
       if (awayPlayer) playerKey = awayPlayer.key
       if (playerKey) break
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
     // Collect all player's game performances
     const performances: any[] = []
 
-    for (const match of matches || []) {
+    for (const match of (matches as any[]) || []) {
       const rounds = match.data.rounds || []
 
       for (const round of rounds) {
