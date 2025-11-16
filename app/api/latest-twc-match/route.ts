@@ -18,7 +18,13 @@ export async function GET() {
       .or('home_team.eq.TWC,away_team.eq.TWC')
       .order('week', { ascending: false })
       .limit(1)
-      .single()
+      .single<{
+        match_key: string
+        week: number
+        venue: string | null
+        home_team: string | null
+        away_team: string | null
+      }>()
 
     if (gameError || !gameData) {
       return NextResponse.json({
