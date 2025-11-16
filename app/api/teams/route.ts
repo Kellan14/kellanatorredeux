@@ -17,7 +17,8 @@ export async function GET(request: NextRequest) {
       .from('teams')
       .select('team_key, team_name')
       .eq('active', true)
-      .order('team_name');
+      .order('team_name')
+      .returns<Array<{ team_key: string; team_name: string }>>();
 
     if (teamsError) {
       console.error('Database error:', teamsError);
@@ -32,7 +33,8 @@ export async function GET(request: NextRequest) {
       .from('games')
       .select('home_team, away_team')
       .eq('season', parseInt(season))
-      .limit(100); // Sample to find all teams in this season
+      .limit(100)
+      .returns<Array<{ home_team: string | null; away_team: string | null }>>(); // Sample to find all teams in this season
 
     if (gamesError) {
       console.error('Database error checking season teams:', gamesError);
@@ -43,7 +45,7 @@ export async function GET(request: NextRequest) {
 
     // Collect team keys that played in this season
     const seasonTeamKeys = new Set<string>();
-    for (const game of (gamesData as any[]) || []) {
+    for (const game of gamesData || []) {
       if (game.home_team) seasonTeamKeys.add(game.home_team);
       if (game.away_team) seasonTeamKeys.add(game.away_team);
     }
