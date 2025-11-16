@@ -15,7 +15,7 @@ export interface VenueMachineLists {
 export async function GET() {
   try {
     // Fetch all venue machine lists from Supabase
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('venue_machine_lists')
       .select('venue_name, included, excluded')
 
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     }
 
     // Upsert (insert or update) the venue machine list
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('venue_machine_lists')
       .upsert({
         venue_name: venueName,
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
     }
 
     // Fetch all lists to return
-    const { data: allLists } = await supabase
+    const { data: allLists } = await (supabase as any)
       .from('venue_machine_lists')
       .select('venue_name, included, excluded')
 

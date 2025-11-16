@@ -33,10 +33,10 @@ export async function GET(request: NextRequest) {
     console.log('[processed-scores] Query result:', {
       rowCount: matchRows?.length,
       error: error?.message,
-      firstRow: matchRows?.[0] ? {
-        id: matchRows[0].id,
-        season: matchRows[0].season,
-        hasData: !!matchRows[0].data
+      firstRow: matchRows && matchRows.length > 0 ? {
+        id: (matchRows[0] as any).id,
+        season: (matchRows[0] as any).season,
+        hasData: !!(matchRows[0] as any).data
       } : null
     });
 
