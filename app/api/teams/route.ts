@@ -12,36 +12,46 @@ export async function GET(request: NextRequest) {
   const season = searchParams.get('season') || '22';
 
   try {
-    // Query matches from Supabase for this season
-    const { data: matches, error } = await supabase
-      .from('matches')
-      .select('data')
-      .eq('season', parseInt(season))
-      .limit(50); // Get first 50 matches to find all teams
+    // Query teams table directly - much simpler and faster!
+    const { data: teamsData, error: teamsError } = await supabase
+      .from('teams')
+      .select('team_key, team_name')
+      .eq('active', true)
+      .order('team_name');
 
-    if (error) {
-      console.error('Database error:', error);
+    if (teamsError) {
+      console.error('Database error:', teamsError);
       return NextResponse.json(
-        { error: 'Failed to load teams', details: error.message },
+        { error: 'Failed to load teams', details: teamsError.message },
         { status: 500 }
       );
     }
 
-    // Extract unique teams from match data
-    const teamMap = new Map<string, string>();
+    // Filter teams that actually played in this season by checking games table
+    const { data: gamesData, error: gamesError } = await supabase
+      .from('games')
+      .select('home_team, away_team')
+      .eq('season', parseInt(season))
+      .limit(100); // Sample to find all teams in this season
 
-    for (const match of (matches as any[]) || []) {
-      if (match.data?.home?.key && match.data?.home?.name) {
-        teamMap.set(match.data.home.key, match.data.home.name);
-      }
-      if (match.data?.away?.key && match.data?.away?.name) {
-        teamMap.set(match.data.away.key, match.data.away.name);
-      }
+    if (gamesError) {
+      console.error('Database error checking season teams:', gamesError);
+      // Return all teams if we can't filter by season
+      const teams = (teamsData || []).map(t => ({ key: t.team_key, name: t.team_name }));
+      return NextResponse.json({ teams });
     }
 
-    const teams = Array.from(teamMap.entries())
-      .map(([key, name]) => ({ key, name }))
-      .sort((a, b) => a.name.localeCompare(b.name));
+    // Collect team keys that played in this season
+    const seasonTeamKeys = new Set<string>();
+    for (const game of (gamesData as any[]) || []) {
+      if (game.home_team) seasonTeamKeys.add(game.home_team);
+      if (game.away_team) seasonTeamKeys.add(game.away_team);
+    }
+
+    // Filter teams to only those that played in this season
+    const teams = (teamsData || [])
+      .filter(t => seasonTeamKeys.has(t.team_key))
+      .map(t => ({ key: t.team_key, name: t.team_name }));
 
     return NextResponse.json({ teams });
   } catch (error) {

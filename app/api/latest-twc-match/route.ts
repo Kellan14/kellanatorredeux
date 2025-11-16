@@ -10,17 +10,17 @@ export const revalidate = 3600
 
 export async function GET() {
   try {
-    // Query latest TWC match from database
-    const { data, error } = await supabase
-      .from('matches')
-      .select('*')
+    // Query latest TWC game from games table (faster than matches)
+    const { data: gameData, error: gameError } = await supabase
+      .from('games')
+      .select('match_key, week, venue, home_team, away_team')
       .eq('season', CURRENT_SEASON)
       .or('home_team.eq.TWC,away_team.eq.TWC')
       .order('week', { ascending: false })
       .limit(1)
       .single()
 
-    if (error || !data) {
+    if (gameError || !gameData) {
       return NextResponse.json({
         venue: 'Georgetown Pizza and Arcade',
         opponent: null,
@@ -28,23 +28,30 @@ export async function GET() {
       })
     }
 
-    // Type assertion for the match data
-    const match = data as any
+    // Determine opponent from team columns
+    const opponentTeamKey = gameData.home_team === 'TWC' ? gameData.away_team : gameData.home_team
 
-    // Determine opponent - TWC could be home or away
-    let opponent = ''
-    if (match.home_team === 'TWC') {
-      opponent = match.data?.away?.name || match.away_team
-    } else {
-      opponent = match.data?.home?.name || match.home_team
-    }
+    // Get opponent name from teams table (fast indexed lookup)
+    const { data: teamData } = await supabase
+      .from('teams')
+      .select('team_name')
+      .eq('team_key', opponentTeamKey)
+      .single()
+
+    // Get match state from matches table (only if needed)
+    const { data: matchData } = await supabase
+      .from('matches')
+      .select('data')
+      .eq('match_key', gameData.match_key)
+      .limit(1)
+      .single()
 
     return NextResponse.json({
-      venue: match.venue_name || 'Georgetown Pizza and Arcade',
-      opponent: opponent,
-      matchKey: match.match_key,
-      week: match.week,
-      state: match.state
+      venue: gameData.venue || 'Georgetown Pizza and Arcade',
+      opponent: teamData?.team_name || opponentTeamKey || '',
+      matchKey: gameData.match_key,
+      week: gameData.week,
+      state: matchData?.data?.state || 'unknown'
     })
   } catch (error) {
     console.error('Error finding latest TWC match:', error)
