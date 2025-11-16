@@ -53,6 +53,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform games data to ProcessedScore format
+    // After running the migration, all team data is denormalized in the games table
     const processedScores: ProcessedScore[] = [];
 
     gamesData.forEach((game: any) => {
@@ -66,19 +67,23 @@ export async function GET(request: NextRequest) {
 
         if (!playerKey || score === null || score === undefined) continue;
 
+        // Calculate is_pick: home team picks odd rounds, away team picks even rounds
+        const isHomeTeam = team === game.home_team;
+        const isPick = game.round_number % 2 === 1 ? isHomeTeam : !isHomeTeam;
+
         processedScores.push({
           season: game.season || 0,
           week: game.week,
           match: game.match_key,
-          round: game.round,
+          round: game.round_number,
           venue: game.venue || '',
           machine: (game.machine || '').toLowerCase(),
           player_name: playerName || 'Unknown',
           team: team || '',
-          team_name: game[`player_${i}_team_name`] || team || '',
+          team_name: team || '', // Team key is used as name for now
           score: score,
           points: points || 0,
-          is_pick: game.is_pick || false,
+          is_pick: isPick,
           is_roster_player: true
         });
       }
