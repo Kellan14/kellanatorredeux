@@ -138,12 +138,25 @@ export class TournamentDataService {
       return this.processedCache.get(cacheKey)!;
     }
 
-    // Load real MNP data
-    const mnpMatches = await this.loadMNPSeasonData(seasons);
-    const processed = processMNPMatchData(mnpMatches);
+    try {
+      // Call the server-side processing API for better performance
+      const seasonsParam = seasons.join(',');
+      const response = await fetch(`/api/processed-scores?seasons=${seasonsParam}`);
 
-    this.processedCache.set(cacheKey, processed);
-    return processed;
+      if (!response.ok) {
+        console.warn(`Failed to load processed scores for seasons ${seasons}`);
+        return [];
+      }
+
+      const data = await response.json();
+      const processed = data.scores || [];
+
+      this.processedCache.set(cacheKey, processed);
+      return processed;
+    } catch (error) {
+      console.error(`Error loading processed scores for seasons ${seasons}:`, error);
+      return [];
+    }
   }
 
   // Load sample data for development
