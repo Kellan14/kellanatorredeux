@@ -58,8 +58,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Extract the nested 'data' property from each database row
+    // and merge in the season from the top level
     const matches: MNPMatch[] = matchRows
-      .map((m: any) => m.data)
+      .map((m: any) => m.data ? { ...m.data, season: m.season } : null)
       .filter((d: any) => d);
 
     console.log('[processed-scores] Extracted matches:', matches.length);

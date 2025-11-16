@@ -36,8 +36,9 @@ export class TournamentDataService {
 
       const data = await response.json();
       // Extract the nested 'data' property from each database row
+      // and merge in the season from the top level
       const matches: MNPMatch[] = (data.matches || [])
-        .map((m: any) => m.data)
+        .map((m: any) => m.data ? { ...m.data, season: m.season } : null)
         .filter((d: any) => d); // Filter out any null/undefined data
 
       this.mnpMatchCache.set(cacheKey, matches);
