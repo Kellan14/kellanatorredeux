@@ -138,12 +138,42 @@ export class TournamentDataService {
       return this.processedCache.get(cacheKey)!;
     }
 
-    // Load real MNP data and process client-side
-    const mnpMatches = await this.loadMNPSeasonData(seasons);
-    const processed = processMNPMatchData(mnpMatches);
+    try {
+      // Call the server-side processing API for better performance
+      const seasonsParam = seasons.join(',');
+      console.log('[data-service] Calling /api/processed-scores with seasons:', seasonsParam);
 
-    this.processedCache.set(cacheKey, processed);
-    return processed;
+      const response = await fetch(`/api/processed-scores?seasons=${seasonsParam}`);
+
+      console.log('[data-service] Response status:', response.status, response.statusText);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.warn(`[data-service] Failed to load processed scores:`, errorText.substring(0, 200));
+        // Fall back to client-side processing
+        console.log('[data-service] Falling back to client-side processing');
+        const mnpMatches = await this.loadMNPSeasonData(seasons);
+        const processed = processMNPMatchData(mnpMatches);
+        this.processedCache.set(cacheKey, processed);
+        return processed;
+      }
+
+      const data = await response.json();
+      const processed = data.scores || [];
+
+      console.log('[data-service] Received processed scores:', processed.length);
+
+      this.processedCache.set(cacheKey, processed);
+      return processed;
+    } catch (error) {
+      console.error(`[data-service] Error loading processed scores:`, error);
+      // Fall back to client-side processing
+      console.log('[data-service] Falling back to client-side processing due to error');
+      const mnpMatches = await this.loadMNPSeasonData(seasons);
+      const processed = processMNPMatchData(mnpMatches);
+      this.processedCache.set(cacheKey, processed);
+      return processed;
+    }
   }
 
   // Load sample data for development
