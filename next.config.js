@@ -5,6 +5,13 @@ const nextConfig = {
   //   typedRoutes: true,
   // },
 
+  // Prevent build trace collection issues
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': ['node_modules/@swc/core-linux-x64-gnu', 'node_modules/@swc/core-linux-x64-musl', '.git/**/*'],
+    },
+  },
+
   // Suppress Pages Router file generation
   poweredByHeader: false,
 
