@@ -38,11 +38,15 @@ export async function GET() {
     const opponentTeamKey = gameData.home_team === 'TWC' ? gameData.away_team : gameData.home_team
 
     // Get opponent name from teams table (fast indexed lookup)
-    const { data: teamData } = await supabase
-      .from('teams')
-      .select('team_name')
-      .eq('team_key', opponentTeamKey)
-      .single()
+    let teamData = null
+    if (opponentTeamKey) {
+      const result = await supabase
+        .from('teams')
+        .select('team_name')
+        .eq('team_key', opponentTeamKey)
+        .single()
+      teamData = result.data
+    }
 
     // Get match state from matches table (only if needed)
     const { data: matchData } = await supabase
