@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    console.log('[processed-scores] Processed scores:', processedScores.length);
+    console.log('[processed-scores] Processed scores from games table:', processedScores.length);
 
     return NextResponse.json({
       scores: processedScores,
