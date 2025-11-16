@@ -8,6 +8,11 @@ const nextConfig = {
   // Use standalone output to avoid build trace issues
   output: 'standalone',
 
+  // Completely disable output file tracing to avoid stack overflow
+  experimental: {
+    outputFileTracingRoot: undefined,
+  },
+
   // Suppress Pages Router file generation
   poweredByHeader: false,
 
