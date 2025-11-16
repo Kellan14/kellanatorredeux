@@ -54,7 +54,7 @@ export async function GET() {
       .select('data')
       .eq('match_key', gameData.match_key)
       .limit(1)
-      .single()
+      .single<{ data: any }>()
 
     return NextResponse.json({
       venue: gameData.venue || 'Georgetown Pizza and Arcade',
