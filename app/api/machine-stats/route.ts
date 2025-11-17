@@ -223,15 +223,16 @@ function calculateMachineStatsServerSide(
     ? venueData.filter(d => d.team_name.toLowerCase() === opponentName.toLowerCase())
     : seasonData.filter(d => d.team_name.toLowerCase() === opponentName.toLowerCase());
 
-  // Get machines that appear in the most recent season at this venue
+  // Get machines that appear at this venue in the MOST RECENT season only
+  // This matches expected behavior: show current machines at the venue
   const latestSeason = seasons[1];
   const latestSeasonVenueData = venueData.filter(d => d.season === latestSeason);
   const recentMachines = new Set(latestSeasonVenueData.map(d => d.machine));
 
-  // Get unique machines from venue, but only those that appear in the most recent season
+  // Get unique machines from most recent season at venue
   let machines = Array.from(recentMachines).sort();
 
-  // Apply venue machine list overrides (included/excluded machines)
+  // Apply venue machine list overrides (adds/removes machines as configured)
   machines = applyVenueMachineListOverrides(venueName, machines);
 
   const stats: MachineStats[] = [];
