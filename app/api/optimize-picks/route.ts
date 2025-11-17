@@ -96,8 +96,8 @@ export async function POST(request: Request) {
       let bestAvg = 0
       let bestCount = 0
 
-      for (const [machine, stats] of playerStats.entries()) {
-        if (!machinesAtVenue.includes(machine)) continue
+      Array.from(playerStats.entries()).forEach(([machine, stats]) => {
+        if (!machinesAtVenue.includes(machine)) return
 
         const avg = stats.total / stats.count
 
@@ -106,7 +106,7 @@ export async function POST(request: Request) {
           bestMachine = machine
           bestCount = stats.count
         }
-      }
+      })
 
       return {
         player,
