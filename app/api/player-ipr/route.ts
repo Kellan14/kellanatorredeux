@@ -76,16 +76,25 @@ export async function GET(request: Request) {
         uniqueMatches.add(game.match_key)
       }
 
-      // Calculate total possible points in this game
+      // Find this player's points
+      let playerPoints = 0
+      if (game.player_1_key === playerKey) {
+        playerPoints = game.player_1_points || 0
+      } else if (game.player_2_key === playerKey) {
+        playerPoints = game.player_2_points || 0
+      } else if (game.player_3_key === playerKey) {
+        playerPoints = game.player_3_points || 0
+      } else if (game.player_4_key === playerKey) {
+        playerPoints = game.player_4_points || 0
+      }
+
+      totalPoints += playerPoints
+
+      // Calculate total possible points in this game (sum all non-null player points)
+      // Games can have 2 players (1v1) or 4 players (2v2)
       const gameTotal = (game.player_1_points || 0) + (game.player_2_points || 0) +
                        (game.player_3_points || 0) + (game.player_4_points || 0)
       totalPossiblePoints += gameTotal
-
-      // Add this player's points
-      if (game.player_1_key === playerKey) totalPoints += game.player_1_points || 0
-      if (game.player_2_key === playerKey) totalPoints += game.player_2_points || 0
-      if (game.player_3_key === playerKey) totalPoints += game.player_3_points || 0
-      if (game.player_4_key === playerKey) totalPoints += game.player_4_points || 0
     }
 
     const matchesPlayedCount = uniqueMatches.size
