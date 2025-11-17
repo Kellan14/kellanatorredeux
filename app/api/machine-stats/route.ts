@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, fetchAllRecords } from '@/lib/supabase';
 import { type MachineStats, type ProcessedScore } from '@/lib/tournament-data';
 import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists';
 
@@ -72,39 +72,25 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch all games for the requested seasons from Supabase
-    // Note: Supabase defaults to 1000 row limit, we need to paginate to get all games
-    let gamesData: any[] = [];
-    let hasMore = true;
-    let offset = 0;
-    const pageSize = 1000;
-
-    while (hasMore) {
-      const { data: page, error } = await supabase
-        .from('games')
-        .select('*')
-        .in('season', seasonList)
-        .order('season', { ascending: false })
-        .order('week', { ascending: false })
-        .range(offset, offset + pageSize - 1);
-
-      if (error) {
-        console.error('[machine-stats] Database error:', error);
-        return NextResponse.json(
-          { error: 'Failed to load games data', details: error.message },
-          { status: 500 }
-        );
-      }
-
-      if (!page || page.length === 0) {
-        hasMore = false;
-      } else {
-        gamesData = gamesData.concat(page);
-        offset += pageSize;
-        hasMore = page.length === pageSize;
-      }
+    let gamesData: any[];
+    try {
+      gamesData = await fetchAllRecords(
+        supabase
+          .from('games')
+          .select('*')
+          .in('season', seasonList)
+          .order('season', { ascending: false })
+          .order('week', { ascending: false })
+      );
+    } catch (error: any) {
+      console.error('[machine-stats] Database error:', error);
+      return NextResponse.json(
+        { error: 'Failed to load games data', details: error.message },
+        { status: 500 }
+      );
     }
 
-    console.log(`[machine-stats] Fetched ${gamesData.length} games total across all pages`);
+    console.log(`[machine-stats] Fetched ${gamesData.length} games total`);
 
     if (!gamesData || gamesData.length === 0) {
       console.log('[machine-stats] No games found for seasons:', seasonList);
