@@ -168,9 +168,12 @@ export async function GET(request: Request) {
         // Get top 10 scores (may include duplicates from same player)
         const top10Scores = allSortedScores.slice(0, 10)
 
-        // Check if player has any score in the top 10
-        const playerEntry = top10Scores.find(s => s.playerKey === playerKey)
-        if (playerEntry) {
+        // Check if player has any score in the top 10 - find their HIGHEST score
+        const playerScoresInTop10 = top10Scores.filter(s => s.playerKey === playerKey)
+        if (playerScoresInTop10.length > 0) {
+          // Get the highest score for this player in the top 10
+          const playerEntry = playerScoresInTop10[0] // Already sorted, so first is highest
+
           // Find the rank of this specific score among ALL scores
           // Rank is based on how many scores are higher
           const rank = allSortedScores.filter(s => s.score > playerEntry.score).length + 1
@@ -197,9 +200,12 @@ export async function GET(request: Request) {
         // Get top 10 scores (may include duplicates from same player)
         const top10Scores = allSortedScores.slice(0, 10)
 
-        // Check if player has any score in the top 10
-        const playerEntry = top10Scores.find(s => s.playerKey === playerKey)
-        if (playerEntry) {
+        // Check if player has any score in the top 10 - find their HIGHEST score
+        const playerScoresInTop10 = top10Scores.filter(s => s.playerKey === playerKey)
+        if (playerScoresInTop10.length > 0) {
+          // Get the highest score for this player in the top 10
+          const playerEntry = playerScoresInTop10[0] // Already sorted, so first is highest
+
           // Find the rank of this specific score among ALL scores
           // Rank is based on how many scores are higher
           const rank = allSortedScores.filter(s => s.score > playerEntry.score).length + 1
