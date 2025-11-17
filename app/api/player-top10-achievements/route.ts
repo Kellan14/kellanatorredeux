@@ -302,10 +302,29 @@ export async function GET(request: Request) {
       return a.machine.localeCompare(b.machine)
     })
 
+    // Debug: Find Aerosmith specifically
+    const aerosmithDebug = {
+      totalScoresCollected: allTimeScores.filter(s => s.machine === 'Aerosmith').length,
+      top10Scores: allTimeScores
+        .filter(s => s.machine === 'Aerosmith')
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10)
+        .map((s, i) => ({
+          rank: i + 1,
+          player: s.playerName,
+          score: s.score,
+          playerKey: s.playerKey,
+          isYou: s.playerKey === playerKey
+        }))
+    }
+
     return NextResponse.json({
       achievements: sortedAchievements,
       count: sortedAchievements.length,
-      playerKey: playerKey // Include for debugging
+      playerKey: playerKey,
+      debug: {
+        aerosmith: aerosmithDebug
+      }
     })
 
   } catch (error) {
