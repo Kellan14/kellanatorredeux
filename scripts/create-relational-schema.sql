@@ -23,24 +23,36 @@ CREATE TABLE IF NOT EXISTS games (
   player_1_name TEXT,
   player_1_score BIGINT,
   player_1_points DECIMAL,
+  player_1_team TEXT,
+  player_1_is_pick BOOLEAN,
 
   -- Player 2
   player_2_key TEXT,
   player_2_name TEXT,
   player_2_score BIGINT,
   player_2_points DECIMAL,
+  player_2_team TEXT,
+  player_2_is_pick BOOLEAN,
 
   -- Player 3 (optional - 2-player games won't have this)
   player_3_key TEXT,
   player_3_name TEXT,
   player_3_score BIGINT,
   player_3_points DECIMAL,
+  player_3_team TEXT,
+  player_3_is_pick BOOLEAN,
 
   -- Player 4 (optional - 2-player games won't have this)
   player_4_key TEXT,
   player_4_name TEXT,
   player_4_score BIGINT,
   player_4_points DECIMAL,
+  player_4_team TEXT,
+  player_4_is_pick BOOLEAN,
+
+  -- Match teams
+  home_team TEXT,
+  away_team TEXT,
 
   -- Team scoring
   away_points DECIMAL,
@@ -61,6 +73,14 @@ CREATE INDEX IF NOT EXISTS idx_games_player_1_key ON games(player_1_key) WHERE p
 CREATE INDEX IF NOT EXISTS idx_games_player_2_key ON games(player_2_key) WHERE player_2_key IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_games_player_3_key ON games(player_3_key) WHERE player_3_key IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_games_player_4_key ON games(player_4_key) WHERE player_4_key IS NOT NULL;
+
+-- Team indexes for filtering by team
+CREATE INDEX IF NOT EXISTS idx_games_home_team ON games(home_team) WHERE home_team IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_games_away_team ON games(away_team) WHERE away_team IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_games_player_1_team ON games(player_1_team) WHERE player_1_team IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_games_player_2_team ON games(player_2_team) WHERE player_2_team IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_games_player_3_team ON games(player_3_team) WHERE player_3_team IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_games_player_4_team ON games(player_4_team) WHERE player_4_team IS NOT NULL;
 
 -- Composite indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_games_season_machine ON games(season, machine);

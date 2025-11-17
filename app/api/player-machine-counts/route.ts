@@ -52,37 +52,63 @@ export async function GET(request: Request) {
       })
     }
 
-    // Query games with pagination
-    let query = supabase
+    // Query games at venue (if specified)
+    let venueGamesData: Array<{
+      machine: string
+      player_1_key: string | null
+      player_2_key: string | null
+      player_3_key: string | null
+      player_4_key: string | null
+    }> = []
+
+    if (venue) {
+      let venueQuery = supabase
+        .from('games')
+        .select('machine, player_1_key, player_2_key, player_3_key, player_4_key')
+        .gte('season', seasonStart)
+        .lte('season', seasonEnd)
+        .eq('venue', venue)
+        .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
+
+      try {
+        venueGamesData = await fetchAllRecords<{
+          machine: string
+          player_1_key: string | null
+          player_2_key: string | null
+          player_3_key: string | null
+          player_4_key: string | null
+        }>(venueQuery)
+      } catch (error) {
+        console.error('Error fetching venue games:', error)
+        return NextResponse.json({ error: 'Database error' }, { status: 500 })
+      }
+    }
+
+    // Query all games (all venues)
+    let allVenuesQuery = supabase
       .from('games')
       .select('machine, player_1_key, player_2_key, player_3_key, player_4_key')
       .gte('season', seasonStart)
       .lte('season', seasonEnd)
       .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
 
-    if (venue) {
-      query = query.eq('venue', venue)
-    }
-
-    let gamesData
+    let allGamesData
     try {
-      gamesData = await fetchAllRecords<{
+      allGamesData = await fetchAllRecords<{
         machine: string
         player_1_key: string | null
         player_2_key: string | null
         player_3_key: string | null
         player_4_key: string | null
-      }>(query)
+      }>(allVenuesQuery)
     } catch (error) {
-      console.error('Error fetching games:', error)
+      console.error('Error fetching all games:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
-    // Count games per machine
-    const counts: Record<string, number> = {}
-    let totalGames = 0
-
-    for (const game of gamesData) {
+    // Count games per machine for venue-specific
+    const venueCounts: Record<string, number> = {}
+    for (const game of venueGamesData) {
       const isPlayerGame =
         game.player_1_key === playerKey ||
         game.player_2_key === playerKey ||
@@ -90,8 +116,39 @@ export async function GET(request: Request) {
         game.player_4_key === playerKey
 
       if (isPlayerGame) {
-        counts[game.machine] = (counts[game.machine] || 0) + 1
+        venueCounts[game.machine] = (venueCounts[game.machine] || 0) + 1
+      }
+    }
+
+    // Count games per machine for all venues
+    const allVenuesCounts: Record<string, number> = {}
+    let totalGames = 0
+    for (const game of allGamesData) {
+      const isPlayerGame =
+        game.player_1_key === playerKey ||
+        game.player_2_key === playerKey ||
+        game.player_3_key === playerKey ||
+        game.player_4_key === playerKey
+
+      if (isPlayerGame) {
+        allVenuesCounts[game.machine] = (allVenuesCounts[game.machine] || 0) + 1
         totalGames++
+      }
+    }
+
+    // Combine into the expected format: { machine: { atVenue: X, allVenues: Y } }
+    const counts: Record<string, { atVenue: number; allVenues: number }> = {}
+
+    // Get all machines from both datasets
+    const allMachines = new Set([
+      ...Object.keys(venueCounts),
+      ...Object.keys(allVenuesCounts)
+    ])
+
+    for (const machine of allMachines) {
+      counts[machine] = {
+        atVenue: venueCounts[machine] || 0,
+        allVenues: allVenuesCounts[machine] || 0
       }
     }
 
