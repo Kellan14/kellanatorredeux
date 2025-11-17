@@ -71,9 +71,9 @@ export async function POST(request: Request) {
     }
 
     // Convert to averages
-    for (const [player, machineStats] of playerMachineStats.entries()) {
+    for (const [player, machineStats] of Array.from(playerMachineStats.entries())) {
       const avgMap = new Map<string, number>()
-      for (const [machine, stats] of machineStats.entries()) {
+      for (const [machine, stats] of Array.from(machineStats.entries())) {
         avgMap.set(machine, stats.total / stats.count)
       }
       playerMachineAvgs.set(player, avgMap)
