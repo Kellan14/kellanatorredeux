@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, fetchAllRecords } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,20 +45,23 @@ export async function GET(request: NextRequest) {
     console.log('[cell-details] Target team:', targetTeam, 'isTWCColumn:', isTWCColumn);
 
     // Query games from Supabase for the specified machine, venue, and seasons
-    const { data: gamesData, error } = await supabase
-      .from('games')
-      .select('*')
-      .gte('season', seasonStart)
-      .lte('season', seasonEnd)
-      .eq('venue', venue)
-      .ilike('machine', machine);
-
-    if (error) {
-      console.error('[cell-details] Database error:', error);
+    let gamesData
+    try {
+      gamesData = await fetchAllRecords(
+        supabase
+          .from('games')
+          .select('*')
+          .gte('season', seasonStart)
+          .lte('season', seasonEnd)
+          .eq('venue', venue)
+          .ilike('machine', machine)
+      )
+    } catch (error) {
+      console.error('[cell-details] Database error:', error)
       return NextResponse.json(
-        { error: 'Failed to load game data', details: error.message },
+        { error: 'Failed to load game data', details: error instanceof Error ? error.message : 'Unknown error' },
         { status: 500 }
-      );
+      )
     }
 
     if (!gamesData || gamesData.length === 0) {

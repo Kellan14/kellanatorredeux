@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 
 // API route to get unique teams from Supabase
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, fetchAllRecords } from '@/lib/supabase';
 
 // Cache for 24 hours since teams rarely change
 export const revalidate = 86400
@@ -30,12 +30,19 @@ export async function GET(request: NextRequest) {
 
     // Filter teams that played OR have lineups in this season
     // Check both games table (completed matches) and player_match_participation (all matches including upcoming)
-    const { data: gamesData, error: gamesError } = await supabase
-      .from('games')
-      .select('home_team, away_team')
-      .eq('season', parseInt(season))
-      .limit(100)
-      .returns<Array<{ home_team: string | null; away_team: string | null }>>(); // Sample to find all teams in this season
+    let gamesData
+    let gamesError
+    try {
+      gamesData = await fetchAllRecords<{ home_team: string | null; away_team: string | null }>(
+        supabase
+          .from('games')
+          .select('home_team, away_team')
+          .eq('season', parseInt(season))
+      )
+    } catch (error) {
+      console.error('Error fetching games:', error)
+      gamesError = error
+    }
 
     const { data: participationData, error: participationError } = await supabase
       .from('player_match_participation')

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, fetchAllRecords } from '@/lib/supabase';
 import { type ProcessedScore } from '@/lib/tournament-data';
 
 export const dynamic = 'force-dynamic';
@@ -22,26 +22,28 @@ export async function GET(request: NextRequest) {
     const seasonList = seasons.split(',').map(s => parseInt(s.trim()));
     console.log('[processed-scores] Season list:', seasonList);
 
-    // Query games table directly for much faster performance
-    const { data: gamesData, error } = await supabase
-      .from('games')
-      .select('*')
-      .in('season', seasonList)
-      .order('season', { ascending: false })
-      .order('week', { ascending: false });
+    // Query games table directly for much faster performance with pagination
+    let gamesData
+    try {
+      gamesData = await fetchAllRecords(
+        supabase
+          .from('games')
+          .select('*')
+          .in('season', seasonList)
+          .order('season', { ascending: false })
+          .order('week', { ascending: false })
+      )
+    } catch (error) {
+      console.error('[processed-scores] Database error:', error)
+      return NextResponse.json(
+        { error: 'Failed to load games data', details: error instanceof Error ? error.message : 'Unknown error' },
+        { status: 500 }
+      )
+    }
 
     console.log('[processed-scores] Query result:', {
-      rowCount: gamesData?.length,
-      error: error?.message
+      rowCount: gamesData?.length
     });
-
-    if (error) {
-      console.error('[processed-scores] Database error:', error);
-      return NextResponse.json(
-        { error: 'Failed to load games data', details: error.message },
-        { status: 500 }
-      );
-    }
 
     if (!gamesData || gamesData.length === 0) {
       console.log('[processed-scores] No games found for seasons:', seasonList);

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists'
 
 export const dynamic = 'force-dynamic';
@@ -77,12 +77,19 @@ export async function GET(request: Request) {
 
     // Get machines from the most recent season at this venue (matches machine-stats logic)
     const latestSeason = seasonEnd
-    const { data: venueMachinesData } = await supabase
-      .from('games')
-      .select('machine')
-      .eq('venue', venue)
-      .eq('season', latestSeason)
-      .returns<Array<{ machine: string }>>()
+    let venueMachinesData
+    try {
+      venueMachinesData = await fetchAllRecords<{ machine: string }>(
+        supabase
+          .from('games')
+          .select('machine')
+          .eq('venue', venue)
+          .eq('season', latestSeason)
+      )
+    } catch (error) {
+      console.error('Error fetching venue machines:', error)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
 
     // Get unique machines and apply venue machine list overrides
     let machinesAtVenue = Array.from(new Set(venueMachinesData?.map(g => g.machine) || []))
@@ -111,46 +118,49 @@ export async function GET(request: Request) {
       playerQuery = playerQuery.eq('venue', venue)
     }
 
-    const { data: playerGamesData, error: playerError } = await playerQuery.returns<Array<{
-      machine: string
-      venue: string | null
-      player_1_key: string | null
-      player_1_score: number | null
-      player_1_points: number | null
-      player_2_key: string | null
-      player_2_score: number | null
-      player_2_points: number | null
-      player_3_key: string | null
-      player_3_score: number | null
-      player_3_points: number | null
-      player_4_key: string | null
-      player_4_score: number | null
-      player_4_points: number | null
-    }>>()
-
-    if (playerError) {
-      console.error('Supabase error:', playerError)
-      return NextResponse.json({ error: playerError.message }, { status: 500 })
+    let playerGamesData
+    try {
+      playerGamesData = await fetchAllRecords<{
+        machine: string
+        venue: string | null
+        player_1_key: string | null
+        player_1_score: number | null
+        player_1_points: number | null
+        player_2_key: string | null
+        player_2_score: number | null
+        player_2_points: number | null
+        player_3_key: string | null
+        player_3_score: number | null
+        player_3_points: number | null
+        player_4_key: string | null
+        player_4_score: number | null
+        player_4_points: number | null
+      }>(playerQuery)
+    } catch (error) {
+      console.error('Error fetching player games:', error)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
     // Step 3: Get all games at the venue for calculating venue averages
-    const { data: venueGamesData, error: venueError } = await supabase
-      .from('games')
-      .select('machine, player_1_score, player_2_score, player_3_score, player_4_score')
-      .eq('venue', venue)
-      .gte('season', seasonStart)
-      .lte('season', seasonEnd)
-      .returns<Array<{
+    let venueGamesData
+    try {
+      venueGamesData = await fetchAllRecords<{
         machine: string
         player_1_score: number | null
         player_2_score: number | null
         player_3_score: number | null
         player_4_score: number | null
-      }>>()
-
-    if (venueError) {
-      console.error('Supabase error:', venueError)
-      return NextResponse.json({ error: venueError.message }, { status: 500 })
+      }>(
+        supabase
+          .from('games')
+          .select('machine, player_1_score, player_2_score, player_3_score, player_4_score')
+          .eq('venue', venue)
+          .gte('season', seasonStart)
+          .lte('season', seasonEnd)
+      )
+    } catch (error) {
+      console.error('Error fetching venue games:', error)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
     // Step 4: Process player's games (only for machines at the venue)

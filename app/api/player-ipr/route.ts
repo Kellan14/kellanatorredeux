@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, fetchAllRecords } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic';
 
@@ -49,12 +49,9 @@ export async function GET(request: Request) {
     const playerKey = playerData.player_key
 
     // Query games table to get all games and calculate stats (single query, no player_match_participation needed)
-    const { data: gamesData } = await supabase
-      .from('games')
-      .select('match_key, player_1_key, player_1_points, player_2_key, player_2_points, player_3_key, player_3_points, player_4_key, player_4_points')
-      .eq('season', CURRENT_SEASON)
-      .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
-      .returns<Array<{
+    let gamesData
+    try {
+      gamesData = await fetchAllRecords<{
         match_key: string
         player_1_key: string | null
         player_1_points: number | null
@@ -64,7 +61,17 @@ export async function GET(request: Request) {
         player_3_points: number | null
         player_4_key: string | null
         player_4_points: number | null
-      }>>()
+      }>(
+        supabase
+          .from('games')
+          .select('match_key, player_1_key, player_1_points, player_2_key, player_2_points, player_3_key, player_3_points, player_4_key, player_4_points')
+          .eq('season', CURRENT_SEASON)
+          .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
+      )
+    } catch (error) {
+      console.error('Error fetching player games:', error)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
 
     let totalPoints = 0
     let totalPossiblePoints = 0
