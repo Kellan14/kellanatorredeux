@@ -22,15 +22,24 @@ export async function GET(request: Request) {
       )
     }
 
-    // Get player's key from player_stats
-    const { data: playerData } = await supabase
-      .from('player_stats')
-      .select('player_key')
-      .eq('player_name', player)
+    // Get player's key from games table (works for all players, not just TWC)
+    const { data: sampleGames } = await supabase
+      .from('games')
+      .select('player_1_key, player_1_name, player_2_key, player_2_name, player_3_key, player_3_name, player_4_key, player_4_name')
+      .or(`player_1_name.eq.${player},player_2_name.eq.${player},player_3_name.eq.${player},player_4_name.eq.${player}`)
       .limit(1)
-      .single<{ player_key: string | null }>()
 
-    if (!playerData?.player_key) {
+    let playerKey: string | null = null
+
+    if (sampleGames && sampleGames.length > 0) {
+      const game = sampleGames[0]
+      if (game.player_1_name === player) playerKey = game.player_1_key
+      else if (game.player_2_name === player) playerKey = game.player_2_key
+      else if (game.player_3_name === player) playerKey = game.player_3_key
+      else if (game.player_4_name === player) playerKey = game.player_4_key
+    }
+
+    if (!playerKey) {
       return NextResponse.json({
         player,
         totalGames: 0,
@@ -40,8 +49,6 @@ export async function GET(request: Request) {
         allVenues
       })
     }
-
-    const playerKey = playerData.player_key
 
     // Query games table directly with SQL filters
     let query = supabase
@@ -77,54 +84,106 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Analyze performance
+    // Analyze performance and calculate venue averages
     const machineStats = new Map()
     const venuesSet = new Set()
+    const venueScores = new Map() // For calculating venue averages
     let totalGames = 0
 
+    // First pass: collect player stats and all scores for venue averages
     for (const game of gamesData || []) {
       if (game.venue) venuesSet.add(game.venue)
 
-      let points = 0
-      let score = 0
+      let playerPoints = 0
+      let playerScore = 0
+      let isPlayerGame = false
 
       if (game.player_1_key === playerKey) {
-        points = game.player_1_points || 0
-        score = game.player_1_score || 0
+        playerPoints = game.player_1_points || 0
+        playerScore = game.player_1_score || 0
+        isPlayerGame = true
       } else if (game.player_2_key === playerKey) {
-        points = game.player_2_points || 0
-        score = game.player_2_score || 0
+        playerPoints = game.player_2_points || 0
+        playerScore = game.player_2_score || 0
+        isPlayerGame = true
       } else if (game.player_3_key === playerKey) {
-        points = game.player_3_points || 0
-        score = game.player_3_score || 0
+        playerPoints = game.player_3_points || 0
+        playerScore = game.player_3_score || 0
+        isPlayerGame = true
       } else if (game.player_4_key === playerKey) {
-        points = game.player_4_points || 0
-        score = game.player_4_score || 0
+        playerPoints = game.player_4_points || 0
+        playerScore = game.player_4_score || 0
+        isPlayerGame = true
       }
 
       const machine = game.machine
 
-      if (!machineStats.has(machine)) {
-        machineStats.set(machine, {
-          machine,
-          gamesPlayed: 0,
-          totalPoints: 0,
-          avgPoints: 0,
-          bestScore: 0
-        })
+      // Track player stats
+      if (isPlayerGame) {
+        if (!machineStats.has(machine)) {
+          machineStats.set(machine, {
+            machine,
+            gamesPlayed: 0,
+            totalPoints: 0,
+            totalScore: 0,
+            avgPoints: 0,
+            avgScore: 0,
+            bestScore: 0,
+            timesPlayed: 0
+          })
+        }
+
+        const stats = machineStats.get(machine)
+        stats.gamesPlayed++
+        stats.timesPlayed++
+        stats.totalPoints += playerPoints
+        stats.totalScore += playerScore
+        stats.bestScore = Math.max(stats.bestScore, playerScore)
+        totalGames++
       }
 
-      const stats = machineStats.get(machine)
-      stats.gamesPlayed++
-      stats.totalPoints += points
-      stats.bestScore = Math.max(stats.bestScore, score)
-      totalGames++
+      // Track all scores for venue averages (from all players)
+      const venueKey = `${machine}`
+      if (!venueScores.has(venueKey)) {
+        venueScores.set(venueKey, { totalScore: 0, count: 0 })
+      }
+      const venueData = venueScores.get(venueKey)!
+
+      // Add all player scores to venue average
+      if (game.player_1_score) {
+        venueData.totalScore += game.player_1_score
+        venueData.count++
+      }
+      if (game.player_2_score) {
+        venueData.totalScore += game.player_2_score
+        venueData.count++
+      }
+      if (game.player_3_score) {
+        venueData.totalScore += game.player_3_score
+        venueData.count++
+      }
+      if (game.player_4_score) {
+        venueData.totalScore += game.player_4_score
+        venueData.count++
+      }
     }
 
-    const machinePerformance = Array.from(machineStats.values()).map(stats => ({
-      ...stats,
-      avgPoints: stats.totalPoints / stats.gamesPlayed
-    })).sort((a, b) => b.avgPoints - a.avgPoints)
+    // Calculate venue averages and player percentages
+    const machinePerformance = Array.from(machineStats.values()).map(stats => {
+      const avgScore = stats.totalScore / stats.gamesPlayed
+      const venueData = venueScores.get(stats.machine)
+      const venueAvg = venueData ? venueData.totalScore / venueData.count : 0
+      const pctOfVenue = venueAvg > 0 ? (avgScore / venueAvg) * 100 : 0
+
+      return {
+        machine: stats.machine,
+        avgScore: avgScore,
+        avgPoints: stats.totalPoints / stats.gamesPlayed,
+        timesPlayed: stats.timesPlayed,
+        bestScore: stats.bestScore,
+        pctOfVenue: pctOfVenue
+      }
+    }).sort((a, b) => b.pctOfVenue - a.pctOfVenue)
 
     return NextResponse.json({
       player,
