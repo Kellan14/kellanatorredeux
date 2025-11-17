@@ -171,11 +171,23 @@ export async function GET(request: NextRequest) {
 
     console.log('[machine-stats] Calculated stats for', stats.length, 'machines');
 
+    // DEBUG: Add diagnostic info to response
+    const uniqueTeams = new Set(processedScores.map(s => s.team_name));
+    const twcScores = processedScores.filter(s => s.team_name.toLowerCase() === teamName.toLowerCase());
+    const twcMachines = new Set(twcScores.map(s => s.machine));
+
     return NextResponse.json({
       stats,
       count: stats.length,
       processedScoresCount: processedScores.length,
-      gamesCount: gamesData.length
+      gamesCount: gamesData.length,
+      debug: {
+        teamNameSearching: teamName,
+        uniqueTeamsInData: Array.from(uniqueTeams),
+        twcScoresFound: twcScores.length,
+        twcMachines: Array.from(twcMachines).sort(),
+        sampleTwcScore: twcScores[0] || null
+      }
     });
   } catch (error) {
     console.error('[machine-stats] Error calculating machine stats:', error);
