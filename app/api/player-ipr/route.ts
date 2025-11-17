@@ -90,11 +90,16 @@ export async function GET(request: Request) {
 
       totalPoints += playerPoints
 
-      // Calculate total possible points in this game (sum all non-null player points)
-      // Games can have 2 players (1v1) or 4 players (2v2)
-      const gameTotal = (game.player_1_points || 0) + (game.player_2_points || 0) +
-                       (game.player_3_points || 0) + (game.player_4_points || 0)
-      totalPossiblePoints += gameTotal
+      // Count how many players in this game to determine if singles or doubles
+      let playerCount = 0
+      if (game.player_1_key) playerCount++
+      if (game.player_2_key) playerCount++
+      if (game.player_3_key) playerCount++
+      if (game.player_4_key) playerCount++
+
+      // Singles (2 players) = 3 points possible, Doubles (4 players) = 2.5 points possible
+      const possiblePoints = playerCount === 4 ? 2.5 : 3
+      totalPossiblePoints += possiblePoints
     }
 
     const matchesPlayedCount = uniqueMatches.size
