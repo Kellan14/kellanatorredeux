@@ -72,12 +72,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch all games for the requested seasons from Supabase
+    // Note: Supabase defaults to 1000 row limit, but we need all games
     const { data: gamesData, error } = await supabase
       .from('games')
       .select('*')
       .in('season', seasonList)
       .order('season', { ascending: false })
-      .order('week', { ascending: false });
+      .order('week', { ascending: false })
+      .limit(100000); // Set high limit to get all games
 
     if (error) {
       console.error('[machine-stats] Database error:', error);
