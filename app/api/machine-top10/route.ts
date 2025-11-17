@@ -28,7 +28,21 @@ export async function GET(request: Request) {
       query = query.eq('venue', venue)
     }
 
-    const { data: games, error } = await query
+    const { data: games, error } = await query.returns<Array<{
+      player_1_name: string | null
+      player_1_score: number | null
+      player_2_name: string | null
+      player_2_score: number | null
+      player_3_name: string | null
+      player_3_score: number | null
+      player_4_name: string | null
+      player_4_score: number | null
+      venue: string | null
+      season: number | null
+      week: number | null
+      match_key: string | null
+      round_number: number | null
+    }>>()
 
     if (error) {
       console.error('Supabase error:', error)
