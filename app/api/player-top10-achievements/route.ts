@@ -138,7 +138,7 @@ export async function GET(request: Request) {
       }
       
       // Process each machine/venue group
-      for (const [groupKey, groupScores] of groupedScores) {
+      for (const [groupKey, groupScores] of Array.from(groupedScores.entries())) {
         // Sort scores for this machine/venue (highest first)
         const sortedScores = groupScores.sort((a, b) => b.score - a.score)
         
