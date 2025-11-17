@@ -198,32 +198,8 @@ export async function GET(request: Request) {
       }
     }).sort((a, b) => b.compositeScore - a.compositeScore)
 
-    // Get all TWC players from player_stats with is_sub info
-    let playerStatsData: { player_name: string; is_sub: boolean }[]
-    try {
-      playerStatsData = await fetchAllRecords<{ player_name: string; is_sub: boolean }>(
-        supabase
-          .from('player_stats')
-          .select('player_name, is_sub')
-          .order('player_name')
-      )
-    } catch (error) {
-      console.error('Error fetching player_stats:', error)
-      // If player_stats fails, continue with empty arrays
-      playerStatsData = []
-    }
-
-    const allTwcPlayers = Array.from(new Set((playerStatsData || []).map((p: any) => p.player_name))).filter(Boolean)
-
-    // Create a map of player -> is_sub status
-    const playerSubStatus = new Map<string, boolean>()
-    ;(playerStatsData || []).forEach((p: any) => {
-      if (p.player_name) {
-        playerSubStatus.set(p.player_name, p.is_sub)
-      }
-    })
-
-    // Get all TWC players from season 22 games
+    // Get all TWC players from games data by season
+    // Season 22 players are considered current roster
     const season22Games = gamesData.filter((g: any) => g.season === 22)
     const season22TwcPlayers = new Set<string>()
 
@@ -239,16 +215,13 @@ export async function GET(request: Request) {
       }
     }
 
-    // Current roster = season 22 players with is_sub = false
-    const rosterPlayers = Array.from(season22TwcPlayers)
-      .filter(player => playerSubStatus.get(player) === false)
-      .sort()
+    const rosterPlayers = Array.from(season22TwcPlayers).sort()
 
-    // Get sub players who played in the last 3 seasons (20-22) but are NOT current roster
-    const last3Seasons = [20, 21, 22]
+    // Get sub players who played in seasons 20-21 but NOT in season 22
+    const last2Seasons = [20, 21]
     const subPlayers = new Set<string>()
 
-    const recentGames = gamesData.filter((g: any) => last3Seasons.includes(g.season))
+    const recentGames = gamesData.filter((g: any) => last2Seasons.includes(g.season))
 
     for (const game of recentGames) {
       for (let i = 1; i <= 4; i++) {
@@ -257,7 +230,7 @@ export async function GET(request: Request) {
         const teamDisplayName = teamNameMap[teamKey]
 
         if (teamDisplayName === teamName && player) {
-          // Only add if they're not in current roster
+          // Only add if they're not in current roster (season 22)
           if (!rosterPlayers.includes(player)) {
             subPlayers.add(player)
           }
@@ -266,6 +239,7 @@ export async function GET(request: Request) {
     }
 
     const subPlayersList = Array.from(subPlayers).sort()
+    const allTwcPlayers = [...rosterPlayers, ...subPlayersList]
 
     return NextResponse.json({
       advantages,
