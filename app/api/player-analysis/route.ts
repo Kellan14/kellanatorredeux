@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists'
 
 export const dynamic = 'force-dynamic';
 
@@ -61,6 +62,8 @@ export async function GET(request: Request) {
     }
 
     // Step 1: Get list of machines at the specific venue
+    // Use the same approach as machine-stats: get machines from LATEST SEASON at venue,
+    // then apply venue machine list overrides to respect "modify venue machine list" settings
     if (!venue) {
       return NextResponse.json({
         player,
@@ -72,17 +75,20 @@ export async function GET(request: Request) {
       })
     }
 
+    // Get machines from the most recent season at this venue (matches machine-stats logic)
+    const latestSeason = seasonEnd
     const { data: venueMachinesData } = await supabase
       .from('games')
       .select('machine')
       .eq('venue', venue)
-      .gte('season', seasonStart)
-      .lte('season', seasonEnd)
+      .eq('season', latestSeason)
       .returns<Array<{ machine: string }>>()
 
-    const machinesAtVenue = new Set(venueMachinesData?.map(g => g.machine) || [])
+    // Get unique machines and apply venue machine list overrides
+    let machinesAtVenue = Array.from(new Set(venueMachinesData?.map(g => g.machine) || []))
+    machinesAtVenue = applyVenueMachineListOverrides(venue, machinesAtVenue)
 
-    if (machinesAtVenue.size === 0) {
+    if (machinesAtVenue.length === 0) {
       return NextResponse.json({
         player,
         totalGames: 0,
@@ -153,8 +159,8 @@ export async function GET(request: Request) {
     let totalGames = 0
 
     for (const game of playerGamesData || []) {
-      // Only process machines that exist at the venue
-      if (!machinesAtVenue.has(game.machine)) continue
+      // Only process machines that exist at the venue (after applying overrides)
+      if (!machinesAtVenue.includes(game.machine)) continue
 
       if (game.venue) venuesSet.add(game.venue)
 
@@ -207,8 +213,8 @@ export async function GET(request: Request) {
     // Step 5: Calculate venue averages from venue games
     const venueScores = new Map()
     for (const game of venueGamesData || []) {
-      // Only process machines at the venue
-      if (!machinesAtVenue.has(game.machine)) continue
+      // Only process machines at the venue (after applying overrides)
+      if (!machinesAtVenue.includes(game.machine)) continue
 
       if (!venueScores.has(game.machine)) {
         venueScores.set(game.machine, { totalScore: 0, count: 0 })
