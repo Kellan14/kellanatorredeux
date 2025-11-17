@@ -215,10 +215,35 @@ export async function GET(request: Request) {
 
     const rosterPlayers = Array.from(new Set((rosterData || []).map((p: any) => p.player_name))).filter(Boolean)
 
+    // Get sub players who played in the last 3 seasons (20-22)
+    const last3Seasons = [20, 21, 22]
+    const subPlayers = new Set<string>()
+
+    // Get all games from last 3 seasons
+    const recentGames = gamesData.filter((g: any) => last3Seasons.includes(g.season))
+
+    for (const game of recentGames) {
+      for (let i = 1; i <= 4; i++) {
+        const teamKey = game[`player_${i}_team`]
+        const player = game[`player_${i}`]
+        const teamDisplayName = teamNameMap[teamKey]
+
+        if (teamDisplayName === teamName && player) {
+          // Only add if they're not already in roster
+          if (!rosterPlayers.includes(player)) {
+            subPlayers.add(player)
+          }
+        }
+      }
+    }
+
+    const subPlayersList = Array.from(subPlayers).sort()
+
     return NextResponse.json({
       advantages,
       players: allTwcPlayers,
-      rosterPlayers: Array.from(rosterPlayers),
+      rosterPlayers: rosterPlayers,
+      subPlayers: subPlayersList,
       venue,
       opponent,
       teamName

@@ -89,6 +89,8 @@ export default function StrategyPage() {
   const [availablePlayers, setAvailablePlayers] = useState<Record<string, boolean>>({})
   const [allPlayers, setAllPlayers] = useState<string[]>([])
   const [rosterPlayers, setRosterPlayers] = useState<string[]>([])
+  const [subPlayers, setSubPlayers] = useState<string[]>([])
+  const [showSubs, setShowSubs] = useState(false)
 
   // Machine picking state
   const [numSinglesMachines, setNumSinglesMachines] = useState(7)
@@ -208,6 +210,7 @@ export default function StrategyPage() {
         setMachineAdvantages(data.advantages || [])
         setAllPlayers(data.players || [])
         setRosterPlayers(data.rosterPlayers || [])
+        setSubPlayers(data.subPlayers || [])
 
         // Initialize player availability (all roster players checked by default)
         const initialAvailability: Record<string, boolean> = {}
@@ -593,8 +596,25 @@ export default function StrategyPage() {
             <>
               {/* Player Availability Section */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-3">TWC Player Availability</h3>
-                <p className="text-sm text-muted-foreground mb-3">Select roster players available for this match:</p>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-lg font-semibold">TWC Player Availability</h3>
+                    <p className="text-sm text-muted-foreground">Select players available for this match</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="show-subs"
+                      checked={showSubs}
+                      onCheckedChange={(checked) => setShowSubs(!!checked)}
+                    />
+                    <label
+                      htmlFor="show-subs"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Show Subs ({subPlayers.length})
+                    </label>
+                  </div>
+                </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
                   {rosterPlayers.map((player) => (
                     <div key={player} className="flex items-center space-x-2">
@@ -610,6 +630,23 @@ export default function StrategyPage() {
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
                         {player}
+                      </label>
+                    </div>
+                  ))}
+                  {showSubs && subPlayers.map((player) => (
+                    <div key={player} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`player-${player}`}
+                        checked={availablePlayers[player] || false}
+                        onCheckedChange={(checked) =>
+                          setAvailablePlayers({ ...availablePlayers, [player]: !!checked })
+                        }
+                      />
+                      <label
+                        htmlFor={`player-${player}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground"
+                      >
+                        {player} (sub)
                       </label>
                     </div>
                   ))}
