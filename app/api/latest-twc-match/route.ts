@@ -10,58 +10,85 @@ export const revalidate = 3600
 
 export async function GET() {
   try {
-    // Query latest TWC game from games table (faster than matches)
-    const { data: gameData, error: gameError } = await supabase
-      .from('games')
-      .select('match_key, week, venue, home_team, away_team')
+    // Query next/latest TWC match from player_match_participation (includes upcoming matches)
+    const { data: participationData, error: participationError } = await supabase
+      .from('player_match_participation')
+      .select('match_key, week, team')
       .eq('season', CURRENT_SEASON)
-      .or('home_team.eq.TWC,away_team.eq.TWC')
+      .eq('team', 'TWC')
       .order('week', { ascending: false })
       .limit(1)
       .single<{
         match_key: string
         week: number
-        venue: string | null
-        home_team: string | null
-        away_team: string | null
+        team: string
       }>()
 
-    if (gameError || !gameData) {
+    if (participationError || !participationData) {
       return NextResponse.json({
         venue: 'Georgetown Pizza and Arcade',
         opponent: null,
-        matchKey: null
+        matchKey: null,
+        week: null,
+        isUpcoming: false
       })
     }
 
-    // Determine opponent from team columns
-    const opponentTeamKey = gameData.home_team === 'TWC' ? gameData.away_team : gameData.home_team
+    // Get match details from matches table for venue and opponent
+    const { data: matchData } = await supabase
+      .from('matches')
+      .select('home_team, away_team, venue_name, state')
+      .eq('match_key', participationData.match_key)
+      .single<{
+        home_team: string
+        away_team: string
+        venue_name: string | null
+        state: string
+      }>()
 
-    // Get opponent name from teams table (fast indexed lookup)
-    let teamData: { team_name: string } | null = null
+    if (!matchData) {
+      return NextResponse.json({
+        venue: 'Georgetown Pizza and Arcade',
+        opponent: null,
+        matchKey: participationData.match_key,
+        week: participationData.week,
+        isUpcoming: false
+      })
+    }
+
+    // Determine opponent
+    const opponentTeamKey = matchData.home_team === 'TWC' ? matchData.away_team : matchData.home_team
+
+    // Get opponent name from teams table
+    let opponentName = opponentTeamKey
     if (opponentTeamKey) {
-      const result = await supabase
+      const { data: teamData } = await supabase
         .from('teams')
         .select('team_name')
         .eq('team_key', opponentTeamKey)
         .single<{ team_name: string }>()
-      teamData = result.data
+
+      if (teamData) {
+        opponentName = teamData.team_name
+      }
     }
 
-    // Get match state from matches table (only if needed)
-    const { data: matchData } = await supabase
-      .from('matches')
-      .select('data')
-      .eq('match_key', gameData.match_key)
+    // Check if match has been played (exists in games table)
+    const { data: gamesData } = await supabase
+      .from('games')
+      .select('id')
+      .eq('match_key', participationData.match_key)
       .limit(1)
-      .single<{ data: any }>()
+
+    const isUpcoming = !gamesData || gamesData.length === 0
 
     return NextResponse.json({
-      venue: gameData.venue || 'Georgetown Pizza and Arcade',
-      opponent: teamData?.team_name || opponentTeamKey || '',
-      matchKey: gameData.match_key,
-      week: gameData.week,
-      state: matchData?.data?.state || 'unknown'
+      venue: matchData.venue_name || 'Georgetown Pizza and Arcade',
+      opponent: opponentName,
+      matchKey: participationData.match_key,
+      week: participationData.week,
+      state: matchData.state,
+      isUpcoming
     })
   } catch (error) {
     console.error('Error finding latest TWC match:', error)
