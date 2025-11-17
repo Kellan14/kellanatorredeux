@@ -145,23 +145,6 @@ export async function GET(request: Request) {
         // Take only the top 10 scores
         const top10 = sortedScores.slice(0, 10)
         
-        // Debug logging for Aerosmith BEFORE sorting
-        if (groupKey === 'Aerosmith' && context.includes('League-wide - all time')) {
-          console.log('=== AEROSMITH DEBUG (BEFORE SORT) ===')
-          console.log('Context:', context)
-          console.log('Total scores for Aerosmith:', groupScores.length)
-          console.log('First 20 scores before sort:')
-          groupScores.slice(0, 20).forEach((s, i) => {
-            console.log(`  ${i + 1}. ${s.playerName}: ${s.score.toLocaleString()}`)
-          })
-        }
-        
-        // Sort scores for this machine/venue (highest first)
-        const sortedScores = groupScores.sort((a, b) => b.score - a.score)
-        
-        // Take only the top 10 scores
-        const top10 = sortedScores.slice(0, 10)
-        
         // Debug logging for Aerosmith AFTER sorting
         if (groupKey === 'Aerosmith' && context.includes('League-wide - all time')) {
           console.log('=== AEROSMITH DEBUG (AFTER SORT) ===')
