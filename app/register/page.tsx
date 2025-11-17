@@ -52,12 +52,29 @@ export default function RegisterPage() {
 
       // Create profile entry
       if (authData.user) {
+        //  Check if username matches a TWC player
+        let playerName: string | null = null
+
+        if (username) {
+          try {
+            const verifyResponse = await fetch(`/api/verify-player?playerName=${encodeURIComponent(username)}`)
+            const verifyData = await verifyResponse.json()
+
+            if (verifyData.exists) {
+              playerName = verifyData.playerName
+            }
+          } catch (e) {
+            console.error('Error verifying player:', e)
+          }
+        }
+
         const { error: profileError } = await supabase
           .from('profiles')
           .insert({
             id: authData.user.id,
             username: username || null,
             full_name: username || null,
+            player_name: playerName,
           } as any)
 
         if (profileError) {
@@ -65,10 +82,31 @@ export default function RegisterPage() {
         }
       }
 
-      toast({
-        title: "Account created!",
-        description: "Please check your email to confirm your account.",
-      })
+      if (authData.user) {
+        // Check again for player association
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('player_name')
+          .eq('id', authData.user.id)
+          .single()
+
+        if (profile?.player_name) {
+          toast({
+            title: "Account created!",
+            description: `Welcome to TWC, ${profile.player_name}! Please check your email to confirm your account.`,
+          })
+        } else {
+          toast({
+            title: "Account created!",
+            description: "Please check your email to confirm your account.",
+          })
+        }
+      } else {
+        toast({
+          title: "Account created!",
+          description: "Please check your email to confirm your account.",
+        })
+      }
 
       router.push('/login')
     } catch (error: any) {

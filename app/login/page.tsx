@@ -32,10 +32,60 @@ export default function LoginPage() {
 
       if (error) throw error
 
-      toast({
-        title: "Welcome back!",
-        description: "You've successfully logged in.",
-      })
+      // Check if user has a profile and if their username matches a TWC player
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('username, player_name')
+          .eq('id', data.user.id)
+          .single()
+
+        // If they have a username but no player_name association, try to match them
+        if (profile?.username && !profile.player_name) {
+          try {
+            const verifyResponse = await fetch(`/api/verify-player?playerName=${encodeURIComponent(profile.username)}`)
+            const verifyData = await verifyResponse.json()
+
+            if (verifyData.exists) {
+              // Associate the player
+              await fetch('/api/associate-player', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  userId: data.user.id,
+                  playerName: verifyData.playerName
+                })
+              })
+
+              toast({
+                title: "Welcome back, " + verifyData.playerName + "!",
+                description: "Your TWC player account has been linked.",
+              })
+            } else {
+              toast({
+                title: "Welcome back!",
+                description: "You've successfully logged in.",
+              })
+            }
+          } catch (e) {
+            // If verification fails, just show normal welcome message
+            toast({
+              title: "Welcome back!",
+              description: "You've successfully logged in.",
+            })
+          }
+        } else if (profile?.player_name) {
+          toast({
+            title: "Welcome back, " + profile.player_name + "!",
+            description: "You've successfully logged in.",
+          })
+        } else {
+          toast({
+            title: "Welcome back!",
+            description: "You've successfully logged in.",
+          })
+        }
+      }
 
       router.push('/')
       router.refresh()
