@@ -28,6 +28,16 @@ export async function GET(request: Request) {
       .select('player_1_key, player_1_name, player_2_key, player_2_name, player_3_key, player_3_name, player_4_key, player_4_name')
       .or(`player_1_name.eq.${player},player_2_name.eq.${player},player_3_name.eq.${player},player_4_name.eq.${player}`)
       .limit(1)
+      .returns<Array<{
+        player_1_key: string | null
+        player_1_name: string | null
+        player_2_key: string | null
+        player_2_name: string | null
+        player_3_key: string | null
+        player_3_name: string | null
+        player_4_key: string | null
+        player_4_name: string | null
+      }>>()
 
     let playerKey: string | null = null
 
