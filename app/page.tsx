@@ -635,28 +635,6 @@ export default function HomePage() {
                     </TableBody>
                   </Table>
                 </div>
-
-                {playerPerformance.machinePerformance.length > 0 && (
-                  <div className="mt-6">
-                    <h4 className="font-semibold mb-3">Your Best Machines</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      {playerPerformance.machinePerformance.slice(0, 3).map((machine: any, index: number) => (
-                        <Card key={machine.machine}>
-                          <CardContent className="pt-4">
-                            <div className="text-sm text-muted-foreground">#{index + 1}</div>
-                            <div className="font-semibold text-lg">{machine.machine}</div>
-                            <div className="text-sm text-muted-foreground mt-1">
-                              {(machine.pctOfVenue || 0).toFixed(1)}% of venue avg
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {machine.timesPlayed} play{machine.timesPlayed !== 1 ? 's' : ''}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
             ) : (
