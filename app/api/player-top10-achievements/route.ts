@@ -165,28 +165,38 @@ export async function GET(request: Request) {
         // Sort all scores to find rankings
         const allSortedScores = scores.sort((a, b) => b.score - a.score)
 
-        // Get top 10 scores (may include duplicates from same player)
-        const top10Scores = allSortedScores.slice(0, 10)
+        // Get unique top 10 scores (considering ties)
+        const uniqueScores = Array.from(new Set(allSortedScores.map(s => s.score)))
+          .sort((a, b) => b - a)
+          .slice(0, 10)
+        
+        // If there are no scores in top 10, skip
+        if (uniqueScores.length === 0) continue
 
-        // Check if player has any score in the top 10 - find their HIGHEST score
-        const playerScoresInTop10 = top10Scores.filter(s => s.playerKey === playerKey)
-        if (playerScoresInTop10.length > 0) {
-          // Get the highest score for this player in the top 10
-          const playerEntry = playerScoresInTop10[0] // Already sorted, so first is highest
+        // The 10th place score (or last score if less than 10 unique scores)
+        const cutoffScore = uniqueScores[uniqueScores.length - 1]
 
-          // Find the rank of this specific score among ALL scores
-          // Rank is based on how many scores are higher
-          const rank = allSortedScores.filter(s => s.score > playerEntry.score).length + 1
-
-          achievements.push({
-            machine,
-            context: `League-wide - ${label}`,
-            rank,
-            score: playerEntry.score,
-            isVenueSpecific: false,
-            priority: leaguePriority,
-            category: leagueCategory as 'league-all' | 'league-season'
-          })
+        // Get all player's scores that are >= the cutoff (in top 10)
+        const playerTopScores = allSortedScores
+          .filter(s => s.playerKey === playerKey && s.score >= cutoffScore)
+        
+        // Add each qualifying score as a separate achievement
+        for (const playerScore of playerTopScores) {
+          // Calculate rank based on unique scores
+          const rank = uniqueScores.findIndex(s => s <= playerScore.score) + 1
+          
+          // Only add if rank is <= 10
+          if (rank <= 10) {
+            achievements.push({
+              machine,
+              context: `League-wide - ${label}`,
+              rank,
+              score: playerScore.score,
+              isVenueSpecific: false,
+              priority: leaguePriority,
+              category: leagueCategory as 'league-all' | 'league-season'
+            })
+          }
         }
       }
 
@@ -197,29 +207,39 @@ export async function GET(request: Request) {
         // Sort all scores to find rankings
         const allSortedScores = scores.sort((a, b) => b.score - a.score)
 
-        // Get top 10 scores (may include duplicates from same player)
-        const top10Scores = allSortedScores.slice(0, 10)
+        // Get unique top 10 scores (considering ties)
+        const uniqueScores = Array.from(new Set(allSortedScores.map(s => s.score)))
+          .sort((a, b) => b - a)
+          .slice(0, 10)
+        
+        // If there are no scores in top 10, skip
+        if (uniqueScores.length === 0) continue
 
-        // Check if player has any score in the top 10 - find their HIGHEST score
-        const playerScoresInTop10 = top10Scores.filter(s => s.playerKey === playerKey)
-        if (playerScoresInTop10.length > 0) {
-          // Get the highest score for this player in the top 10
-          const playerEntry = playerScoresInTop10[0] // Already sorted, so first is highest
+        // The 10th place score (or last score if less than 10 unique scores)
+        const cutoffScore = uniqueScores[uniqueScores.length - 1]
 
-          // Find the rank of this specific score among ALL scores
-          // Rank is based on how many scores are higher
-          const rank = allSortedScores.filter(s => s.score > playerEntry.score).length + 1
-
-          achievements.push({
-            machine,
-            context: `${venue} - ${label}`,
-            venue,
-            rank,
-            score: playerEntry.score,
-            isVenueSpecific: true,
-            priority: venuePriority,
-            category: venueCategory as 'venue-all' | 'venue-season'
-          })
+        // Get all player's scores that are >= the cutoff (in top 10)
+        const playerTopScores = allSortedScores
+          .filter(s => s.playerKey === playerKey && s.score >= cutoffScore)
+        
+        // Add each qualifying score as a separate achievement
+        for (const playerScore of playerTopScores) {
+          // Calculate rank based on unique scores
+          const rank = uniqueScores.findIndex(s => s <= playerScore.score) + 1
+          
+          // Only add if rank is <= 10
+          if (rank <= 10) {
+            achievements.push({
+              machine,
+              context: `${venue} - ${label}`,
+              venue,
+              rank,
+              score: playerScore.score,
+              isVenueSpecific: true,
+              priority: venuePriority,
+              category: venueCategory as 'venue-all' | 'venue-season'
+            })
+          }
         }
       }
 
@@ -230,12 +250,34 @@ export async function GET(request: Request) {
     const allTimeAchievements = await processGamesForSeasonRange(20, 22, 'all time')
     const currentSeasonAchievements = await processGamesForSeasonRange(currentSeason, currentSeason, 'this season')
 
-    // Combine and sort by priority (then by rank, then by score)
-    const allAchievements = [...allTimeAchievements, ...currentSeasonAchievements]
+    // Combine achievements
+    const combinedAchievements = [...allTimeAchievements, ...currentSeasonAchievements]
+
+    // Deduplicate: for each machine+context combination, only keep the best (highest score/best rank)
+    const achievementMap = new Map<string, Achievement>()
+    
+    for (const achievement of combinedAchievements) {
+      const key = `${achievement.machine}|||${achievement.context}`
+      const existing = achievementMap.get(key)
+      
+      if (!existing || 
+          achievement.rank < existing.rank || 
+          (achievement.rank === existing.rank && achievement.score > existing.score)) {
+        achievementMap.set(key, achievement)
+      }
+    }
+
+    // Convert back to array and sort
+    const allAchievements = Array.from(achievementMap.values())
       .sort((a, b) => {
+        // First by priority (1=best)
         if (a.priority !== b.priority) return a.priority - b.priority
+        // Then by rank (1=best)
         if (a.rank !== b.rank) return a.rank - b.rank
-        return b.score - a.score
+        // Then by score (higher=better)
+        if (a.score !== b.score) return b.score - a.score
+        // Finally by machine name for consistency
+        return a.machine.localeCompare(b.machine)
       })
 
     return NextResponse.json({
