@@ -34,11 +34,13 @@ export default function LoginPage() {
 
       // Check if user has a profile and if their username matches a TWC player
       if (data.user) {
-        const { data: profile } = await supabase
+        const { data: profileData } = await supabase
           .from('profiles')
           .select('username, player_name')
           .eq('id', data.user.id)
-          .single()
+          .maybeSingle()
+
+        const profile = profileData as { username: string | null; player_name: string | null } | null
 
         // If they have a username but no player_name association, try to match them
         if (profile?.username && !profile.player_name) {

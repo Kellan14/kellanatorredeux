@@ -84,11 +84,13 @@ export default function RegisterPage() {
 
       if (authData.user) {
         // Check again for player association
-        const { data: profile } = await supabase
+        const { data: profileData } = await supabase
           .from('profiles')
           .select('player_name')
           .eq('id', authData.user.id)
-          .single()
+          .maybeSingle()
+
+        const profile = profileData as { player_name: string | null } | null
 
         if (profile?.player_name) {
           toast({

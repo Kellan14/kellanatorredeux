@@ -3,6 +3,11 @@ import { supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic';
 
+interface PlayerData {
+  player_name: string
+  player_key: string
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -16,20 +21,22 @@ export async function GET(request: Request) {
     }
 
     // Check if this player name exists in player_stats (TWC data)
-    const { data: playerData, error } = await supabase
+    const { data, error } = await supabase
       .from('player_stats')
       .select('player_name, player_key')
       .eq('player_name', playerName)
       .limit(1)
-      .single()
+      .maybeSingle()
 
-    if (error || !playerData) {
+    if (error || !data) {
       return NextResponse.json({
         exists: false,
         playerName: null,
         playerKey: null
       })
     }
+
+    const playerData = data as PlayerData
 
     return NextResponse.json({
       exists: true,
