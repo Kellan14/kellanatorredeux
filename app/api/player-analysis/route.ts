@@ -78,6 +78,7 @@ export async function GET(request: Request) {
       .eq('venue', venue)
       .gte('season', seasonStart)
       .lte('season', seasonEnd)
+      .returns<Array<{ machine: string }>>()
 
     const machinesAtVenue = new Set(venueMachinesData?.map(g => g.machine) || [])
 
