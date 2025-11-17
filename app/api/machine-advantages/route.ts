@@ -124,19 +124,108 @@ export async function GET(request: Request) {
       const advantage = twcAvg - oppAvg
       const advantagePct = oppAvg > 0 ? (advantage / oppAvg) * 100 : 0
 
+      // Get venue average for % of venue calculations
+      const allGamesOnMachine = gamesData.filter((g: any) => g.machine === machine && g.venue === venue)
+      const venueScores = []
+      for (const game of allGamesOnMachine) {
+        for (let i = 1; i <= 4; i++) {
+          const score = game[`player_${i}_score`]
+          if (score) venueScores.push(score)
+        }
+      }
+      const venueAvg = venueScores.length > 0 ? venueScores.reduce((a, b) => a + b, 0) / venueScores.length : 0
+
+      const twcPctOfVenue = venueAvg > 0 ? (twcAvg / venueAvg) * 100 : 0
+      const opponentPctOfVenue = venueAvg > 0 ? (oppAvg / venueAvg) * 100 : 0
+      const statisticalAdvantage = twcPctOfVenue - opponentPctOfVenue
+      const experienceAdvantage = stats.twcCount - stats.oppCount
+
+      // Determine advantage level
+      let advantageLevel = 'Low'
+      if (statisticalAdvantage > 10 || experienceAdvantage > 10) {
+        advantageLevel = 'High'
+      } else if (statisticalAdvantage > 5 || experienceAdvantage > 5) {
+        advantageLevel = 'Medium'
+      }
+
+      // Get top TWC players for this machine
+      const playerScores = new Map<string, number[]>()
+      for (const game of gamesData) {
+        if (game.machine !== machine) continue
+        if (twcVenueSpecific && game.venue !== venue) continue
+
+        for (let i = 1; i <= 4; i++) {
+          const teamKey = game[`player_${i}_team`]
+          const player = game[`player_${i}`]
+          const score = game[`player_${i}_score`]
+          const teamDisplayName = teamNameMap[teamKey]
+
+          if (teamDisplayName === teamName && player && score) {
+            if (!playerScores.has(player)) {
+              playerScores.set(player, [])
+            }
+            playerScores.get(player)!.push(score)
+          }
+        }
+      }
+
+      const playerAvgs = Array.from(playerScores.entries()).map(([player, scores]) => ({
+        player,
+        avgScore: scores.reduce((a, b) => a + b, 0) / scores.length,
+        count: scores.length
+      })).sort((a, b) => b.avgScore - a.avgScore)
+
+      const topTwcPlayers = playerAvgs.slice(0, 3).map(p => p.player)
+
+      const compositeScore = statisticalAdvantage + (experienceAdvantage * 0.5)
+
       return {
         machine,
+        compositeScore,
+        twcPctOfVenue,
+        opponentPctOfVenue,
+        statisticalAdvantage,
+        experienceAdvantage,
+        advantageLevel,
+        topTwcPlayers,
         twcAverage: twcAvg,
         twcTimesPlayed: stats.twcCount,
         opponentAverage: oppAvg,
         opponentTimesPlayed: stats.oppCount,
         advantage,
-        advantagePct
+        advantagePct,
+        twcPlays: stats.twcCount
       }
-    }).sort((a, b) => b.advantage - a.advantage)
+    }).sort((a, b) => b.compositeScore - a.compositeScore)
+
+    // Get all TWC players from player_stats
+    const { data: playerStatsData } = await supabase
+      .from('player_stats')
+      .select('player_name')
+      .eq('team_name', teamName)
+      .order('player_name')
+
+    const allTwcPlayers = Array.from(new Set((playerStatsData || []).map((p: any) => p.player_name)))
+
+    // Get current roster players from season 22
+    const season22Games = gamesData.filter((g: any) => g.season === 22)
+    const rosterPlayers = new Set<string>()
+    for (const game of season22Games) {
+      for (let i = 1; i <= 4; i++) {
+        const teamKey = game[`player_${i}_team`]
+        const player = game[`player_${i}`]
+        const teamDisplayName = teamNameMap[teamKey]
+
+        if (teamDisplayName === teamName && player) {
+          rosterPlayers.add(player)
+        }
+      }
+    }
 
     return NextResponse.json({
       advantages,
+      players: allTwcPlayers,
+      rosterPlayers: Array.from(rosterPlayers),
       venue,
       opponent,
       teamName
