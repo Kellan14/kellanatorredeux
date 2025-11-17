@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       if (!machinesAtVenue.includes(game.machine)) continue
 
       for (let i = 1; i <= 4; i++) {
-        const playerName = game[`player_${i}_name`]
+        const playerName = game[`player_${i}`]
         const score = game[`player_${i}_score`]
 
         if (!playerName || score == null) continue
@@ -78,44 +78,87 @@ export async function POST(request: Request) {
       }
     }
 
-    // Generate recommendations: best machine for each available player
-    const recommendations = availablePlayers.map((player: string) => {
-      const playerStats = playerMachineStats.get(player)
+    // Calculate venue averages for each machine
+    const machineVenueStats = new Map<string, { total: number; count: number }>()
+    for (const game of gamesData) {
+      if (!machinesAtVenue.includes(game.machine)) continue
 
-      if (!playerStats) {
-        return {
-          player,
-          recommendedMachine: null,
-          avgScore: 0,
-          timesPlayed: 0,
-          confidence: 'low'
+      if (!machineVenueStats.has(game.machine)) {
+        machineVenueStats.set(game.machine, { total: 0, count: 0 })
+      }
+
+      const stats = machineVenueStats.get(game.machine)!
+      for (let i = 1; i <= 4; i++) {
+        const score = game[`player_${i}_score`]
+        if (score != null) {
+          stats.total += score
+          stats.count++
+        }
+      }
+    }
+
+    // Calculate machine scores for available players
+    const machineScores = new Map<string, number>()
+    for (const machine of machinesAtVenue) {
+      let totalPlayerAvg = 0
+      let playerCount = 0
+
+      for (const player of availablePlayers) {
+        const playerStats = playerMachineStats.get(player)
+        if (playerStats && playerStats.has(machine)) {
+          const stats = playerStats.get(machine)!
+          const avg = stats.total / stats.count
+          totalPlayerAvg += avg
+          playerCount++
         }
       }
 
-      let bestMachine = null
-      let bestAvg = 0
-      let bestCount = 0
+      // Score is the average performance of available players on this machine
+      machineScores.set(machine, playerCount > 0 ? totalPlayerAvg / playerCount : 0)
+    }
 
-      Array.from(playerStats.entries()).forEach(([machine, stats]) => {
-        if (!machinesAtVenue.includes(machine)) return
+    // Sort machines by score and pick top N
+    const rankedMachines = Array.from(machineScores.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, numMachines)
+      .map(([machine]) => machine)
 
-        const avg = stats.total / stats.count
+    // For singles: assign best player to each machine
+    // For doubles: assign best 2 players to each machine
+    const playersPerMachine = format === 'doubles' ? 2 : 1
+    const usedPlayers = new Set<string>()
+    const recommendations = []
 
-        if (avg > bestAvg) {
-          bestAvg = avg
-          bestMachine = machine
-          bestCount = stats.count
-        }
+    for (const machine of rankedMachines) {
+      const assignedPlayers: string[] = []
+
+      // Find best available players for this machine
+      const playerScores = availablePlayers
+        .filter((p: string) => !usedPlayers.has(p))
+        .map((player: string) => {
+          const playerStats = playerMachineStats.get(player)
+          if (!playerStats || !playerStats.has(machine)) {
+            return { player, avg: 0, count: 0 }
+          }
+          const stats = playerStats.get(machine)!
+          return {
+            player,
+            avg: stats.total / stats.count,
+            count: stats.count
+          }
+        })
+        .sort((a, b) => b.avg - a.avg)
+
+      for (let i = 0; i < playersPerMachine && i < playerScores.length; i++) {
+        assignedPlayers.push(playerScores[i].player)
+        usedPlayers.add(playerScores[i].player)
+      }
+
+      recommendations.push({
+        machine,
+        players: assignedPlayers
       })
-
-      return {
-        player,
-        recommendedMachine: bestMachine,
-        avgScore: bestAvg,
-        timesPlayed: bestCount,
-        confidence: bestCount >= 5 ? 'high' : bestCount >= 2 ? 'medium' : 'low'
-      }
-    }).sort((a: any, b: any) => b.avgScore - a.avgScore)
+    }
 
     return NextResponse.json({
       recommendations,

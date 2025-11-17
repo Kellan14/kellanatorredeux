@@ -45,30 +45,38 @@ export async function POST(request: Request) {
     // Calculate player performance on each machine
     const playerMachineAvgs = new Map<string, Map<string, number>>()
 
+    // Build player machine stats
+    const playerMachineStats = new Map<string, Map<string, { total: number; count: number }>>()
+
     for (const game of gamesData) {
       for (let i = 1; i <= 4; i++) {
-        const playerName = game[`player_${i}_name`]
+        const playerName = game[`player_${i}`]
         const score = game[`player_${i}_score`]
 
         if (!playerName || score == null || !availablePlayers.includes(playerName)) continue
 
-        if (!playerMachineAvgs.has(playerName)) {
-          playerMachineAvgs.set(playerName, new Map())
+        if (!playerMachineStats.has(playerName)) {
+          playerMachineStats.set(playerName, new Map())
         }
 
-        const playerStats = playerMachineAvgs.get(playerName)!
+        const playerStats = playerMachineStats.get(playerName)!
         if (!playerStats.has(game.machine)) {
-          playerStats.set(game.machine, 0)
+          playerStats.set(game.machine, { total: 0, count: 0 })
         }
 
-        const currentAvg = playerStats.get(game.machine)!
-        const currentCount = gamesData.filter((g: any) =>
-          [g.player_1_name, g.player_2_name, g.player_3_name, g.player_4_name].includes(playerName) &&
-          g.machine === game.machine
-        ).length
-
-        playerStats.set(game.machine, (currentAvg * (currentCount - 1) + score) / currentCount)
+        const stats = playerStats.get(game.machine)!
+        stats.total += score
+        stats.count++
       }
+    }
+
+    // Convert to averages
+    for (const [player, machineStats] of playerMachineStats.entries()) {
+      const avgMap = new Map<string, number>()
+      for (const [machine, stats] of machineStats.entries()) {
+        avgMap.set(machine, stats.total / stats.count)
+      }
+      playerMachineAvgs.set(player, avgMap)
     }
 
     // Greedy assignment algorithm: assign best player to each machine
