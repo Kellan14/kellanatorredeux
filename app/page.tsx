@@ -109,27 +109,27 @@ export default function HomePage() {
 
   const loadPlayerStats = async (user: SupabaseUser) => {
     try {
-      // Get player name from UID mapping
-      const mappingResponse = await fetch(`/api/player-mapping?uid=${user.id}`)
+      // Get player_name from profiles table (NEW SYSTEM)
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('player_name')
+        .eq('id', user.id)
+        .maybeSingle()
 
-      if (!mappingResponse.ok) {
-        console.log(`No player mapping found for UID: ${user.id}`)
+      const profile = profileData as { player_name: string | null } | null
+
+      if (!profile?.player_name) {
+        console.log('No TWC player association found for this user')
         return
       }
 
-      const mappingData = await mappingResponse.json()
-      const name = mappingData.name
-
-      if (!name) {
-        console.log('No player name found in mapping')
-        return
-      }
+      const playerName = profile.player_name
 
       // Save player name for performance profile
-      setPlayerName(name)
+      setPlayerName(playerName)
 
       // Fetch comprehensive stats from most recent matches
-      const statsResponse = await fetch(`/api/player-ipr?name=${encodeURIComponent(name)}`)
+      const statsResponse = await fetch(`/api/player-ipr?name=${encodeURIComponent(playerName)}`)
 
       if (statsResponse.ok) {
         const statsData = await statsResponse.json()
