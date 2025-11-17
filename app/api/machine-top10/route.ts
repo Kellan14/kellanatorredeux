@@ -1,7 +1,19 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import fs from 'fs'
+import path from 'path'
 
 export const dynamic = 'force-dynamic';
+
+// Load score limits
+const scoreLimitsPath = path.join(process.cwd(), 'score_limits.json')
+let scoreLimits: Record<string, number> = {}
+try {
+  const scoreLimitsData = fs.readFileSync(scoreLimitsPath, 'utf-8')
+  scoreLimits = JSON.parse(scoreLimitsData)
+} catch (error) {
+  console.error('Failed to load score limits:', error)
+}
 
 export async function GET(request: Request) {
   try {
@@ -61,12 +73,19 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
+    // Helper to check if a score should be filtered out based on machine limits
+    const isScoreValid = (score: number): boolean => {
+      const machineLimit = scoreLimits[machineKey.toLowerCase()]
+      if (!machineLimit) return true
+      return score <= machineLimit
+    }
+
     // Extract all scores from games
     const scores: Array<{ player: string; score: number; venue: string; season: number; week: number; match: string; round: number }> = []
 
     for (const game of games || []) {
       // Player 1
-      if (game.player_1_name && game.player_1_score != null) {
+      if (game.player_1_name && game.player_1_score != null && isScoreValid(game.player_1_score)) {
         scores.push({
           player: game.player_1_name,
           score: game.player_1_score,
@@ -78,7 +97,7 @@ export async function GET(request: Request) {
         })
       }
       // Player 2
-      if (game.player_2_name && game.player_2_score != null) {
+      if (game.player_2_name && game.player_2_score != null && isScoreValid(game.player_2_score)) {
         scores.push({
           player: game.player_2_name,
           score: game.player_2_score,
@@ -90,7 +109,7 @@ export async function GET(request: Request) {
         })
       }
       // Player 3
-      if (game.player_3_name && game.player_3_score != null) {
+      if (game.player_3_name && game.player_3_score != null && isScoreValid(game.player_3_score)) {
         scores.push({
           player: game.player_3_name,
           score: game.player_3_score,
@@ -102,7 +121,7 @@ export async function GET(request: Request) {
         })
       }
       // Player 4
-      if (game.player_4_name && game.player_4_score != null) {
+      if (game.player_4_name && game.player_4_score != null && isScoreValid(game.player_4_score)) {
         scores.push({
           player: game.player_4_name,
           score: game.player_4_score,

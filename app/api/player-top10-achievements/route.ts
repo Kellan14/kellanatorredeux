@@ -1,10 +1,22 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import fs from 'fs'
+import path from 'path'
 
 export const dynamic = 'force-dynamic';
 
 // Cache for 1 hour since stats only update weekly
 export const revalidate = 3600
+
+// Load score limits
+const scoreLimitsPath = path.join(process.cwd(), 'score_limits.json')
+let scoreLimits: Record<string, number> = {}
+try {
+  const scoreLimitsData = fs.readFileSync(scoreLimitsPath, 'utf-8')
+  scoreLimits = JSON.parse(scoreLimitsData)
+} catch (error) {
+  console.error('Failed to load score limits:', error)
+}
 
 interface Achievement {
   machine: string
@@ -62,6 +74,13 @@ export async function GET(request: Request) {
       return NextResponse.json({ achievements: [] })
     }
 
+    // Helper to check if a score should be filtered out based on machine limits
+    const isScoreValid = (machine: string, score: number): boolean => {
+      const machineLimit = scoreLimits[machine.toLowerCase()]
+      if (!machineLimit) return true
+      return score <= machineLimit
+    }
+
     // Function to process games for a specific season range
     const processGamesForSeasonRange = async (minSeason: number, maxSeason: number, label: 'all time' | 'this season') => {
       let allGamesQuery = supabase
@@ -106,7 +125,7 @@ export async function GET(request: Request) {
         ]
 
         for (const s of scores) {
-          if (s.key && s.name && s.score != null) {
+          if (s.key && s.name && s.score != null && isScoreValid(game.machine, s.score)) {
             // League-wide scores by machine
             if (!machineScores.has(game.machine)) {
               machineScores.set(game.machine, [])
