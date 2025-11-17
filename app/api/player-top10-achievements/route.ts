@@ -162,13 +162,19 @@ export async function GET(request: Request) {
 
       // Check league-wide top 10
       for (const [machine, scores] of Array.from(machineScores.entries())) {
-        const sortedScores = scores
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 10)
+        // Sort all scores to find rankings
+        const allSortedScores = scores.sort((a, b) => b.score - a.score)
 
-        const playerEntry = sortedScores.find(s => s.playerKey === playerKey)
+        // Get top 10 scores (may include duplicates from same player)
+        const top10Scores = allSortedScores.slice(0, 10)
+
+        // Check if player has any score in the top 10
+        const playerEntry = top10Scores.find(s => s.playerKey === playerKey)
         if (playerEntry) {
-          const rank = sortedScores.findIndex(s => s.playerKey === playerKey && s.score === playerEntry.score) + 1
+          // Find the rank of this specific score among ALL scores
+          // Rank is based on how many scores are higher
+          const rank = allSortedScores.filter(s => s.score > playerEntry.score).length + 1
+
           achievements.push({
             machine,
             context: `League-wide - ${label}`,
@@ -185,13 +191,18 @@ export async function GET(request: Request) {
       for (const [venueKey, scores] of Array.from(venueScores.entries())) {
         const [machine, venue] = venueKey.split('|||')
 
-        const sortedScores = scores
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 10)
+        // Sort all scores to find rankings
+        const allSortedScores = scores.sort((a, b) => b.score - a.score)
 
-        const playerEntry = sortedScores.find(s => s.playerKey === playerKey)
+        // Get top 10 scores (may include duplicates from same player)
+        const top10Scores = allSortedScores.slice(0, 10)
+
+        // Check if player has any score in the top 10
+        const playerEntry = top10Scores.find(s => s.playerKey === playerKey)
         if (playerEntry) {
-          const rank = sortedScores.findIndex(s => s.playerKey === playerKey && s.score === playerEntry.score) + 1
+          // Find the rank of this specific score among ALL scores
+          // Rank is based on how many scores are higher
+          const rank = allSortedScores.filter(s => s.score > playerEntry.score).length + 1
 
           achievements.push({
             machine,
