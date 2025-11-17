@@ -162,7 +162,7 @@ export async function GET(request: NextRequest) {
       {
         includeVenueSpecific: true,
         includeTWCStats: true,
-        opponentTeam,
+        opponentTeam: opponentTeam || undefined,
         scoreLimits,
         teamVenueSpecific,
         twcVenueSpecific
