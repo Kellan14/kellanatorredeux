@@ -147,7 +147,7 @@ export async function POST(request: Request) {
             count: stats.count
           }
         })
-        .sort((a, b) => b.avg - a.avg)
+        .sort((a: { player: string; avg: number; count: number }, b: { player: string; avg: number; count: number }) => b.avg - a.avg)
 
       for (let i = 0; i < playersPerMachine && i < playerScores.length; i++) {
         assignedPlayers.push(playerScores[i].player)
