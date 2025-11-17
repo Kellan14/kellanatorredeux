@@ -206,20 +206,14 @@ export async function GET(request: Request) {
 
     const allTwcPlayers = Array.from(new Set((playerStatsData || []).map((p: any) => p.player_name))).filter(Boolean)
 
-    // Get current roster players from season 22
-    const season22Games = gamesData.filter((g: any) => g.season === 22)
-    const rosterPlayers = new Set<string>()
-    for (const game of season22Games) {
-      for (let i = 1; i <= 4; i++) {
-        const teamKey = game[`player_${i}_team`]
-        const player = game[`player_${i}`]
-        const teamDisplayName = teamNameMap[teamKey]
+    // Get current roster players (non-subs) from player_stats
+    const { data: rosterData } = await supabase
+      .from('player_stats')
+      .select('player_name')
+      .eq('is_sub', false)
+      .order('player_name')
 
-        if (teamDisplayName === teamName && player) {
-          rosterPlayers.add(player)
-        }
-      }
-    }
+    const rosterPlayers = Array.from(new Set((rosterData || []).map((p: any) => p.player_name))).filter(Boolean)
 
     return NextResponse.json({
       advantages,

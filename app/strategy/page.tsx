@@ -88,6 +88,7 @@ export default function StrategyPage() {
   // Player availability
   const [availablePlayers, setAvailablePlayers] = useState<Record<string, boolean>>({})
   const [allPlayers, setAllPlayers] = useState<string[]>([])
+  const [rosterPlayers, setRosterPlayers] = useState<string[]>([])
 
   // Machine picking state
   const [numSinglesMachines, setNumSinglesMachines] = useState(7)
@@ -206,11 +207,12 @@ export default function StrategyPage() {
         const data = await response.json()
         setMachineAdvantages(data.advantages || [])
         setAllPlayers(data.players || [])
+        setRosterPlayers(data.rosterPlayers || [])
 
-        // Initialize player availability (roster players checked by default)
+        // Initialize player availability (all roster players checked by default)
         const initialAvailability: Record<string, boolean> = {}
-        data.players.forEach((player: string) => {
-          initialAvailability[player] = data.rosterPlayers?.includes(player) || false
+        ;(data.rosterPlayers || []).forEach((player: string) => {
+          initialAvailability[player] = true
         })
         setAvailablePlayers(initialAvailability)
       }
@@ -592,9 +594,9 @@ export default function StrategyPage() {
               {/* Player Availability Section */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-3">TWC Player Availability</h3>
-                <p className="text-sm text-muted-foreground mb-3">Select players available for this match:</p>
+                <p className="text-sm text-muted-foreground mb-3">Select roster players available for this match:</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                  {allPlayers.map((player) => (
+                  {rosterPlayers.map((player) => (
                     <div key={player} className="flex items-center space-x-2">
                       <Checkbox
                         id={`player-${player}`}
