@@ -199,8 +199,6 @@ export async function GET(request: Request) {
     }).sort((a, b) => b.compositeScore - a.compositeScore)
 
     // Get TWC players from player_match_participation table
-    const twcTeamKey = teamKeyMap[teamName]
-
     // Get season 22 players (current roster)
     const { data: season22Data } = await supabase
       .from('player_match_participation')
