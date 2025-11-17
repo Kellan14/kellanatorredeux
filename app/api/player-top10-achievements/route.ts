@@ -141,7 +141,7 @@ export async function GET(request: Request) {
     }> = []
 
     // Check league-wide top 10
-    for (const [machine, scores] of machineScores.entries()) {
+    for (const [machine, scores] of Array.from(machineScores.entries())) {
       // Sort scores descending and get unique top scores
       const sortedScores = scores
         .sort((a, b) => b.score - a.score)
@@ -162,7 +162,7 @@ export async function GET(request: Request) {
     }
 
     // Check venue-specific top 10
-    for (const [venueKey, scores] of venueScores.entries()) {
+    for (const [venueKey, scores] of Array.from(venueScores.entries())) {
       const [machine, venue] = venueKey.split('|||')
 
       // Sort scores descending and get top 10
