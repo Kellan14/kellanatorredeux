@@ -105,6 +105,7 @@ export async function GET(request: NextRequest) {
       isPick: boolean;
       opponent?: string;
       opponentScore?: number;
+      venue: string;
     }
 
     const details: ScoreDetail[] = [];
@@ -154,7 +155,8 @@ export async function GET(request: NextRequest) {
           points: points || 0,
           isPick: isPick,
           opponent: opponent || undefined,
-          opponentScore: opponent ? opponentScore : undefined
+          opponentScore: opponent ? opponentScore : undefined,
+          venue: game.venue
         });
       }
     });
