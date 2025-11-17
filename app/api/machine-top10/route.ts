@@ -47,8 +47,8 @@ export async function GET(request: Request) {
       query = query.gte('season', 20).lte('season', 22)
     }
 
-    // Filter by venue if context is venue-specific (contains venue name)
-    if (venue && context.includes(venue)) {
+    // Filter by venue if context is venue-specific (not league-wide)
+    if (venue && !context.includes('League-wide')) {
       query = query.eq('venue', venue)
     }
 
