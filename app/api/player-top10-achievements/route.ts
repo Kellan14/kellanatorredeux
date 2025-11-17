@@ -138,20 +138,37 @@ export async function GET(request: Request) {
       }
       
       // Process each machine/venue group
-      for (const [groupKey, groupScores] of Array.from(groupedScores.entries())) {
+      groupedScores.forEach((groupScores, groupKey) => {
         // Sort scores for this machine/venue (highest first)
         const sortedScores = groupScores.sort((a, b) => b.score - a.score)
         
         // Take only the top 10 scores
         const top10 = sortedScores.slice(0, 10)
         
-        // Debug logging for Aerosmith
+        // Debug logging for Aerosmith BEFORE sorting
         if (groupKey === 'Aerosmith' && context.includes('League-wide - all time')) {
-          console.log('=== AEROSMITH DEBUG ===')
+          console.log('=== AEROSMITH DEBUG (BEFORE SORT) ===')
           console.log('Context:', context)
-          console.log('Top 10 scores:')
+          console.log('Total scores for Aerosmith:', groupScores.length)
+          console.log('First 20 scores before sort:')
+          groupScores.slice(0, 20).forEach((s, i) => {
+            console.log(`  ${i + 1}. ${s.playerName}: ${s.score.toLocaleString()}`)
+          })
+        }
+        
+        // Sort scores for this machine/venue (highest first)
+        const sortedScores = groupScores.sort((a, b) => b.score - a.score)
+        
+        // Take only the top 10 scores
+        const top10 = sortedScores.slice(0, 10)
+        
+        // Debug logging for Aerosmith AFTER sorting
+        if (groupKey === 'Aerosmith' && context.includes('League-wide - all time')) {
+          console.log('=== AEROSMITH DEBUG (AFTER SORT) ===')
+          console.log('Top 10 scores after sort:')
           top10.forEach((s, i) => {
-            console.log(`${i + 1}. ${s.playerName} (key: ${s.playerKey}): ${s.score.toLocaleString()}`)
+            const isPlayer = s.playerKey === playerKey ? ' <-- THIS IS THE PLAYER' : ''
+            console.log(`${i + 1}. ${s.playerName} (key: ${s.playerKey}): ${s.score.toLocaleString()}${isPlayer}`)
           })
           console.log('Looking for playerKey:', playerKey)
         }
@@ -179,10 +196,11 @@ export async function GET(request: Request) {
             })
             
             // Only take the player's highest score for this machine/venue
+            // Since the list is sorted by score descending, first occurrence is the best
             break
           }
         }
-      }
+      })
       
       return achievements
     }
