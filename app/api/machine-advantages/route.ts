@@ -198,14 +198,13 @@ export async function GET(request: Request) {
       }
     }).sort((a, b) => b.compositeScore - a.compositeScore)
 
-    // Get all TWC players from player_stats
+    // Get all TWC players from player_stats (this table only contains TWC players)
     const { data: playerStatsData } = await supabase
       .from('player_stats')
       .select('player_name')
-      .eq('team_name', teamName)
       .order('player_name')
 
-    const allTwcPlayers = Array.from(new Set((playerStatsData || []).map((p: any) => p.player_name)))
+    const allTwcPlayers = Array.from(new Set((playerStatsData || []).map((p: any) => p.player_name))).filter(Boolean)
 
     // Get current roster players from season 22
     const season22Games = gamesData.filter((g: any) => g.season === 22)
