@@ -321,6 +321,14 @@ function calculateMachineStatsServerSide(
     // Add TWC stats if requested
     if (options.includeTWCStats) {
       const useTwcVenueSpecific = options.twcVenueSpecific !== undefined ? options.twcVenueSpecific : false;
+
+      // DEBUG: Log what we're searching for
+      const sourceData = useTwcVenueSpecific ? venueData : seasonData;
+      const uniqueTeamsInData = new Set(sourceData.map(d => d.team_name));
+      console.log(`[TWC DEBUG] Machine: ${machine}, Looking for team: "${teamName}", Venue-specific: ${useTwcVenueSpecific}`);
+      console.log(`[TWC DEBUG] Available teams in ${useTwcVenueSpecific ? 'venue' : 'season'} data:`, Array.from(uniqueTeamsInData));
+      console.log(`[TWC DEBUG] Source data count:`, sourceData.length, `Machine matches:`, sourceData.filter(d => d.machine === machine).length);
+
       const twcData = useTwcVenueSpecific
         ? venueData.filter(d =>
             d.team_name.toLowerCase() === teamName.toLowerCase() && d.machine === machine
@@ -328,6 +336,8 @@ function calculateMachineStatsServerSide(
         : seasonData.filter(d =>
             d.team_name.toLowerCase() === teamName.toLowerCase() && d.machine === machine
           );
+
+      console.log(`[TWC DEBUG] TWC data found:`, twcData.length, `scores`);
 
       // Filter TWC scores by limit
       const allTwcScores = twcData.map(d => d.score);
