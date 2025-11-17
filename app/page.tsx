@@ -260,7 +260,7 @@ export default function HomePage() {
 
   const fetchAchievements = async () => {
     try {
-      const response = await fetch(`/api/player-top10-achievements?player=${encodeURIComponent(playerName)}&season=alltime`)
+      const response = await fetch(`/api/player-top10-achievements?player=${encodeURIComponent(playerName)}`)
       if (response.ok) {
         const data = await response.json()
         setAchievements(data.achievements || [])
@@ -685,9 +685,9 @@ export default function HomePage() {
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0 ml-4">
                         <div className={`text-lg font-bold ${
-                          achievement.rank === 1 ? 'text-neon-yellow' :
-                          achievement.rank === 2 ? 'text-gray-400' :
-                          achievement.rank === 3 ? 'text-orange-600' :
+                          achievement.category === 'league-all' ? 'text-neon-yellow' :
+                          achievement.category === 'venue-all' ? 'text-gray-400' :
+                          achievement.category === 'league-season' ? 'text-orange-600' :
                           'text-neon-blue'
                         }`}>
                           #{achievement.rank}
