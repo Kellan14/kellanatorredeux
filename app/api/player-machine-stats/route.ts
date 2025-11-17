@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, fetchAllRecords } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic';
 
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
 
     const playerKey = playerData.player_key
 
-    // Query games table directly with SQL filters
+    // Query games table directly with SQL filters using pagination
     let query = supabase
       .from('games')
       .select('match_key, week, season, venue, player_1_key, player_1_score, player_1_points, player_2_key, player_2_score, player_2_points, player_3_key, player_3_score, player_3_points, player_4_key, player_4_score, player_4_points')
@@ -52,32 +52,33 @@ export async function GET(request: Request) {
       query = query.eq('venue', venue)
     }
 
-    const { data: gamesData, error } = await query.returns<Array<{
-      match_key: string
-      week: number
-      season: number
-      venue: string | null
-      player_1_key: string | null
-      player_1_score: number | null
-      player_1_points: number | null
-      player_2_key: string | null
-      player_2_score: number | null
-      player_2_points: number | null
-      player_3_key: string | null
-      player_3_score: number | null
-      player_3_points: number | null
-      player_4_key: string | null
-      player_4_score: number | null
-      player_4_points: number | null
-    }>>()
-
-    if (error) {
+    let gamesData
+    try {
+      gamesData = await fetchAllRecords<{
+        match_key: string
+        week: number
+        season: number
+        venue: string | null
+        player_1_key: string | null
+        player_1_score: number | null
+        player_1_points: number | null
+        player_2_key: string | null
+        player_2_score: number | null
+        player_2_points: number | null
+        player_3_key: string | null
+        player_3_score: number | null
+        player_3_points: number | null
+        player_4_key: string | null
+        player_4_score: number | null
+        player_4_points: number | null
+      }>(query)
+    } catch (error) {
       console.error('Supabase error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
     // Extract stats for this player from each game
-    const stats = (gamesData || []).map(game => {
+    const stats = gamesData.map(game => {
       let score = 0
       let points = 0
 
