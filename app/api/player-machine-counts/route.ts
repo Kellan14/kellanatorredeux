@@ -145,12 +145,12 @@ export async function GET(request: Request) {
       ...Object.keys(allVenuesCounts)
     ])
 
-    for (const machine of allMachines) {
+    Array.from(allMachines).forEach(machine => {
       counts[machine] = {
         atVenue: venueCounts[machine] || 0,
         allVenues: allVenuesCounts[machine] || 0
       }
-    }
+    })
 
     return NextResponse.json({
       counts,
