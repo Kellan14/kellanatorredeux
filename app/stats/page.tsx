@@ -29,8 +29,7 @@ import {
 } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ChevronUp, ChevronDown, Loader2, ArrowUp, ArrowDown } from 'lucide-react'
-import { tournamentDataService } from '@/lib/data-service'
-import { calculateMachineStats, type MachineStats } from '@/lib/tournament-data'
+import { type MachineStats } from '@/lib/tournament-data'
 import { VenueMachineListManager } from '@/components/venue-machine-list-manager'
 
 interface Team {
@@ -353,23 +352,27 @@ export default function StatsPage() {
         seasons.push(s)
       }
 
-      const processed = await tournamentDataService.getProcessedScores(seasons)
-      const stats = calculateMachineStats(
-        processed,
-        'The Wrecking Crew',
-        selectedVenue,
-        seasonRange,
-        {
-          includeVenueSpecific: true,
-          includeTWCStats: true,
-          opponentTeam: selectedOpponent,
-          scoreLimits: scoreLimits,
-          teamVenueSpecific: teamVenueSpecific,
-          twcVenueSpecific: twcVenueSpecific
-        }
-      )
+      // Call new server-side API that calculates statistics on the server
+      // This avoids Vercel's 4.5MB response size limit by returning only final stats (~50KB)
+      const params = new URLSearchParams({
+        seasons: seasons.join(','),
+        venue: selectedVenue,
+        teamName: 'The Wrecking Crew',
+        opponentTeam: selectedOpponent,
+        teamVenueSpecific: teamVenueSpecific.toString(),
+        twcVenueSpecific: twcVenueSpecific.toString(),
+        scoreLimits: JSON.stringify(scoreLimits)
+      })
 
-      setMachineStats(stats)
+      const response = await fetch(`/api/machine-stats?${params}`)
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to load machine stats')
+      }
+
+      console.log('[stats] Loaded', data.count, 'machine stats from server-side calculation')
+      setMachineStats(data.stats || [])
     } catch (error) {
       console.error('Error loading stats:', error)
     } finally {
