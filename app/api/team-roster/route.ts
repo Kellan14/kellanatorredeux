@@ -17,13 +17,13 @@ export async function GET(request: Request) {
       )
     }
 
-    // Query player stats for this team
+    // Query player_match_participation for this team
+    // This table has all players from all teams, not just TWC
     const { data, error } = await supabase
-      .from('player_stats')
+      .from('player_match_participation')
       .select('*')
       .eq('season', parseInt(season))
       .eq('team', team)
-      .order('ipr', { ascending: false })
 
     if (error) {
       console.error('Database error:', error)
@@ -32,14 +32,41 @@ export async function GET(request: Request) {
       })
     }
 
-    // Format the response
-    const players = ((data as any[]) || []).map((p: any) => ({
-      name: p.player_name,
-      key: p.player_key,
-      ipr: p.ipr,
-      matchesPlayed: p.matches_played,
-      sub: false // We can enhance this later if needed
-    }))
+    // Group by player to get unique players with their stats
+    const playerMap = new Map<string, any>()
+
+    for (const row of (data as any[]) || []) {
+      const existing = playerMap.get(row.player_key)
+      if (!existing) {
+        playerMap.set(row.player_key, {
+          name: row.player_name,
+          key: row.player_key,
+          ipr: row.ipr_at_match || 0,
+          matchesPlayed: 1,
+          sub: row.is_sub || false
+        })
+      } else {
+        // Increment match count and update IPR to most recent
+        existing.matchesPlayed++
+        if (row.ipr_at_match) {
+          existing.ipr = row.ipr_at_match
+        }
+        // If they were ever not a sub, mark as non-sub
+        if (!row.is_sub) {
+          existing.sub = false
+        }
+      }
+    }
+
+    // Convert map to array and filter by showSubs
+    let players = Array.from(playerMap.values())
+
+    if (!showSubs) {
+      players = players.filter(p => !p.sub)
+    }
+
+    // Sort by IPR descending
+    players.sort((a, b) => (b.ipr || 0) - (a.ipr || 0))
 
     return NextResponse.json({
       players: players
