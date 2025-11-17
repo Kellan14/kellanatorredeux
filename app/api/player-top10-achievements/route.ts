@@ -182,9 +182,9 @@ export async function GET(request: Request) {
         
         // Add each qualifying score as a separate achievement
         for (const playerScore of playerTopScores) {
-          // Calculate rank based on unique scores
-          const rank = uniqueScores.findIndex(s => s <= playerScore.score) + 1
-          
+          // Calculate rank based on how many scores are higher
+          const rank = allSortedScores.filter(s => s.score > playerScore.score).length + 1
+
           // Only add if rank is <= 10
           if (rank <= 10) {
             achievements.push({
@@ -224,9 +224,9 @@ export async function GET(request: Request) {
         
         // Add each qualifying score as a separate achievement
         for (const playerScore of playerTopScores) {
-          // Calculate rank based on unique scores
-          const rank = uniqueScores.findIndex(s => s <= playerScore.score) + 1
-          
+          // Calculate rank based on how many scores are higher
+          const rank = allSortedScores.filter(s => s.score > playerScore.score).length + 1
+
           // Only add if rank is <= 10
           if (rank <= 10) {
             achievements.push({
