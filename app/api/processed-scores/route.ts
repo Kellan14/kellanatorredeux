@@ -52,6 +52,29 @@ export async function GET(request: NextRequest) {
       }, { status: 404 });
     }
 
+    // Build a map of team_key -> team_name from teams table
+    const teamKeys = new Set<string>();
+    gamesData.forEach((game: any) => {
+      for (let i = 1; i <= 4; i++) {
+        const team = game[`player_${i}_team`];
+        if (team) teamKeys.add(team);
+      }
+      if (game.home_team) teamKeys.add(game.home_team);
+      if (game.away_team) teamKeys.add(game.away_team);
+    });
+
+    const { data: teamsData } = await supabase
+      .from('teams')
+      .select('team_key, team_name')
+      .in('team_key', Array.from(teamKeys));
+
+    const teamNameMap: Record<string, string> = {};
+    (teamsData || []).forEach((team: any) => {
+      teamNameMap[team.team_key] = team.team_name;
+    });
+
+    console.log('[processed-scores] Team name map:', teamNameMap);
+
     // Transform games data to ProcessedScore format
     // After running the migration, all team data is denormalized in the games table
     const processedScores: ProcessedScore[] = [];
@@ -63,12 +86,12 @@ export async function GET(request: NextRequest) {
         const playerName = game[`player_${i}_name`];
         const score = game[`player_${i}_score`];
         const points = game[`player_${i}_points`];
-        const team = game[`player_${i}_team`];
+        const teamKey = game[`player_${i}_team`];
 
         if (!playerKey || score === null || score === undefined) continue;
 
         // Calculate is_pick: home team picks odd rounds, away team picks even rounds
-        const isHomeTeam = team === game.home_team;
+        const isHomeTeam = teamKey === game.home_team;
         const isPick = game.round_number % 2 === 1 ? isHomeTeam : !isHomeTeam;
 
         processedScores.push({
@@ -79,8 +102,8 @@ export async function GET(request: NextRequest) {
           venue: game.venue || '',
           machine: (game.machine || '').toLowerCase(),
           player_name: playerName || 'Unknown',
-          team: team || '',
-          team_name: team || '', // Team key is used as name for now
+          team: teamKey || '',
+          team_name: teamNameMap[teamKey] || teamKey || '', // Use actual team name from teams table
           score: score,
           points: points || 0,
           is_pick: isPick,
