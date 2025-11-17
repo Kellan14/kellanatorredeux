@@ -17,13 +17,27 @@ export async function GET(request: Request) {
       )
     }
 
+    // The team parameter might be a team_name (e.g., "Pocketeers") or team_key (e.g., "PKT")
+    // First, try to look up the team_key from the teams table
+    const { data: teamData } = await supabase
+      .from('teams')
+      .select('team_key, team_name')
+      .or(`team_key.eq.${team},team_name.ilike.${team}`)
+      .single<{ team_key: string; team_name: string }>()
+
+    // Use the team_key if found, otherwise use the original team parameter
+    const teamKey = teamData?.team_key || team
+
+    console.log('[team-roster] Looking up team:', team, '→ teamKey:', teamKey)
+
     // Query player_match_participation for this team
     // This table has all players from all teams, not just TWC
+    // The 'team' column stores team_key, not team_name
     const { data, error } = await supabase
       .from('player_match_participation')
       .select('*')
       .eq('season', parseInt(season))
-      .eq('team', team)
+      .eq('team', teamKey)
 
     if (error) {
       console.error('Database error:', error)
