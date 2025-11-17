@@ -17,14 +17,26 @@ export async function GET(request: Request) {
       )
     }
 
+    // Determine season filter from context
+    const isThisSeason = context.includes('this season')
+    const currentSeason = 22
+
     // Build query for top 10 scores
     let query = supabase
       .from('games')
       .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, venue, season, week, match_key, round_number')
       .eq('machine', machineKey)
 
-    // Filter by venue if context is venue-specific
-    if (context.includes(' at ') && venue) {
+    // Filter by season if "this season"
+    if (isThisSeason) {
+      query = query.eq('season', currentSeason)
+    } else {
+      // All time: seasons 20-22
+      query = query.gte('season', 20).lte('season', 22)
+    }
+
+    // Filter by venue if context is venue-specific (contains venue name)
+    if (venue && context.includes(venue)) {
       query = query.eq('venue', venue)
     }
 
@@ -103,10 +115,14 @@ export async function GET(request: Request) {
       }
     }
 
-    // Sort by score descending and take top 10
+    // Sort by score descending and take top 10, adding rank numbers
     const topScores = scores
       .sort((a, b) => b.score - a.score)
       .slice(0, 10)
+      .map((score, index) => ({
+        ...score,
+        rank: index + 1
+      }))
 
     return NextResponse.json({
       machine: machineKey,
