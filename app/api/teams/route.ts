@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Filter teams that actually played in this season by checking games table
+    // Filter teams that played OR have lineups in this season
+    // Check both games table (completed matches) and player_match_participation (all matches including upcoming)
     const { data: gamesData, error: gamesError } = await supabase
       .from('games')
       .select('home_team, away_team')
@@ -36,18 +37,31 @@ export async function GET(request: NextRequest) {
       .limit(100)
       .returns<Array<{ home_team: string | null; away_team: string | null }>>(); // Sample to find all teams in this season
 
-    if (gamesError) {
-      console.error('Database error checking season teams:', gamesError);
+    const { data: participationData, error: participationError } = await supabase
+      .from('player_match_participation')
+      .select('team')
+      .eq('season', parseInt(season))
+      .returns<Array<{ team: string }>>();
+
+    if (gamesError && participationError) {
+      console.error('Database errors:', { gamesError, participationError });
       // Return all teams if we can't filter by season
       const teams = (teamsData || []).map(t => ({ key: t.team_key, name: t.team_name }));
       return NextResponse.json({ teams });
     }
 
-    // Collect team keys that played in this season
+    // Collect team keys that played or have lineups in this season
     const seasonTeamKeys = new Set<string>();
+
+    // Add teams from games (completed matches)
     for (const game of gamesData || []) {
       if (game.home_team) seasonTeamKeys.add(game.home_team);
       if (game.away_team) seasonTeamKeys.add(game.away_team);
+    }
+
+    // Add teams from player participation (includes upcoming matches)
+    for (const p of participationData || []) {
+      if (p.team) seasonTeamKeys.add(p.team);
     }
 
     // Filter teams to only those that played in this season
