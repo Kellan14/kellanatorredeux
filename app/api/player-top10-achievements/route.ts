@@ -138,17 +138,34 @@ export async function GET(request: Request) {
       }
       
       // Process each machine/venue group
-      for (const [groupKey, groupScores] of Array.from(groupedScores.entries())) {
+      for (const [groupKey, groupScores] of groupedScores) {
         // Sort scores for this machine/venue (highest first)
         const sortedScores = groupScores.sort((a, b) => b.score - a.score)
         
         // Take only the top 10 scores
         const top10 = sortedScores.slice(0, 10)
         
+        // Debug logging for Aerosmith
+        if (groupKey === 'Aerosmith' && context.includes('League-wide - all time')) {
+          console.log('=== AEROSMITH DEBUG ===')
+          console.log('Context:', context)
+          console.log('Top 10 scores:')
+          top10.forEach((s, i) => {
+            console.log(`${i + 1}. ${s.playerName} (key: ${s.playerKey}): ${s.score.toLocaleString()}`)
+          })
+          console.log('Looking for playerKey:', playerKey)
+        }
+        
         // Find player's best score in the top 10
         for (let i = 0; i < top10.length; i++) {
           if (top10[i].playerKey === playerKey) {
             const [machine, venue] = groupKey.split('|||')
+            
+            // More debug logging
+            if (machine === 'Aerosmith' && context.includes('League-wide - all time')) {
+              console.log(`Found player at position ${i} (rank ${i + 1})`)
+              console.log(`Player score: ${top10[i].score.toLocaleString()}`)
+            }
             
             achievements.push({
               machine,
