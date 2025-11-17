@@ -44,7 +44,7 @@ export async function GET(request: Request) {
     // Query all games for both teams
     let gamesData
     try {
-      gamesData = await fetchAllRecords(
+      gamesData = await fetchAllRecords<any>(
         supabase
           .from('games')
           .select('*')

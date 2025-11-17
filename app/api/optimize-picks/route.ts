@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     // Query games with pagination
     let gamesData
     try {
-      gamesData = await fetchAllRecords(
+      gamesData = await fetchAllRecords<any>(
         supabase
           .from('games')
           .select('*')
