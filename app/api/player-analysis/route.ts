@@ -60,19 +60,40 @@ export async function GET(request: Request) {
       })
     }
 
-    // Query games table directly with SQL filters
-    let query = supabase
+    // Step 1: Get list of machines at the specific venue
+    const { data: venueMachinesData } = await supabase
+      .from('games')
+      .select('machine')
+      .eq('venue', venue)
+      .gte('season', seasonStart)
+      .lte('season', seasonEnd)
+
+    const machinesAtVenue = new Set(venueMachinesData?.map(g => g.machine) || [])
+
+    if (machinesAtVenue.size === 0) {
+      return NextResponse.json({
+        player,
+        totalGames: 0,
+        uniqueMachines: 0,
+        venuesPlayed: 0,
+        machinePerformance: [],
+        allVenues
+      })
+    }
+
+    // Step 2: Get player's games (venue-specific or all venues)
+    let playerQuery = supabase
       .from('games')
       .select('machine, venue, player_1_key, player_1_score, player_1_points, player_2_key, player_2_score, player_2_points, player_3_key, player_3_score, player_3_points, player_4_key, player_4_score, player_4_points')
       .gte('season', seasonStart)
       .lte('season', seasonEnd)
       .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
 
-    if (!allVenues && venue) {
-      query = query.eq('venue', venue)
+    if (!allVenues) {
+      playerQuery = playerQuery.eq('venue', venue)
     }
 
-    const { data: gamesData, error } = await query.returns<Array<{
+    const { data: playerGamesData, error: playerError } = await playerQuery.returns<Array<{
       machine: string
       venue: string | null
       player_1_key: string | null
@@ -89,19 +110,40 @@ export async function GET(request: Request) {
       player_4_points: number | null
     }>>()
 
-    if (error) {
-      console.error('Supabase error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (playerError) {
+      console.error('Supabase error:', playerError)
+      return NextResponse.json({ error: playerError.message }, { status: 500 })
     }
 
-    // Analyze performance and calculate venue averages
+    // Step 3: Get all games at the venue for calculating venue averages
+    const { data: venueGamesData, error: venueError } = await supabase
+      .from('games')
+      .select('machine, player_1_score, player_2_score, player_3_score, player_4_score')
+      .eq('venue', venue)
+      .gte('season', seasonStart)
+      .lte('season', seasonEnd)
+      .returns<Array<{
+        machine: string
+        player_1_score: number | null
+        player_2_score: number | null
+        player_3_score: number | null
+        player_4_score: number | null
+      }>>()
+
+    if (venueError) {
+      console.error('Supabase error:', venueError)
+      return NextResponse.json({ error: venueError.message }, { status: 500 })
+    }
+
+    // Step 4: Process player's games (only for machines at the venue)
     const machineStats = new Map()
     const venuesSet = new Set()
-    const venueScores = new Map() // For calculating venue averages
     let totalGames = 0
 
-    // First pass: collect player stats and all scores for venue averages
-    for (const game of gamesData || []) {
+    for (const game of playerGamesData || []) {
+      // Only process machines that exist at the venue
+      if (!machinesAtVenue.has(game.machine)) continue
+
       if (game.venue) venuesSet.add(game.venue)
 
       let playerPoints = 0
@@ -126,13 +168,10 @@ export async function GET(request: Request) {
         isPlayerGame = true
       }
 
-      const machine = game.machine
-
-      // Track player stats
       if (isPlayerGame) {
-        if (!machineStats.has(machine)) {
-          machineStats.set(machine, {
-            machine,
+        if (!machineStats.has(game.machine)) {
+          machineStats.set(game.machine, {
+            machine: game.machine,
             gamesPlayed: 0,
             totalPoints: 0,
             totalScore: 0,
@@ -143,7 +182,7 @@ export async function GET(request: Request) {
           })
         }
 
-        const stats = machineStats.get(machine)
+        const stats = machineStats.get(game.machine)
         stats.gamesPlayed++
         stats.timesPlayed++
         stats.totalPoints += playerPoints
@@ -151,13 +190,18 @@ export async function GET(request: Request) {
         stats.bestScore = Math.max(stats.bestScore, playerScore)
         totalGames++
       }
+    }
 
-      // Track all scores for venue averages (from all players)
-      const venueKey = `${machine}`
-      if (!venueScores.has(venueKey)) {
-        venueScores.set(venueKey, { totalScore: 0, count: 0 })
+    // Step 5: Calculate venue averages from venue games
+    const venueScores = new Map()
+    for (const game of venueGamesData || []) {
+      // Only process machines at the venue
+      if (!machinesAtVenue.has(game.machine)) continue
+
+      if (!venueScores.has(game.machine)) {
+        venueScores.set(game.machine, { totalScore: 0, count: 0 })
       }
-      const venueData = venueScores.get(venueKey)!
+      const venueData = venueScores.get(game.machine)!
 
       // Add all player scores to venue average
       if (game.player_1_score) {
