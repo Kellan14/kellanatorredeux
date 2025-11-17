@@ -3,12 +3,10 @@ import { supabase } from '@/lib/supabase'
 import fs from 'fs'
 import path from 'path'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
+export const revalidate = 3600 // Cache for 1 hour
 
-// Cache for 1 hour since stats only update weekly
-export const revalidate = 3600
-
-// Load score limits
+// Load score limits to filter out invalid/glitched scores
 const scoreLimitsPath = path.join(process.cwd(), 'score_limits.json')
 let scoreLimits: Record<string, number> = {}
 try {
@@ -25,8 +23,17 @@ interface Achievement {
   rank: number
   score: number
   isVenueSpecific: boolean
-  priority: number  // 1=highest (league-wide all-time), 4=lowest (venue-specific this season)
+  priority: number
   category: 'league-all' | 'venue-all' | 'league-season' | 'venue-season'
+}
+
+interface GameScore {
+  playerKey: string
+  playerName: string
+  score: number
+  machine: string
+  venue: string | null
+  season: number
 }
 
 export async function GET(request: Request) {
@@ -42,238 +49,224 @@ export async function GET(request: Request) {
     }
 
     const currentSeason = 22
-
-    // Get player's key from games
-    const { data: sampleGames } = await supabase
+    
+    // First, find the player's key by looking for any game they've played
+    const { data: playerGames } = await supabase
       .from('games')
       .select('player_1_key, player_1_name, player_2_key, player_2_name, player_3_key, player_3_name, player_4_key, player_4_name')
       .or(`player_1_name.eq.${playerName},player_2_name.eq.${playerName},player_3_name.eq.${playerName},player_4_name.eq.${playerName}`)
       .limit(1)
-      .returns<Array<{
-        player_1_key: string | null
-        player_1_name: string | null
-        player_2_key: string | null
-        player_2_name: string | null
-        player_3_key: string | null
-        player_3_name: string | null
-        player_4_key: string | null
-        player_4_name: string | null
-      }>>()
 
-    let playerKey: string | null = null
-
-    if (sampleGames && sampleGames.length > 0) {
-      const game = sampleGames[0]
-      if (game.player_1_name === playerName) playerKey = game.player_1_key
-      else if (game.player_2_name === playerName) playerKey = game.player_2_key
-      else if (game.player_3_name === playerName) playerKey = game.player_3_key
-      else if (game.player_4_name === playerName) playerKey = game.player_4_key
+    if (!playerGames || playerGames.length === 0) {
+      return NextResponse.json({ achievements: [], count: 0 })
     }
+
+    // Extract player key from the game record
+    let playerKey: string | null = null
+    const game = playerGames[0]
+    if (game.player_1_name === playerName) playerKey = game.player_1_key
+    else if (game.player_2_name === playerName) playerKey = game.player_2_key
+    else if (game.player_3_name === playerName) playerKey = game.player_3_key
+    else if (game.player_4_name === playerName) playerKey = game.player_4_key
 
     if (!playerKey) {
-      return NextResponse.json({ achievements: [] })
+      return NextResponse.json({ achievements: [], count: 0 })
     }
 
-    // Helper to check if a score should be filtered out based on machine limits
-    const isScoreValid = (machine: string, score: number): boolean => {
-      const machineLimit = scoreLimits[machine.toLowerCase()]
-      if (!machineLimit) return true
-      return score <= machineLimit
+    // Function to check if a score is valid (not glitched)
+    const isValidScore = (machine: string, score: number): boolean => {
+      const limit = scoreLimits[machine.toLowerCase()]
+      return !limit || score <= limit
     }
 
-    // Function to process games for a specific season range
-    const processGamesForSeasonRange = async (minSeason: number, maxSeason: number, label: 'all time' | 'this season') => {
-      let allGamesQuery = supabase
-        .from('games')
-        .select('machine, venue, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score, season')
-        .gte('season', minSeason)
-        .lte('season', maxSeason)
-
-      const { data: allGames, error } = await allGamesQuery.returns<Array<{
-        machine: string
-        venue: string | null
-        player_1_key: string | null
-        player_1_name: string | null
-        player_1_score: number | null
-        player_2_key: string | null
-        player_2_name: string | null
-        player_2_score: number | null
-        player_3_key: string | null
-        player_3_name: string | null
-        player_3_score: number | null
-        player_4_key: string | null
-        player_4_name: string | null
-        player_4_score: number | null
-        season: number
-      }>>()
-
-      if (error) {
-        console.error('Supabase error:', error)
-        return []
-      }
-
-      // Extract all scores and organize by machine and machine+venue
-      const machineScores = new Map<string, Array<{ player: string; playerKey: string; score: number }>>()
-      const venueScores = new Map<string, Array<{ player: string; playerKey: string; score: number }>>()
-
-      for (const game of allGames || []) {
-        const scores = [
-          { key: game.player_1_key, name: game.player_1_name, score: game.player_1_score },
-          { key: game.player_2_key, name: game.player_2_name, score: game.player_2_score },
-          { key: game.player_3_key, name: game.player_3_name, score: game.player_3_score },
-          { key: game.player_4_key, name: game.player_4_name, score: game.player_4_score }
-        ]
-
-        for (const s of scores) {
-          if (s.key && s.name && s.score != null && isScoreValid(game.machine, s.score)) {
-            // League-wide scores by machine
-            if (!machineScores.has(game.machine)) {
-              machineScores.set(game.machine, [])
-            }
-            machineScores.get(game.machine)!.push({
-              player: s.name,
-              playerKey: s.key,
-              score: s.score
+    // Function to extract all scores from game records
+    const extractScores = (games: any[]): GameScore[] => {
+      const scores: GameScore[] = []
+      
+      for (const game of games) {
+        // Check each player position (1-4)
+        for (let i = 1; i <= 4; i++) {
+          const key = game[`player_${i}_key`]
+          const name = game[`player_${i}_name`]
+          const score = game[`player_${i}_score`]
+          
+          if (key && name && score != null && isValidScore(game.machine, score)) {
+            scores.push({
+              playerKey: key,
+              playerName: name,
+              score: score,
+              machine: game.machine,
+              venue: game.venue,
+              season: game.season
             })
-
-            // Venue-specific scores by machine+venue
-            if (game.venue) {
-              const venueKey = `${game.machine}|||${game.venue}`
-              if (!venueScores.has(venueKey)) {
-                venueScores.set(venueKey, [])
-              }
-              venueScores.get(venueKey)!.push({
-                player: s.name,
-                playerKey: s.key,
-                score: s.score
-              })
-            }
           }
         }
       }
+      
+      return scores
+    }
 
+    // Function to find player achievements in a dataset
+    const findAchievements = (
+      scores: GameScore[], 
+      playerKey: string, 
+      context: string,
+      priority: number,
+      category: 'league-all' | 'venue-all' | 'league-season' | 'venue-season'
+    ): Achievement[] => {
       const achievements: Achievement[] = []
-
-      // Determine priority based on label
-      const leaguePriority = label === 'all time' ? 1 : 3
-      const venuePriority = label === 'all time' ? 2 : 4
-      const leagueCategory = label === 'all time' ? 'league-all' : 'league-season'
-      const venueCategory = label === 'all time' ? 'venue-all' : 'venue-season'
-
-      // Check league-wide top 10
-      for (const [machine, scores] of Array.from(machineScores.entries())) {
-        // Sort all scores descending
-        const allSortedScores = scores.sort((a, b) => b.score - a.score)
+      
+      // Group scores by machine (or machine+venue for venue-specific)
+      const groupedScores = new Map<string, GameScore[]>()
+      
+      for (const score of scores) {
+        const key = category.includes('venue') ? `${score.machine}|||${score.venue}` : score.machine
+        if (!groupedScores.has(key)) {
+          groupedScores.set(key, [])
+        }
+        groupedScores.get(key)!.push(score)
+      }
+      
+      // Process each machine/venue group
+      for (const [groupKey, groupScores] of groupedScores) {
+        // Sort scores for this machine/venue (highest first)
+        const sortedScores = groupScores.sort((a, b) => b.score - a.score)
         
-        // Take the top 10 scores (not unique, just top 10)
-        const top10Scores = allSortedScores.slice(0, 10)
+        // Take only the top 10 scores
+        const top10 = sortedScores.slice(0, 10)
         
-        // Check if player is in the top 10
-        let playerRank = 0
-        let playerScore = 0
-        
-        for (let i = 0; i < top10Scores.length; i++) {
-          if (top10Scores[i].playerKey === playerKey) {
-            playerRank = i + 1  // Rank is position + 1
-            playerScore = top10Scores[i].score
-            break  // Take first (highest) score for this player
+        // Find player's best score in the top 10
+        for (let i = 0; i < top10.length; i++) {
+          if (top10[i].playerKey === playerKey) {
+            const [machine, venue] = groupKey.split('|||')
+            
+            achievements.push({
+              machine,
+              context,
+              venue: venue || undefined,
+              rank: i + 1,
+              score: top10[i].score,
+              isVenueSpecific: category.includes('venue'),
+              priority,
+              category
+            })
+            
+            // Only take the player's highest score for this machine/venue
+            break
           }
         }
-        
-        if (playerRank > 0) {
-          achievements.push({
-            machine,
-            context: `League-wide - ${label}`,
-            rank: playerRank,
-            score: playerScore,
-            isVenueSpecific: false,
-            priority: leaguePriority,
-            category: leagueCategory as 'league-all' | 'league-season'
-          })
-        }
       }
-
-      // Check venue-specific top 10
-      for (const [venueKey, scores] of Array.from(venueScores.entries())) {
-        const [machine, venue] = venueKey.split('|||')
-
-        // Sort all scores descending
-        const allSortedScores = scores.sort((a, b) => b.score - a.score)
-        
-        // Take the top 10 scores (not unique, just top 10)
-        const top10Scores = allSortedScores.slice(0, 10)
-        
-        // Check if player is in the top 10
-        let playerRank = 0
-        let playerScore = 0
-        
-        for (let i = 0; i < top10Scores.length; i++) {
-          if (top10Scores[i].playerKey === playerKey) {
-            playerRank = i + 1  // Rank is position + 1
-            playerScore = top10Scores[i].score
-            break  // Take first (highest) score for this player
-          }
-        }
-        
-        if (playerRank > 0) {
-          achievements.push({
-            machine,
-            context: `${venue} - ${label}`,
-            venue,
-            rank: playerRank,
-            score: playerScore,
-            isVenueSpecific: true,
-            priority: venuePriority,
-            category: venueCategory as 'venue-all' | 'venue-season'
-          })
-        }
-      }
-
+      
       return achievements
     }
 
-    // Get achievements for both all-time and current season
-    const allTimeAchievements = await processGamesForSeasonRange(20, 22, 'all time')
-    const currentSeasonAchievements = await processGamesForSeasonRange(currentSeason, currentSeason, 'this season')
+    // Fetch all games for all-time period (seasons 20-22)
+    const { data: allTimeGames, error: allTimeError } = await supabase
+      .from('games')
+      .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
+      .gte('season', 20)
+      .lte('season', 22)
 
-    // Combine achievements
-    const combinedAchievements = [...allTimeAchievements, ...currentSeasonAchievements]
+    if (allTimeError) {
+      console.error('Error fetching all-time games:', allTimeError)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
 
-    // Deduplicate: for each machine+context combination, only keep the best (highest score/best rank)
-    const achievementMap = new Map<string, Achievement>()
-    
-    for (const achievement of combinedAchievements) {
-      const key = `${achievement.machine}|||${achievement.context}`
-      const existing = achievementMap.get(key)
-      
-      if (!existing || 
-          achievement.rank < existing.rank || 
-          (achievement.rank === existing.rank && achievement.score > existing.score)) {
-        achievementMap.set(key, achievement)
+    // Fetch games for current season only
+    const { data: currentSeasonGames, error: seasonError } = await supabase
+      .from('games')
+      .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
+      .eq('season', currentSeason)
+
+    if (seasonError) {
+      console.error('Error fetching current season games:', seasonError)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
+
+    // Extract scores from both datasets
+    const allTimeScores = extractScores(allTimeGames || [])
+    const currentSeasonScores = extractScores(currentSeasonGames || [])
+
+    // Find achievements in each category
+    const achievements: Achievement[] = []
+
+    // League-wide all-time (priority 1)
+    achievements.push(...findAchievements(
+      allTimeScores,
+      playerKey,
+      'League-wide - all time',
+      1,
+      'league-all'
+    ))
+
+    // Venue-specific all-time (priority 2)
+    achievements.push(...findAchievements(
+      allTimeScores,
+      playerKey,
+      'all time', // Will be prefixed with venue name
+      2,
+      'venue-all'
+    ))
+
+    // League-wide current season (priority 3)
+    achievements.push(...findAchievements(
+      currentSeasonScores,
+      playerKey,
+      'League-wide - this season',
+      3,
+      'league-season'
+    ))
+
+    // Venue-specific current season (priority 4)
+    achievements.push(...findAchievements(
+      currentSeasonScores,
+      playerKey,
+      'this season', // Will be prefixed with venue name
+      4,
+      'venue-season'
+    ))
+
+    // Fix venue-specific context strings
+    for (const achievement of achievements) {
+      if (achievement.isVenueSpecific && achievement.venue) {
+        if (achievement.context === 'all time') {
+          achievement.context = `${achievement.venue} - all time`
+        } else if (achievement.context === 'this season') {
+          achievement.context = `${achievement.venue} - this season`
+        }
       }
     }
 
-    // Convert back to array and sort
-    const allAchievements = Array.from(achievementMap.values())
-      .sort((a, b) => {
-        // First by priority (1=best)
-        if (a.priority !== b.priority) return a.priority - b.priority
-        // Then by rank (1=best)
-        if (a.rank !== b.rank) return a.rank - b.rank
-        // Then by score (higher=better)
-        if (a.score !== b.score) return b.score - a.score
-        // Finally by machine name for consistency
-        return a.machine.localeCompare(b.machine)
-      })
+    // Remove duplicates (keep best rank for each machine+context)
+    const uniqueAchievements = new Map<string, Achievement>()
+    
+    for (const achievement of achievements) {
+      const key = `${achievement.machine}|||${achievement.context}`
+      const existing = uniqueAchievements.get(key)
+      
+      if (!existing || achievement.rank < existing.rank) {
+        uniqueAchievements.set(key, achievement)
+      }
+    }
+
+    // Sort final achievements
+    const sortedAchievements = Array.from(uniqueAchievements.values()).sort((a, b) => {
+      if (a.priority !== b.priority) return a.priority - b.priority
+      if (a.rank !== b.rank) return a.rank - b.rank
+      if (a.score !== b.score) return b.score - a.score
+      return a.machine.localeCompare(b.machine)
+    })
 
     return NextResponse.json({
-      achievements: allAchievements,
-      count: allAchievements.length
+      achievements: sortedAchievements,
+      count: sortedAchievements.length,
+      playerKey: playerKey // Include for debugging
     })
+
   } catch (error) {
-    console.error('Error fetching player achievements:', error)
+    console.error('Error in achievements route:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch achievements' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
