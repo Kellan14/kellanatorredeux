@@ -260,7 +260,7 @@ export default function HomePage() {
 
   const fetchAchievements = async () => {
     try {
-      const response = await fetch(`/api/player-top10-achievements?player=${encodeURIComponent(playerName)}`)
+      const response = await fetch(`/api/player-top10-achievements?player=${encodeURIComponent(playerName)}&season=alltime`)
       if (response.ok) {
         const data = await response.json()
         setAchievements(data.achievements || [])
