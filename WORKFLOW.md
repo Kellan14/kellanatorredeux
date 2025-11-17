@@ -1046,6 +1046,197 @@ const stats = await fetch('/api/machine-stats?seasons=20,21,22&venue=...');
 - Database calculation: Fast PostgreSQL aggregations
 - Result: ✅ Works perfectly
 
+## Data Query Optimizations (Nov 16, 2025)
+
+### Issue #4: Supabase 1000 Row Limit - Missing TWC Statistics (FIXED)
+
+**Problem Discovered**: The `/api/machine-stats` endpoint was only showing 90 TWC scores when there should be 1,050+ scores across 96 machines. TWC data only appeared for Georgetown Pizza and Arcade venue.
+
+**Root Cause**: Supabase has a default **1000 row limit** on queries without explicit pagination. With ~11,110 games across seasons 20-22, the API was only fetching the first 1000 rows, causing massive data loss.
+
+**User Investigation**:
+- Database query showed 374 games where `away_team='TWC'`
+- 770 games with TWC players in `player_X_team` columns
+- 35 unique TWC matches
+- 0 NULL scores (data was complete, just not being fetched)
+
+**Fix Attempt #1**: Added `.limit(100000)` to query
+```typescript
+.limit(100000)
+```
+**Result**: ❌ Failed - still only fetched 1000 rows
+
+**Fix Attempt #2**: Implemented pagination with `.range()`
+```typescript
+// app/api/machine-stats/route.ts:74-107
+let gamesData: any[] = [];
+let hasMore = true;
+let offset = 0;
+const pageSize = 1000;
+
+while (hasMore) {
+  const { data: page, error } = await supabase
+    .from('games')
+    .select('*')
+    .in('season', seasonList)
+    .order('season', { ascending: false })
+    .order('week', { ascending: false })
+    .range(offset, offset + pageSize - 1);
+
+  if (error) {
+    console.error('[machine-stats] Database error:', error);
+    return NextResponse.json(
+      { error: 'Failed to load games data', details: error.message },
+      { status: 500 }
+    );
+  }
+
+  if (!page || page.length === 0) {
+    hasMore = false;
+  } else {
+    gamesData = gamesData.concat(page);
+    offset += pageSize;
+    hasMore = page.length === pageSize;
+  }
+}
+
+console.log(`[machine-stats] Fetched ${gamesData.length} games total`);
+```
+
+**Result**: ✅ Success!
+- Now fetches **all 11,110 games** across seasons 20-22
+- TWC statistics show **1,050 scores across 96 machines**
+- Pagination handles any data size
+
+**Commits**: `64192a2`, `bd40217`
+
+### Issue #5: Incorrect POPS Calculation (FIXED)
+
+**Problem**: Dashboard POPS (Percent of Points Scored) showing incorrect value - should be ~74.4%.
+
+**Root Cause**: API was not using the correct **fixed point totals** for singles vs doubles games:
+- Singles (2 players): 3.0 points possible
+- Doubles (4 players): 2.5 points possible
+
+**User Clarification**:
+- "no either 2 or 4 players play in each match"
+- "when 2 players one is from each team, when 4 players 2 are from each team"
+- "and there are 2.5 points possible in doubles and 3 in singles"
+- "i know its wrong becuase i know my POPS should be approx 74.4 percent"
+
+**Fix**: Updated `/api/player-ipr/route.ts` to count players per game and use appropriate point totals
+
+```typescript
+// app/api/player-ipr/route.ts:73-103
+let totalPoints = 0
+let totalPossiblePoints = 0
+const uniqueMatches = new Set<string>()
+
+for (const game of gamesData || []) {
+  // Track unique matches
+  if (game.match_key) {
+    uniqueMatches.add(game.match_key)
+  }
+
+  // Find this player's points
+  let playerPoints = 0
+  if (game.player_1_key === playerKey) {
+    playerPoints = game.player_1_points || 0
+  } else if (game.player_2_key === playerKey) {
+    playerPoints = game.player_2_points || 0
+  } else if (game.player_3_key === playerKey) {
+    playerPoints = game.player_3_points || 0
+  } else if (game.player_4_key === playerKey) {
+    playerPoints = game.player_4_points || 0
+  }
+
+  totalPoints += playerPoints
+
+  // Count how many players in this game to determine if singles or doubles
+  let playerCount = 0
+  if (game.player_1_key) playerCount++
+  if (game.player_2_key) playerCount++
+  if (game.player_3_key) playerCount++
+  if (game.player_4_key) playerCount++
+
+  // Singles (2 players) = 3 points possible, Doubles (4 players) = 2.5 points possible
+  const possiblePoints = playerCount === 4 ? 2.5 : 3
+  totalPossiblePoints += possiblePoints
+}
+
+const matchesPlayedCount = uniqueMatches.size
+const pointsPerMatch = matchesPlayedCount > 0 ? totalPoints / matchesPlayedCount : 0
+const pops = totalPossiblePoints > 0 ? (totalPoints / totalPossiblePoints) * 100 : 0
+```
+
+**Result**: ✅ POPS now calculates correctly as ~74.4%
+
+**Commit**: `496140d`
+
+### Issue #6: Missing Venue Column in Statistics Details (FIXED)
+
+**Problem**: When clicking on cells in the statistics table to see individual scores, the venue column was not appearing in the details table.
+
+**Root Cause**: The `/api/cell-details` endpoint was not including the `venue` field in the response data.
+
+**Fix**: Updated `ScoreDetail` interface and detail objects to include venue
+
+```typescript
+// app/api/cell-details/route.ts:96-109
+interface ScoreDetail {
+  season: number;
+  week: number;
+  match: string;
+  round: number;
+  player: string;
+  team: string;
+  score: number;
+  points: number;
+  isPick: boolean;
+  opponent?: string;
+  opponentScore?: number;
+  venue: string;  // ADDED
+}
+
+// app/api/cell-details/route.ts:147-160
+details.push({
+  season: game.season || 0,
+  week: game.week,
+  match: game.match_key,
+  round: game.round_number,
+  player: playerName,
+  team: teamName,
+  score: score,
+  points: points || 0,
+  isPick: isPick,
+  opponent: opponent || undefined,
+  opponentScore: opponent ? opponentScore : undefined,
+  venue: game.venue  // ADDED
+});
+```
+
+**Result**: ✅ Venue column now displays in cell-details table
+
+**Commit**: `f4e96d7`
+
+### Deployment Workflow Update
+
+**Change**: Switched to force deployment on every code change to ensure immediate updates without GitHub integration delays.
+
+**Command**:
+```bash
+# Force redeploy to production
+npx vercel --prod --yes
+```
+
+**Benefits**:
+- Immediate deployment (no waiting for GitHub webhook)
+- Guaranteed fresh build
+- Predictable deployment timing
+- Easier testing cycle
+
+---
+
 ## Summary
 
 The platform has successfully transitioned from JSONB-only storage to an optimized relational schema.
@@ -1058,9 +1249,13 @@ The platform has successfully transitioned from JSONB-only storage to an optimiz
 - ✓ Unified import script created (`unified-import.js`)
 - ✓ Core APIs migrated to SQL queries
 - ✓ **10-40x performance improvement achieved**
+- ✓ Supabase pagination implemented (handles 11,110+ games)
+- ✓ POPS calculation fixed with correct point totals
+- ✓ Venue field added to statistics details
 
 **Architecture:**
 - **Primary data source**: `games` table (flattened, indexed)
 - **Reference tables**: `teams`, `player_match_participation`, `player_stats`
 - **Backup**: `matches` table (original JSONB preserved)
 - **Import method**: `unified-import.js` (single command, all seasons)
+- **Deployment**: Force deploy with `npx vercel --prod --yes`
