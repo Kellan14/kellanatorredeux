@@ -204,7 +204,7 @@ export async function GET(request: Request) {
       .from('player_match_participation')
       .select('player_name, is_sub')
       .eq('season', 22)
-      .eq('team', twcTeamKey)
+      .eq('team', twcTeamKey) as { data: { player_name: string; is_sub: boolean }[] | null }
 
     const season22Players = new Set<string>()
     const season22Subs = new Set<string>()
@@ -224,7 +224,7 @@ export async function GET(request: Request) {
       .from('player_match_participation')
       .select('player_name')
       .in('season', [20, 21])
-      .eq('team', twcTeamKey)
+      .eq('team', twcTeamKey) as { data: { player_name: string }[] | null }
 
     const subPlayers = new Set<string>()
     for (const row of (oldSeasonsData || [])) {
