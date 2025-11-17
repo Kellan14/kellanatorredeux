@@ -53,21 +53,53 @@ export async function GET(request: Request) {
     const scores: Array<{ player: string; score: number; venue: string; season: number; week: number; match: string; round: number }> = []
 
     for (const game of games || []) {
-      for (let i = 1; i <= 4; i++) {
-        const playerName = game[`player_${i}_name`]
-        const playerScore = game[`player_${i}_score`]
-
-        if (playerName && playerScore != null) {
-          scores.push({
-            player: playerName,
-            score: playerScore,
-            venue: game.venue || '',
-            season: game.season || 0,
-            week: game.week || 0,
-            match: game.match_key || '',
-            round: game.round_number || 0
-          })
-        }
+      // Player 1
+      if (game.player_1_name && game.player_1_score != null) {
+        scores.push({
+          player: game.player_1_name,
+          score: game.player_1_score,
+          venue: game.venue || '',
+          season: game.season || 0,
+          week: game.week || 0,
+          match: game.match_key || '',
+          round: game.round_number || 0
+        })
+      }
+      // Player 2
+      if (game.player_2_name && game.player_2_score != null) {
+        scores.push({
+          player: game.player_2_name,
+          score: game.player_2_score,
+          venue: game.venue || '',
+          season: game.season || 0,
+          week: game.week || 0,
+          match: game.match_key || '',
+          round: game.round_number || 0
+        })
+      }
+      // Player 3
+      if (game.player_3_name && game.player_3_score != null) {
+        scores.push({
+          player: game.player_3_name,
+          score: game.player_3_score,
+          venue: game.venue || '',
+          season: game.season || 0,
+          week: game.week || 0,
+          match: game.match_key || '',
+          round: game.round_number || 0
+        })
+      }
+      // Player 4
+      if (game.player_4_name && game.player_4_score != null) {
+        scores.push({
+          player: game.player_4_name,
+          score: game.player_4_score,
+          venue: game.venue || '',
+          season: game.season || 0,
+          week: game.week || 0,
+          match: game.match_key || '',
+          round: game.round_number || 0
+        })
       }
     }
 
