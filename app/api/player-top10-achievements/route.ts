@@ -145,11 +145,28 @@ export async function GET(request: Request) {
         // Take only the top 10 scores
         const top10 = sortedScores.slice(0, 10)
         
+        // Debug logging for Aerosmith BEFORE sorting
+        if (groupKey === 'Aerosmith' && context.includes('League-wide - all time')) {
+          console.log('=== AEROSMITH DEBUG (BEFORE SORT) ===')
+          console.log('Context:', context)
+          console.log('Total scores for Aerosmith:', groupScores.length)
+          console.log('First 20 scores before sort:')
+          groupScores.slice(0, 20).forEach((s, i) => {
+            console.log(`  ${i + 1}. ${s.playerName}: ${s.score.toLocaleString()}`)
+          })
+        }
+        
+        // Sort scores for this machine/venue (highest first)
+        const machineSortedScores = groupScores.sort((a, b) => b.score - a.score)
+        
+        // Take only the top 10 scores
+        const machineTop10 = machineSortedScores.slice(0, 10)
+        
         // Debug logging for Aerosmith AFTER sorting
         if (groupKey === 'Aerosmith' && context.includes('League-wide - all time')) {
           console.log('=== AEROSMITH DEBUG (AFTER SORT) ===')
           console.log('Top 10 scores after sort:')
-          top10.forEach((s, i) => {
+          machineTop10.forEach((s, i) => {
             const isPlayer = s.playerKey === playerKey ? ' <-- THIS IS THE PLAYER' : ''
             console.log(`${i + 1}. ${s.playerName} (key: ${s.playerKey}): ${s.score.toLocaleString()}${isPlayer}`)
           })
@@ -157,14 +174,14 @@ export async function GET(request: Request) {
         }
         
         // Find player's best score in the top 10
-        for (let i = 0; i < top10.length; i++) {
-          if (top10[i].playerKey === playerKey) {
+        for (let i = 0; i < machineTop10.length; i++) {
+          if (machineTop10[i].playerKey === playerKey) {
             const [machine, venue] = groupKey.split('|||')
             
             // More debug logging
             if (machine === 'Aerosmith' && context.includes('League-wide - all time')) {
               console.log(`Found player at position ${i} (rank ${i + 1})`)
-              console.log(`Player score: ${top10[i].score.toLocaleString()}`)
+              console.log(`Player score: ${machineTop10[i].score.toLocaleString()}`)
             }
             
             achievements.push({
@@ -172,7 +189,7 @@ export async function GET(request: Request) {
               context,
               venue: venue || undefined,
               rank: i + 1,
-              score: top10[i].score,
+              score: machineTop10[i].score,
               isVenueSpecific: category.includes('venue'),
               priority,
               category
