@@ -61,6 +61,17 @@ export async function GET(request: Request) {
     }
 
     // Step 1: Get list of machines at the specific venue
+    if (!venue) {
+      return NextResponse.json({
+        player,
+        totalGames: 0,
+        uniqueMachines: 0,
+        venuesPlayed: 0,
+        machinePerformance: [],
+        allVenues
+      })
+    }
+
     const { data: venueMachinesData } = await supabase
       .from('games')
       .select('machine')
