@@ -199,10 +199,12 @@ export async function GET(request: Request) {
     }).sort((a, b) => b.compositeScore - a.compositeScore)
 
     // Get all TWC players from player_stats with is_sub info
-    const { data: playerStatsData } = await supabase
-      .from('player_stats')
-      .select('player_name, is_sub')
-      .order('player_name')
+    const playerStatsData = await fetchAllRecords<{ player_name: string; is_sub: boolean }>(
+      supabase
+        .from('player_stats')
+        .select('player_name, is_sub')
+        .order('player_name')
+    )
 
     const allTwcPlayers = Array.from(new Set((playerStatsData || []).map((p: any) => p.player_name))).filter(Boolean)
 
