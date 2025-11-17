@@ -334,27 +334,40 @@ export default function HomePage() {
 
     // Fetch stats for this player on this machine
     try {
+      // Add timestamp to bust cache
       const url = `/api/player-machine-stats?` +
         `player=${encodeURIComponent(selectedPlayer)}` +
         `&machine=${encodeURIComponent(machine)}` +
         `&venue=${venueFilter ? encodeURIComponent(venue) : ''}` +
         `&seasonStart=20` +
-        `&seasonEnd=22`
+        `&seasonEnd=22` +
+        `&_t=${Date.now()}`
 
       console.log('Fetching player machine stats:', url)
-      const response = await fetch(url)
+      const response = await fetch(url, {
+        cache: 'no-store'
+      })
 
       if (response.ok) {
         const data = await response.json()
         console.log('Player machine stats received:', data)
         console.log('Stats array:', data.stats)
         console.log('Stats length:', data.stats?.length || 0)
-        setPlayerMachineStats(data.stats || [])
+
+        // Check if API returned the "disabled" message
+        if (data.message && data.message.includes('disabled')) {
+          console.error('API still returning disabled message - cache issue?')
+          setPlayerMachineStats([])
+        } else {
+          setPlayerMachineStats(data.stats || [])
+        }
       } else {
-        console.error('Failed to fetch stats:', response.status)
+        console.error('Failed to fetch stats:', response.status, await response.text())
+        setPlayerMachineStats([])
       }
     } catch (error) {
       console.error('Error fetching player machine stats:', error)
+      setPlayerMachineStats([])
     }
   }
 
@@ -909,7 +922,13 @@ export default function HomePage() {
                 </div>
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
-                  No stats found
+                  <p className="font-medium">No stats found for {selectedPlayer} on {selectedMachine}</p>
+                  <p className="text-sm mt-2">
+                    This player may not have played this machine{playerVenueSpecific ? ' at this venue' : ''} during seasons 20-22.
+                  </p>
+                  <p className="text-xs mt-2 opacity-70">
+                    Check the browser console for detailed debugging information.
+                  </p>
                 </div>
               )}
             </DialogContent>
