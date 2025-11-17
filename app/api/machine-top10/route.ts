@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, fetchAllRecords } from '@/lib/supabase'
 import fs from 'fs'
 import path from 'path'
 
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     const isThisSeason = context.includes('this season')
     const currentSeason = 22
 
-    // Build query for top 10 scores
+    // Build query for top 10 scores with pagination
     let query = supabase
       .from('games')
       .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, venue, season, week, match_key, round_number')
@@ -52,25 +52,26 @@ export async function GET(request: Request) {
       query = query.eq('venue', venue)
     }
 
-    const { data: games, error } = await query.returns<Array<{
-      player_1_name: string | null
-      player_1_score: number | null
-      player_2_name: string | null
-      player_2_score: number | null
-      player_3_name: string | null
-      player_3_score: number | null
-      player_4_name: string | null
-      player_4_score: number | null
-      venue: string | null
-      season: number | null
-      week: number | null
-      match_key: string | null
-      round_number: number | null
-    }>>()
-
-    if (error) {
+    let games
+    try {
+      games = await fetchAllRecords<{
+        player_1_name: string | null
+        player_1_score: number | null
+        player_2_name: string | null
+        player_2_score: number | null
+        player_3_name: string | null
+        player_3_score: number | null
+        player_4_name: string | null
+        player_4_score: number | null
+        venue: string | null
+        season: number | null
+        week: number | null
+        match_key: string | null
+        round_number: number | null
+      }>(query)
+    } catch (error) {
       console.error('Supabase error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
     // Helper to check if a score should be filtered out based on machine limits
@@ -83,7 +84,7 @@ export async function GET(request: Request) {
     // Extract all scores from games
     const scores: Array<{ player: string; score: number; venue: string; season: number; week: number; match: string; round: number }> = []
 
-    for (const game of games || []) {
+    for (const game of games) {
       // Player 1
       if (game.player_1_name && game.player_1_score != null && isScoreValid(game.player_1_score)) {
         scores.push({

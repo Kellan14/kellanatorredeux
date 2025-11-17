@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, fetchAllRecords } from '@/lib/supabase'
 import fs from 'fs'
 import path from 'path'
 
@@ -205,32 +205,38 @@ export async function GET(request: Request) {
       return achievements
     }
 
-    // Fetch all games for all-time period (seasons 20-22)
-    const { data: allTimeGames, error: allTimeError } = await supabase
-      .from('games')
-      .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
-      .gte('season', 20)
-      .lte('season', 22)
-
-    if (allTimeError) {
+    // Fetch all games for all-time period (seasons 20-22) with pagination
+    let allTimeGames
+    try {
+      allTimeGames = await fetchAllRecords(
+        supabase
+          .from('games')
+          .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
+          .gte('season', 20)
+          .lte('season', 22)
+      )
+    } catch (allTimeError) {
       console.error('Error fetching all-time games:', allTimeError)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
-    // Fetch games for current season only
-    const { data: currentSeasonGames, error: seasonError } = await supabase
-      .from('games')
-      .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
-      .eq('season', currentSeason)
-
-    if (seasonError) {
+    // Fetch games for current season only with pagination
+    let currentSeasonGames
+    try {
+      currentSeasonGames = await fetchAllRecords(
+        supabase
+          .from('games')
+          .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
+          .eq('season', currentSeason)
+      )
+    } catch (seasonError) {
       console.error('Error fetching current season games:', seasonError)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
     // Extract scores from both datasets
-    const allTimeScores = extractScores(allTimeGames || [])
-    const currentSeasonScores = extractScores(currentSeasonGames || [])
+    const allTimeScores = extractScores(allTimeGames)
+    const currentSeasonScores = extractScores(currentSeasonGames)
 
     // Find achievements in each category
     const achievements: Achievement[] = []
