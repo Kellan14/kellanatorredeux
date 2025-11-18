@@ -1072,7 +1072,6 @@ export default function HomePage() {
                         <YAxis
                           domain={[1, 6]}
                           ticks={[1, 2, 3, 4, 5, 6]}
-                          label={{ value: 'Placement (1=best, 6=worst)', angle: -90, position: 'insideLeft' }}
                         />
                         <Tooltip
                           content={({ active, payload }) => {
