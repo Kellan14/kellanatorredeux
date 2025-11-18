@@ -18,16 +18,18 @@ Successfully implemented core optimization engine that works with existing `game
 - `react-dnd@^16.0.1`
 - `react-dnd-html5-backend@^16.0.1`
 
-## What Was Disabled/Removed
+## What Was Disabled/Removed (FIXED)
 
-### Removed Files
-1. **`app/api/strategy/matrix/route.ts`** - DELETED
-   - Reason: Queried non-existent `players`, `machines`, and `player_machine_stats` tables
-   - Status: Can be recreated later when needed for UI components
+### ~~Removed Files~~ → RECREATED
+1. **`app/api/strategy/matrix/route.ts`** - ✅ RECREATED
+   - Originally deleted: Queried non-existent `players`, `machines`, and `player_machine_stats` tables
+   - **Fixed**: Recreated to query from `games` table via `calculatePlayerMachineStats()`
+   - Returns serialized stats map for PerformanceMatrix component
+   - Accepts query params: `playerNames`, `machines`, `seasonStart`, `seasonEnd`
 
-2. **`app/api/players/route.ts`** - DELETED
-   - Reason: Queried non-existent `players` table
-   - Status: Can be recreated to query from `games` table if needed
+2. **`app/api/players/route.ts`** - NOT NEEDED
+   - Originally deleted: Queried non-existent `players` table
+   - Not needed because player list is already available from `/api/machine-advantages` response
 
 ### Temporarily Disabled Features
 
@@ -100,20 +102,25 @@ The following tables from `machine-picker-implementation.md` were NOT created:
    - Manual player assignment via drag-and-drop
    - Fixed react-dnd ref type errors with `as any` casts
 
-3. **`app/strategy/page.tsx`** - ✅ UPDATED
+3. **`app/strategy/page.tsx`** - ✅ FULLY WIRED UP
    - Added new "Advanced Machine Optimization (Beta)" section at bottom of page
    - Keeps original strategy tools intact above
    - Two tabs: "Performance Heatmap" and "Drag & Drop Optimizer"
-   - Currently shows placeholders for components (to be wired up later)
+   - **Fixed**: Components are now fully wired up and functional:
+     - PerformanceMatrix displays player-machine stats with heatmap
+     - MachinePicker allows drag-and-drop and auto-optimization
+     - Data fetched from `/api/strategy/matrix` endpoint
+     - Format selector for 7x7 singles or 4x2 doubles
 
 ## Next Steps
 
 ### To Complete Implementation
 1. ✅ Create React components
 2. ✅ Add new strategy section to page
-3. Test optimization API with real data
-4. Wire up components in strategy page (replace placeholders)
-5. Deploy to Vercel
+3. ✅ Recreate `/api/strategy/matrix` endpoint
+4. ✅ Wire up components in strategy page (PerformanceMatrix & MachinePicker)
+5. Test optimization API with real data
+6. Deploy to Vercel
 
 ### Optional Performance Enhancements
 1. Create `strategy_cache` table in Supabase

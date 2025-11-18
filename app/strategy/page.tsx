@@ -35,6 +35,9 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import { getMachineImagePath } from '@/lib/machine-images'
+import { PerformanceMatrix } from '@/components/strategy/PerformanceMatrix'
+import { MachinePicker } from '@/components/strategy/MachinePicker'
+import type { PlayerMachineStats, OptimizationResult } from '@/types/strategy'
 
 interface Team {
   key: string
@@ -119,6 +122,15 @@ export default function StrategyPage() {
   const [showAllVenues, setShowAllVenues] = useState(false)
   const [playerAnalysis, setPlayerAnalysis] = useState<any>(null)
   const [loadingAnalysis, setLoadingAnalysis] = useState(false)
+
+  // Advanced optimization state
+  const [matrixData, setMatrixData] = useState<{
+    playerNames: string[]
+    machines: string[]
+    statsMap: Map<string, Map<string, PlayerMachineStats>>
+  } | null>(null)
+  const [loadingMatrix, setLoadingMatrix] = useState(false)
+  const [optimizationFormat, setOptimizationFormat] = useState<'7x7' | '4x2'>('7x7')
 
   // Load venues and teams
   useEffect(() => {
@@ -421,6 +433,79 @@ export default function StrategyPage() {
       loadPlayerAnalysis()
     }
   }, [selectedAnalysisPlayer, showAllVenues, selectedVenue, seasonRange])
+
+  const loadMatrixData = async () => {
+    if (!selectedVenue || !selectedOpponent || rosterPlayers.length === 0) {
+      setMatrixData(null)
+      return
+    }
+
+    setLoadingMatrix(true)
+    try {
+      // Get available machines from the venue
+      const venue = venues.find(v => v.name === selectedVenue)
+      if (!venue || !venue.machines || venue.machines.length === 0) {
+        console.error('No machines found for venue:', selectedVenue)
+        setMatrixData(null)
+        return
+      }
+
+      // Get selected players (those who are checked as available)
+      const selectedPlayers = Object.keys(availablePlayers).filter(p => availablePlayers[p])
+
+      // If no players selected, use all roster players
+      const playersToUse = selectedPlayers.length > 0 ? selectedPlayers : rosterPlayers
+
+      if (playersToUse.length === 0) {
+        console.error('No players available')
+        setMatrixData(null)
+        return
+      }
+
+      const response = await fetch(
+        `/api/strategy/matrix?` +
+        `playerNames=${encodeURIComponent(playersToUse.join(','))}` +
+        `&machines=${encodeURIComponent(venue.machines.join(','))}` +
+        `&seasonStart=${seasonRange[0]}` +
+        `&seasonEnd=${seasonRange[1]}`
+      )
+
+      if (response.ok) {
+        const data = await response.json()
+
+        // Convert serialized object back to Map structure
+        const statsMap = new Map<string, Map<string, PlayerMachineStats>>()
+
+        for (const [playerName, machineStats] of Object.entries(data.statsMap || {})) {
+          const machineMap = new Map<string, PlayerMachineStats>()
+          for (const [machineName, stats] of Object.entries(machineStats as Record<string, PlayerMachineStats>)) {
+            machineMap.set(machineName, stats)
+          }
+          statsMap.set(playerName, machineMap)
+        }
+
+        setMatrixData({
+          playerNames: data.playerNames,
+          machines: data.machines,
+          statsMap
+        })
+      } else {
+        console.error('Failed to load matrix data:', response.statusText)
+        setMatrixData(null)
+      }
+    } catch (error) {
+      console.error('Error loading matrix data:', error)
+      setMatrixData(null)
+    } finally {
+      setLoadingMatrix(false)
+    }
+  }
+
+  useEffect(() => {
+    if (selectedVenue && selectedOpponent && rosterPlayers.length > 0) {
+      loadMatrixData()
+    }
+  }, [selectedVenue, selectedOpponent, seasonRange, rosterPlayers, availablePlayers])
 
   const handleCellClick = async (machine: string, columnKey: string) => {
     // Don't allow clicking on machine name column
@@ -1241,28 +1326,82 @@ export default function StrategyPage() {
                   Visualize player performance on each machine. Darker colors indicate better win rates.
                   Click cells for detailed stats.
                 </p>
-                <div className="text-center p-8 border border-dashed rounded">
-                  <p className="text-muted-foreground">
-                    Performance matrix component coming soon
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Will display win rates, games played, and streaks for each player-machine combination
-                  </p>
-                </div>
+
+                {loadingMatrix && (
+                  <div className="flex items-center justify-center p-12">
+                    <Loader2 className="h-8 w-8 animate-spin mr-2" />
+                    <span>Loading performance matrix...</span>
+                  </div>
+                )}
+
+                {!loadingMatrix && matrixData && (
+                  <PerformanceMatrix
+                    playerNames={matrixData.playerNames}
+                    machines={matrixData.machines}
+                    statsMap={matrixData.statsMap}
+                    onCellClick={(player, machine) => {
+                      console.log('Cell clicked:', player, machine)
+                      // Could open a dialog with detailed stats here
+                    }}
+                  />
+                )}
+
+                {!loadingMatrix && !matrixData && (
+                  <div className="text-center p-8 border border-dashed rounded">
+                    <p className="text-muted-foreground">
+                      No performance data available. Make sure players are selected above.
+                    </p>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="optimizer" className="space-y-4">
                 <p className="text-sm text-muted-foreground">
                   Drag players onto machines for manual assignments, or use auto-optimize for algorithmic recommendations.
                 </p>
-                <div className="text-center p-8 border border-dashed rounded">
-                  <p className="text-muted-foreground">
-                    Drag and drop machine picker coming soon
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Supports both 7x7 singles and 4x2 doubles formats
-                  </p>
+
+                {/* Format selector */}
+                <div className="flex items-center gap-4 mb-4">
+                  <label className="text-sm font-medium">Format:</label>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={optimizationFormat === '7x7' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setOptimizationFormat('7x7')}
+                    >
+                      7x7 Singles
+                    </Button>
+                    <Button
+                      variant={optimizationFormat === '4x2' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setOptimizationFormat('4x2')}
+                    >
+                      4x2 Doubles
+                    </Button>
+                  </div>
                 </div>
+
+                {matrixData && matrixData.playerNames.length > 0 && matrixData.machines.length > 0 ? (
+                  <MachinePicker
+                    format={optimizationFormat}
+                    playerNames={matrixData.playerNames}
+                    machines={matrixData.machines}
+                    seasonStart={seasonRange[0]}
+                    seasonEnd={seasonRange[1]}
+                    onOptimize={(result: OptimizationResult) => {
+                      console.log('Optimization result:', result)
+                      // Could show a toast notification or detailed results dialog
+                    }}
+                  />
+                ) : (
+                  <div className="text-center p-8 border border-dashed rounded">
+                    <p className="text-muted-foreground">
+                      {loadingMatrix
+                        ? 'Loading...'
+                        : 'No data available. Make sure players are selected above.'}
+                    </p>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           )}
