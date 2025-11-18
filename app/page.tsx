@@ -1033,12 +1033,16 @@ export default function HomePage() {
                   {/* Summary Stats */}
                   <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
                     <div>
-                      <div className="text-xs text-muted-foreground">Current IPR</div>
+                      <div className="text-xs text-muted-foreground">Recent Placement</div>
                       <div className="text-lg font-semibold">{iprHistory[iprHistory.length - 1]?.ipr || 0}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-muted-foreground">Starting IPR</div>
-                      <div className="text-lg font-semibold">{iprHistory[0]?.ipr || 0}</div>
+                      <div className="text-xs text-muted-foreground">Average Placement</div>
+                      <div className="text-lg font-semibold">
+                        {iprHistory.length > 0
+                          ? (iprHistory.reduce((sum, h) => sum + h.ipr, 0) / iprHistory.length).toFixed(1)
+                          : '0'}
+                      </div>
                     </div>
                     <div>
                       <div className="text-xs text-muted-foreground">Total Matches</div>
@@ -1059,7 +1063,10 @@ export default function HomePage() {
                           label={{ value: 'Match Number', position: 'insideBottom', offset: -5 }}
                         />
                         <YAxis
-                          label={{ value: 'IPR', angle: -90, position: 'insideLeft' }}
+                          reversed={true}
+                          domain={[1, 4]}
+                          ticks={[1, 2, 3, 4]}
+                          label={{ value: 'Placement (1=best)', angle: -90, position: 'insideLeft' }}
                         />
                         <Tooltip
                           content={({ active, payload }) => {
@@ -1069,8 +1076,8 @@ export default function HomePage() {
                                 <div className="bg-background border rounded-lg p-3 shadow-lg">
                                   <p className="font-semibold">Match #{data.matchNumber}</p>
                                   <p className="text-sm">Season {data.season}, Week {data.week}</p>
-                                  <p className="text-sm">IPR: {data.ipr}</p>
-                                  <p className="text-sm">Points: {data.points}</p>
+                                  <p className="text-sm">Placement: {data.ipr}</p>
+                                  <p className="text-sm">Points: {data.points.toFixed(1)}</p>
                                 </div>
                               )
                             }

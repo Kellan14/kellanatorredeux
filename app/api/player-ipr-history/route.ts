@@ -63,35 +63,40 @@ export async function GET(request: Request) {
       })
     }
 
-    // Get all matches the player participated in, grouped by match
+    // Get all games the player participated in
     const gamesData = await fetchAllRecords<{
       match_key: string
       season: number
       week: number | null
       player_1_key: string | null
+      player_1_score: number | null
       player_1_points: number | null
       player_2_key: string | null
+      player_2_score: number | null
       player_2_points: number | null
       player_3_key: string | null
+      player_3_score: number | null
       player_3_points: number | null
       player_4_key: string | null
+      player_4_score: number | null
       player_4_points: number | null
       created_at: string | null
     }>(
       supabase
         .from('games')
-        .select('match_key, season, week, player_1_key, player_1_points, player_2_key, player_2_points, player_3_key, player_3_points, player_4_key, player_4_points, created_at')
+        .select('match_key, season, week, player_1_key, player_1_score, player_1_points, player_2_key, player_2_score, player_2_points, player_3_key, player_3_score, player_3_points, player_4_key, player_4_score, player_4_points, created_at')
         .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
         .order('season', { ascending: true })
         .order('week', { ascending: true })
     )
 
-    // Group by match and calculate cumulative points
+    // Group games by match and determine player's placement (IPR) in each match
     const matchStats = new Map<string, {
       matchKey: string
       season: number
       week: number | null
       points: number
+      placement: number  // 1-4 based on total match points
       date: string
     }>()
 
@@ -99,12 +104,20 @@ export async function GET(request: Request) {
       const matchKey = game.match_key
       if (!matchKey) continue
 
-      // Find player's points in this game
+      // Find player's points in this game and collect all player points for ranking
       let playerPoints = 0
+      const allPlayerPoints: number[] = []
+
       if (game.player_1_key === playerKey) playerPoints = game.player_1_points || 0
       else if (game.player_2_key === playerKey) playerPoints = game.player_2_points || 0
       else if (game.player_3_key === playerKey) playerPoints = game.player_3_points || 0
       else if (game.player_4_key === playerKey) playerPoints = game.player_4_points || 0
+
+      // Collect all players' points for this game
+      if (game.player_1_points != null) allPlayerPoints.push(game.player_1_points)
+      if (game.player_2_points != null) allPlayerPoints.push(game.player_2_points)
+      if (game.player_3_points != null) allPlayerPoints.push(game.player_3_points)
+      if (game.player_4_points != null) allPlayerPoints.push(game.player_4_points)
 
       // Accumulate points for this match
       if (!matchStats.has(matchKey)) {
@@ -113,6 +126,7 @@ export async function GET(request: Request) {
           season: game.season,
           week: game.week || 0,
           points: 0,
+          placement: 0,
           date: game.created_at || new Date().toISOString()
         })
       }
@@ -121,29 +135,47 @@ export async function GET(request: Request) {
       stats.points += playerPoints
     }
 
-    // Convert to array and calculate running IPR
+    // Now calculate placement for each match based on total points earned
+    // We need to fetch all games in each match to determine rankings
+    for (const [matchKey, matchData] of Array.from(matchStats.entries())) {
+      const matchGames = gamesData.filter(g => g.match_key === matchKey)
+
+      // Sum up points per player in this match
+      const playerTotals = new Map<string, number>()
+      for (const game of matchGames) {
+        for (let i = 1; i <= 4; i++) {
+          const key = game[`player_${i}_key` as keyof typeof game] as string | null
+          const points = game[`player_${i}_points` as keyof typeof game] as number | null
+          if (key && points != null) {
+            playerTotals.set(key, (playerTotals.get(key) || 0) + points)
+          }
+        }
+      }
+
+      // Sort by points descending to determine placement
+      const sortedPlayers = Array.from(playerTotals.entries())
+        .sort((a, b) => b[1] - a[1])
+
+      // Find our player's placement
+      const placement = sortedPlayers.findIndex(([key]) => key === playerKey) + 1
+      matchData.placement = placement || 1
+    }
+
+    // Convert to array
     const matches = Array.from(matchStats.values())
       .sort((a, b) => {
         if (a.season !== b.season) return a.season - b.season
         return (a.week || 0) - (b.week || 0)
       })
 
-    // Calculate cumulative points and IPR over time
-    let cumulativePoints = 0
+    // Build history with actual placement as IPR
     const history = matches.map((match, index) => {
-      cumulativePoints += match.points
-
-      // Simple IPR calculation: cumulative points * scaling factor
-      // This is a simplified version - actual IFPA IPR is more complex
-      const ipr = Math.round(cumulativePoints * 10)
-
       return {
         season: match.season,
         week: match.week,
         matchNumber: index + 1,
         points: match.points,
-        cumulativePoints,
-        ipr,
+        ipr: match.placement,  // IPR is just the placement (1-4)
         date: match.date
       }
     })
