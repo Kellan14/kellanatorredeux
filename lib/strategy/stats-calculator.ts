@@ -4,6 +4,10 @@ import type { PlayerMachineStats } from '@/types/strategy'
 /**
  * Calculate player-machine stats from games table
  * This computes everything on-the-fly from historical game data
+ *
+ * NOTE: The games table structure is:
+ * - Each row is ONE player's performance in ONE game
+ * - Columns: player_name, score, machine, season, match, round, points
  */
 export async function calculatePlayerMachineStats(
   playerNames: string[],
@@ -32,38 +36,53 @@ export async function calculatePlayerMachineStats(
     date: string
   }>>()
 
-  // Process each game
+  // Group games by match+round to find opponents
+  const gamesByMatchRound = new Map<string, Array<any>>()
   for (const game of gamesData) {
+    const matchRoundKey = `${game.match}|${game.round}|${game.machine}`
+    if (!gamesByMatchRound.has(matchRoundKey)) {
+      gamesByMatchRound.set(matchRoundKey, [])
+    }
+    gamesByMatchRound.get(matchRoundKey)!.push(game)
+  }
+
+  // Process each game record (one row per player)
+  for (const game of gamesData) {
+    const playerName = game.player_name
+    const playerScore = game.score
+
+    if (!playerName || !playerNames.includes(playerName) || !playerScore) continue
     if (!machines.includes(game.machine)) continue
 
-    // Check all 4 player positions
-    for (let i = 1; i <= 4; i++) {
-      const playerName = game[`player_${i}`]
-      const playerScore = game[`player_${i}_score`]
+    // Find opponents in the same match+round+machine
+    const matchRoundKey = `${game.match}|${game.round}|${game.machine}`
+    const matchGames = gamesByMatchRound.get(matchRoundKey) || []
 
-      if (!playerName || !playerNames.includes(playerName) || !playerScore) continue
+    // Get opponent scores (all other players in this match+round on same machine)
+    const opponentScores = matchGames
+      .filter((g: any) => g.player_name !== playerName)
+      .map((g: any) => g.score)
+      .filter((score: number) => score != null)
 
-      // Find opponent score (simplified - take best opponent score)
-      const opponentScores = []
-      for (let j = 1; j <= 4; j++) {
-        if (j !== i && game[`player_${j}_score`]) {
-          opponentScores.push(game[`player_${j}_score`])
-        }
-      }
-      const opponentScore = opponentScores.length > 0 ? Math.max(...opponentScores) : 0
+    const opponentScore = opponentScores.length > 0
+      ? Math.max(...opponentScores)
+      : 0
 
-      const key = `${playerName}|${game.machine}`
-      if (!gamesByPlayerMachine.has(key)) {
-        gamesByPlayerMachine.set(key, [])
-      }
+    // Determine if player won based on points (more reliable than score comparison)
+    // In IFPA scoring: 3pts = win, 1.5pts = tie, 0pts = loss
+    const won = game.points >= 1.5
 
-      gamesByPlayerMachine.get(key)!.push({
-        score: playerScore,
-        opponentScore,
-        won: playerScore > opponentScore,
-        date: game.created_at || game.match_date || new Date().toISOString()
-      })
+    const key = `${playerName}|${game.machine}`
+    if (!gamesByPlayerMachine.has(key)) {
+      gamesByPlayerMachine.set(key, [])
     }
+
+    gamesByPlayerMachine.get(key)!.push({
+      score: playerScore,
+      opponentScore,
+      won,
+      date: game.created_at || new Date().toISOString()
+    })
   }
 
   // Convert to stats
@@ -112,97 +131,30 @@ export async function calculatePlayerMachineStats(
     }
 
     // Confidence score based on games played
-    let confidenceScore = 1
-    if (gamesPlayed >= 20) confidenceScore = 10
-    else if (gamesPlayed >= 10) confidenceScore = 9
-    else if (gamesPlayed >= 5) confidenceScore = 7
-    else if (gamesPlayed >= 3) confidenceScore = 5
-    else if (gamesPlayed >= 1) confidenceScore = 3
+    const confidenceScore = Math.min(gamesPlayed, 10)
 
-    const stat: PlayerMachineStats = {
-      id: key,
-      player_id: playerName, // Using name as ID for now
+    // Find last played date
+    const lastPlayed = sortedGames.length > 0 ? sortedGames[0].date : undefined
+
+    const stats: PlayerMachineStats = {
+      id: `${playerName}-${machine}`,
+      player_id: playerName,
       machine_id: machine,
       games_played: gamesPlayed,
       wins,
       losses,
       win_rate: winRate,
-      avg_score: Math.round(avgScore),
+      avg_score: avgScore,
       high_score: highScore,
       recent_form: recentForm,
       streak_type: streakType,
       streak_count: streakCount,
       confidence_score: confidenceScore,
-      last_played: sortedGames[0]?.date
+      last_played: lastPlayed
     }
 
-    statsMap.get(playerName)!.set(machine, stat)
+    statsMap.get(playerName)!.set(machine, stats)
   }
 
   return statsMap
-}
-
-/**
- * Calculate pair statistics for doubles format
- */
-export async function calculatePairStats(
-  playerNames: string[],
-  machines: string[],
-  seasonStart: number = 20,
-  seasonEnd: number = 22
-): Promise<Map<string, { winRate: number; gamesPlayed: number }>> {
-  // Fetch games where these players played together
-  const gamesData = await fetchAllRecords<any>(
-    supabase
-      .from('games')
-      .select('*')
-      .gte('season', seasonStart)
-      .lte('season', seasonEnd)
-      .in('machine', machines)
-  )
-
-  const pairStats = new Map<string, { wins: number; total: number }>()
-
-  for (const game of gamesData) {
-    if (!machines.includes(game.machine)) continue
-
-    // Find pairs of players in this game
-    const playersInGame: string[] = []
-    for (let i = 1; i <= 4; i++) {
-      const playerName = game[`player_${i}`]
-      if (playerName && playerNames.includes(playerName)) {
-        playersInGame.push(playerName)
-      }
-    }
-
-    // If we have 2 of our players in the same game, they might be a pair
-    if (playersInGame.length === 2) {
-      const [p1, p2] = playersInGame.sort()
-      const pairKey = `${p1}|${p2}|${game.machine}`
-
-      if (!pairStats.has(pairKey)) {
-        pairStats.set(pairKey, { wins: 0, total: 0 })
-      }
-
-      const stats = pairStats.get(pairKey)!
-      stats.total++
-
-      // Check if they won (both scores > opponent scores)
-      const p1Score = game[`player_${playersInGame[0]}`] || 0
-      const p2Score = game[`player_${playersInGame[1]}`] || 0
-      // Simplified win check
-      stats.wins++
-    }
-  }
-
-  // Convert to result format
-  const result = new Map<string, { winRate: number; gamesPlayed: number }>()
-  for (const [key, stats] of Array.from(pairStats.entries())) {
-    result.set(key, {
-      winRate: stats.total > 0 ? stats.wins / stats.total : 0,
-      gamesPlayed: stats.total
-    })
-  }
-
-  return result
 }
