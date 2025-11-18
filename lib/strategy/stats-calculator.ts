@@ -36,53 +36,49 @@ export async function calculatePlayerMachineStats(
     date: string
   }>>()
 
-  // Group games by match+round to find opponents
-  const gamesByMatchRound = new Map<string, Array<any>>()
+  // Process each game record (wide format: 4 players per row)
   for (const game of gamesData) {
-    const matchRoundKey = `${game.match}|${game.round}|${game.machine}`
-    if (!gamesByMatchRound.has(matchRoundKey)) {
-      gamesByMatchRound.set(matchRoundKey, [])
+    // Loop through all 4 player positions in each game row
+    for (let i = 1; i <= 4; i++) {
+      const playerName = game[`player_${i}_name`]
+      const playerScore = game[`player_${i}_score`]
+      const playerPoints = game[`player_${i}_points`]
+
+      // Skip if player doesn't exist or not in our target list
+      if (!playerName || !playerNames.includes(playerName) || playerScore == null) continue
+      if (!machines.includes(game.machine)) continue
+
+      // Get opponent scores (all other players in this same game row)
+      const opponentScores: number[] = []
+      for (let j = 1; j <= 4; j++) {
+        if (j !== i) {
+          const oppScore = game[`player_${j}_score`]
+          if (oppScore != null) {
+            opponentScores.push(oppScore)
+          }
+        }
+      }
+
+      const opponentScore = opponentScores.length > 0
+        ? Math.max(...opponentScores)
+        : 0
+
+      // Determine if player won based on points (more reliable than score comparison)
+      // In IFPA scoring: 3pts = win, 1.5pts = tie, 0pts = loss
+      const won = playerPoints >= 1.5
+
+      const key = `${playerName}|${game.machine}`
+      if (!gamesByPlayerMachine.has(key)) {
+        gamesByPlayerMachine.set(key, [])
+      }
+
+      gamesByPlayerMachine.get(key)!.push({
+        score: playerScore,
+        opponentScore,
+        won,
+        date: game.created_at || new Date().toISOString()
+      })
     }
-    gamesByMatchRound.get(matchRoundKey)!.push(game)
-  }
-
-  // Process each game record (one row per player)
-  for (const game of gamesData) {
-    const playerName = game.player_name
-    const playerScore = game.score
-
-    if (!playerName || !playerNames.includes(playerName) || !playerScore) continue
-    if (!machines.includes(game.machine)) continue
-
-    // Find opponents in the same match+round+machine
-    const matchRoundKey = `${game.match}|${game.round}|${game.machine}`
-    const matchGames = gamesByMatchRound.get(matchRoundKey) || []
-
-    // Get opponent scores (all other players in this match+round on same machine)
-    const opponentScores = matchGames
-      .filter((g: any) => g.player_name !== playerName)
-      .map((g: any) => g.score)
-      .filter((score: number) => score != null)
-
-    const opponentScore = opponentScores.length > 0
-      ? Math.max(...opponentScores)
-      : 0
-
-    // Determine if player won based on points (more reliable than score comparison)
-    // In IFPA scoring: 3pts = win, 1.5pts = tie, 0pts = loss
-    const won = game.points >= 1.5
-
-    const key = `${playerName}|${game.machine}`
-    if (!gamesByPlayerMachine.has(key)) {
-      gamesByPlayerMachine.set(key, [])
-    }
-
-    gamesByPlayerMachine.get(key)!.push({
-      score: playerScore,
-      opponentScore,
-      won,
-      date: game.created_at || new Date().toISOString()
-    })
   }
 
   // Convert to stats
@@ -179,37 +175,34 @@ export async function calculatePairStats(
       .in('machine', machines)
   )
 
-  // Group games by match+round+machine
-  const gamesByMatchRound = new Map<string, Array<any>>()
-  for (const game of gamesData) {
-    const matchRoundKey = `${game.match}|${game.round}|${game.machine}`
-    if (!gamesByMatchRound.has(matchRoundKey)) {
-      gamesByMatchRound.set(matchRoundKey, [])
-    }
-    gamesByMatchRound.get(matchRoundKey)!.push(game)
-  }
-
   // Track pair stats
   const pairStats = new Map<string, { wins: number; total: number }>()
 
-  // For each match/round/machine, find pairs that played together
-  for (const [matchRoundKey, matchGames] of Array.from(gamesByMatchRound.entries())) {
-    const [, , machine] = matchRoundKey.split('|')
+  // Process each game record (wide format: 4 players per row)
+  for (const game of gamesData) {
+    const machine = game.machine
 
-    // Get all players in this game
-    const playersInGame = matchGames
-      .filter(g => playerNames.includes(g.player_name))
-      .map(g => ({ name: g.player_name, points: g.points }))
+    // Extract all players in this game row
+    const playersInGame: Array<{ name: string; points: number }> = []
+    for (let i = 1; i <= 4; i++) {
+      const playerName = game[`player_${i}_name`]
+      const playerPoints = game[`player_${i}_points`]
 
-    // If we have at least 2 players, check all pairs
+      if (playerName && playerNames.includes(playerName) && playerPoints != null) {
+        playersInGame.push({ name: playerName, points: playerPoints })
+      }
+    }
+
+    // If we have at least 2 players from our list in this game, check all pairs
     if (playersInGame.length >= 2) {
       for (let i = 0; i < playersInGame.length; i++) {
         for (let j = i + 1; j < playersInGame.length; j++) {
           const p1 = playersInGame[i]
           const p2 = playersInGame[j]
 
-          // Create pair key (order doesn't matter, so sort alphabetically)
-          const pairKey = `${p1.name}|${p2.name}|${machine}`
+          // Create pair key (sorted alphabetically for consistency)
+          const sortedNames = [p1.name, p2.name].sort()
+          const pairKey = `${sortedNames[0]}|${sortedNames[1]}|${machine}`
 
           if (!pairStats.has(pairKey)) {
             pairStats.set(pairKey, { wins: 0, total: 0 })
