@@ -21,7 +21,7 @@ export function PerformanceMatrix({
 }: PerformanceMatrixProps) {
   const getPerformanceColor = (stats: PlayerMachineStats | undefined): string => {
     if (!stats || stats.games_played === 0) {
-      return 'bg-gray-100'
+      return 'bg-gray-700'
     }
 
     const score = stats.win_rate
@@ -47,13 +47,13 @@ export function PerformanceMatrix({
       <table className="min-w-full border-collapse">
         <thead>
           <tr>
-            <th className="border border-gray-300 bg-gray-50 p-2 text-left text-sm font-medium">
+            <th className="border border-gray-600 bg-gray-800 p-2 text-left text-sm font-medium text-gray-100">
               Player
             </th>
             {machines.map((machine) => (
               <th
                 key={machine}
-                className="border border-gray-300 bg-gray-50 p-2 text-center text-sm font-medium"
+                className="border border-gray-600 bg-gray-800 p-2 text-center text-sm font-medium text-gray-100"
               >
                 <div className="max-w-[120px] truncate" title={machine}>
                   {machine}
@@ -68,7 +68,7 @@ export function PerformanceMatrix({
 
             return (
               <tr key={playerName}>
-                <td className="border border-gray-300 bg-gray-50 p-2 text-sm font-medium">
+                <td className="border border-gray-600 bg-gray-800 p-2 text-sm font-medium text-gray-100">
                   <div className="max-w-[150px] truncate" title={playerName}>
                     {playerName}
                   </div>
@@ -81,7 +81,7 @@ export function PerformanceMatrix({
                   return (
                     <td
                       key={`${playerName}-${machine}`}
-                      className={`border border-gray-300 p-1 cursor-pointer hover:ring-2 hover:ring-blue-500 ${colorClass} ${opacityClass}`}
+                      className={`border border-gray-600 p-1 cursor-pointer hover:ring-2 hover:ring-blue-500 ${colorClass} ${opacityClass}`}
                       onClick={() => onCellClick?.(playerName, machine)}
                       title={
                         stats
@@ -118,7 +118,7 @@ export function PerformanceMatrix({
         </tbody>
       </table>
 
-      <div className="mt-4 flex items-center gap-6 text-xs text-gray-600">
+      <div className="mt-4 flex items-center gap-6 text-xs text-gray-300">
         <div className="font-semibold">Legend:</div>
         <div className="flex items-center gap-1">
           <div className="w-4 h-4 bg-green-500"></div>
@@ -140,7 +140,7 @@ export function PerformanceMatrix({
           <div className="w-4 h-4 bg-red-400"></div>
           <span>&lt;40%</span>
         </div>
-        <div className="ml-4 text-gray-500">
+        <div className="ml-4 text-gray-400">
           Opacity indicates confidence (more games = more opaque)
         </div>
       </div>
