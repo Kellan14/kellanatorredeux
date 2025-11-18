@@ -206,7 +206,9 @@ export async function GET(request: Request) {
             avgPoints: 0,
             avgScore: 0,
             bestScore: 0,
-            timesPlayed: 0
+            timesPlayed: 0,
+            venues: new Set(),
+            venueScores: new Map() // Track score per venue for "best venue" calculation
           })
         }
 
@@ -216,6 +218,20 @@ export async function GET(request: Request) {
         stats.totalPoints += playerPoints
         stats.totalScore += playerScore
         stats.bestScore = Math.max(stats.bestScore, playerScore)
+
+        // Track venues for this machine
+        if (game.venue) {
+          stats.venues.add(game.venue)
+
+          // Track score per venue
+          if (!stats.venueScores.has(game.venue)) {
+            stats.venueScores.set(game.venue, { totalScore: 0, count: 0 })
+          }
+          const venueData = stats.venueScores.get(game.venue)
+          venueData.totalScore += playerScore
+          venueData.count++
+        }
+
         totalGames++
       }
     }
@@ -257,13 +273,26 @@ export async function GET(request: Request) {
       const venueAvg = venueData ? venueData.totalScore / venueData.count : 0
       const pctOfVenue = venueAvg > 0 ? (avgScore / venueAvg) * 100 : 0
 
+      // Find best venue (highest average) for this machine
+      let bestVenue = ''
+      let bestVenueAvg = 0
+      for (const [venueName, venueStats] of stats.venueScores.entries()) {
+        const venueAverage = venueStats.totalScore / venueStats.count
+        if (venueAverage > bestVenueAvg) {
+          bestVenueAvg = venueAverage
+          bestVenue = venueName
+        }
+      }
+
       return {
         machine: stats.machine,
         avgScore: avgScore,
         avgPoints: stats.totalPoints / stats.gamesPlayed,
         timesPlayed: stats.timesPlayed,
         bestScore: stats.bestScore,
-        pctOfVenue: pctOfVenue
+        pctOfVenue: pctOfVenue,
+        venuesPlayed: stats.venues.size,
+        bestVenue: bestVenue
       }
     }).sort((a, b) => b.pctOfVenue - a.pctOfVenue)
 
