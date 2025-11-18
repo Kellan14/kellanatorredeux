@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trophy, Target, TrendingUp, Users, Calendar, BarChart3, Percent, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { Trophy, Target, TrendingUp, Users, Calendar, BarChart3, Percent, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown, LineChart } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import { getMachineImagePath } from '@/lib/machine-images'
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 export default function HomePage() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
@@ -71,6 +72,10 @@ export default function HomePage() {
   const [playerPerformance, setPlayerPerformance] = useState<any>(null)
   const [playerName, setPlayerName] = useState<string>('')
   const [ownPerformanceVenueSpecific, setOwnPerformanceVenueSpecific] = useState(true)
+
+  // IPR history dialog
+  const [iprHistoryDialogOpen, setIprHistoryDialogOpen] = useState(false)
+  const [iprHistory, setIprHistory] = useState<any[]>([])
 
   const supabase = createSupabaseClient()
 
@@ -407,6 +412,22 @@ export default function HomePage() {
     })
   }
 
+  const handleIPRClick = async () => {
+    if (!playerName) return
+
+    setIprHistoryDialogOpen(true)
+
+    try {
+      const response = await fetch(`/api/player-ipr-history?name=${encodeURIComponent(playerName)}`)
+      if (response.ok) {
+        const data = await response.json()
+        setIprHistory(data.history || [])
+      }
+    } catch (error) {
+      console.error('Error fetching IPR history:', error)
+    }
+  }
+
   const calculateStats = () => {
     if (!playerMachineStats || playerMachineStats.length === 0) {
       return { mean: 0, median: 0, mode: 0, iqr: 0 }
@@ -472,7 +493,10 @@ export default function HomePage() {
         <>
           {/* Personal Stats Grid - Only shown when logged in */}
           <div className="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-2 lg:grid-cols-5 mb-8">
-            <Card className="hover:shadow-lg transition-shadow hover:border-neon-blue/50">
+            <Card
+              className="hover:shadow-lg transition-shadow hover:border-neon-blue/50 cursor-pointer"
+              onClick={handleIPRClick}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 md:pb-2 p-3 md:p-6">
                 <CardTitle className="text-xs md:text-sm font-medium">
                   IPR
@@ -480,9 +504,9 @@ export default function HomePage() {
                 <Trophy className="h-3 w-3 md:h-4 md:w-4 text-neon-yellow" />
               </CardHeader>
               <CardContent className="p-3 pt-0 md:p-6 md:pt-0">
-                <div className="text-lg md:text-2xl font-bold">{playerStats.ipr}</div>
+                <div className="text-lg md:text-2xl font-bold">{Math.round(playerStats.ipr)}</div>
                 <p className="text-[10px] md:text-xs text-muted-foreground">
-                  Individual Player Ranking
+                  Click for history
                 </p>
               </CardContent>
             </Card>
@@ -991,6 +1015,85 @@ export default function HomePage() {
                   </div>
                 )}
               </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* IPR History Dialog */}
+          <Dialog open={iprHistoryDialogOpen} onOpenChange={setIprHistoryDialogOpen}>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>IPR History - {playerName}</DialogTitle>
+                <DialogDescription>
+                  Your Individual Player Ranking progression over time
+                </DialogDescription>
+              </DialogHeader>
+
+              {iprHistory.length > 0 ? (
+                <>
+                  {/* Summary Stats */}
+                  <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
+                    <div>
+                      <div className="text-xs text-muted-foreground">Current IPR</div>
+                      <div className="text-lg font-semibold">{iprHistory[iprHistory.length - 1]?.ipr || 0}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Starting IPR</div>
+                      <div className="text-lg font-semibold">{iprHistory[0]?.ipr || 0}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Total Matches</div>
+                      <div className="text-lg font-semibold">{iprHistory.length}</div>
+                    </div>
+                  </div>
+
+                  {/* Line Chart */}
+                  <div className="w-full h-96">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsLineChart
+                        data={iprHistory}
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          dataKey="matchNumber"
+                          label={{ value: 'Match Number', position: 'insideBottom', offset: -5 }}
+                        />
+                        <YAxis
+                          label={{ value: 'IPR', angle: -90, position: 'insideLeft' }}
+                        />
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload
+                              return (
+                                <div className="bg-background border rounded-lg p-3 shadow-lg">
+                                  <p className="font-semibold">Match #{data.matchNumber}</p>
+                                  <p className="text-sm">Season {data.season}, Week {data.week}</p>
+                                  <p className="text-sm">IPR: {data.ipr}</p>
+                                  <p className="text-sm">Points: {data.points}</p>
+                                </div>
+                              )
+                            }
+                            return null
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="ipr"
+                          stroke="hsl(var(--primary))"
+                          strokeWidth={2}
+                          dot={{ r: 3 }}
+                          activeDot={{ r: 6 }}
+                        />
+                      </RechartsLineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  Loading IPR history...
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         </>
