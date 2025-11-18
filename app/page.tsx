@@ -1055,18 +1055,24 @@ export default function HomePage() {
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsLineChart
                         data={iprHistory}
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        margin={{ top: 5, right: 30, left: 20, bottom: 25 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis
                           dataKey="matchNumber"
-                          label={{ value: 'Match Number', position: 'insideBottom', offset: -5 }}
+                          tickFormatter={(value, index) => {
+                            const match = iprHistory[index]
+                            return match ? `S${match.season}W${match.week}` : value
+                          }}
+                          label={{ value: 'Season & Week', position: 'insideBottom', offset: -10 }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
                         />
                         <YAxis
-                          reversed={true}
-                          domain={[1, 4]}
-                          ticks={[1, 2, 3, 4]}
-                          label={{ value: 'Placement (1=best)', angle: -90, position: 'insideLeft' }}
+                          domain={[1, 6]}
+                          ticks={[1, 2, 3, 4, 5, 6]}
+                          label={{ value: 'Placement (1=best, 6=worst)', angle: -90, position: 'insideLeft' }}
                         />
                         <Tooltip
                           content={({ active, payload }) => {
@@ -1074,8 +1080,7 @@ export default function HomePage() {
                               const data = payload[0].payload
                               return (
                                 <div className="bg-background border rounded-lg p-3 shadow-lg">
-                                  <p className="font-semibold">Match #{data.matchNumber}</p>
-                                  <p className="text-sm">Season {data.season}, Week {data.week}</p>
+                                  <p className="font-semibold">Season {data.season}, Week {data.week}</p>
                                   <p className="text-sm">Placement: {data.ipr}</p>
                                   <p className="text-sm">Points: {data.points.toFixed(1)}</p>
                                 </div>
