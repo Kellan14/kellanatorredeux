@@ -1082,7 +1082,6 @@ export default function HomePage() {
                                 <div className="bg-background border rounded-lg p-3 shadow-lg">
                                   <p className="font-semibold">Season {data.season}, Week {data.week}</p>
                                   <p className="text-sm">Placement: {data.ipr}</p>
-                                  <p className="text-sm">Points: {data.points.toFixed(1)}</p>
                                 </div>
                               )
                             }
