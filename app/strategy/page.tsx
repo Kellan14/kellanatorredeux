@@ -1215,6 +1215,66 @@ export default function StrategyPage() {
         </CardContent>
       </Card>
 
+      {/* NEW: Advanced Machine Optimization Section */}
+      <Card className="mt-6">
+        <CardContent className="pt-6">
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Target className="h-5 w-5" />
+              <h2 className="text-xl font-bold">Advanced Machine Optimization (Beta)</h2>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Hungarian algorithm-based optimization with performance heatmap visualization.
+              This is a new experimental feature running alongside the original strategy tools above.
+            </p>
+          </div>
+
+          {!loading && selectedVenue && selectedOpponent && (
+            <Tabs defaultValue="heatmap" className="w-full">
+              <TabsList className="mb-4">
+                <TabsTrigger value="heatmap">Performance Heatmap</TabsTrigger>
+                <TabsTrigger value="optimizer">Drag & Drop Optimizer</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="heatmap" className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Visualize player performance on each machine. Darker colors indicate better win rates.
+                  Click cells for detailed stats.
+                </p>
+                <div className="text-center p-8 border border-dashed rounded">
+                  <p className="text-muted-foreground">
+                    Performance matrix component coming soon
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Will display win rates, games played, and streaks for each player-machine combination
+                  </p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="optimizer" className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Drag players onto machines for manual assignments, or use auto-optimize for algorithmic recommendations.
+                </p>
+                <div className="text-center p-8 border border-dashed rounded">
+                  <p className="text-muted-foreground">
+                    Drag and drop machine picker coming soon
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Supports both 7x7 singles and 4x2 doubles formats
+                  </p>
+                </div>
+              </TabsContent>
+            </Tabs>
+          )}
+
+          {!selectedVenue || !selectedOpponent && (
+            <div className="text-center p-12 text-muted-foreground">
+              Please select a venue and opponent above to use advanced optimization
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Cell Details Dialog */}
       <Dialog open={cellDetailsOpen} onOpenChange={setCellDetailsOpen}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
