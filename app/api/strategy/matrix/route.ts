@@ -13,6 +13,7 @@ import type { PlayerMachineStats } from '@/types/strategy'
  * - machines: comma-separated list of machine names
  * - seasonStart: starting season number (default: 20)
  * - seasonEnd: ending season number (default: 22)
+ * - venue: optional venue filter (omit for all venues)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -23,6 +24,7 @@ export async function GET(request: NextRequest) {
     const machinesParam = searchParams.get('machines')
     const seasonStart = parseInt(searchParams.get('seasonStart') || '20')
     const seasonEnd = parseInt(searchParams.get('seasonEnd') || '22')
+    const venue = searchParams.get('venue') || undefined
 
     if (!playerNamesParam || !machinesParam) {
       return NextResponse.json(
@@ -42,12 +44,13 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Calculate stats from games table
+    // Calculate stats from games table (optionally filtered by venue)
     const statsMap = await calculatePlayerMachineStats(
       playerNames,
       machines,
       seasonStart,
-      seasonEnd
+      seasonEnd,
+      venue
     )
 
     // Convert Map<string, Map<string, PlayerMachineStats>> to serializable object

@@ -13,17 +13,23 @@ export async function calculatePlayerMachineStats(
   playerNames: string[],
   machines: string[],
   seasonStart: number = 20,
-  seasonEnd: number = 22
+  seasonEnd: number = 22,
+  venue?: string
 ): Promise<Map<string, Map<string, PlayerMachineStats>>> {
   // Fetch all relevant games
-  const gamesData = await fetchAllRecords<any>(
-    supabase
-      .from('games')
-      .select('*')
-      .gte('season', seasonStart)
-      .lte('season', seasonEnd)
-      .in('machine', machines)
-  )
+  let query = supabase
+    .from('games')
+    .select('*')
+    .gte('season', seasonStart)
+    .lte('season', seasonEnd)
+    .in('machine', machines)
+
+  // Optionally filter by venue
+  if (venue) {
+    query = query.eq('venue', venue)
+  }
+
+  const gamesData = await fetchAllRecords<any>(query)
 
   // Build stats map: playerName -> machineName -> stats
   const statsMap = new Map<string, Map<string, PlayerMachineStats>>()

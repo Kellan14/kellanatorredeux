@@ -120,6 +120,7 @@ export default function StrategyPage() {
   // Player analysis state
   const [selectedAnalysisPlayer, setSelectedAnalysisPlayer] = useState<string>('')
   const [showAllVenues, setShowAllVenues] = useState(false)
+  const [heatmapShowAllVenues, setHeatmapShowAllVenues] = useState(false)
   const [playerAnalysis, setPlayerAnalysis] = useState<any>(null)
   const [loadingAnalysis, setLoadingAnalysis] = useState(false)
 
@@ -462,12 +463,16 @@ export default function StrategyPage() {
         return
       }
 
+      // Only pass venue parameter if NOT showing all venues
+      const venueParam = heatmapShowAllVenues ? '' : `&venue=${encodeURIComponent(selectedVenue)}`
+
       const response = await fetch(
         `/api/strategy/matrix?` +
         `playerNames=${encodeURIComponent(playersToUse.join(','))}` +
         `&machines=${encodeURIComponent(venue.machines.join(','))}` +
         `&seasonStart=${seasonRange[0]}` +
-        `&seasonEnd=${seasonRange[1]}`
+        `&seasonEnd=${seasonRange[1]}` +
+        venueParam
       )
 
       if (response.ok) {
@@ -505,7 +510,7 @@ export default function StrategyPage() {
     if (selectedVenue && selectedOpponent && rosterPlayers.length > 0) {
       loadMatrixData()
     }
-  }, [selectedVenue, selectedOpponent, seasonRange, rosterPlayers, availablePlayers])
+  }, [selectedVenue, selectedOpponent, seasonRange, rosterPlayers, availablePlayers, heatmapShowAllVenues])
 
   const handleCellClick = async (machine: string, columnKey: string) => {
     // Don't allow clicking on machine name column
@@ -1322,10 +1327,25 @@ export default function StrategyPage() {
               </TabsList>
 
               <TabsContent value="heatmap" className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Visualize player performance on each machine. Darker colors indicate better win rates.
-                  Click cells for detailed stats.
-                </p>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-sm text-muted-foreground">
+                    Visualize player performance on each machine. Darker colors indicate better win rates.
+                    Click cells for detailed stats.
+                  </p>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="heatmap-all-venues"
+                      checked={heatmapShowAllVenues}
+                      onCheckedChange={(checked) => setHeatmapShowAllVenues(!!checked)}
+                    />
+                    <label
+                      htmlFor="heatmap-all-venues"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Show all venues
+                    </label>
+                  </div>
+                </div>
 
                 {loadingMatrix && (
                   <div className="flex items-center justify-center p-12">
