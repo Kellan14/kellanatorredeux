@@ -158,3 +158,85 @@ export async function calculatePlayerMachineStats(
 
   return statsMap
 }
+
+/**
+ * Calculate pair statistics for doubles format
+ * Finds games where two players played together on the same machine
+ */
+export async function calculatePairStats(
+  playerNames: string[],
+  machines: string[],
+  seasonStart: number = 20,
+  seasonEnd: number = 22
+): Promise<Map<string, { winRate: number; gamesPlayed: number }>> {
+  // Fetch all relevant games
+  const gamesData = await fetchAllRecords<any>(
+    supabase
+      .from('games')
+      .select('*')
+      .gte('season', seasonStart)
+      .lte('season', seasonEnd)
+      .in('machine', machines)
+  )
+
+  // Group games by match+round+machine
+  const gamesByMatchRound = new Map<string, Array<any>>()
+  for (const game of gamesData) {
+    const matchRoundKey = `${game.match}|${game.round}|${game.machine}`
+    if (!gamesByMatchRound.has(matchRoundKey)) {
+      gamesByMatchRound.set(matchRoundKey, [])
+    }
+    gamesByMatchRound.get(matchRoundKey)!.push(game)
+  }
+
+  // Track pair stats
+  const pairStats = new Map<string, { wins: number; total: number }>()
+
+  // For each match/round/machine, find pairs that played together
+  for (const [matchRoundKey, matchGames] of Array.from(gamesByMatchRound.entries())) {
+    const [, , machine] = matchRoundKey.split('|')
+
+    // Get all players in this game
+    const playersInGame = matchGames
+      .filter(g => playerNames.includes(g.player_name))
+      .map(g => ({ name: g.player_name, points: g.points }))
+
+    // If we have at least 2 players, check all pairs
+    if (playersInGame.length >= 2) {
+      for (let i = 0; i < playersInGame.length; i++) {
+        for (let j = i + 1; j < playersInGame.length; j++) {
+          const p1 = playersInGame[i]
+          const p2 = playersInGame[j]
+
+          // Create pair key (order doesn't matter, so sort alphabetically)
+          const pairKey = `${p1.name}|${p2.name}|${machine}`
+
+          if (!pairStats.has(pairKey)) {
+            pairStats.set(pairKey, { wins: 0, total: 0 })
+          }
+
+          const stats = pairStats.get(pairKey)!
+
+          // Both players won if both got >= 1.5 points (win or tie)
+          const bothWon = p1.points >= 1.5 && p2.points >= 1.5
+
+          if (bothWon) {
+            stats.wins++
+          }
+          stats.total++
+        }
+      }
+    }
+  }
+
+  // Convert to win rates
+  const pairStatsMap = new Map<string, { winRate: number; gamesPlayed: number }>()
+  for (const [key, stats] of Array.from(pairStats.entries())) {
+    pairStatsMap.set(key, {
+      winRate: stats.total > 0 ? stats.wins / stats.total : 0,
+      gamesPlayed: stats.total
+    })
+  }
+
+  return pairStatsMap
+}
