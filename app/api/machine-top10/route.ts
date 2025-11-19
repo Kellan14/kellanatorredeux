@@ -43,8 +43,8 @@ export async function GET(request: Request) {
     if (isThisSeason) {
       query = query.eq('season', currentSeason)
     } else {
-      // All time: seasons 20-22
-      query = query.gte('season', 20).lte('season', 22)
+      // All time: all historical seasons (2-22)
+      query = query.gte('season', 2).lte('season', 22)
     }
 
     // Filter by venue if context is venue-specific (not league-wide)

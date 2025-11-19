@@ -205,14 +205,14 @@ export async function GET(request: Request) {
       return achievements
     }
 
-    // Fetch all games for all-time period (seasons 20-22) with pagination
+    // Fetch all games for all-time period (all seasons 2-22) with pagination
     let allTimeGames
     try {
       allTimeGames = await fetchAllRecords(
         supabase
           .from('games')
           .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
-          .gte('season', 20)
+          .gte('season', 2)
           .lte('season', 22)
       )
     } catch (allTimeError) {
