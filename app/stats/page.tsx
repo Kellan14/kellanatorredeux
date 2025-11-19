@@ -299,32 +299,14 @@ export default function StatsPage() {
   const loadVenuesAndTeams = async () => {
     setLoadingDropdowns(true)
     try {
-      const venuesResponse = await fetch('/api/venues')
+      // If includeHistoricalVenues is false, request only venues with scores in season 22
+      const venuesUrl = includeHistoricalVenues
+        ? '/api/venues'
+        : '/api/venues?season=22'
+
+      const venuesResponse = await fetch(venuesUrl)
       const venuesData = await venuesResponse.json()
-
-      let filteredVenues = venuesData.venues || []
-
-      // Filter venues based on includeHistoricalVenues toggle
-      if (!includeHistoricalVenues) {
-        // Get venues used in season 22
-        const gamesResponse = await fetch('/api/games?seasons=22')
-        const gamesData = await gamesResponse.json()
-
-        // Get unique venue names from season 22 games
-        const season22Venues = new Set<string>()
-        if (gamesData.games) {
-          gamesData.games.forEach((game: any) => {
-            if (game.venue) {
-              season22Venues.add(game.venue)
-            }
-          })
-        }
-
-        // Filter to only venues used in season 22
-        filteredVenues = filteredVenues.filter((v: Venue) =>
-          season22Venues.has(v.name)
-        )
-      }
+      const filteredVenues = venuesData.venues || []
 
       setVenues(filteredVenues)
 
