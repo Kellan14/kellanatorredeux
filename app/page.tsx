@@ -281,8 +281,8 @@ export default function HomePage() {
 
     // Parse venue from context if venue-specific
     let venueParam = ''
-    if (achievement.context.includes(' at ')) {
-      venueParam = achievement.venue || ''
+    if (achievement.isVenueSpecific && achievement.venue) {
+      venueParam = achievement.venue
     }
 
     try {
