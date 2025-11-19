@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-11-19T02-10-59",
+  "created_at": "2025-11-19T02:11:10.645Z",
+  "tables": {
+    "matches": {
+      "file": "matches_backup_2025-11-19T02-10-59.json",
+      "records": 1342
+    },
+    "games": {
+      "file": "games_backup_2025-11-19T02-10-59.json",
+      "records": 28946
+    }
+  }
+}
