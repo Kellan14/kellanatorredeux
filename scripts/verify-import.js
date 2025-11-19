@@ -1,79 +1,86 @@
-const { createClient } = require('@supabase/supabase-js')
+#!/usr/bin/env node
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
+const { createClient } = require('@supabase/supabase-js');
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+/**
+ * Fetch all records with pagination to get around Supabase limit
+ */
+async function fetchAllRecords(table, columns = '*') {
+  const allRecords = [];
+  let offset = 0;
+  const limit = 1000;
+  let hasMore = true;
+
+  while (hasMore) {
+    const { data, error } = await supabase
+      .from(table)
+      .select(columns)
+      .order('season', { ascending: true })
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      console.error(`Error fetching ${table}:`, error);
+      throw error;
+    }
+
+    if (data && data.length > 0) {
+      allRecords.push(...data);
+      offset += limit;
+      hasMore = data.length === limit;
+    } else {
+      hasMore = false;
+    }
+  }
+
+  return allRecords;
+}
 
 async function verifyImport() {
-  console.log('Verifying Supabase data import...\n')
+  console.log('=== Verifying Historical Data Import ===\n');
 
-  // Check matches count
-  const { count: matchesCount, error: matchesError } = await supabase
-    .from('matches')
-    .select('*', { count: 'exact', head: true })
+  // Check matches by season (with pagination)
+  console.log('Fetching all matches...');
+  const matches = await fetchAllRecords('matches', 'season');
 
-  if (matchesError) {
-    console.error('Error counting matches:', matchesError)
-  } else {
-    console.log(`✓ Total matches imported: ${matchesCount}`)
-  }
+  // Count matches by season
+  const matchCounts = {};
+  matches.forEach(m => {
+    matchCounts[m.season] = (matchCounts[m.season] || 0) + 1;
+  });
 
-  // Check matches by season
-  const { data: matchesBySeason } = await supabase
-    .from('matches')
-    .select('season')
+  console.log('\nMatches by Season:');
+  Object.keys(matchCounts).sort((a, b) => parseInt(a) - parseInt(b)).forEach(season => {
+    console.log(`  Season ${season}: ${matchCounts[season]} matches`);
+  });
 
-  if (matchesBySeason) {
-    const seasonCounts = {}
-    matchesBySeason.forEach(m => {
-      seasonCounts[m.season] = (seasonCounts[m.season] || 0) + 1
-    })
-    console.log('\nMatches by season:')
-    Object.keys(seasonCounts).sort().forEach(season => {
-      console.log(`  Season ${season}: ${seasonCounts[season]} matches`)
-    })
-  }
+  console.log(`\nTotal matches: ${matches.length}`);
 
-  // Check player stats count
-  const { count: statsCount, error: statsError } = await supabase
-    .from('player_stats')
-    .select('*', { count: 'exact', head: true })
+  // Check games by season (with pagination)
+  console.log('\nFetching all games...');
+  const games = await fetchAllRecords('games', 'season');
 
-  if (statsError) {
-    console.error('Error counting player stats:', statsError)
-  } else {
-    console.log(`\n✓ Total player stats records: ${statsCount}`)
-  }
+  // Count games by season
+  const gameCounts = {};
+  games.forEach(g => {
+    gameCounts[g.season] = (gameCounts[g.season] || 0) + 1;
+  });
 
-  // Check current season (22) player stats
-  const { data: season22Stats } = await supabase
-    .from('player_stats')
-    .select('*')
-    .eq('season', 22)
-    .order('ipr', { ascending: false })
-    .limit(10)
+  console.log('\nGames by Season:');
+  Object.keys(gameCounts).sort((a, b) => parseInt(a) - parseInt(b)).forEach(season => {
+    console.log(`  Season ${season}: ${gameCounts[season]} games`);
+  });
 
-  if (season22Stats && season22Stats.length > 0) {
-    console.log('\nTop 10 players in Season 22:')
-    season22Stats.forEach((player, index) => {
-      console.log(`  ${index + 1}. ${player.player_name} (${player.team}) - IPR: ${player.ipr} - Matches: ${player.matches_played}`)
-    })
-  }
-
-  // Check for TWC team data
-  const { data: twcPlayers } = await supabase
-    .from('player_stats')
-    .select('*')
-    .eq('season', 22)
-    .eq('team', 'TWC')
-    .order('ipr', { ascending: false })
-
-  if (twcPlayers && twcPlayers.length > 0) {
-    console.log(`\n✓ TWC team has ${twcPlayers.length} players in Season 22`)
-  }
-
-  console.log('\n✓ Data verification complete!')
+  console.log(`\nTotal games: ${games.length}`);
 }
 
 verifyImport()
+  .then(() => process.exit(0))
+  .catch(err => {
+    console.error('Error:', err);
+    process.exit(1);
+  });

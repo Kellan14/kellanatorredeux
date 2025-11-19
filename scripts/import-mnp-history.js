@@ -189,7 +189,7 @@ async function importHistoricalData(dryRun = true) {
   // Fetch existing players from database first
   const existingPlayersMap = await fetchExistingPlayers();
 
-  const csvPath = path.join(__dirname, '..', 'MNP history.csv');
+  const csvPath = path.join(__dirname, '..', 'MNP-seasons-3-12.csv');
 
   console.log('\nReading CSV file:', csvPath);
   const csvContent = fs.readFileSync(csvPath, 'utf-8');
