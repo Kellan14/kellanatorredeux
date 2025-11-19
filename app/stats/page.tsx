@@ -117,6 +117,7 @@ export default function StatsPage() {
   const [machineStats, setMachineStats] = useState<MachineStats[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingDropdowns, setLoadingDropdowns] = useState(true)
+  const [includeHistoricalVenues, setIncludeHistoricalVenues] = useState(false)
   const [sortColumn, setSortColumn] = useState<string>('machine')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [optionsOpen, setOptionsOpen] = useState(false)
@@ -240,7 +241,7 @@ export default function StatsPage() {
   // Load venues and teams
   useEffect(() => {
     loadVenuesAndTeams()
-  }, [])
+  }, [includeHistoricalVenues])
 
   // Set venue-specific defaults based on venue
   useEffect(() => {
@@ -300,7 +301,32 @@ export default function StatsPage() {
     try {
       const venuesResponse = await fetch('/api/venues')
       const venuesData = await venuesResponse.json()
-      setVenues(venuesData.venues || [])
+
+      let filteredVenues = venuesData.venues || []
+
+      // Filter venues based on includeHistoricalVenues toggle
+      if (!includeHistoricalVenues) {
+        // Get venues used in season 22
+        const gamesResponse = await fetch('/api/games?seasons=22')
+        const gamesData = await gamesResponse.json()
+
+        // Get unique venue names from season 22 games
+        const season22Venues = new Set<string>()
+        if (gamesData.games) {
+          gamesData.games.forEach((game: any) => {
+            if (game.venue) {
+              season22Venues.add(game.venue)
+            }
+          })
+        }
+
+        // Filter to only venues used in season 22
+        filteredVenues = filteredVenues.filter((v: Venue) =>
+          season22Venues.has(v.name)
+        )
+      }
+
+      setVenues(filteredVenues)
 
       const teamsResponse = await fetch('/api/teams?season=22')
       const teamsData = await teamsResponse.json()
@@ -315,13 +341,13 @@ export default function StatsPage() {
         setSelectedVenue(latestMatch.venue)
       } else {
         // Fallback to GPA
-        const gpa = venuesData.venues.find((v: Venue) =>
+        const gpa = filteredVenues.find((v: Venue) =>
           v.name.toLowerCase().includes('georgetown') && v.name.toLowerCase().includes('pizza')
         )
         if (gpa) {
           setSelectedVenue(gpa.name)
-        } else if (venuesData.venues.length > 0) {
-          setSelectedVenue(venuesData.venues[0].name)
+        } else if (filteredVenues.length > 0) {
+          setSelectedVenue(filteredVenues[0].name)
         }
       }
 
@@ -562,7 +588,7 @@ export default function StatsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {[14, 15, 16, 17, 18, 19, 20, 21, 22].map(s => (
+                      {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map(s => (
                         <SelectItem key={s} value={String(s)}>{s}</SelectItem>
                       ))}
                     </SelectContent>
@@ -598,6 +624,19 @@ export default function StatsPage() {
                     className="text-xs md:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
                     TWC - Venue Specific
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="include-historical-venues"
+                    checked={includeHistoricalVenues}
+                    onCheckedChange={(checked) => setIncludeHistoricalVenues(!!checked)}
+                  />
+                  <label
+                    htmlFor="include-historical-venues"
+                    className="text-xs md:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Include Historical Venues
                   </label>
                 </div>
               </div>
