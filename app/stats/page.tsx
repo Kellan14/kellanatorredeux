@@ -310,7 +310,12 @@ export default function StatsPage() {
 
       setVenues(filteredVenues)
 
-      const teamsResponse = await fetch('/api/teams?season=22')
+      // If includeHistoricalVenues is true, load teams from all seasons
+      const teamsUrl = includeHistoricalVenues
+        ? '/api/teams'
+        : '/api/teams?season=22'
+
+      const teamsResponse = await fetch(teamsUrl)
       const teamsData = await teamsResponse.json()
       setTeams(teamsData.teams || [])
 
