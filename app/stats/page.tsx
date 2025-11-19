@@ -31,6 +31,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ChevronUp, ChevronDown, Loader2, ArrowUp, ArrowDown } from 'lucide-react'
 import { type MachineStats } from '@/lib/tournament-data'
 import { VenueMachineListManager } from '@/components/venue-machine-list-manager'
+import { MachineMappingManager } from '@/components/machine-mapping-manager'
 
 interface Team {
   key: string
@@ -131,6 +132,7 @@ export default function StatsPage() {
   const [teamVenueSpecific, setTeamVenueSpecific] = useState(true)
   const [twcVenueSpecific, setTwcVenueSpecific] = useState(false)
   const [venueListManagerOpen, setVenueListManagerOpen] = useState(false)
+  const [machineMappingOpen, setMachineMappingOpen] = useState(false)
   const [hasMachineModifications, setHasMachineModifications] = useState(false)
   const [hasRosterModifications, setHasRosterModifications] = useState(false)
   const [hasTwcRosterModifications, setHasTwcRosterModifications] = useState(false)
@@ -705,7 +707,8 @@ export default function StatsPage() {
                       variant="outline"
                       className="h-20 md:h-24 flex items-center justify-center text-xs md:text-sm"
                       onClick={() => {
-                        // TODO: Implement Standardize Machines
+                        setOptionsOpen(false)
+                        setMachineMappingOpen(true)
                       }}
                     >
                       Standardize Machines
@@ -1010,6 +1013,12 @@ export default function StatsPage() {
         onOpenChange={setVenueListManagerOpen}
         venueName={selectedVenue}
         currentMachines={machineStats.map(s => s.machine)}
+      />
+
+      {/* Machine Mapping Manager Dialog */}
+      <MachineMappingManager
+        open={machineMappingOpen}
+        onOpenChange={setMachineMappingOpen}
       />
 
       {/* Cell Details Dialog */}
