@@ -135,14 +135,27 @@ export async function GET(request: Request) {
       }
     }
 
-    // Sort by score descending and take top 10, adding rank numbers
-    const topScores = scores
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 10)
-      .map((score, index) => ({
-        ...score,
-        rank: index + 1
-      }))
+    // Sort by score descending
+    const sortedScores = scores.sort((a, b) => b.score - a.score)
+
+    // Assign ranks handling ties correctly
+    const rankedScores: Array<{ player: string; score: number; venue: string; season: number; week: number; match: string; round: number; rank: number }> = []
+    let currentRank = 1
+
+    for (let i = 0; i < sortedScores.length; i++) {
+      // If this score is different from the previous score, update the rank
+      if (i > 0 && sortedScores[i].score < sortedScores[i - 1].score) {
+        currentRank = i + 1
+      }
+
+      rankedScores.push({
+        ...sortedScores[i],
+        rank: currentRank
+      })
+    }
+
+    // Take top 10 after ranking
+    const topScores = rankedScores.slice(0, 10)
 
     return NextResponse.json({
       machine: machineKey,
