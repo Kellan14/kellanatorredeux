@@ -28,28 +28,28 @@ export async function GET(request: Request) {
     if (season) {
       const seasonNum = parseInt(season);
 
-      // Query player_stats to find venues that have activity in the specified season
-      const playerStatsData = await fetchAllRecords<{
+      // Query games table to find venues that have games in the specified season
+      const gamesData = await fetchAllRecords<{
         venue: string | null;
         season: number;
       }>(
         supabase
-          .from('player_stats')
+          .from('games')
           .select('venue, season')
           .eq('season', seasonNum)
       );
 
-      // Get unique venue names from player_stats
+      // Get unique venue names from games
       const activeVenues = new Set<string>();
-      if (playerStatsData && playerStatsData.length > 0) {
-        playerStatsData.forEach(stat => {
-          if (stat.venue) {
-            activeVenues.add(stat.venue);
+      if (gamesData && gamesData.length > 0) {
+        gamesData.forEach(game => {
+          if (game.venue) {
+            activeVenues.add(game.venue);
           }
         });
       }
 
-      // Filter venues to only those with activity in the specified season
+      // Filter venues to only those with games in the specified season
       venues = venues.filter(v => activeVenues.has(v.name));
     }
 
