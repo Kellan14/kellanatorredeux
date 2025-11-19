@@ -15,6 +15,47 @@ try {
   console.error('Failed to load score limits:', error)
 }
 
+// Load machine mappings
+const machineMappingPath = path.join(process.cwd(), 'machine_mapping.json')
+let machineMappings: Record<string, string> = {}
+try {
+  const machineMappingData = fs.readFileSync(machineMappingPath, 'utf-8')
+  machineMappings = JSON.parse(machineMappingData)
+} catch (error) {
+  console.error('Failed to load machine mappings:', error)
+}
+
+// Helper to get all machine name variations for querying
+function getMachineVariations(machineKey: string): string[] {
+  const variations = new Set<string>()
+  const lowerMachineKey = machineKey.toLowerCase()
+
+  // Add the original machine key
+  variations.add(machineKey)
+
+  // Find all aliases that map to this standardized name
+  for (const [alias, standardized] of Object.entries(machineMappings)) {
+    if (standardized.toLowerCase() === lowerMachineKey) {
+      variations.add(alias)
+      variations.add(standardized)
+    }
+  }
+
+  // Check if the machine key itself is an alias
+  const standardizedName = machineMappings[lowerMachineKey]
+  if (standardizedName) {
+    variations.add(standardizedName)
+    // Also find other aliases for this standardized name
+    for (const [alias, standard] of Object.entries(machineMappings)) {
+      if (standard === standardizedName) {
+        variations.add(alias)
+      }
+    }
+  }
+
+  return Array.from(variations)
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -33,11 +74,15 @@ export async function GET(request: Request) {
     const isThisSeason = context.includes('this season')
     const currentSeason = 22
 
+    // Get all machine name variations to query for
+    const machineVariations = getMachineVariations(machineKey)
+    console.log(`Querying for machine "${machineKey}" with variations:`, machineVariations)
+
     // Build query for top 10 scores with pagination
     let query = supabase
       .from('games')
       .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, venue, season, week, match_key, round_number')
-      .eq('machine', machineKey)
+      .in('machine', machineVariations)
 
     // Filter by season if "this season"
     if (isThisSeason) {
