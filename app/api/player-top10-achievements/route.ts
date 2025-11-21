@@ -169,10 +169,10 @@ export async function GET(request: Request) {
 
         // Convert back to array and take top 10
         const machineTop10 = Array.from(uniquePlayerScores.values()).slice(0, 10)
-        
-        // Debug logging for Aerosmith AFTER sorting
-        if (groupKey === 'Aerosmith' && context.includes('League-wide - all time')) {
-          console.log('=== AEROSMITH DEBUG (AFTER SORT) ===')
+
+        // Debug logging for specific machines
+        if ((groupKey === 'Aerosmith' || groupKey === 'Torpedo') && context.includes('League-wide - all time')) {
+          console.log(`=== ${groupKey.toUpperCase()} DEBUG (AFTER SORT) ===`)
           console.log('Top 10 scores after sort:')
           machineTop10.forEach((s, i) => {
             const isPlayer = s.playerKey === playerKey ? ' <-- THIS IS THE PLAYER' : ''
