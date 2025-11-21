@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
+import { machineMappings } from '@/lib/machine-mappings'
 import fs from 'fs'
 import path from 'path'
 
@@ -14,6 +15,19 @@ try {
   scoreLimits = JSON.parse(scoreLimitsData)
 } catch (error) {
   console.error('Failed to load score limits:', error)
+}
+
+// Helper to standardize machine names using mappings
+function standardizeMachineName(machineName: string): string {
+  const lowerName = machineName.toLowerCase()
+
+  // Check if this name is an alias in our mappings
+  if (machineMappings[lowerName]) {
+    return machineMappings[lowerName]
+  }
+
+  // Return original name if no mapping found
+  return machineName
 }
 
 interface Achievement {
@@ -92,27 +106,30 @@ export async function GET(request: Request) {
     // Function to extract all scores from game records
     const extractScores = (games: any[]): GameScore[] => {
       const scores: GameScore[] = []
-      
+
       for (const game of games) {
+        // Standardize machine name using mappings
+        const standardizedMachine = standardizeMachineName(game.machine)
+
         // Check each player position (1-4)
         for (let i = 1; i <= 4; i++) {
           const key = game[`player_${i}_key`]
           const name = game[`player_${i}_name`]
           const score = game[`player_${i}_score`]
-          
+
           if (key && name && score != null && isValidScore(game.machine, score)) {
             scores.push({
               playerKey: key,
               playerName: name,
               score: score,
-              machine: game.machine,
+              machine: standardizedMachine, // Use standardized machine name
               venue: game.venue,
               season: game.season
             })
           }
         }
       }
-      
+
       return scores
     }
 
