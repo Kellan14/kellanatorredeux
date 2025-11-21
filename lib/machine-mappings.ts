@@ -27,6 +27,8 @@ export const machineMappings: Record<string, string> = {
   "dnd": "dungeons and dragons stern",
   "jurassic": "sternpark",
   "ghost": "ghostbusters",
+  "fish tales": "FishTales",
+  "ft": "FishTales",
   "jw": "John Wick",
   "foo fighters": "FOO",
   "batman dark knight": "bdk"
