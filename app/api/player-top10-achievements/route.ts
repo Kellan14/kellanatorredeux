@@ -158,26 +158,17 @@ export async function GET(request: Request) {
       groupedScores.forEach((groupScores, groupKey) => {
         // Sort scores for this machine/venue (highest first)
         const sortedScores = groupScores.sort((a, b) => b.score - a.score)
-        
-        // Take only the top 10 scores
-        const top10 = sortedScores.slice(0, 10)
-        
-        // Debug logging for Aerosmith BEFORE sorting
-        if (groupKey === 'Aerosmith' && context.includes('League-wide - all time')) {
-          console.log('=== AEROSMITH DEBUG (BEFORE SORT) ===')
-          console.log('Context:', context)
-          console.log('Total scores for Aerosmith:', groupScores.length)
-          console.log('First 20 scores before sort:')
-          groupScores.slice(0, 20).forEach((s, i) => {
-            console.log(`  ${i + 1}. ${s.playerName}: ${s.score.toLocaleString()}`)
-          })
+
+        // Deduplicate by player - keep only the highest score for each player
+        const uniquePlayerScores = new Map<string, GameScore>()
+        for (const score of sortedScores) {
+          if (!uniquePlayerScores.has(score.playerKey)) {
+            uniquePlayerScores.set(score.playerKey, score)
+          }
         }
-        
-        // Sort scores for this machine/venue (highest first)
-        const machineSortedScores = groupScores.sort((a, b) => b.score - a.score)
-        
-        // Take only the top 10 scores
-        const machineTop10 = machineSortedScores.slice(0, 10)
+
+        // Convert back to array and take top 10
+        const machineTop10 = Array.from(uniquePlayerScores.values()).slice(0, 10)
         
         // Debug logging for Aerosmith AFTER sorting
         if (groupKey === 'Aerosmith' && context.includes('League-wide - all time')) {
