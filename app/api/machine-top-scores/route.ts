@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
+import { getMachineVariations } from '@/lib/machine-mappings'
 import fs from 'fs'
 import path from 'path'
 
@@ -36,11 +37,14 @@ export async function GET(request: Request) {
       return score <= machineLimit
     }
 
+    // Get all machine name variations for case-insensitive matching
+    const machineVariations = getMachineVariations(machineName)
+
     // Query current season games with pagination
     let seasonQuery = supabase
       .from('games')
       .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue')
-      .eq('machine', machineName)
+      .in('machine', machineVariations)
       .eq('season', currentSeason)
 
     if (venue) {
@@ -59,7 +63,7 @@ export async function GET(request: Request) {
     let allTimeQuery = supabase
       .from('games')
       .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue')
-      .eq('machine', machineName)
+      .in('machine', machineVariations)
       .gte('season', 20)
       .lte('season', 22)
 

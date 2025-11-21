@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
+import { getMachineVariations } from '@/lib/machine-mappings'
 
 export const dynamic = 'force-dynamic';
 
@@ -39,11 +40,14 @@ export async function GET(request: Request) {
 
     const playerKey = playerData.player_key
 
+    // Get all machine name variations for case-insensitive matching
+    const machineVariations = getMachineVariations(machine)
+
     // Query games table directly with SQL filters using pagination, including team info
     let query = supabase
       .from('games')
       .select('match_key, week, season, venue, home_team, away_team, player_1_key, player_1_score, player_1_points, player_1_team, player_2_key, player_2_score, player_2_points, player_2_team, player_3_key, player_3_score, player_3_points, player_3_team, player_4_key, player_4_score, player_4_points, player_4_team')
-      .eq('machine', machine)
+      .in('machine', machineVariations)
       .gte('season', seasonStart)
       .lte('season', seasonEnd)
       .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { machineMappings } from '@/lib/machine-mappings'
+import { getMachineVariations } from '@/lib/machine-mappings'
 import fs from 'fs'
 import path from 'path'
 
@@ -14,48 +14,6 @@ try {
   scoreLimits = JSON.parse(scoreLimitsData)
 } catch (error) {
   console.error('Failed to load score limits:', error)
-}
-
-// Helper to get all machine name variations for querying
-function getMachineVariations(machineKey: string): string[] {
-  const variations = new Set<string>()
-  const lowerMachineKey = machineKey.toLowerCase()
-
-  // Add the original machine key and common case variations
-  variations.add(machineKey)
-  variations.add(lowerMachineKey)
-  variations.add(machineKey.toUpperCase()) // Add all uppercase version (BK2K, etc.)
-  // Add capitalized version (Ghost, Venom, etc.)
-  variations.add(machineKey.charAt(0).toUpperCase() + machineKey.slice(1).toLowerCase())
-
-  // Find all aliases that map to this standardized name
-  for (const [alias, standardized] of Object.entries(machineMappings)) {
-    if (standardized.toLowerCase() === lowerMachineKey) {
-      // Add alias in multiple case variations
-      variations.add(alias)
-      variations.add(alias.toLowerCase())
-      variations.add(alias.charAt(0).toUpperCase() + alias.slice(1).toLowerCase())
-      variations.add(standardized)
-    }
-  }
-
-  // Check if the machine key itself is an alias
-  const standardizedName = machineMappings[lowerMachineKey]
-  if (standardizedName) {
-    variations.add(standardizedName)
-    variations.add(standardizedName.toLowerCase())
-    variations.add(standardizedName.charAt(0).toUpperCase() + standardizedName.slice(1).toLowerCase())
-    // Also find other aliases for this standardized name
-    for (const [alias, standard] of Object.entries(machineMappings)) {
-      if (standard === standardizedName) {
-        variations.add(alias)
-        variations.add(alias.toLowerCase())
-        variations.add(alias.charAt(0).toUpperCase() + alias.slice(1).toLowerCase())
-      }
-    }
-  }
-
-  return Array.from(variations)
 }
 
 export async function GET(request: Request) {
