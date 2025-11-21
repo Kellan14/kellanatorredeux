@@ -972,7 +972,12 @@ export default function HomePage() {
 
               <div className="space-y-3">
                 {achievementTop10.map((entry) => {
-                  const isCurrentPlayer = entry.player === playerName
+                  // Check if this score belongs to the current player
+                  // Match both exact name and "(sub)" variants (e.g., "Kellan Kirkland" and "Kellan Kirkland (sub)")
+                  const isExactMatch = entry.player === playerName
+                  const isSubMatch = entry.player === `${playerName} (sub)` ||
+                    (entry.player.startsWith(playerName) && entry.player.toLowerCase().includes('(sub)'))
+                  const isCurrentPlayer = isExactMatch || isSubMatch
                   return (
                     <div
                       key={entry.rank}
@@ -992,7 +997,11 @@ export default function HomePage() {
                         <div>
                           <div className={`font-semibold ${isCurrentPlayer ? 'text-neon-blue' : ''}`}>
                             {entry.player}
-                            {isCurrentPlayer && <span className="ml-2 text-xs text-neon-blue">(You)</span>}
+                            {isCurrentPlayer && (
+                              <span className="ml-2 text-xs text-neon-blue">
+                                {isSubMatch ? '(You - sub)' : '(You)'}
+                              </span>
+                            )}
                           </div>
                           <div className="text-sm text-muted-foreground">
                             {entry.venue} • Season {entry.season}
