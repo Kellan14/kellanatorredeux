@@ -26,8 +26,10 @@ function standardizeMachineName(machineName: string): string {
     return machineMappings[lowerName]
   }
 
-  // Return original name if no mapping found
-  return machineName
+  // No mapping found - standardize to Title Case for consistency
+  // This ensures 'torpedo' and 'Torpedo' are treated as same machine
+  // Handle multi-word names by capitalizing first letter only
+  return machineName.charAt(0).toUpperCase() + machineName.slice(1)
 }
 
 interface Achievement {
