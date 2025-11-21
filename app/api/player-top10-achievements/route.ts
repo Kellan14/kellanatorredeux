@@ -166,16 +166,12 @@ export async function GET(request: Request) {
         // Sort scores for this machine/venue (highest first)
         const sortedScores = groupScores.sort((a, b) => b.score - a.score)
 
-        // Deduplicate by player - keep only the highest score for each player
-        const uniquePlayerScores = new Map<string, GameScore>()
-        for (const score of sortedScores) {
-          if (!uniquePlayerScores.has(score.playerKey)) {
-            uniquePlayerScores.set(score.playerKey, score)
-          }
-        }
+        // NOTE: We do NOT deduplicate by player here to match machine-top10 API behavior
+        // This ensures rankings are consistent between the achievements list and detail view
+        // A player can appear multiple times in the top 10 with different scores
 
-        // Convert back to array and take top 10
-        const machineTop10 = Array.from(uniquePlayerScores.values()).slice(0, 10)
+        // Take top 10 scores (same player can appear multiple times)
+        const machineTop10 = sortedScores.slice(0, 10)
 
         // Debug logging for specific machines
         if ((groupKey === 'Aerosmith' || groupKey === 'Torpedo') && context.includes('League-wide - all time')) {
