@@ -325,11 +325,11 @@ export async function GET(request: Request) {
       return a.machine.localeCompare(b.machine)
     })
 
-    // Debug: Find Aerosmith specifically
-    const aerosmithDebug = {
-      totalScoresCollected: allTimeScores.filter(s => s.machine === 'Aerosmith').length,
+    // Debug: Find IronMaiden specifically
+    const ironMaidenDebug = {
+      totalScoresCollected: allTimeScores.filter(s => s.machine === 'IronMaiden').length,
       top10Scores: allTimeScores
-        .filter(s => s.machine === 'Aerosmith')
+        .filter(s => s.machine === 'IronMaiden')
         .sort((a, b) => b.score - a.score)
         .slice(0, 10)
         .map((s, i) => ({
@@ -346,7 +346,7 @@ export async function GET(request: Request) {
       count: sortedAchievements.length,
       playerKey: playerKey,
       debug: {
-        aerosmith: aerosmithDebug
+        ironMaiden: ironMaidenDebug
       }
     })
 
