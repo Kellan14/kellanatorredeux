@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
+import { getMachineVariations } from '@/lib/machine-mappings'
 import fs from 'fs'
 import path from 'path'
 
@@ -20,7 +21,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const machineName = searchParams.get('machine')
     const venue = searchParams.get('venue') || ''
-    const currentSeason = 22
 
     if (!machineName) {
       return NextResponse.json(
@@ -28,6 +28,16 @@ export async function GET(request: Request) {
         { status: 400 }
       )
     }
+
+    // Get the current season dynamically from the database
+    const { data: maxSeasonData } = await supabase
+      .from('games')
+      .select('season')
+      .order('season', { ascending: false })
+      .limit(1)
+      .single()
+
+    const currentSeason = maxSeasonData?.season || 22
 
     // Helper to check if a score should be filtered out
     const isScoreValid = (score: number): boolean => {
@@ -58,13 +68,13 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
-    // Query all-time games (seasons 20-22) with pagination
+    // Query all-time games (seasons 2 to current) with pagination
     let allTimeQuery = supabase
       .from('games')
       .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue')
       .ilike('machine', lowerMachineName)
-      .gte('season', 20)
-      .lte('season', 22)
+      .gte('season', 2)
+      .lte('season', currentSeason)
 
     if (venue) {
       allTimeQuery = allTimeQuery.eq('venue', venue)
