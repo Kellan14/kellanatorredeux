@@ -35,7 +35,7 @@ export async function GET(request: Request) {
       .select('season')
       .order('season', { ascending: false })
       .limit(1)
-      .single()
+      .single<{ season: number }>()
 
     const currentSeason = maxSeasonData?.season || 22
 
