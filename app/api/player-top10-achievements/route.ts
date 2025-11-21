@@ -245,6 +245,20 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
+    // Debug: Log total games fetched
+    console.log(`[achievements] Total games fetched for all-time: ${allTimeGames.length}`)
+
+    // Debug: Find all unique machine names that might be Torpedo variants
+    const torpedoVariants = new Set<string>()
+    for (const game of allTimeGames) {
+      const g = game as { machine?: string }
+      if (g.machine && g.machine.toLowerCase().includes('torpedo')) {
+        torpedoVariants.add(g.machine)
+      }
+    }
+    console.log(`[achievements] Torpedo variants found in raw data:`, Array.from(torpedoVariants))
+    console.log(`[achievements] Total Torpedo games in raw data:`, allTimeGames.filter(g => (g as { machine?: string }).machine?.toLowerCase().includes('torpedo')).length)
+
     // Extract scores from both datasets
     const allTimeScores = extractScores(allTimeGames)
     const currentSeasonScores = extractScores(currentSeasonGames)
@@ -336,7 +350,18 @@ export async function GET(request: Request) {
     }
 
     // Debug: Find Torpedo specifically
+    type GameRecord = { machine?: string }
+    const torpedoVariantsInRawData = Array.from(new Set(
+      (allTimeGames as GameRecord[])
+        .filter(g => g.machine?.toLowerCase().includes('torpedo'))
+        .map(g => g.machine)
+    ))
+    const torpedoGamesRawCount = (allTimeGames as GameRecord[]).filter(g => g.machine?.toLowerCase().includes('torpedo')).length
+
     const torpedoDebug = {
+      totalGamesQueried: allTimeGames.length,
+      rawTorpedoGames: torpedoGamesRawCount,
+      machineVariantsFound: torpedoVariantsInRawData,
       totalScoresCollected: allTimeScores.filter(s => s.machine === 'Torpedo').length,
       top10Scores: allTimeScores
         .filter(s => s.machine === 'Torpedo')
