@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     let gamesError
     try {
       gamesData = await fetchAllRecords<{ home_team: string | null; away_team: string | null }>(
-        supabase
+        () => supabase
           .from('games')
           .select('home_team, away_team')
           .eq('season', parseInt(season))

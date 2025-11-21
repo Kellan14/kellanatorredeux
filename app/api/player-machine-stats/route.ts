@@ -77,7 +77,7 @@ export async function GET(request: Request) {
         player_4_score: number | null
         player_4_points: number | null
         player_4_team: string | null
-      }>(query)
+      }>(() => query)
     } catch (error) {
       console.error('Supabase error:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })

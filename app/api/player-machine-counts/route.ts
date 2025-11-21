@@ -77,7 +77,7 @@ export async function GET(request: Request) {
           player_2_key: string | null
           player_3_key: string | null
           player_4_key: string | null
-        }>(venueQuery)
+        }>(() => venueQuery)
       } catch (error) {
         console.error('Error fetching venue games:', error)
         return NextResponse.json({ error: 'Database error' }, { status: 500 })
@@ -100,7 +100,7 @@ export async function GET(request: Request) {
         player_2_key: string | null
         player_3_key: string | null
         player_4_key: string | null
-      }>(allVenuesQuery)
+      }>(() => allVenuesQuery)
     } catch (error) {
       console.error('Error fetching all games:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })

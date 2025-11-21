@@ -33,7 +33,7 @@ export async function GET(request: Request) {
         venue: string | null;
         season: number;
       }>(
-        supabase
+        () => supabase
           .from('games')
           .select('venue, season')
           .eq('season', seasonNum)

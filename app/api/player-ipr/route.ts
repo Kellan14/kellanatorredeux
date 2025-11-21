@@ -62,7 +62,7 @@ export async function GET(request: Request) {
         player_4_key: string | null
         player_4_points: number | null
       }>(
-        supabase
+        () => supabase
           .from('games')
           .select('match_key, player_1_key, player_1_points, player_2_key, player_2_points, player_3_key, player_3_points, player_4_key, player_4_points')
           .eq('season', CURRENT_SEASON)

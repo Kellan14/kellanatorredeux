@@ -30,7 +30,7 @@ export async function GET(request: Request) {
       data: any
       created_at: string | null
     }>(
-      supabase
+      () => supabase
         .from('matches')
         .select('match_key, season, week, data, created_at')
         .order('season', { ascending: true })

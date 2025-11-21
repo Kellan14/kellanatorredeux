@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     let gamesData
     try {
       gamesData = await fetchAllRecords<any>(
-        supabase
+        () => supabase
           .from('games')
           .select('*')
           .eq('venue', venue)

@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     let gamesData: any[];
     try {
       gamesData = await fetchAllRecords(
-        supabase
+        () => supabase
           .from('games')
           .select('*')
           .in('season', seasonList)

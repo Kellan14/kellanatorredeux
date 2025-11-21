@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     let venueMachinesData
     try {
       venueMachinesData = await fetchAllRecords<{ machine: string }>(
-        supabase
+        () => supabase
           .from('games')
           .select('machine')
           .eq('venue', venue)
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
     let gamesData
     try {
       gamesData = await fetchAllRecords<any>(
-        supabase
+        () => supabase
           .from('games')
           .select('*')
           .gte('season', seasonStart)

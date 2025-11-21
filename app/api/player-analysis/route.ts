@@ -80,7 +80,7 @@ export async function GET(request: Request) {
     let venueMachinesData
     try {
       venueMachinesData = await fetchAllRecords<{ machine: string }>(
-        supabase
+        () => supabase
           .from('games')
           .select('machine')
           .eq('venue', venue)
@@ -135,7 +135,7 @@ export async function GET(request: Request) {
         player_4_key: string | null
         player_4_score: number | null
         player_4_points: number | null
-      }>(playerQuery)
+      }>(() => playerQuery)
     } catch (error) {
       console.error('Error fetching player games:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
@@ -151,7 +151,7 @@ export async function GET(request: Request) {
         player_3_score: number | null
         player_4_score: number | null
       }>(
-        supabase
+        () => supabase
           .from('games')
           .select('machine, player_1_score, player_2_score, player_3_score, player_4_score')
           .eq('venue', venue)

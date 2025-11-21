@@ -217,7 +217,7 @@ export async function GET(request: Request) {
     let allTimeGames
     try {
       allTimeGames = await fetchAllRecords(
-        supabase
+        () => supabase
           .from('games')
           .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
           .gte('season', 2)
@@ -232,7 +232,7 @@ export async function GET(request: Request) {
     let currentSeasonGames
     try {
       currentSeasonGames = await fetchAllRecords(
-        supabase
+        () => supabase
           .from('games')
           .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
           .eq('season', currentSeason)

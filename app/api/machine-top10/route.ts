@@ -114,7 +114,7 @@ export async function GET(request: Request) {
         week: number | null
         match_key: string | null
         round_number: number | null
-      }>(query)
+      }>(() => query)
     } catch (error) {
       console.error('Supabase error:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })

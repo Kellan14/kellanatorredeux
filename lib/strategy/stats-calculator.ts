@@ -29,7 +29,7 @@ export async function calculatePlayerMachineStats(
     query = query.eq('venue', venue)
   }
 
-  const gamesData = await fetchAllRecords<any>(query)
+  const gamesData = await fetchAllRecords<any>(() => query)
 
   // Build stats map: playerName -> machineName -> stats
   const statsMap = new Map<string, Map<string, PlayerMachineStats>>()
@@ -173,7 +173,7 @@ export async function calculatePairStats(
 ): Promise<Map<string, { winRate: number; gamesPlayed: number }>> {
   // Fetch all relevant games
   const gamesData = await fetchAllRecords<any>(
-    supabase
+    () => supabase
       .from('games')
       .select('*')
       .gte('season', seasonStart)

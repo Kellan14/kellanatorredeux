@@ -18,8 +18,9 @@ export const supabase = (() => {
 export const createSupabaseClient = () => supabase
 
 // Helper function to fetch all records with pagination (bypassing 1000 record limit)
+// Accepts a function that creates a fresh query builder for each page to avoid query builder mutation
 export async function fetchAllRecords<T>(
-  queryBuilder: any,
+  createQueryBuilder: () => any,
   pageSize: number = 1000
 ): Promise<T[]> {
   const allRecords: T[] = []
@@ -27,6 +28,8 @@ export async function fetchAllRecords<T>(
   let hasMore = true
 
   while (hasMore) {
+    // Create a fresh query builder for each page to avoid mutation issues
+    const queryBuilder = createQueryBuilder()
     const { data, error } = await queryBuilder
       .range(offset, offset + pageSize - 1)
 

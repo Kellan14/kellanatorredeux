@@ -49,7 +49,7 @@ export async function GET(request: Request) {
 
     let seasonGames
     try {
-      seasonGames = await fetchAllRecords<any>(seasonQuery)
+      seasonGames = await fetchAllRecords<any>(() => seasonQuery)
     } catch (error) {
       console.error('Error fetching season games:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
 
     let allTimeGames
     try {
-      allTimeGames = await fetchAllRecords<any>(allTimeQuery)
+      allTimeGames = await fetchAllRecords<any>(() => allTimeQuery)
     } catch (error) {
       console.error('Error fetching all-time games:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
