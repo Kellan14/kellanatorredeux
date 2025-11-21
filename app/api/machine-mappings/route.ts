@@ -5,7 +5,7 @@ import path from 'path'
 
 export const dynamic = 'force-dynamic'
 
-const MACHINE_MAPPING_FILE = path.join(process.cwd(), 'machine_mapping.json')
+const MACHINE_MAPPING_FILE = path.join(process.cwd(), 'public', 'machine_mapping.json')
 
 // Helper function to load machine mappings from file
 function loadMachineMappings(): Record<string, string> {

@@ -16,7 +16,7 @@ try {
 }
 
 // Load machine mappings
-const machineMappingPath = path.join(process.cwd(), 'machine_mapping.json')
+const machineMappingPath = path.join(process.cwd(), 'public', 'machine_mapping.json')
 let machineMappings: Record<string, string> = {}
 try {
   const machineMappingData = fs.readFileSync(machineMappingPath, 'utf-8')
