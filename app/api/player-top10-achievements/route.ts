@@ -245,19 +245,24 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
-    // Debug: Log total games fetched
-    console.log(`[achievements] Total games fetched for all-time: ${allTimeGames.length}`)
-
-    // Debug: Find all unique machine names that might be Torpedo variants
-    const torpedoVariants = new Set<string>()
+    // Debug: Log total games fetched and sample machine names
+    type GameRecord = { machine?: string; season?: number }
+    const allMachines = new Set<string>()
+    const allSeasons = new Set<number>()
     for (const game of allTimeGames) {
-      const g = game as { machine?: string }
-      if (g.machine && g.machine.toLowerCase().includes('torpedo')) {
-        torpedoVariants.add(g.machine)
-      }
+      const g = game as GameRecord
+      if (g.machine) allMachines.add(g.machine)
+      if (g.season) allSeasons.add(g.season)
     }
-    console.log(`[achievements] Torpedo variants found in raw data:`, Array.from(torpedoVariants))
-    console.log(`[achievements] Total Torpedo games in raw data:`, allTimeGames.filter(g => (g as { machine?: string }).machine?.toLowerCase().includes('torpedo')).length)
+    const seasonsList = Array.from(allSeasons).sort((a, b) => a - b)
+    console.log(`[achievements] Total games fetched for all-time: ${allTimeGames.length}`)
+    console.log(`[achievements] Unique machines in data: ${allMachines.size}`)
+    console.log(`[achievements] Sample machines:`, Array.from(allMachines).slice(0, 20))
+    console.log(`[achievements] Seasons in data: ${seasonsList.join(', ')} (${seasonsList.length} total)`)
+
+    // Find machines that might be Torpedo (fuzzy search)
+    const torpedoLike = Array.from(allMachines).filter(m => m.toLowerCase().includes('torp') || m.toLowerCase().includes('orped'))
+    console.log(`[achievements] Machines containing 'torp' or 'orped':`, torpedoLike)
 
     // Extract scores from both datasets
     const allTimeScores = extractScores(allTimeGames)
@@ -349,8 +354,7 @@ export async function GET(request: Request) {
         }))
     }
 
-    // Debug: Find Torpedo specifically
-    type GameRecord = { machine?: string }
+    // Debug: Find Torpedo specifically (using GameRecord type defined above)
     const torpedoVariantsInRawData = Array.from(new Set(
       (allTimeGames as GameRecord[])
         .filter(g => g.machine?.toLowerCase().includes('torpedo'))
@@ -381,6 +385,10 @@ export async function GET(request: Request) {
       count: sortedAchievements.length,
       playerKey: playerKey,
       debug: {
+        totalGames: allTimeGames.length,
+        uniqueMachines: allMachines.size,
+        seasonsInData: seasonsList,
+        sampleMachines: Array.from(allMachines).slice(0, 30),
         ironMaiden: ironMaidenDebug,
         torpedo: torpedoDebug
       }
