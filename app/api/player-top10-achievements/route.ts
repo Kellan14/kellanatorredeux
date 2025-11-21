@@ -64,7 +64,11 @@ export async function GET(request: Request) {
     }
 
     const currentSeason = 22
-    
+    // Create explicit season list for all-time queries (2-22)
+    // Using .in() instead of .gte().lte() to ensure all seasons are included
+    // regardless of data type (some seasons may be stored as strings)
+    const allSeasons = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+
     // First, find the player's key by looking for any game they've played
     const { data: playerGames } = await supabase
       .from('games')
@@ -217,14 +221,14 @@ export async function GET(request: Request) {
     }
 
     // Fetch all games for all-time period (all seasons 2-22) with pagination
+    // Using .in() with explicit season list instead of .gte().lte() to ensure all seasons are included
     let allTimeGames
     try {
       allTimeGames = await fetchAllRecords(
         () => supabase
           .from('games')
           .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
-          .gte('season', 2)
-          .lte('season', 22)
+          .in('season', allSeasons)
       )
     } catch (allTimeError) {
       console.error('Error fetching all-time games:', allTimeError)
