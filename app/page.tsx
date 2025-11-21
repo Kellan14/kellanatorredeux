@@ -708,7 +708,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {achievements.slice(0, 20).map((achievement, index) => (
+                  {achievements.map((achievement, index) => (
                     <div
                       key={index}
                       className="flex items-start justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
