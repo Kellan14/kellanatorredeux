@@ -252,13 +252,13 @@ export async function GET(request: Request) {
     // Debug: Log total games fetched and sample machine names
     type GameRecord = { machine?: string; season?: number }
     const allMachines = new Set<string>()
-    const allSeasons = new Set<number>()
+    const seasonsFound = new Set<number>()
     for (const game of allTimeGames) {
       const g = game as GameRecord
       if (g.machine) allMachines.add(g.machine)
-      if (g.season) allSeasons.add(g.season)
+      if (g.season) seasonsFound.add(g.season)
     }
-    const seasonsList = Array.from(allSeasons).sort((a, b) => a - b)
+    const seasonsList = Array.from(seasonsFound).sort((a, b) => a - b)
     console.log(`[achievements] Total games fetched for all-time: ${allTimeGames.length}`)
     console.log(`[achievements] Unique machines in data: ${allMachines.size}`)
     console.log(`[achievements] Sample machines:`, Array.from(allMachines).slice(0, 20))
