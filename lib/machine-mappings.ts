@@ -1,0 +1,33 @@
+// Machine name aliases mapped to standardized names
+// This file is imported directly into API routes to ensure it's bundled with serverless functions
+export const machineMappings: Record<string, string> = {
+  "pulp": "PULP",
+  "bksor": "BlackKnight",
+  "james bond": "007",
+  "james bond 007": "007",
+  "james bond '007": "007",
+  "lights camera action": "lights camera action!",
+  "banzairun": "banzai run",
+  "party animals": "party animal",
+  "mandolorian": "mandalorian",
+  "bobby orr power player": "bopp",
+  "ej": "elton john",
+  "br": "buck rogers",
+  "dp": "deadpool",
+  "ebb": "eight ball beyond",
+  "godzilla (stern)": "godzilla",
+  "guardians of the galaxy": "guardians",
+  "scooby doo": "scooby-doo",
+  "the mandalorian (premium)": "mandalorian",
+  "venom (r)": "venom",
+  "venom left": "venom",
+  "venom right": "venom",
+  "ven": "venom",
+  "sdnd": "dungeons and dragons stern",
+  "dnd": "dungeons and dragons stern",
+  "jurassic": "sternpark",
+  "ghost": "ghostbusters",
+  "jw": "John Wick",
+  "foo fighters": "FOO",
+  "batman dark knight": "bdk"
+}

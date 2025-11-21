@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
+import { machineMappings } from '@/lib/machine-mappings'
 import fs from 'fs'
 import path from 'path'
 
@@ -13,16 +14,6 @@ try {
   scoreLimits = JSON.parse(scoreLimitsData)
 } catch (error) {
   console.error('Failed to load score limits:', error)
-}
-
-// Load machine mappings
-const machineMappingPath = path.join(process.cwd(), 'public', 'machine_mapping.json')
-let machineMappings: Record<string, string> = {}
-try {
-  const machineMappingData = fs.readFileSync(machineMappingPath, 'utf-8')
-  machineMappings = JSON.parse(machineMappingData)
-} catch (error) {
-  console.error('Failed to load machine mappings:', error)
 }
 
 // Helper to get all machine name variations for querying
