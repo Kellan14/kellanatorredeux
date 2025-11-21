@@ -35,6 +35,15 @@ export const machineMappings: Record<string, string> = {
 }
 
 /**
+ * Convert a string to Title Case (each word capitalized)
+ */
+function toTitleCase(str: string): string {
+  return str.split(' ').map(word =>
+    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+  ).join(' ')
+}
+
+/**
  * Get all possible case variations of a machine name for database queries.
  * This handles machines stored with different case conventions (BK2K, Bk2k, bk2k, etc.)
  * Also includes all aliases that map to the same standardized name.
@@ -49,6 +58,8 @@ export function getMachineVariations(machineKey: string): string[] {
   variations.add(machineKey.toUpperCase()) // Add all uppercase version (BK2K, etc.)
   // Add capitalized version (Ghost, Venom, etc.)
   variations.add(machineKey.charAt(0).toUpperCase() + machineKey.slice(1).toLowerCase())
+  // Add title case version (Mata Hari, etc.) - each word capitalized
+  variations.add(toTitleCase(machineKey))
 
   // Find all aliases that map to this standardized name
   for (const [alias, standardized] of Object.entries(machineMappings)) {
@@ -57,7 +68,9 @@ export function getMachineVariations(machineKey: string): string[] {
       variations.add(alias)
       variations.add(alias.toLowerCase())
       variations.add(alias.charAt(0).toUpperCase() + alias.slice(1).toLowerCase())
+      variations.add(toTitleCase(alias))
       variations.add(standardized)
+      variations.add(toTitleCase(standardized))
     }
   }
 
@@ -67,12 +80,14 @@ export function getMachineVariations(machineKey: string): string[] {
     variations.add(standardizedName)
     variations.add(standardizedName.toLowerCase())
     variations.add(standardizedName.charAt(0).toUpperCase() + standardizedName.slice(1).toLowerCase())
+    variations.add(toTitleCase(standardizedName))
     // Also find other aliases for this standardized name
     for (const [alias, standard] of Object.entries(machineMappings)) {
       if (standard === standardizedName) {
         variations.add(alias)
         variations.add(alias.toLowerCase())
         variations.add(alias.charAt(0).toUpperCase() + alias.slice(1).toLowerCase())
+        variations.add(toTitleCase(alias))
       }
     }
   }
