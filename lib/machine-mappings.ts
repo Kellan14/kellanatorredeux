@@ -2,7 +2,6 @@
 // This file is imported directly into API routes to ensure it's bundled with serverless functions
 export const machineMappings: Record<string, string> = {
   "pulp": "PULP",
-  "bksor": "BlackKnight",
   "james bond": "007",
   "james bond 007": "007",
   "james bond '007": "007",
