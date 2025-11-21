@@ -334,12 +334,29 @@ export async function GET(request: Request) {
         }))
     }
 
+    // Debug: Find Torpedo specifically
+    const torpedoDebug = {
+      totalScoresCollected: allTimeScores.filter(s => s.machine === 'Torpedo').length,
+      top10Scores: allTimeScores
+        .filter(s => s.machine === 'Torpedo')
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10)
+        .map((s, i) => ({
+          rank: i + 1,
+          player: s.playerName,
+          score: s.score,
+          playerKey: s.playerKey,
+          isYou: s.playerKey === playerKey
+        }))
+    }
+
     return NextResponse.json({
       achievements: sortedAchievements,
       count: sortedAchievements.length,
       playerKey: playerKey,
       debug: {
-        ironMaiden: ironMaidenDebug
+        ironMaiden: ironMaidenDebug,
+        torpedo: torpedoDebug
       }
     })
 
