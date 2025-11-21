@@ -24,6 +24,7 @@ function getMachineVariations(machineKey: string): string[] {
   // Add the original machine key and common case variations
   variations.add(machineKey)
   variations.add(lowerMachineKey)
+  variations.add(machineKey.toUpperCase()) // Add all uppercase version (BK2K, etc.)
   // Add capitalized version (Ghost, Venom, etc.)
   variations.add(machineKey.charAt(0).toUpperCase() + machineKey.slice(1).toLowerCase())
 
