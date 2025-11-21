@@ -21,13 +21,19 @@ function getMachineVariations(machineKey: string): string[] {
   const variations = new Set<string>()
   const lowerMachineKey = machineKey.toLowerCase()
 
-  // Add the original machine key
+  // Add the original machine key and common case variations
   variations.add(machineKey)
+  variations.add(lowerMachineKey)
+  // Add capitalized version (Ghost, Venom, etc.)
+  variations.add(machineKey.charAt(0).toUpperCase() + machineKey.slice(1).toLowerCase())
 
   // Find all aliases that map to this standardized name
   for (const [alias, standardized] of Object.entries(machineMappings)) {
     if (standardized.toLowerCase() === lowerMachineKey) {
+      // Add alias in multiple case variations
       variations.add(alias)
+      variations.add(alias.toLowerCase())
+      variations.add(alias.charAt(0).toUpperCase() + alias.slice(1).toLowerCase())
       variations.add(standardized)
     }
   }
@@ -36,10 +42,14 @@ function getMachineVariations(machineKey: string): string[] {
   const standardizedName = machineMappings[lowerMachineKey]
   if (standardizedName) {
     variations.add(standardizedName)
+    variations.add(standardizedName.toLowerCase())
+    variations.add(standardizedName.charAt(0).toUpperCase() + standardizedName.slice(1).toLowerCase())
     // Also find other aliases for this standardized name
     for (const [alias, standard] of Object.entries(machineMappings)) {
       if (standard === standardizedName) {
         variations.add(alias)
+        variations.add(alias.toLowerCase())
+        variations.add(alias.charAt(0).toUpperCase() + alias.slice(1).toLowerCase())
       }
     }
   }
