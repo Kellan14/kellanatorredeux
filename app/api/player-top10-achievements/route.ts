@@ -117,9 +117,11 @@ export async function GET(request: Request) {
           const name = game[`player_${i}_name`]
           const score = game[`player_${i}_score`]
 
-          if (key && name && score != null && isValidScore(game.machine, score)) {
+          // Include players even without player_key (subs may not have keys)
+          // Use player name as fallback key for deduplication
+          if (name && score != null && isValidScore(game.machine, score)) {
             scores.push({
-              playerKey: key,
+              playerKey: key || `name:${name}`, // Use name as fallback key for subs
               playerName: name,
               score: score,
               machine: standardizedMachine, // Use standardized machine name
