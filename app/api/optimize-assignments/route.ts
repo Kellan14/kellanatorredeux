@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { getAllMachineVariations } from '@/lib/machine-mappings'
 
 export const dynamic = 'force-dynamic';
 
@@ -26,8 +25,8 @@ export async function POST(request: Request) {
       )
     }
 
-    // Get all machine name variations for case-insensitive matching
-    const machineVariations = getAllMachineVariations(machines)
+    // Build OR filter for case-insensitive machine matching
+    const machineFilter = machines.map((m: string) => `machine.ilike.${m.toLowerCase()}`).join(',')
 
     // Query games with pagination
     let gamesData
@@ -39,7 +38,7 @@ export async function POST(request: Request) {
           .eq('venue', venue)
           .gte('season', seasonStart)
           .lte('season', seasonEnd)
-          .in('machine', machineVariations)
+          .or(machineFilter)
       )
     } catch (error) {
       console.error('Error fetching games:', error)

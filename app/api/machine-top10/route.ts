@@ -34,31 +34,17 @@ export async function GET(request: Request) {
     const isThisSeason = context.includes('this season')
     const currentSeason = 22
 
-    // Get all machine name variations to query for
+    // Get all machine name variations to query for (case-insensitive via ilike)
     const machineVariations = getMachineVariations(machineKey)
-    console.log(`Querying for machine "${machineKey}" with variations:`, machineVariations)
-
-    // Build query for top 10 scores with pagination
-    let query = supabase
-      .from('games')
-      .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, venue, season, week, match_key, round_number')
-      .in('machine', machineVariations)
-
-    // Filter by season if "this season"
-    if (isThisSeason) {
-      query = query.eq('season', currentSeason)
-    } else {
-      // All time: all historical seasons (2-22)
-      query = query.gte('season', 2).lte('season', 22)
-    }
-
-    // Filter by venue if context is venue-specific (not league-wide)
-    if (venue && !context.includes('League-wide')) {
-      query = query.eq('venue', venue)
-    }
+    const lowerMachineKey = machineKey.toLowerCase()
+    console.log(`[machine-top10] Querying for machine "${machineKey}" with variations:`, machineVariations)
+    console.log(`[machine-top10] Also using ilike for case-insensitive: ${lowerMachineKey}`)
+    console.log(`[machine-top10] Season filter: isThisSeason=${isThisSeason}, range=${isThisSeason ? currentSeason : '2-22'}`)
 
     let games
     try {
+      // Use fetchAllRecords with a query builder function for proper pagination
+      // Using ilike for case-insensitive matching
       games = await fetchAllRecords<{
         player_1_name: string | null
         player_1_score: number | null
@@ -73,7 +59,27 @@ export async function GET(request: Request) {
         week: number | null
         match_key: string | null
         round_number: number | null
-      }>(() => query)
+      }>(() => {
+        let query = supabase
+          .from('games')
+          .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, venue, season, week, match_key, round_number')
+          .ilike('machine', lowerMachineKey)
+
+        // Filter by season if "this season"
+        if (isThisSeason) {
+          query = query.eq('season', currentSeason)
+        } else {
+          // All time: all historical seasons (2-22)
+          query = query.gte('season', 2).lte('season', 22)
+        }
+
+        // Filter by venue if context is venue-specific (not league-wide)
+        if (venue && !context.includes('League-wide')) {
+          query = query.eq('venue', venue)
+        }
+
+        return query
+      })
     } catch (error) {
       console.error('Supabase error:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })

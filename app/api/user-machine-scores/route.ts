@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getMachineVariations } from '@/lib/machine-mappings'
 
 export const dynamic = 'force-dynamic';
 
@@ -22,14 +21,14 @@ export async function GET(request: Request) {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Get all machine name variations for case-insensitive matching
-    const machineVariations = getMachineVariations(machine)
+    // Use ilike for case-insensitive matching
+    const lowerMachine = machine.toLowerCase()
 
     const { data, error } = await supabase
       .from('user_machine_scores')
       .select('*')
       .eq('player_name', player)
-      .in('machine', machineVariations)
+      .ilike('machine', lowerMachine)
       .order('score', { ascending: false })
 
     if (error) {
