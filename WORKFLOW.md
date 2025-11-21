@@ -1219,6 +1219,52 @@ details.push({
 
 **Commit**: `f4e96d7`
 
+### Issue #7: Torpedo Ranking Discrepancy - Missing Seasons in Achievements API (FIXED - Nov 21, 2025)
+
+**Problem**: The achievements API (`/api/player-top10-achievements`) was showing incorrect Torpedo ranking - rank 2 instead of the correct rank 3. The `machine-top10` detail view correctly showed rank 3.
+
+**Symptom**: Clicking on the Torpedo achievement showed the correct top 10 with:
+- #1: Travis Maisch (sub): 7,434,610 (Season 11)
+- #2: Alan Wiley: 6,375,780 (Season 9)
+- #3: Kellan Kirkland: 6,127,380 (Season 11)
+
+But the achievements card showed rank 2, suggesting Alan Wiley's score was being excluded.
+
+**Investigation**:
+1. Compared both APIs to find the discrepancy
+2. `machine-top10` API: Found 47 Torpedo games correctly
+3. `player-top10-achievements` API: Found 0 Torpedo games initially
+4. Debug output showed seasons in data: 2, 3, 4, 6, 7, 8, 9, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22
+5. **Missing seasons**: 5, 10, 11, 13
+
+**Root Cause**: The achievements API was using `.gte('season', 2).lte('season', 22)` (range query) which was not returning all seasons due to data type issues in the database. The `machine-top10` API used a different query method that worked correctly.
+
+**The Fix**: Changed from range query to explicit `.in()` with a season list:
+
+```typescript
+// app/api/player-top10-achievements/route.ts:66-71
+
+// OLD (Broken):
+.gte('season', 2)
+.lte('season', 22)
+
+// NEW (Fixed):
+const allSeasons = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+// ...
+.in('season', allSeasons)
+```
+
+**Additional Fix**: Had to rename a debug variable from `allSeasons` to `seasonsFound` to avoid duplicate identifier error at line 255.
+
+**Result**:
+- Now correctly fetches data from seasons 10 and 11 (where top Torpedo scores are)
+- Torpedo shows 94 scores from 47 games
+- Kellan Kirkland correctly ranks #3 with 6,127,380
+
+**Key Lesson**: When querying for "all seasons" in Supabase/PostgreSQL, prefer `.in()` with an explicit list over `.gte().lte()` range queries, especially when season data may have type inconsistencies (some stored as strings vs integers).
+
+**Commit**: `f15ef76`
+
 ### Deployment Workflow Update
 
 **Change**: Switched to force deployment on every code change to ensure immediate updates without GitHub integration delays.
