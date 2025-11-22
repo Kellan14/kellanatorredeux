@@ -20,6 +20,7 @@ export const machineMappings: Record<string, string> = {
   "banzairun": "banzai run",
   "batman (stern)": "Batman Dark Knight",
   "batman dark knight": "Batman Dark Knight",
+  "batman dark knight (stern)": "Batman Dark Knight",
   "batman de": "Batman (Data East)",
   "batman f": "Batman Forever",
   "bdk": "Batman Dark Knight",
