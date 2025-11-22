@@ -1265,6 +1265,79 @@ const allSeasons = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 
 
 **Commit**: `f15ef76`
 
+### Issue #8: BKSoR/BlackKnight Mapping Inconsistency (FIXED - Nov 21, 2025)
+
+**Problem**: Clicking on "BlackKnight" achievement at Shorty's returned empty `topScores` array. The achievements list showed a BlackKnight achievement at Shorty's, but the detail view returned no data.
+
+**Symptom**:
+```json
+{
+  "machine": "BlackKnight",
+  "machineKey": "BlackKnight",
+  "context": "Shorty's - all time",
+  "topScores": []  // Empty!
+}
+```
+
+**Investigation**:
+1. Database query showed machine is stored as "bksor" at Shorty's (not "BlackKnight")
+2. `lib/machine-mappings.ts` had mapping `"bksor": "BlackKnight"` on line 5
+3. `public/machine_mapping.json` did NOT have this mapping
+4. The two files were out of sync
+
+**Root Cause**: The `player-top10-achievements` API imports from `lib/machine-mappings.ts` which was mapping "bksor" → "BlackKnight". When the user clicked the achievement, the `machine-top10` API searched for "blackknight" but the database only has "bksor".
+
+**The Fix**: Removed `"bksor": "BlackKnight"` mapping from `lib/machine-mappings.ts` to keep BKSoR (Black Knight: Sword of Rage 2019) separate from BlackKnight (1980).
+
+**Files Changed**:
+- `lib/machine-mappings.ts` - Removed line 5: `"bksor": "BlackKnight",`
+
+**Result**:
+- Achievements now show "Bksor" at Shorty's (not "BlackKnight")
+- Clicking on Bksor achievement returns correct top 10 scores
+- Three Black Knight machines remain properly separated:
+  - BlackKnight (1980)
+  - bk2k (Black Knight 2000)
+  - Bksor (Black Knight: Sword of Rage 2019)
+
+**Key Lesson**: Machine mapping files must stay in sync. The `lib/machine-mappings.ts` file is bundled with serverless functions and imported directly, while `public/machine_mapping.json` is loaded at runtime.
+
+**Commit**: `39c969f`
+
+### Issue #9: UI Limiting Achievements to 20 (FIXED - Nov 21, 2025)
+
+**Problem**: The achievements section on the homepage only displayed 20 achievements, even though the API was returning 82 total achievements.
+
+**Root Cause**: Line 711 in `app/page.tsx` had `.slice(0, 20)` limiting the displayed achievements:
+```typescript
+{achievements.slice(0, 20).map((achievement, index) => (
+```
+
+**The Fix**: Removed the `.slice(0, 20)` to display all achievements:
+```typescript
+{achievements.map((achievement, index) => (
+```
+
+**Result**: All 82 achievements now display instead of being limited to 20.
+
+**Commit**: `c788bdd`
+
+### Issue #10: /machines Page Top Scores Not Working (PENDING)
+
+**Problem**: Many machines on the `/machines` page are showing empty or incorrect top scores when clicked.
+
+**Status**: Investigation pending - need to examine:
+1. How the machines page fetches top scores
+2. Which API endpoint is used (`/api/machine-top-scores` or `/api/machine-top10`)
+3. Whether machine name matching is case-sensitive
+4. If machine mappings are being applied correctly
+
+**Files to Investigate**:
+- `app/machines/page.tsx` - Main machines list page
+- `app/machines/[machine]/page.tsx` - Individual machine detail page
+- `app/api/machine-top-scores/route.ts` - Top scores API
+- `app/api/machine-top10/route.ts` - Top 10 API with context support
+
 ### Deployment Workflow Update
 
 **Change**: Switched to force deployment on every code change to ensure immediate updates without GitHub integration delays.
