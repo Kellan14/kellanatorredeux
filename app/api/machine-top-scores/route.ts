@@ -46,43 +46,50 @@ export async function GET(request: Request) {
       return score <= machineLimit
     }
 
-    // Use ilike for case-insensitive matching
-    const lowerMachineName = machineName.toLowerCase()
+    // Get all machine name variations (aliases) for better matching
+    const machineVariations = getMachineVariations(machineName)
+
+    // Build OR condition for all machine variations using ilike
+    const machineOrCondition = machineVariations
+      .map(v => `machine.ilike.${v}`)
+      .join(',')
 
     // Query current season games with pagination
-    let seasonQuery = supabase
-      .from('games')
-      .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue')
-      .ilike('machine', lowerMachineName)
-      .eq('season', currentSeason)
-
-    if (venue) {
-      seasonQuery = seasonQuery.eq('venue', venue)
-    }
-
     let seasonGames
     try {
-      seasonGames = await fetchAllRecords<any>(() => seasonQuery)
+      seasonGames = await fetchAllRecords<any>(() => {
+        let query = supabase
+          .from('games')
+          .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue')
+          .or(machineOrCondition)
+          .eq('season', currentSeason)
+
+        if (venue) {
+          query = query.eq('venue', venue)
+        }
+        return query
+      })
     } catch (error) {
       console.error('Error fetching season games:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
     // Query all-time games (seasons 2 to current) with pagination
-    let allTimeQuery = supabase
-      .from('games')
-      .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue')
-      .ilike('machine', lowerMachineName)
-      .gte('season', 2)
-      .lte('season', currentSeason)
-
-    if (venue) {
-      allTimeQuery = allTimeQuery.eq('venue', venue)
-    }
-
     let allTimeGames
     try {
-      allTimeGames = await fetchAllRecords<any>(() => allTimeQuery)
+      allTimeGames = await fetchAllRecords<any>(() => {
+        let query = supabase
+          .from('games')
+          .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue')
+          .or(machineOrCondition)
+          .gte('season', 2)
+          .lte('season', currentSeason)
+
+        if (venue) {
+          query = query.eq('venue', venue)
+        }
+        return query
+      })
     } catch (error) {
       console.error('Error fetching all-time games:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
