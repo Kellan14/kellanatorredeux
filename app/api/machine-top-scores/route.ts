@@ -48,25 +48,17 @@ export async function GET(request: Request) {
 
     // Get all machine name variations (aliases) for better matching
     const machineVariations = getMachineVariations(machineName)
+    console.log(`[machine-top-scores] Searching for "${machineName}" with variations:`, machineVariations)
 
-    // Build OR condition for all machine variations using ilike
-    // Values with spaces or special characters need to be double-quoted for Supabase
-    const machineOrCondition = machineVariations
-      .map(v => {
-        // Quote values that contain spaces, commas, or other special characters
-        const needsQuoting = /[\s,()]/.test(v)
-        return needsQuoting ? `machine.ilike."${v}"` : `machine.ilike.${v}`
-      })
-      .join(',')
-
-    // Query current season games with pagination
+    // Query current season games with pagination using .in() for exact matching
+    // getMachineVariations returns all case variations (PULP, pulp, Pulp, etc.)
     let seasonGames
     try {
       seasonGames = await fetchAllRecords<any>(() => {
         let query = supabase
           .from('games')
           .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue')
-          .or(machineOrCondition)
+          .in('machine', machineVariations)
           .eq('season', currentSeason)
 
         if (venue) {
@@ -86,7 +78,7 @@ export async function GET(request: Request) {
         let query = supabase
           .from('games')
           .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue')
-          .or(machineOrCondition)
+          .in('machine', machineVariations)
           .gte('season', 2)
           .lte('season', currentSeason)
 

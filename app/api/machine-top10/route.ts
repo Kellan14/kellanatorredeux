@@ -44,7 +44,7 @@ export async function GET(request: Request) {
     let games
     try {
       // Use fetchAllRecords with a query builder function for proper pagination
-      // Using ilike for case-insensitive matching
+      // Query for ALL machine name variations (both short forms like "PULP" and long forms like "Pulp Fiction")
       games = await fetchAllRecords<{
         player_1_name: string | null
         player_1_score: number | null
@@ -60,10 +60,15 @@ export async function GET(request: Request) {
         match_key: string | null
         round_number: number | null
       }>(() => {
+        // Use .in() to match any of the machine name variations (case-sensitive)
+        // This handles cases where DB has "PULP" in old seasons and "Pulp Fiction" in new seasons
+        // getMachineVariations returns all case variations so .in() works correctly
+        console.log(`[machine-top10] Searching for variations:`, machineVariations)
+
         let query = supabase
           .from('games')
           .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, venue, season, week, match_key, round_number')
-          .ilike('machine', lowerMachineKey)
+          .in('machine', machineVariations)
 
         // Filter by season if "this season"
         if (isThisSeason) {

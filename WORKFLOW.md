@@ -1265,6 +1265,88 @@ const allSeasons = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 
 
 **Commit**: `f15ef76`
 
+## Machine Mapping Rules
+
+**CRITICAL: Never delete machine mappings unless explicitly instructed by user.**
+
+The `lib/machine-mappings.ts` file contains the single source of truth for machine name aliases. The long-form names (values) are EXACTLY what the machine APIs search for - DO NOT MODIFY them.
+
+Rules:
+1. **Never delete mappings** - Only add or update values when instructed
+2. **Long-form names are sacred** - The values must match EXACTLY what's in STDmapping.xlsx
+3. **Keep all existing keys** - When updating, preserve all existing aliases
+4. **Case sensitivity matters** - "Batman Forever (SEGA)" is different from "Batman Forever"
+
+---
+
+## Machine Mapping Standardization Audit (Nov 22, 2025) - IN PROGRESS
+
+### Problem Discovered
+Machine mappings have inconsistent chained mappings (e.g., "pulp" -> "PULP" -> "Pulp Fiction") which causes `getMachineVariations()` to fail since it only follows ONE level.
+
+### Audit Steps
+- [x] **Step 1**: Audit all APIs to identify which machine name format they use
+- [x] **Step 2**: Decide on canonical format (LONG FORM like "Pulp Fiction")
+- [x] **Step 3**: Update all mappings to point directly to canonical format (no chaining)
+- [x] **Step 4**: Update APIs to use consistent format
+
+### Current Status: COMPLETED
+
+**API Fix Applied:**
+- `/api/machine-top10/route.ts`: Changed from `.ilike('machine', lowerMachineKey)` (single value) to `.or(machineVariations.map(...))` (all variations)
+- This ensures queries match BOTH old data ("PULP") and new data ("Pulp Fiction")
+
+**Mappings fixed (no more chaining):**
+- "pulp" -> "Pulp Fiction" (was "PULP")
+- "foo fighters" -> "Foo Fighters" (was "FOO")
+- "guardians of the galaxy" -> "Guardians of the Galaxy" (was "guardians")
+- "james bond" -> "James Bond 007" (was "007")
+- "jurassic" -> "Stern Jurassic Park" (was "sternpark")
+- "mandolorian" -> "Mandalorian" (was lowercase)
+- Plus many lowercase values fixed to Title Case
+
+### Previous: Step 1 - API Audit
+**APIs to check:**
+- [ ] `/api/machine-stats`
+- [ ] `/api/machine-top10`
+- [ ] `/api/machine-top-scores`
+- [ ] `/api/player-machine-stats`
+- [ ] `/api/player-top10-achievements`
+- [ ] `/api/cell-details`
+- [ ] `/api/processed-scores`
+- [ ] `/api/machines`
+- [ ] Any other APIs using machine names
+
+### Findings
+
+| API | Machine Name Handling | Uses Mappings? |
+|-----|----------------------|----------------|
+| `/api/machine-stats` | `game.machine.toLowerCase()` - raw from DB | NO |
+| `/api/machine-top10` | `.ilike('machine', lowerMachineKey)` + `getMachineVariations()` | YES (1 level) |
+| `/api/player-top10-achievements` | `standardizeMachineName()` follows mapping 1 level | YES (1 level) |
+| `/api/cell-details` | `.ilike('machine', machine)` - raw query | NO |
+| `/api/processed-scores` | `game.machine.toLowerCase()` - raw from DB | NO |
+
+**Key Problems Identified:**
+1. **Database stores inconsistent names**: "PULP" in old seasons, "Pulp Fiction" in new seasons
+2. **Chained mappings break lookups**: "pulp" -> "PULP" -> "Pulp Fiction" only follows 1 level
+3. **APIs inconsistent**: Some use raw DB values, some use mappings
+4. **`getMachineVariations()` only follows 1 level of mapping**
+
+### Decision: Use LONG FORM as Canonical
+
+**Rationale:**
+- STDmapping.xlsx uses long form as the "real" name
+- Long form is human-readable ("Pulp Fiction" vs "PULP")
+- Long form matches what users expect to see
+
+**Implementation Plan:**
+1. Update ALL mappings to point DIRECTLY to long form (no chaining)
+2. Update APIs to normalize machine names using mappings when displaying
+3. Ensure `getMachineVariations()` returns BOTH short and long forms for DB queries
+
+---
+
 ### Issue #8: BKSoR/BlackKnight Mapping Inconsistency (FIXED - Nov 21, 2025)
 
 **Problem**: Clicking on "BlackKnight" achievement at Shorty's returned empty `topScores` array. The achievements list showed a BlackKnight achievement at Shorty's, but the detail view returned no data.
