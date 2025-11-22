@@ -26,7 +26,12 @@ export async function POST(request: Request) {
     }
 
     // Build OR filter for case-insensitive machine matching
-    const machineFilter = machines.map((m: string) => `machine.ilike.${m.toLowerCase()}`).join(',')
+    // Values with spaces or special characters need to be double-quoted for Supabase
+    const machineFilter = machines.map((m: string) => {
+      const lower = m.toLowerCase()
+      const needsQuoting = /[\s,()]/.test(lower)
+      return needsQuoting ? `machine.ilike."${lower}"` : `machine.ilike.${lower}`
+    }).join(',')
 
     // Query games with pagination
     let gamesData
