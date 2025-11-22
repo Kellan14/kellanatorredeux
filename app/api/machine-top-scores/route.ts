@@ -50,8 +50,13 @@ export async function GET(request: Request) {
     const machineVariations = getMachineVariations(machineName)
 
     // Build OR condition for all machine variations using ilike
+    // Values with spaces or special characters need to be double-quoted for Supabase
     const machineOrCondition = machineVariations
-      .map(v => `machine.ilike.${v}`)
+      .map(v => {
+        // Quote values that contain spaces, commas, or other special characters
+        const needsQuoting = /[\s,()]/.test(v)
+        return needsQuoting ? `machine.ilike."${v}"` : `machine.ilike.${v}`
+      })
       .join(',')
 
     // Query current season games with pagination
