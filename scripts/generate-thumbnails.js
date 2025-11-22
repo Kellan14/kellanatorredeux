@@ -27,10 +27,17 @@ async function generateThumbnails() {
       const sourcePath = path.join(sourceDir, file);
       const thumbPath = path.join(thumbDir, file);
 
-      // Skip if thumbnail already exists
+      // Check if thumbnail exists and is up to date
       if (fs.existsSync(thumbPath)) {
-        processed++;
-        continue;
+        const sourceStats = fs.statSync(sourcePath);
+        const thumbStats = fs.statSync(thumbPath);
+
+        // Skip if thumbnail is newer than source (already up to date)
+        if (thumbStats.mtimeMs >= sourceStats.mtimeMs) {
+          processed++;
+          continue;
+        }
+        console.log(`Regenerating outdated thumbnail: ${file}`);
       }
 
       // Generate thumbnail at 200px width (maintains aspect ratio)
