@@ -32,8 +32,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-# data archive - too many files, causes build issues
-mnp-data-archive
 
 # typescript
 *.tsbuildinfo
