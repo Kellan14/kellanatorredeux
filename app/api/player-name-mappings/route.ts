@@ -34,6 +34,7 @@ export async function POST(request: Request) {
       )
     }
 
+    // @ts-ignore - Supabase typing issue with new table
     const { data, error } = await supabase
       .from('player_name_mappings')
       .upsert({ alias, canonical_name }, { onConflict: 'alias' })
