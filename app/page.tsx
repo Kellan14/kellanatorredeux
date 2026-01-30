@@ -145,7 +145,7 @@ export default function HomePage() {
           pointsWon: statsData.pointsWon || 0,
           pointsPerMatch: statsData.pointsPerMatch || 0,
           pops: statsData.pops || 0,
-          currentSeason: statsData.currentSeason || 22
+          currentSeason: statsData.currentSeason || 23
         })
       } else {
         console.log(`Player "${playerName}" not found in recent matches`)
@@ -174,10 +174,10 @@ export default function HomePage() {
           setMatchLabel('Next Match')
         }
 
-        // Format date if available
-        // Week info can be used to create a rough date estimate
+        // Format date/week info
         if (data.week) {
-          setMatchDate(`Week ${data.week}`)
+          const seasonLabel = data.season ? `Season ${data.season} • ` : ''
+          setMatchDate(`${seasonLabel}Week ${data.week}`)
         }
       } else {
         setOpponent('Schedule unavailable')
@@ -193,12 +193,15 @@ export default function HomePage() {
   const fetchOpponentPlayers = async () => {
     try {
       // Fetch roster/players for the opponent team
+      // Use previous season for historical advantages (current season likely has no games yet)
+      const currentSeason = playerStats.currentSeason || 23
+      const historicalSeason = currentSeason - 1
       const response = await fetch(
         `/api/machine-advantages?` +
         `venue=${encodeURIComponent(venue)}` +
         `&opponent=${encodeURIComponent(opponent)}` +
         `&seasonStart=20` +
-        `&seasonEnd=22` +
+        `&seasonEnd=${historicalSeason}` +
         `&teamVenueSpecific=true` +
         `&twcVenueSpecific=false`
       )
@@ -210,7 +213,7 @@ export default function HomePage() {
 
         // We need to fetch the actual roster - let me use a different approach
         // For now, we'll get players from match data
-        const playersResponse = await fetch(`/api/team-roster?team=${encodeURIComponent(opponent)}&season=22&showSubs=${showSubs}`)
+        const playersResponse = await fetch(`/api/team-roster?team=${encodeURIComponent(opponent)}&season=${currentSeason}&showSubs=${showSubs}`)
 
         if (playersResponse.ok) {
           const playersData = await playersResponse.json()
@@ -231,11 +234,13 @@ export default function HomePage() {
   const fetchPlayerPerformance = async () => {
     console.log('Fetching player performance for:', playerName, 'at venue:', venue, 'venue-specific:', ownPerformanceVenueSpecific)
     try {
+      // Use previous season for historical data (current season likely has no games yet)
+      const historicalSeason = (playerStats.currentSeason || 23) - 1
       const url = `/api/player-analysis?` +
         `player=${encodeURIComponent(playerName)}` +
         `&venue=${encodeURIComponent(venue)}` +
         `&seasonStart=20` +
-        `&seasonEnd=22` +
+        `&seasonEnd=${historicalSeason}` +
         `&allVenues=${!ownPerformanceVenueSpecific}`
 
       console.log('Performance API URL:', url)
@@ -306,13 +311,15 @@ export default function HomePage() {
     setPlayerDialogOpen(true)
 
     // Fetch machine play counts for this player
+    // Use previous season for historical data (current season likely has no games yet)
     try {
+      const historicalSeason = (playerStats.currentSeason || 23) - 1
       const response = await fetch(
         `/api/player-machine-counts?` +
         `player=${encodeURIComponent(playerName)}` +
         `&venue=${encodeURIComponent(venue)}` +
         `&seasonStart=20` +
-        `&seasonEnd=22`
+        `&seasonEnd=${historicalSeason}`
       )
 
       if (response.ok) {
@@ -338,14 +345,16 @@ export default function HomePage() {
     const venueFilter = useVenueSpecific !== undefined ? useVenueSpecific : playerVenueSpecific
 
     // Fetch stats for this player on this machine
+    // Use season 22 for historical data since season 23 has no games yet
     try {
+      const currentSeason = 22
       // Add timestamp to bust cache
       const url = `/api/player-machine-stats?` +
         `player=${encodeURIComponent(selectedPlayer)}` +
         `&machine=${encodeURIComponent(machine)}` +
         `&venue=${venueFilter ? encodeURIComponent(venue) : ''}` +
         `&seasonStart=20` +
-        `&seasonEnd=22` +
+        `&seasonEnd=${currentSeason}` +
         `&_t=${Date.now()}`
 
       console.log('Fetching player machine stats:', url)
@@ -711,25 +720,37 @@ export default function HomePage() {
                   {achievements.map((achievement, index) => (
                     <div
                       key={index}
-                      className="flex items-start justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                      className="relative overflow-hidden border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
                       onClick={() => handleAchievementClick(achievement)}
                     >
-                      <div className="flex-1">
-                        <div className="font-semibold">{achievement.machine}</div>
-                        <div className="text-sm text-muted-foreground mt-1">
-                          {(achievement.score || 0).toLocaleString()} points • #{achievement.rank} {achievement.context}
+                      {/* Background image on right side */}
+                      <div
+                        className="absolute right-0 top-0 bottom-0 w-1/3 opacity-30"
+                        style={{
+                          backgroundImage: `url(${getMachineImagePath(achievement.machine, achievement.machine)})`,
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center',
+                          backgroundRepeat: 'no-repeat'
+                        }}
+                      />
+                      <div className="relative z-10 flex items-start justify-between p-3">
+                        <div className="flex-1">
+                          <div className="font-semibold">{achievement.machine}</div>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            {(achievement.score || 0).toLocaleString()} points • #{achievement.rank} {achievement.context}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-                        <div className={`text-lg font-bold ${
-                          achievement.category === 'league-all' ? 'text-neon-yellow' :
-                          achievement.category === 'venue-all' ? 'text-gray-400' :
-                          achievement.category === 'league-season' ? 'text-orange-600' :
-                          'text-neon-blue'
-                        }`}>
-                          #{achievement.rank}
+                        <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+                          <div className={`text-lg font-bold ${
+                            achievement.category === 'league-all' ? 'text-neon-yellow' :
+                            achievement.category === 'venue-all' ? 'text-gray-400' :
+                            achievement.category === 'league-season' ? 'text-orange-600' :
+                            'text-neon-blue'
+                          }`}>
+                            #{achievement.rank}
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
                         </div>
-                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
                       </div>
                     </div>
                   ))}

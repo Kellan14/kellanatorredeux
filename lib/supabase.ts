@@ -131,7 +131,7 @@ export type Database = {
       games: {
         Row: {
           id: number
-          match_id: number
+          match_id: number | null
           season: number
           week: number
           venue: string | null
@@ -143,25 +143,35 @@ export type Database = {
           player_1_name: string | null
           player_1_score: number | null
           player_1_points: number | null
+          player_1_team: string | null
+          player_1_is_pick: boolean | null
           player_2_key: string | null
           player_2_name: string | null
           player_2_score: number | null
           player_2_points: number | null
+          player_2_team: string | null
+          player_2_is_pick: boolean | null
           player_3_key: string | null
           player_3_name: string | null
           player_3_score: number | null
           player_3_points: number | null
+          player_3_team: string | null
+          player_3_is_pick: boolean | null
           player_4_key: string | null
           player_4_name: string | null
           player_4_score: number | null
           player_4_points: number | null
+          player_4_team: string | null
+          player_4_is_pick: boolean | null
+          home_team: string | null
+          away_team: string | null
           away_points: number | null
           home_points: number | null
           created_at: string
         }
         Insert: {
           id?: number
-          match_id: number
+          match_id?: number | null
           season: number
           week: number
           venue?: string | null
@@ -173,25 +183,35 @@ export type Database = {
           player_1_name?: string | null
           player_1_score?: number | null
           player_1_points?: number | null
+          player_1_team?: string | null
+          player_1_is_pick?: boolean | null
           player_2_key?: string | null
           player_2_name?: string | null
           player_2_score?: number | null
           player_2_points?: number | null
+          player_2_team?: string | null
+          player_2_is_pick?: boolean | null
           player_3_key?: string | null
           player_3_name?: string | null
           player_3_score?: number | null
           player_3_points?: number | null
+          player_3_team?: string | null
+          player_3_is_pick?: boolean | null
           player_4_key?: string | null
           player_4_name?: string | null
           player_4_score?: number | null
           player_4_points?: number | null
+          player_4_team?: string | null
+          player_4_is_pick?: boolean | null
+          home_team?: string | null
+          away_team?: string | null
           away_points?: number | null
           home_points?: number | null
           created_at?: string
         }
         Update: {
           id?: number
-          match_id?: number
+          match_id?: number | null
           season?: number
           week?: number
           venue?: string | null
@@ -203,18 +223,28 @@ export type Database = {
           player_1_name?: string | null
           player_1_score?: number | null
           player_1_points?: number | null
+          player_1_team?: string | null
+          player_1_is_pick?: boolean | null
           player_2_key?: string | null
           player_2_name?: string | null
           player_2_score?: number | null
           player_2_points?: number | null
+          player_2_team?: string | null
+          player_2_is_pick?: boolean | null
           player_3_key?: string | null
           player_3_name?: string | null
           player_3_score?: number | null
           player_3_points?: number | null
+          player_3_team?: string | null
+          player_3_is_pick?: boolean | null
           player_4_key?: string | null
           player_4_name?: string | null
           player_4_score?: number | null
           player_4_points?: number | null
+          player_4_team?: string | null
+          player_4_is_pick?: boolean | null
+          home_team?: string | null
+          away_team?: string | null
           away_points?: number | null
           home_points?: number | null
           created_at?: string
@@ -223,13 +253,13 @@ export type Database = {
       player_match_participation: {
         Row: {
           id: number
-          match_id: number
+          match_id: number | null
+          match_key: string
           player_key: string
           player_name: string
           season: number
           week: number
           team: string
-          match_key: string
           ipr_at_match: number | null
           num_played: number
           is_sub: boolean
@@ -237,13 +267,13 @@ export type Database = {
         }
         Insert: {
           id?: number
-          match_id: number
+          match_id?: number | null
+          match_key: string
           player_key: string
           player_name: string
           season: number
           week: number
           team: string
-          match_key: string
           ipr_at_match?: number | null
           num_played?: number
           is_sub?: boolean
@@ -251,13 +281,13 @@ export type Database = {
         }
         Update: {
           id?: number
-          match_id?: number
+          match_id?: number | null
+          match_key?: string
           player_key?: string
           player_name?: string
           season?: number
           week?: number
           team?: string
-          match_key?: string
           ipr_at_match?: number | null
           num_played?: number
           is_sub?: boolean
@@ -351,6 +381,104 @@ export type Database = {
           machine_name?: string | null
           venue_name?: string | null
           note?: string
+          created_at?: string
+        }
+      }
+      teams: {
+        Row: {
+          team_key: string
+          team_name: string
+          active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          team_key: string
+          team_name: string
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          team_key?: string
+          team_name?: string
+          active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      user_machine_scores: {
+        Row: {
+          id: number
+          user_id: string
+          player_name: string
+          machine: string
+          score: number
+          venue: string | null
+          played_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          user_id: string
+          player_name: string
+          machine: string
+          score: number
+          venue?: string | null
+          played_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          user_id?: string
+          player_name?: string
+          machine?: string
+          score?: number
+          venue?: string | null
+          played_at?: string
+          created_at?: string
+        }
+      }
+      player_name_mappings: {
+        Row: {
+          id: number
+          alias: string
+          canonical_name: string
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          alias: string
+          canonical_name: string
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          alias?: string
+          canonical_name?: string
+          created_at?: string
+        }
+      }
+      player_name_update_log: {
+        Row: {
+          id: number
+          old_name: string
+          new_name: string
+          records_updated: number
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          old_name: string
+          new_name: string
+          records_updated: number
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          old_name?: string
+          new_name?: string
+          records_updated?: number
           created_at?: string
         }
       }

@@ -1,57 +1,83 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { standardizeVenueName } from '@/lib/venue-mappings'
 
 export const dynamic = 'force-dynamic';
-
-const CURRENT_SEASON = 22
 
 // Cache for 1 hour since latest match info updates weekly
 export const revalidate = 3600
 
 export async function GET() {
   try {
-    // Query next/latest TWC match from player_match_participation (includes upcoming matches)
-    const { data: participationData, error: participationError } = await supabase
-      .from('player_match_participation')
-      .select('match_key, week, team')
-      .eq('season', CURRENT_SEASON)
-      .eq('team', 'TWC')
-      .order('week', { ascending: false })
-      .limit(1)
-      .single<{
-        match_key: string
-        week: number
-        team: string
-      }>()
+    // Strategy:
+    // 1. Look for the earliest "pregame" TWC match (upcoming, not yet started)
+    // 2. If none, look for the most recent "playing" match (in progress)
+    // 3. If none, fall back to the most recent "complete" match
+    // Note: Old seasons may have matches stuck in "playing" state, so we
+    // prioritize "pregame" (truly upcoming) over "playing" (may be stale).
 
-    if (participationError || !participationData) {
-      return NextResponse.json({
-        venue: 'Georgetown Pizza and Arcade',
-        opponent: null,
-        matchKey: null,
-        week: null,
-        isUpcoming: false
-      })
+    let matchData: {
+      match_key: string
+      season: number
+      week: number
+      home_team: string
+      away_team: string
+      venue_name: string | null
+      state: string
+    } | null = null
+
+    // Step 1: Find the earliest pregame TWC match (next upcoming)
+    const { data: pregameMatches } = await supabase
+      .from('matches')
+      .select('match_key, season, week, home_team, away_team, venue_name, state')
+      .or('home_team.eq.TWC,away_team.eq.TWC')
+      .eq('state', 'pregame')
+      .order('season', { ascending: true })
+      .order('week', { ascending: true })
+      .limit(1)
+
+    if (pregameMatches && pregameMatches.length > 0) {
+      matchData = pregameMatches[0] as any
     }
 
-    // Get match details from matches table for venue and opponent
-    const { data: matchData } = await supabase
-      .from('matches')
-      .select('home_team, away_team, venue_name, state')
-      .eq('match_key', participationData.match_key)
-      .single<{
-        home_team: string
-        away_team: string
-        venue_name: string | null
-        state: string
-      }>()
+    // Step 2: If no pregame, find the most recent playing match
+    if (!matchData) {
+      const { data: playingMatches } = await supabase
+        .from('matches')
+        .select('match_key, season, week, home_team, away_team, venue_name, state')
+        .or('home_team.eq.TWC,away_team.eq.TWC')
+        .eq('state', 'playing')
+        .order('season', { ascending: false })
+        .order('week', { ascending: false })
+        .limit(1)
+
+      if (playingMatches && playingMatches.length > 0) {
+        matchData = playingMatches[0] as any
+      }
+    }
+
+    // Step 3: Fall back to most recent completed match
+    if (!matchData) {
+      const { data: recentMatches } = await supabase
+        .from('matches')
+        .select('match_key, season, week, home_team, away_team, venue_name, state')
+        .or('home_team.eq.TWC,away_team.eq.TWC')
+        .eq('state', 'complete')
+        .order('season', { ascending: false })
+        .order('week', { ascending: false })
+        .limit(1)
+
+      if (recentMatches && recentMatches.length > 0) {
+        matchData = recentMatches[0] as any
+      }
+    }
 
     if (!matchData) {
       return NextResponse.json({
         venue: 'Georgetown Pizza and Arcade',
         opponent: null,
-        matchKey: participationData.match_key,
-        week: participationData.week,
+        matchKey: null,
+        week: null,
         isUpcoming: false
       })
     }
@@ -73,20 +99,14 @@ export async function GET() {
       }
     }
 
-    // Check if match has been played (exists in games table)
-    const { data: gamesData } = await supabase
-      .from('games')
-      .select('id')
-      .eq('match_key', participationData.match_key)
-      .limit(1)
-
-    const isUpcoming = !gamesData || gamesData.length === 0
+    const isUpcoming = matchData.state !== 'complete'
 
     return NextResponse.json({
-      venue: matchData.venue_name || 'Georgetown Pizza and Arcade',
+      venue: standardizeVenueName(matchData.venue_name) || 'Georgetown Pizza and Arcade',
       opponent: opponentName,
-      matchKey: participationData.match_key,
-      week: participationData.week,
+      matchKey: matchData.match_key,
+      week: matchData.week,
+      season: matchData.season,
       state: matchData.state,
       isUpcoming
     })
