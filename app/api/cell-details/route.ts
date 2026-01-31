@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, fetchAllRecords } from '@/lib/supabase';
+import { getVenueVariations } from '@/lib/venue-mappings';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,20 +43,31 @@ export async function GET(request: NextRequest) {
     const isTWCColumn = column.toLowerCase().includes('twc');
     const targetTeam = isTWCColumn ? twcTeam : team;
 
-    console.log('[cell-details] Target team:', targetTeam, 'isTWCColumn:', isTWCColumn);
+    // Respect venue-specific flags: if the relevant flag is false, query all venues
+    const teamVenueSpecific = searchParams.get('teamVenueSpecific') === 'true';
+    const twcVenueSpecific = searchParams.get('twcVenueSpecific') === 'true';
+    const useVenueFilter = isTWCColumn ? twcVenueSpecific : teamVenueSpecific;
 
-    // Query games from Supabase for the specified machine, venue, and seasons
+    console.log('[cell-details] Target team:', targetTeam, 'isTWCColumn:', isTWCColumn, 'venueFiltered:', useVenueFilter);
+
+    // Query games from Supabase for the specified machine and seasons
+    // Only filter by venue if the venue-specific flag is set for this team
     let gamesData
     try {
-      gamesData = await fetchAllRecords(
-        () => supabase
-          .from('games')
-          .select('*')
-          .gte('season', seasonStart)
-          .lte('season', seasonEnd)
-          .eq('venue', venue)
-          .ilike('machine', machine)
-      )
+      const venueVariations = getVenueVariations(venue)
+      let query = supabase
+        .from('games')
+        .select('*')
+        .gte('season', seasonStart)
+        .lte('season', seasonEnd)
+        .ilike('machine', machine)
+        .order('id', { ascending: true }) // Required for consistent pagination
+
+      if (useVenueFilter) {
+        query = query.in('venue', venueVariations)
+      }
+
+      gamesData = await fetchAllRecords(() => query)
     } catch (error) {
       console.error('[cell-details] Database error:', error)
       return NextResponse.json(
