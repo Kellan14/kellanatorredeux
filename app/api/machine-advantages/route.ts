@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists'
+import { getVenueVariations } from '@/lib/venue-mappings'
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +15,8 @@ export async function GET(request: Request) {
     const seasonEnd = parseInt(searchParams.get('seasonEnd') || '22')
     const teamVenueSpecific = searchParams.get('teamVenueSpecific') === 'true'
     const twcVenueSpecific = searchParams.get('twcVenueSpecific') === 'true'
+    const venueWeightParam = parseFloat(searchParams.get('venueWeight') || '0.7')
+    const vw = Math.max(0, Math.min(1, venueWeightParam))
 
     if (!venue || !opponent) {
       return NextResponse.json(
@@ -24,14 +27,16 @@ export async function GET(request: Request) {
 
     // Get machines at venue from latest season
     const latestSeason = seasonEnd
+    const venueVariations = getVenueVariations(venue)
     let venueMachinesData
     try {
       venueMachinesData = await fetchAllRecords<{ machine: string }>(
         () => supabase
           .from('games')
           .select('machine')
-          .eq('venue', venue)
+          .in('venue', venueVariations)
           .eq('season', latestSeason)
+          .order('id', { ascending: true })
       )
     } catch (error) {
       console.error('Error fetching venue machines:', error)
@@ -41,7 +46,7 @@ export async function GET(request: Request) {
     let machinesAtVenue = Array.from(new Set(venueMachinesData?.map(g => g.machine) || []))
     machinesAtVenue = applyVenueMachineListOverrides(venue, machinesAtVenue)
 
-    // Query all games for both teams
+    // Query all games
     let gamesData
     try {
       gamesData = await fetchAllRecords<any>(
@@ -50,6 +55,7 @@ export async function GET(request: Request) {
           .select('*')
           .gte('season', seasonStart)
           .lte('season', seasonEnd)
+          .order('id', { ascending: true })
       )
     } catch (error) {
       console.error('Error fetching games:', error)
@@ -82,52 +88,88 @@ export async function GET(request: Request) {
     const twcTeamKey = teamKeyMap[teamName]
     const opponentTeamKey = teamKeyMap[opponent]
 
-    // Calculate machine advantages
-    const machineStats = new Map<string, { twcTotal: number; twcCount: number; oppTotal: number; oppCount: number }>()
-
+    // Separate venue-specific and non-venue games
+    const venueGameSet = new Set<number>()
+    const venueGames: any[] = []
+    const nonVenueGames: any[] = []
     for (const game of gamesData) {
-      // Only process machines at venue
       if (!machinesAtVenue.includes(game.machine)) continue
-
-      // Apply venue-specific filtering
-      const isTWCVenueMatch = game.venue === venue
-      const skipTWC = twcVenueSpecific && !isTWCVenueMatch
-      const skipOpp = teamVenueSpecific && !isTWCVenueMatch
-
-      if (!machineStats.has(game.machine)) {
-        machineStats.set(game.machine, { twcTotal: 0, twcCount: 0, oppTotal: 0, oppCount: 0 })
-      }
-
-      const stats = machineStats.get(game.machine)!
-
-      for (let i = 1; i <= 4; i++) {
-        const teamKey = game[`player_${i}_team`]
-        const score = game[`player_${i}_score`]
-        const teamDisplayName = teamNameMap[teamKey]
-
-        if (!score || !teamDisplayName) continue
-
-        if (teamDisplayName === teamName && !skipTWC) {
-          stats.twcTotal += score
-          stats.twcCount++
-        } else if (teamDisplayName === opponent && !skipOpp) {
-          stats.oppTotal += score
-          stats.oppCount++
-        }
+      const isVenue = venueVariations.includes(game.venue)
+      if (isVenue) {
+        venueGameSet.add(game.id)
+        venueGames.push(game)
+      } else {
+        nonVenueGames.push(game)
       }
     }
 
-    // Calculate advantages
-    const advantages = Array.from(machineStats.entries()).map(([machine, stats]) => {
-      const twcAvg = stats.twcCount > 0 ? stats.twcTotal / stats.twcCount : 0
-      const oppAvg = stats.oppCount > 0 ? stats.oppTotal / stats.oppCount : 0
+    // Build team stats per machine for venue and non-venue separately
+    type TeamMachineStats = Map<string, { twcTotal: number; twcCount: number; oppTotal: number; oppCount: number }>
+
+    const buildTeamStats = (games: any[]): TeamMachineStats => {
+      const stats: TeamMachineStats = new Map()
+      for (const game of games) {
+        if (!stats.has(game.machine)) {
+          stats.set(game.machine, { twcTotal: 0, twcCount: 0, oppTotal: 0, oppCount: 0 })
+        }
+        const ms = stats.get(game.machine)!
+        for (let i = 1; i <= 4; i++) {
+          const teamKey = game[`player_${i}_team`]
+          const score = game[`player_${i}_score`]
+          const teamDisplayName = teamNameMap[teamKey]
+          if (!score || !teamDisplayName) continue
+          if (teamDisplayName === teamName) { ms.twcTotal += score; ms.twcCount++ }
+          else if (teamDisplayName === opponent) { ms.oppTotal += score; ms.oppCount++ }
+        }
+      }
+      return stats
+    }
+
+    const venueStats = buildTeamStats(venueGames)
+    const nonVenueStats = buildTeamStats(nonVenueGames)
+
+    // Blend function for a team's average on a machine
+    const blendAvg = (
+      venueTotal: number, venueCount: number,
+      nonVenueTotal: number, nonVenueCount: number,
+      isVenueSpecific: boolean, weight: number
+    ): { avg: number; count: number; source: string } => {
+      const vAvg = venueCount > 0 ? venueTotal / venueCount : null
+      const nvAvg = nonVenueCount > 0 ? nonVenueTotal / nonVenueCount : null
+
+      // If venue-specific is checked, only use venue data
+      if (isVenueSpecific) {
+        return { avg: vAvg ?? 0, count: venueCount, source: vAvg !== null ? 'venue' : 'none' }
+      }
+
+      // Otherwise blend
+      if (vAvg !== null && nvAvg !== null) {
+        return { avg: vAvg * weight + nvAvg * (1 - weight), count: venueCount + nonVenueCount, source: 'blended' }
+      } else if (vAvg !== null) {
+        return { avg: vAvg, count: venueCount, source: 'venue' }
+      } else if (nvAvg !== null) {
+        return { avg: nvAvg, count: nonVenueCount, source: 'all' }
+      }
+      return { avg: 0, count: 0, source: 'none' }
+    }
+
+    // Calculate advantages using blended scores
+    const advantages = machinesAtVenue.map((machine) => {
+      const vs = venueStats.get(machine) || { twcTotal: 0, twcCount: 0, oppTotal: 0, oppCount: 0 }
+      const nvs = nonVenueStats.get(machine) || { twcTotal: 0, twcCount: 0, oppTotal: 0, oppCount: 0 }
+
+      const twc = blendAvg(vs.twcTotal, vs.twcCount, nvs.twcTotal, nvs.twcCount, twcVenueSpecific, vw)
+      const opp = blendAvg(vs.oppTotal, vs.oppCount, nvs.oppTotal, nvs.oppCount, teamVenueSpecific, vw)
+
+      const twcAvg = twc.avg
+      const oppAvg = opp.avg
       const advantage = twcAvg - oppAvg
       const advantagePct = oppAvg > 0 ? (advantage / oppAvg) * 100 : 0
 
-      // Get venue average for % of venue calculations
-      const allGamesOnMachine = gamesData.filter((g: any) => g.machine === machine && g.venue === venue)
-      const venueScores = []
-      for (const game of allGamesOnMachine) {
+      // Get venue average baseline for % of venue calculations
+      const venueScores: number[] = []
+      for (const game of venueGames) {
+        if (game.machine !== machine) continue
         for (let i = 1; i <= 4; i++) {
           const score = game[`player_${i}_score`]
           if (score) venueScores.push(score)
@@ -135,12 +177,26 @@ export async function GET(request: Request) {
       }
       const venueAvg = venueScores.length > 0 ? venueScores.reduce((a, b) => a + b, 0) / venueScores.length : 0
 
-      const twcPctOfVenue = venueAvg > 0 ? (twcAvg / venueAvg) * 100 : 0
-      const opponentPctOfVenue = venueAvg > 0 ? (oppAvg / venueAvg) * 100 : 0
-      const statisticalAdvantage = twcPctOfVenue - opponentPctOfVenue
-      const experienceAdvantage = stats.twcCount - stats.oppCount
+      // % of venue: if no venue baseline, use raw averages comparison instead
+      let twcPctOfVenue: number
+      let opponentPctOfVenue: number
+      let statisticalAdvantage: number
 
-      // Determine advantage level
+      if (venueAvg > 0) {
+        twcPctOfVenue = (twcAvg / venueAvg) * 100
+        opponentPctOfVenue = (oppAvg / venueAvg) * 100
+        statisticalAdvantage = twcPctOfVenue - opponentPctOfVenue
+      } else {
+        // No venue baseline — compare raw averages directly as a percentage difference
+        // Normalize around 100% so the composite score formula still works
+        const maxAvg = Math.max(twcAvg, oppAvg, 1)
+        twcPctOfVenue = (twcAvg / maxAvg) * 100
+        opponentPctOfVenue = (oppAvg / maxAvg) * 100
+        statisticalAdvantage = twcPctOfVenue - opponentPctOfVenue
+      }
+
+      const experienceAdvantage = twc.count - opp.count
+
       let advantageLevel = 'Low'
       if (statisticalAdvantage > 10 || experienceAdvantage > 10) {
         advantageLevel = 'High'
@@ -148,11 +204,11 @@ export async function GET(request: Request) {
         advantageLevel = 'Medium'
       }
 
-      // Get top TWC players for this machine
+      // Get top TWC players for this machine (respecting venue-specific flag)
       const playerScores = new Map<string, number[]>()
       for (const game of gamesData) {
         if (game.machine !== machine) continue
-        if (twcVenueSpecific && game.venue !== venue) continue
+        if (twcVenueSpecific && !venueVariations.includes(game.venue)) continue
 
         for (let i = 1; i <= 4; i++) {
           const teamKey = game[`player_${i}_team`]
@@ -161,9 +217,7 @@ export async function GET(request: Request) {
           const teamDisplayName = teamNameMap[teamKey]
 
           if (teamDisplayName === teamName && player && score) {
-            if (!playerScores.has(player)) {
-              playerScores.set(player, [])
-            }
+            if (!playerScores.has(player)) playerScores.set(player, [])
             playerScores.get(player)!.push(score)
           }
         }
@@ -189,14 +243,18 @@ export async function GET(request: Request) {
         advantageLevel,
         topTwcPlayers,
         twcAverage: twcAvg,
-        twcTimesPlayed: stats.twcCount,
+        twcTimesPlayed: twc.count,
         opponentAverage: oppAvg,
-        opponentTimesPlayed: stats.oppCount,
+        opponentTimesPlayed: opp.count,
         advantage,
         advantagePct,
-        twcPlays: stats.twcCount
+        twcPlays: twc.count,
+        twcDataSource: twc.source,
+        oppDataSource: opp.source
       }
-    }).sort((a, b) => b.compositeScore - a.compositeScore)
+    })
+    .filter(a => a.twcPctOfVenue > 0 || a.opponentPctOfVenue > 0) // exclude machines with zero data for both
+    .sort((a, b) => b.compositeScore - a.compositeScore)
 
     // Get TWC players from player_match_participation table
     // Get season 22 players (current roster)
@@ -219,16 +277,18 @@ export async function GET(request: Request) {
 
     const rosterPlayers = Array.from(season22Players).sort()
 
-    // Get players from seasons 20-21 who didn't play in season 22
+    // Start with actual season 22 subs (players marked as is_sub = true)
+    const subPlayers = new Set<string>(season22Subs)
+
+    // Also add players from seasons 20-21 who didn't play in season 22
     const { data: oldSeasonsData } = await supabase
       .from('player_match_participation')
       .select('player_name')
       .in('season', [20, 21])
       .eq('team', twcTeamKey) as { data: { player_name: string }[] | null }
 
-    const subPlayers = new Set<string>()
     for (const row of (oldSeasonsData || [])) {
-      // Only add if not in current roster
+      // Only add if not in current roster or already in subs
       if (!season22Players.has(row.player_name) && !season22Subs.has(row.player_name)) {
         subPlayers.add(row.player_name)
       }

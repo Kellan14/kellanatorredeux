@@ -181,10 +181,17 @@ export async function POST(request: Request) {
       else if (sources.has('venue')) dataSource = 'venue'
       else if (sources.has('all')) dataSource = 'all'
 
+      // Calculate the blended score for assigned players
+      const assignedScores = playerScores.slice(0, playersPerMachine)
+      const blendedScore = assignedScores.length > 0
+        ? assignedScores.reduce((sum: number, p: any) => sum + p.avg, 0) / assignedScores.length
+        : 0
+
       recommendations.push({
         machine,
         players: assignedPlayers,
-        dataSource
+        dataSource,
+        blendedScore: Math.round(blendedScore)
       })
     }
 

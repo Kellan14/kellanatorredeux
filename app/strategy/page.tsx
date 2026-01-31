@@ -66,6 +66,7 @@ interface PlayerAssignment {
   machine: string
   players: string[]
   dataSource?: string
+  blendedScore?: number
   stats?: {
     player: string
     pctOfVenue: number
@@ -156,7 +157,7 @@ export default function StrategyPage() {
     if (selectedVenue && selectedOpponent) {
       loadMachineAdvantages()
     }
-  }, [selectedVenue, selectedOpponent, seasonRange, teamVenueSpecific, twcVenueSpecific])
+  }, [selectedVenue, selectedOpponent, seasonRange, teamVenueSpecific, twcVenueSpecific, venueWeight])
 
   const loadVenuesAndTeams = async () => {
     setLoadingDropdowns(true)
@@ -217,7 +218,8 @@ export default function StrategyPage() {
         `&seasonStart=${seasonRange[0]}` +
         `&seasonEnd=${seasonRange[1]}` +
         `&teamVenueSpecific=${teamVenueSpecific}` +
-        `&twcVenueSpecific=${twcVenueSpecific}`
+        `&twcVenueSpecific=${twcVenueSpecific}` +
+        `&venueWeight=${venueWeight / 100}`
       )
 
       if (response.ok) {
@@ -907,11 +909,14 @@ export default function StrategyPage() {
                                           Assigned Player: {rec.players.join(', ')}
                                         </div>
                                       )}
-                                      {machineData && (
-                                        <div className="text-sm text-muted-foreground mt-1">
-                                          Composite Score: {machineData.compositeScore.toFixed(1)}
-                                        </div>
-                                      )}
+                                      <div className="text-sm text-muted-foreground mt-1">
+                                        {rec.blendedScore != null && (
+                                          <span>Avg Score: {rec.blendedScore.toLocaleString()}</span>
+                                        )}
+                                        {machineData && (
+                                          <span className="ml-3">Advantage: {machineData.compositeScore.toFixed(1)}</span>
+                                        )}
+                                      </div>
                                     </div>
                                     <div className="relative z-10">
                                       {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -1012,11 +1017,14 @@ export default function StrategyPage() {
                                           Assigned Players: {rec.players.join(', ')}
                                         </div>
                                       )}
-                                      {machineData && (
-                                        <div className="text-sm text-muted-foreground mt-1">
-                                          Composite Score: {machineData.compositeScore.toFixed(1)}
-                                        </div>
-                                      )}
+                                      <div className="text-sm text-muted-foreground mt-1">
+                                        {rec.blendedScore != null && (
+                                          <span>Avg Score: {rec.blendedScore.toLocaleString()}</span>
+                                        )}
+                                        {machineData && (
+                                          <span className="ml-3">Advantage: {machineData.compositeScore.toFixed(1)}</span>
+                                        )}
+                                      </div>
                                     </div>
                                     <div className="relative z-10">
                                       {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
