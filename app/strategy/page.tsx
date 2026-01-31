@@ -272,6 +272,7 @@ export default function StrategyPage() {
       if (response.ok) {
         const data = await response.json()
         setSinglesRecommendations(data.recommendations || [])
+        if (data.debug) console.log('Singles optimizer debug:', data.debug)
       }
     } catch (error) {
       console.error('Error optimizing singles picks:', error)
@@ -307,6 +308,7 @@ export default function StrategyPage() {
       if (response.ok) {
         const data = await response.json()
         setDoublesRecommendations(data.recommendations || [])
+        if (data.debug) console.log('Doubles optimizer debug:', data.debug)
       }
     } catch (error) {
       console.error('Error optimizing doubles picks:', error)

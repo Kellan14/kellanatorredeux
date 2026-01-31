@@ -195,11 +195,28 @@ export async function POST(request: Request) {
       })
     }
 
+    // Debug info to diagnose data issues
+    const allPlayerMachineCount = Array.from(allPlayerStats.entries())
+      .reduce((sum, [, machines]) => sum + machines.size, 0)
+    const venuePlayerMachineCount = Array.from(venuePlayerStats.entries())
+      .reduce((sum, [, machines]) => sum + machines.size, 0)
+
     return NextResponse.json({
       recommendations,
       machinesAtVenue,
       venue,
-      venueWeight: vw
+      venueWeight: vw,
+      debug: {
+        venueGamesCount: venueGames.length,
+        allVenueGamesCount: allVenueGames.length,
+        machinesAtVenueCount: machinesAtVenue.length,
+        venuePlayersWithStats: venuePlayerStats.size,
+        allPlayersWithStats: allPlayerStats.size,
+        venuePlayerMachineEntries: venuePlayerMachineCount,
+        allPlayerMachineEntries: allPlayerMachineCount,
+        sampleMachines: machinesAtVenue.slice(0, 5),
+        availablePlayers: availablePlayers.slice(0, 5),
+      }
     })
   } catch (error) {
     console.error('Error optimizing picks:', error)
