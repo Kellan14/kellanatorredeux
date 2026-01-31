@@ -12,7 +12,7 @@ function buildPlayerMachineStats(games: any[], machinesAtVenue: string[]): Stats
   for (const game of games) {
     if (!machinesAtVenue.includes(game.machine)) continue
     for (let i = 1; i <= 4; i++) {
-      const playerName = game[`player_${i}`]
+      const playerName = game[`player_${i}_name`]
       const score = game[`player_${i}_score`]
       if (!playerName || score == null) continue
       if (!stats.has(playerName)) stats.set(playerName, new Map())

@@ -10,7 +10,7 @@ function buildPlayerMachineStats(games: any[], availablePlayers: string[]): Stat
   const stats: StatsMap = new Map()
   for (const game of games) {
     for (let i = 1; i <= 4; i++) {
-      const playerName = game[`player_${i}`]
+      const playerName = game[`player_${i}_name`]
       const score = game[`player_${i}_score`]
       if (!playerName || score == null || !availablePlayers.includes(playerName)) continue
       if (!stats.has(playerName)) stats.set(playerName, new Map())
