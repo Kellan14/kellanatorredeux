@@ -65,6 +65,7 @@ interface MachineAdvantage {
 interface PlayerAssignment {
   machine: string
   players: string[]
+  dataSource?: string
   stats?: {
     player: string
     pctOfVenue: number
@@ -98,6 +99,7 @@ export default function StrategyPage() {
   // Machine picking state
   const [numSinglesMachines, setNumSinglesMachines] = useState(7)
   const [numDoublesMachines, setNumDoublesMachines] = useState(4)
+  const [venueWeight, setVenueWeight] = useState(70) // 0-100 percentage
   const [singlesRecommendations, setSinglesRecommendations] = useState<PlayerAssignment[]>([])
   const [doublesRecommendations, setDoublesRecommendations] = useState<PlayerAssignment[]>([])
 
@@ -261,6 +263,7 @@ export default function StrategyPage() {
           availablePlayers: selectedPlayers,
           teamVenueSpecific,
           twcVenueSpecific,
+          venueWeight: venueWeight / 100,
         }),
       })
 
@@ -295,6 +298,7 @@ export default function StrategyPage() {
           availablePlayers: selectedPlayers,
           teamVenueSpecific,
           twcVenueSpecific,
+          venueWeight: venueWeight / 100,
         }),
       })
 
@@ -329,6 +333,7 @@ export default function StrategyPage() {
           availablePlayers: selectedPlayers,
           teamVenueSpecific,
           twcVenueSpecific,
+          venueWeight: venueWeight / 100,
         }),
       })
 
@@ -363,6 +368,7 @@ export default function StrategyPage() {
           availablePlayers: selectedPlayers,
           teamVenueSpecific,
           twcVenueSpecific,
+          venueWeight: venueWeight / 100,
         }),
       })
 
@@ -812,6 +818,25 @@ export default function StrategyPage() {
                     When TWC is picking machines first, use this tool to select the optimal machines and assign players.
                   </p>
 
+                  <div className="p-4 border rounded bg-muted/30">
+                    <label className="text-sm font-medium mb-2 block">
+                      Venue Weight: {venueWeight}% venue / {100 - venueWeight}% all venues
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={5}
+                      value={venueWeight}
+                      onChange={(e) => setVenueWeight(parseInt(e.target.value))}
+                      className="w-full accent-primary"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>All venues only</span>
+                      <span>Venue only</span>
+                    </div>
+                  </div>
+
                   <Tabs defaultValue="singles" className="w-full">
                     <TabsList>
                       <TabsTrigger value="singles">Singles</TabsTrigger>
@@ -853,8 +878,8 @@ export default function StrategyPage() {
                                 }))}
                                 className="mb-3"
                               >
-                                <div className="border rounded overflow-hidden">
-                                  <CollapsibleTrigger className="w-full p-3 flex items-center justify-between hover:bg-muted/50 relative overflow-hidden">
+                                <div className="border rounded overflow-hidden bg-background">
+                                  <CollapsibleTrigger className="w-full p-3 flex items-center justify-between hover:bg-muted/50 relative overflow-hidden bg-background">
                                     <div
                                       className="absolute right-0 top-0 bottom-0 w-1/2 opacity-50"
                                       style={{
@@ -865,8 +890,17 @@ export default function StrategyPage() {
                                       }}
                                     />
                                     <div className="text-left relative z-10">
-                                      <div className="font-medium">
+                                      <div className="font-medium flex items-center gap-2">
                                         {index + 1}. {rec.machine}
+                                        {rec.dataSource && rec.dataSource !== 'none' && (
+                                          <span className={`px-1.5 py-0.5 rounded text-[10px] ${
+                                            rec.dataSource === 'venue' ? 'bg-green-100 text-green-800' :
+                                            rec.dataSource === 'all' ? 'bg-blue-100 text-blue-800' :
+                                            'bg-purple-100 text-purple-800'
+                                          }`}>
+                                            {rec.dataSource === 'venue' ? 'venue' : rec.dataSource === 'all' ? 'all venues' : 'blended'}
+                                          </span>
+                                        )}
                                       </div>
                                       {rec.players && rec.players.length > 0 && (
                                         <div className="text-sm text-muted-foreground mt-1">
@@ -949,8 +983,8 @@ export default function StrategyPage() {
                                 }))}
                                 className="mb-3"
                               >
-                                <div className="border rounded overflow-hidden">
-                                  <CollapsibleTrigger className="w-full p-3 flex items-center justify-between hover:bg-muted/50 relative overflow-hidden">
+                                <div className="border rounded overflow-hidden bg-background">
+                                  <CollapsibleTrigger className="w-full p-3 flex items-center justify-between hover:bg-muted/50 relative overflow-hidden bg-background">
                                     <div
                                       className="absolute right-0 top-0 bottom-0 w-1/2 opacity-50"
                                       style={{
@@ -961,8 +995,17 @@ export default function StrategyPage() {
                                       }}
                                     />
                                     <div className="text-left relative z-10">
-                                      <div className="font-medium">
+                                      <div className="font-medium flex items-center gap-2">
                                         {index + 1}. {rec.machine}
+                                        {rec.dataSource && rec.dataSource !== 'none' && (
+                                          <span className={`px-1.5 py-0.5 rounded text-[10px] ${
+                                            rec.dataSource === 'venue' ? 'bg-green-100 text-green-800' :
+                                            rec.dataSource === 'all' ? 'bg-blue-100 text-blue-800' :
+                                            'bg-purple-100 text-purple-800'
+                                          }`}>
+                                            {rec.dataSource === 'venue' ? 'venue' : rec.dataSource === 'all' ? 'all venues' : 'blended'}
+                                          </span>
+                                        )}
                                       </div>
                                       {rec.players && rec.players.length > 0 && (
                                         <div className="text-sm text-muted-foreground mt-1">
@@ -1017,6 +1060,25 @@ export default function StrategyPage() {
                     When the opponent has picked machines, use this tool to optimally assign your players.
                   </p>
 
+                  <div className="p-4 border rounded bg-muted/30">
+                    <label className="text-sm font-medium mb-2 block">
+                      Venue Weight: {venueWeight}% venue / {100 - venueWeight}% all venues
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={5}
+                      value={venueWeight}
+                      onChange={(e) => setVenueWeight(parseInt(e.target.value))}
+                      className="w-full accent-primary"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>All venues only</span>
+                      <span>Venue only</span>
+                    </div>
+                  </div>
+
                   <Tabs defaultValue="singles" className="w-full">
                     <TabsList>
                       <TabsTrigger value="singles">Singles</TabsTrigger>
@@ -1053,7 +1115,7 @@ export default function StrategyPage() {
                         {singlesOpponentPicks.length > 0 && (
                           <div className="space-y-2 mb-4">
                             {singlesOpponentPicks.map((machine, index) => (
-                              <div key={machine} className="flex items-center justify-between p-2 border rounded">
+                              <div key={machine} className="flex items-center justify-between p-2 border rounded bg-background">
                                 <span>{index + 1}. {machine}</span>
                                 <Button
                                   variant="ghost"
@@ -1078,7 +1140,7 @@ export default function StrategyPage() {
                         <div className="mt-4">
                           <h4 className="font-semibold mb-3">Recommended Player Assignments:</h4>
                           {singlesAssignments.map((assignment) => (
-                            <div key={assignment.machine} className="mb-3 p-3 border rounded">
+                            <div key={assignment.machine} className="mb-3 p-3 border rounded bg-background">
                               <div className="font-medium">{assignment.machine}</div>
                               <div className="text-sm text-muted-foreground mt-1">
                                 Assigned Player: {assignment.players.join(', ')}
@@ -1119,7 +1181,7 @@ export default function StrategyPage() {
                         {doublesOpponentPicks.length > 0 && (
                           <div className="space-y-2 mb-4">
                             {doublesOpponentPicks.map((machine, index) => (
-                              <div key={machine} className="flex items-center justify-between p-2 border rounded">
+                              <div key={machine} className="flex items-center justify-between p-2 border rounded bg-background">
                                 <span>{index + 1}. {machine}</span>
                                 <Button
                                   variant="ghost"
@@ -1144,7 +1206,7 @@ export default function StrategyPage() {
                         <div className="mt-4">
                           <h4 className="font-semibold mb-3">Recommended Player Assignments:</h4>
                           {doublesAssignments.map((assignment) => (
-                            <div key={assignment.machine} className="mb-3 p-3 border rounded">
+                            <div key={assignment.machine} className="mb-3 p-3 border rounded bg-background">
                               <div className="font-medium">{assignment.machine}</div>
                               <div className="text-sm text-muted-foreground mt-1">
                                 Assigned Players: {assignment.players.join(', ')}
@@ -1276,7 +1338,7 @@ export default function StrategyPage() {
                             <h4 className="font-semibold mt-6 mb-3">Top Machines for {selectedAnalysisPlayer}</h4>
                             <div className="space-y-2">
                               {playerAnalysis.machinePerformance.slice(0, 3).map((machine: any, index: number) => (
-                                <div key={machine.machine} className="p-3 border rounded">
+                                <div key={machine.machine} className="p-3 border rounded bg-background">
                                   <div className="font-medium">
                                     {index + 1}. {machine.machine}
                                   </div>
