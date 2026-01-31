@@ -268,12 +268,17 @@ export async function GET(request: Request) {
     const season22Subs = new Set<string>()
 
     for (const row of (season22Data || [])) {
+      const name = (row.player_name || '').trim()
+      if (!name) continue
       if (row.is_sub) {
-        season22Subs.add(row.player_name)
+        season22Subs.add(name)
       } else {
-        season22Players.add(row.player_name)
+        season22Players.add(name)
       }
     }
+
+    // Roster takes priority — remove from subs if they're on the roster
+    Array.from(season22Players).forEach(player => season22Subs.delete(player))
 
     const rosterPlayers = Array.from(season22Players).sort()
 
@@ -288,9 +293,11 @@ export async function GET(request: Request) {
       .eq('team', twcTeamKey) as { data: { player_name: string }[] | null }
 
     for (const row of (oldSeasonsData || [])) {
-      // Only add if not in current roster or already in subs
-      if (!season22Players.has(row.player_name) && !season22Subs.has(row.player_name)) {
-        subPlayers.add(row.player_name)
+      const name = (row.player_name || '').trim()
+      if (!name) continue
+      // Only add if not in current roster and not already in subs
+      if (!season22Players.has(name) && !subPlayers.has(name)) {
+        subPlayers.add(name)
       }
     }
 
