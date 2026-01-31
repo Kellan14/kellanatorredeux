@@ -201,6 +201,18 @@ export async function POST(request: Request) {
     const venuePlayerMachineCount = Array.from(venuePlayerStats.entries())
       .reduce((sum, [, machines]) => sum + machines.size, 0)
 
+    // Sample a venue game to see actual column structure
+    const sampleVenueGame = venueGames.length > 0 ? venueGames[0] : null
+    const sampleAllGame = allVenueGames.length > 0 ? allVenueGames[0] : null
+    const sampleGameDebug = sampleVenueGame ? {
+      machine: sampleVenueGame.machine,
+      machineInList: machinesAtVenue.includes(sampleVenueGame.machine),
+      player_1: sampleVenueGame.player_1,
+      player_1_name: sampleVenueGame.player_1_name,
+      player_1_score: sampleVenueGame.player_1_score,
+      columns: Object.keys(sampleVenueGame).filter(k => k.startsWith('player_1')),
+    } : null
+
     return NextResponse.json({
       recommendations,
       machinesAtVenue,
@@ -216,6 +228,7 @@ export async function POST(request: Request) {
         allPlayerMachineEntries: allPlayerMachineCount,
         sampleMachines: machinesAtVenue.slice(0, 5),
         availablePlayers: availablePlayers.slice(0, 5),
+        sampleVenueGame: sampleGameDebug,
       }
     })
   } catch (error) {
