@@ -1,3 +1,25 @@
+/**
+ * Strategy Page
+ *
+ * This page has several optimizer sections:
+ *
+ * 1. "Create Report" — Runs all 4 optimizers in parallel and generates a
+ *    copyable text report in a dialog.
+ *
+ * 2. "Greedy Optimizer" — The "Optimize Singles Picks" / "Optimize Doubles Picks" buttons.
+ *    - API: /api/optimize-picks (greedy algorithm)
+ *    - State: singlesRecommendations / doublesRecommendations
+ *    - Renders collapsible result cards with machine name, player name, stats, advantage data.
+ *
+ * 3. "Hungarian Optimizer" — Below the greedy optimizer.
+ *    - Uses MachinePicker component → /api/strategy/optimize (Hungarian algorithm via LineupOptimizer)
+ *    - State: hungarianSinglesResult / hungarianDoublesResult
+ *
+ * 4. "Assignment Optimizer" — Assigns players to opponent-picked machines.
+ *    - API: /api/optimize-assignments (greedy assignment to fixed machines)
+ *    - State: singlesAssignments / doublesAssignments
+ */
+
 'use client'
 
 import { useState, useEffect } from 'react'
