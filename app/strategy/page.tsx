@@ -1874,7 +1874,7 @@ export default function StrategyPage() {
                                           </span>
                                         )}
                                       </div>
-                                      {rec.players && rec.players.length > 1 && (
+                                      {rec.players && rec.players.length > 0 && (
                                         <div className="text-sm text-muted-foreground mt-1">
                                           {rec.players.join(', ')}
                                         </div>
