@@ -115,8 +115,8 @@ export async function GET(request: NextRequest) {
               venue_adjusted_avg: vStats.venue_adjusted_avg * vw + aStats.venue_adjusted_avg * (1 - vw),
               high_score: Math.max(vStats.high_score, aStats.high_score),
               recent_form: vStats.recent_form * vw + aStats.recent_form * (1 - vw),
-              streak_type: vStats.streak_type,
-              streak_count: vStats.streak_count,
+              streak_type: aStats.streak_type,
+              streak_count: aStats.streak_count,
               confidence_score: Math.max(vStats.confidence_score, aStats.confidence_score),
               user_confidence: vStats.user_confidence || aStats.user_confidence,
               last_played: vStats.last_played || aStats.last_played
