@@ -11,8 +11,8 @@ console.log(`Reading Excel file: ${inputFile}\n`);
 
 const workbook = XLSX.readFile(inputFile);
 
-// Seasons to import (3-12, skipping 5 which has bad data, and 2 which is already imported)
-const seasonsToImport = ['3', '4', '6', '7', '8', '9', '10', '11', '12'];
+// Seasons to import (3-12, and 2 which is already imported separately)
+const seasonsToImport = ['3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 
 let allRows = [];
 let totalGames = 0;

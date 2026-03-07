@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, fetchAllRecords } from '@/lib/supabase';
 import { getVenueVariations } from '@/lib/venue-mappings';
+import { machineMappings } from '@/lib/machine-mappings';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,15 +53,37 @@ export async function GET(request: NextRequest) {
 
     // Query games from Supabase for the specified machine and seasons
     // Only filter by venue if the venue-specific flag is set for this team
+    // Build list of possible machine name variations (DB key, display name, etc.)
+    const machineVariations = new Set<string>([machine])
+    const machineLower = machine.toLowerCase().trim()
+    // Check if the machine name maps to a DB value
+    const mapped = machineMappings[machineLower] || machineMappings[machine]
+    if (mapped) machineVariations.add(mapped)
+    // Also check if any mapping values match (reverse lookup)
+    Object.entries(machineMappings).forEach(([alias, dbValue]) => {
+      if (dbValue.toLowerCase() === machineLower || alias.toLowerCase().trim() === machineLower) {
+        machineVariations.add(alias)
+        machineVariations.add(dbValue)
+      }
+    })
+
     let gamesData
     try {
       const venueVariations = getVenueVariations(venue)
+      // Use OR filter to match any machine name variation
+      const machineFilter = Array.from(machineVariations)
+        .map(m => {
+          const needsQuoting = /[\s,()]/.test(m)
+          return needsQuoting ? `machine.ilike."${m}"` : `machine.ilike.${m}`
+        })
+        .join(',')
+
       let query = supabase
         .from('games')
         .select('*')
         .gte('season', seasonStart)
         .lte('season', seasonEnd)
-        .ilike('machine', machine)
+        .or(machineFilter)
         .order('id', { ascending: true }) // Required for consistent pagination
 
       if (useVenueFilter) {
@@ -107,6 +130,14 @@ export async function GET(request: NextRequest) {
       teamNameMap[t.team_key] = t.team_name;
     });
 
+    // Determine pick filter based on column type
+    // "Picked" columns should only show picks, "Resp" columns only responses
+    const columnLower = column.toLowerCase();
+    const filterPicks = columnLower.includes('picked') || columnLower.includes('pops pick');
+    const filterResponses = columnLower.includes('pops resp');
+
+    console.log('[cell-details] Column filter - picks only:', filterPicks, 'responses only:', filterResponses);
+
     // Extract individual scores for the target team
     interface ScoreDetail {
       season: number;
@@ -143,6 +174,10 @@ export async function GET(request: NextRequest) {
         // Calculate is_pick
         const isHomeTeam = teamKey === game.home_team;
         const isPick = game.round_number % 2 === 1 ? isHomeTeam : !isHomeTeam;
+
+        // Filter based on column type
+        if (filterPicks && !isPick) continue;
+        if (filterResponses && isPick) continue;
 
         // Find opponent score in same round
         let opponent = '';

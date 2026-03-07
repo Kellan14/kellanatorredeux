@@ -1,4 +1,5 @@
 import machineMapping from '../machine_mapping.json'
+// Note: machineMappings is for display names, NOT for image filenames
 
 /**
  * Gets the full image path for a machine
@@ -13,7 +14,7 @@ export function getMachineImagePath(machineKey: string, machineName?: string): s
     return '/opdb_backglass_images/AFM.jpg' // Default fallback image
   }
 
-  // First, check if there's a mapping for the machine name
+  // First, check if there's a mapping for the machine name in image-specific mappings
   if (machineName) {
     const normalized = machineName.toLowerCase().trim()
     const mapped = (machineMapping as Record<string, string>)[normalized]
@@ -23,8 +24,18 @@ export function getMachineImagePath(machineKey: string, machineName?: string): s
     }
   }
 
+  // Also check if machineKey itself needs mapping
+  const keyNormalized = machineKey.toLowerCase().trim()
+  const keyMapped = (machineMapping as Record<string, string>)[keyNormalized]
+  if (keyMapped) {
+    return `/opdb_backglass_images/${keyMapped}.jpg`
+  }
+
+  // Note: We intentionally do NOT use machineMappings here because it maps
+  // to display names (e.g., "007" -> "James Bond 007"), not image filenames.
+  // Image filenames match the machine keys (e.g., "007.jpg"), not display names.
+
   // The images are named exactly like the machine keys from machines.json
-  // Try with .jpg first (most common), then .JPG
   return `/opdb_backglass_images/${machineKey}.jpg`
 }
 
@@ -41,7 +52,7 @@ export function getMachineThumbnailPath(machineKey: string, machineName?: string
     return '/opdb_backglass_images/thumbnails/AFM.jpg' // Default fallback thumbnail
   }
 
-  // First, check if there's a mapping for the machine name
+  // First, check if there's a mapping for the machine name in image-specific mappings
   if (machineName) {
     const normalized = machineName.toLowerCase().trim()
     const mapped = (machineMapping as Record<string, string>)[normalized]
@@ -50,6 +61,17 @@ export function getMachineThumbnailPath(machineKey: string, machineName?: string
       return `/opdb_backglass_images/thumbnails/${mapped}.jpg`
     }
   }
+
+  // Also check if machineKey itself needs mapping
+  const keyNormalized = machineKey.toLowerCase().trim()
+  const keyMapped = (machineMapping as Record<string, string>)[keyNormalized]
+  if (keyMapped) {
+    return `/opdb_backglass_images/thumbnails/${keyMapped}.jpg`
+  }
+
+  // Note: We intentionally do NOT use machineMappings here because it maps
+  // to display names (e.g., "007" -> "James Bond 007"), not image filenames.
+  // Image filenames match the machine keys (e.g., "007.jpg"), not display names.
 
   // The thumbnails are named exactly like the machine keys from machines.json
   return `/opdb_backglass_images/thumbnails/${machineKey}.jpg`

@@ -4,6 +4,8 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { fetchMNPData } from '@/lib/fetch-mnp-data';
 import { supabase, fetchAllRecords } from '@/lib/supabase';
+import { standardizeVenueName } from '@/lib/venue-mappings';
+import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists';
 
 export async function GET(request: Request) {
   try {
@@ -20,7 +22,7 @@ export async function GET(request: Request) {
         name: v.name,
         address: v.address || '',
         neighborhood: v.neighborhood || '',
-        machines: v.machines || []
+        machines: applyVenueMachineListOverrides(v.name, v.machines || [])
       }))
       .sort((a: any, b: any) => a.name.localeCompare(b.name));
 
@@ -39,18 +41,23 @@ export async function GET(request: Request) {
           .eq('season', seasonNum)
       );
 
-      // Get unique venue names from games
+      // Get unique venue names from games (standardized to handle variations)
       const activeVenues = new Set<string>();
       if (gamesData && gamesData.length > 0) {
         gamesData.forEach(game => {
           if (game.venue) {
-            activeVenues.add(game.venue);
+            const standardized = standardizeVenueName(game.venue);
+            if (standardized) activeVenues.add(standardized);
           }
         });
       }
 
       // Filter venues to only those with games in the specified season
-      venues = venues.filter(v => activeVenues.has(v.name));
+      // Standardize both sides to handle "Ice Box" vs "Icebox" etc.
+      venues = venues.filter(v => {
+        const standardized = standardizeVenueName(v.name);
+        return standardized && activeVenues.has(standardized);
+      });
     }
 
     return NextResponse.json({ venues });

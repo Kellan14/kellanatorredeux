@@ -1,14 +1,7 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic';
-
-// Hardcoded player mappings (will move to database later)
-const PLAYER_MAPPINGS: Record<string, { name: string; team: string }> = {
-  'dcdbf053-3e71-4f05-a627-70390da8f984': {
-    name: 'Kellan Kirkland',
-    team: 'TWC'
-  }
-}
 
 export async function GET(request: Request) {
   try {
@@ -22,11 +15,26 @@ export async function GET(request: Request) {
       )
     }
 
-    const mappings = PLAYER_MAPPINGS
+    // Create Supabase client
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
-    const playerData = mappings[uid]
+    // Check the profiles table for the player_name
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('player_name')
+      .eq('id', uid)
+      .single()
 
-    if (!playerData) {
+    if (error || !profile?.player_name) {
       return NextResponse.json(
         { error: 'Player mapping not found for this UID' },
         { status: 404 }
@@ -35,8 +43,8 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       uid: uid,
-      name: playerData.name,
-      team: playerData.team
+      name: profile.player_name,
+      team: 'TWC' // Default team for now
     })
   } catch (error) {
     console.error('Error fetching player mapping:', error)

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getMachineVariations } from '@/lib/machine-mappings'
+import { getVenueVariations } from '@/lib/venue-mappings'
 
 export const dynamic = 'force-dynamic';
 
@@ -46,14 +47,15 @@ export async function GET(request: Request) {
     // Query games table directly with SQL filters using pagination, including team info
     let query = supabase
       .from('games')
-      .select('match_key, week, season, venue, home_team, away_team, player_1_key, player_1_score, player_1_points, player_1_team, player_2_key, player_2_score, player_2_points, player_2_team, player_3_key, player_3_score, player_3_points, player_3_team, player_4_key, player_4_score, player_4_points, player_4_team')
+      .select('match_key, week, season, venue, round_number, home_team, away_team, player_1_key, player_1_score, player_1_points, player_1_team, player_2_key, player_2_score, player_2_points, player_2_team, player_3_key, player_3_score, player_3_points, player_3_team, player_4_key, player_4_score, player_4_points, player_4_team')
       .in('machine', machineVariations)
       .gte('season', seasonStart)
       .lte('season', seasonEnd)
       .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
 
     if (venue) {
-      query = query.eq('venue', venue)
+      const venueVariations = getVenueVariations(venue)
+      query = query.in('venue', venueVariations)
     }
 
     let gamesData
@@ -145,7 +147,7 @@ export async function GET(request: Request) {
 
       return {
         matchKey: game.match_key,
-        round: game.week,
+        round: (game as any).round_number || 0,
         match: opponentTeam || 'Unknown',
         week: game.week,
         season: game.season,

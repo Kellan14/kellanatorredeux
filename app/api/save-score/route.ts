@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getCanonicalMachineKey } from '@/lib/machine-mappings'
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,19 @@ export async function POST(request: Request) {
       )
     }
 
+    // Normalize machine name to canonical key for consistent storage
+    const canonicalMachine = getCanonicalMachineKey(machine)
+
+    // Get the current season (max season from matches table)
+    const { data: seasonData } = await supabase
+      .from('matches')
+      .select('season')
+      .order('season', { ascending: false })
+      .limit(1)
+      .single()
+
+    const currentSeason = seasonData?.season || 23 // Fallback to 23 if not found
+
     // Insert the score into Supabase
     const { data, error } = await supabase
       .from('user_machine_scores')
@@ -27,9 +41,10 @@ export async function POST(request: Request) {
         {
           user_id: userId,
           player_name: playerName,
-          machine,
+          machine: canonicalMachine,
           score,
           venue,
+          season: currentSeason,
           played_at: new Date().toISOString(),
           include_in_calculations: true, // Default to true, can be toggled later
         },

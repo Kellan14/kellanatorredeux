@@ -1,6 +1,6 @@
 /**
  * Hungarian Algorithm (Munkres Algorithm) for optimal assignment
- * Finds the maximum weight matching in a bipartite graph
+ * Finds the optimal matching in a bipartite graph
  * Time complexity: O(n^3)
  */
 
@@ -10,10 +10,12 @@ export interface HungarianResult {
 }
 
 /**
- * Solve the assignment problem using the Hungarian algorithm
- * @param costMatrix - Square matrix where costMatrix[i][j] is the cost of assigning row i to column j
- * @param maximize - If true, maximizes the total cost; if false, minimizes it
- * @returns Optimal assignments and total cost
+ * Solve the assignment problem using the Hungarian algorithm.
+ * Uses the shortest augmenting path method which guarantees a complete assignment
+ * for any square cost matrix.
+ *
+ * @param costMatrix - Square matrix where costMatrix[i][j] is the cost/score
+ * @param maximize - If true, maximizes; if false, minimizes
  */
 export function hungarianAlgorithm(
   costMatrix: number[][],
@@ -24,38 +26,77 @@ export function hungarianAlgorithm(
     return { assignments: [], totalCost: 0 }
   }
 
-  // Make a copy and convert to minimization problem if needed
-  let matrix = costMatrix.map(row => [...row])
-
+  // Convert to minimization if needed
+  let cost: number[][]
   if (maximize) {
-    // Convert maximization to minimization by negating values
-    const maxValue = Math.max(...matrix.flat())
-    matrix = matrix.map(row => row.map(val => maxValue - val))
+    const maxVal = Math.max(...costMatrix.flat())
+    cost = costMatrix.map(row => row.map(val => maxVal - val))
+  } else {
+    cost = costMatrix.map(row => [...row])
   }
 
-  // Step 1: Subtract row minimums
-  for (let i = 0; i < n; i++) {
-    const rowMin = Math.min(...matrix[i])
-    for (let j = 0; j < n; j++) {
-      matrix[i][j] -= rowMin
-    }
+  // u[i] = potential for row i, v[j] = potential for column j
+  // p[j] = row assigned to column j (0-indexed, -1 = unassigned)
+  // Using 1-indexed internally for cleaner algorithm, then convert
+  const u = new Array(n + 1).fill(0)
+  const v = new Array(n + 1).fill(0)
+  const p = new Array(n + 1).fill(0) // p[j] = row assigned to col j (1-indexed)
+  const way = new Array(n + 1).fill(0)
+
+  for (let i = 1; i <= n; i++) {
+    // Start augmenting path from row i
+    p[0] = i
+    let j0 = 0 // virtual column
+    const minv = new Array(n + 1).fill(Infinity)
+    const used = new Array(n + 1).fill(false)
+
+    do {
+      used[j0] = true
+      let i0 = p[j0]
+      let delta = Infinity
+      let j1 = -1
+
+      for (let j = 1; j <= n; j++) {
+        if (!used[j]) {
+          const cur = cost[i0 - 1][j - 1] - u[i0] - v[j]
+          if (cur < minv[j]) {
+            minv[j] = cur
+            way[j] = j0
+          }
+          if (minv[j] < delta) {
+            delta = minv[j]
+            j1 = j
+          }
+        }
+      }
+
+      for (let j = 0; j <= n; j++) {
+        if (used[j]) {
+          u[p[j]] += delta
+          v[j] -= delta
+        } else {
+          minv[j] -= delta
+        }
+      }
+
+      j0 = j1
+    } while (p[j0] !== 0)
+
+    // Update assignment along the augmenting path
+    do {
+      const j1 = way[j0]
+      p[j0] = p[j1]
+      j0 = j1
+    } while (j0)
   }
 
-  // Step 2: Subtract column minimums
-  for (let j = 0; j < n; j++) {
-    let colMin = matrix[0][j]
-    for (let i = 1; i < n; i++) {
-      colMin = Math.min(colMin, matrix[i][j])
-    }
-    for (let i = 0; i < n; i++) {
-      matrix[i][j] -= colMin
+  // Convert from column-based to row-based assignments (0-indexed)
+  const assignments = new Array(n).fill(-1)
+  for (let j = 1; j <= n; j++) {
+    if (p[j] !== 0) {
+      assignments[p[j] - 1] = j - 1
     }
   }
-
-  // Step 3: Cover all zeros with minimum number of lines
-  // Step 4: Create additional zeros if needed
-  // Step 5: Find optimal assignment
-  const assignments = findOptimalAssignment(matrix, n)
 
   // Calculate total cost from original matrix
   let totalCost = 0
@@ -66,119 +107,6 @@ export function hungarianAlgorithm(
   }
 
   return { assignments, totalCost }
-}
-
-function findOptimalAssignment(matrix: number[][], n: number): number[] {
-  const assignments = new Array(n).fill(-1)
-  const rowCovered = new Array(n).fill(false)
-  const colCovered = new Array(n).fill(false)
-
-  // Try to find a zero in each row and mark it
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
-      if (matrix[i][j] === 0 && !rowCovered[i] && !colCovered[j]) {
-        assignments[i] = j
-        rowCovered[i] = true
-        colCovered[j] = true
-        break
-      }
-    }
-  }
-
-  // Check if we have a complete assignment
-  let assignedCount = assignments.filter(a => a !== -1).length
-
-  if (assignedCount === n) {
-    return assignments
-  }
-
-  // If not complete, use augmenting path method
-  return augmentingPathMethod(matrix, n)
-}
-
-function augmentingPathMethod(matrix: number[][], n: number): number[] {
-  const assignments = new Array(n).fill(-1)
-  const colAssignment = new Array(n).fill(-1)
-
-  for (let row = 0; row < n; row++) {
-    const visited = new Array(n).fill(false)
-    if (findPath(row, matrix, assignments, colAssignment, visited, n)) {
-      // Path found, assignment updated
-    } else {
-      // No path found, reduce matrix and try again
-      reduceMatrix(matrix, n)
-      const visited2 = new Array(n).fill(false)
-      findPath(row, matrix, assignments, colAssignment, visited2, n)
-    }
-  }
-
-  return assignments
-}
-
-function findPath(
-  row: number,
-  matrix: number[][],
-  assignments: number[],
-  colAssignment: number[],
-  visited: boolean[],
-  n: number
-): boolean {
-  for (let col = 0; col < n; col++) {
-    if (matrix[row][col] === 0 && !visited[col]) {
-      visited[col] = true
-
-      if (colAssignment[col] === -1 ||
-          findPath(colAssignment[col], matrix, assignments, colAssignment, visited, n)) {
-        assignments[row] = col
-        colAssignment[col] = row
-        return true
-      }
-    }
-  }
-  return false
-}
-
-function reduceMatrix(matrix: number[][], n: number) {
-  // Find minimum uncovered value
-  let minUncovered = Infinity
-  const rowCovered = new Array(n).fill(false)
-  const colCovered = new Array(n).fill(false)
-
-  // Mark covered rows and columns based on current zeros
-  for (let i = 0; i < n; i++) {
-    let hasZero = false
-    for (let j = 0; j < n; j++) {
-      if (matrix[i][j] === 0) {
-        hasZero = true
-        colCovered[j] = true
-      }
-    }
-    if (!hasZero) rowCovered[i] = true
-  }
-
-  // Find minimum uncovered value
-  for (let i = 0; i < n; i++) {
-    if (!rowCovered[i]) {
-      for (let j = 0; j < n; j++) {
-        if (!colCovered[j]) {
-          minUncovered = Math.min(minUncovered, matrix[i][j])
-        }
-      }
-    }
-  }
-
-  if (minUncovered === Infinity) return
-
-  // Adjust matrix
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
-      if (!rowCovered[i] && !colCovered[j]) {
-        matrix[i][j] -= minUncovered
-      } else if (rowCovered[i] && colCovered[j]) {
-        matrix[i][j] += minUncovered
-      }
-    }
-  }
 }
 
 /**

@@ -87,6 +87,18 @@ export default function LoginPage() {
             description: "You've successfully logged in.",
           })
         }
+
+        // Log the login with player name if available
+        try {
+          await (supabase.from('login_history') as any).insert({
+            user_id: data.user.id,
+            email: data.user.email,
+            player_name: profile?.player_name || null,
+            user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : null
+          })
+        } catch (e) {
+          console.error('Failed to log login:', e)
+        }
       }
 
       router.push('/')

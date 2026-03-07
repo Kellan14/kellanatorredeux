@@ -1,20 +1,10 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { getMachineVariations } from '@/lib/machine-mappings'
-import fs from 'fs'
-import path from 'path'
+import { getMachineVariations, machineMappings } from '@/lib/machine-mappings'
+import { getVenueVariations } from '@/lib/venue-mappings'
+import { getScoreLimits } from '@/lib/score-limits'
 
 export const dynamic = 'force-dynamic';
-
-// Load score limits
-const scoreLimitsPath = path.join(process.cwd(), 'score_limits.json')
-let scoreLimits: Record<string, number> = {}
-try {
-  const scoreLimitsData = fs.readFileSync(scoreLimitsPath, 'utf-8')
-  scoreLimits = JSON.parse(scoreLimitsData)
-} catch (error) {
-  console.error('Failed to load score limits:', error)
-}
 
 export async function GET(request: Request) {
   try {
@@ -39,9 +29,14 @@ export async function GET(request: Request) {
 
     const currentSeason = maxSeasonData?.season || 22
 
+    // Load score limits from database
+    const scoreLimits = await getScoreLimits()
+
     // Helper to check if a score should be filtered out
+    // Use standardized machine name to check limits
     const isScoreValid = (score: number): boolean => {
-      const machineLimit = scoreLimits[machineName.toLowerCase()]
+      const standardized = (machineMappings[machineName.toLowerCase()] || machineName).toLowerCase()
+      const machineLimit = scoreLimits[standardized] || scoreLimits[machineName.toLowerCase()]
       if (!machineLimit) return true
       return score <= machineLimit
     }
@@ -52,6 +47,7 @@ export async function GET(request: Request) {
 
     // Query current season games with pagination using .in() for exact matching
     // getMachineVariations returns all case variations (PULP, pulp, Pulp, etc.)
+    const venueVariations = venue ? getVenueVariations(venue) : []
     let seasonGames
     try {
       seasonGames = await fetchAllRecords<any>(() => {
@@ -62,7 +58,7 @@ export async function GET(request: Request) {
           .eq('season', currentSeason)
 
         if (venue) {
-          query = query.eq('venue', venue)
+          query = query.in('venue', venueVariations)
         }
         return query
       })
@@ -83,7 +79,7 @@ export async function GET(request: Request) {
           .lte('season', currentSeason)
 
         if (venue) {
-          query = query.eq('venue', venue)
+          query = query.in('venue', venueVariations)
         }
         return query
       })

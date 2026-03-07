@@ -21,11 +21,45 @@ export async function GET(request: NextRequest) {
       .returns<Array<{ team_key: string; team_name: string }>>();
 
     if (teamsError) {
-      console.error('Database error:', teamsError);
-      return NextResponse.json(
-        { error: 'Failed to load teams', details: teamsError.message },
-        { status: 500 }
-      );
+      console.error('Database error querying teams table:', teamsError);
+      // Teams table might not exist - fall through to get teams from games
+    }
+
+    // If teams table is empty or doesn't exist, get teams from games table
+    if (!teamsData || teamsData.length === 0) {
+      console.log('Teams table empty, fetching from games...')
+      // Get unique team keys from games
+      const { data: gameTeams } = await supabase
+        .from('games')
+        .select('home_team, away_team, player_1_team, player_2_team, player_3_team, player_4_team')
+        .eq('season', parseInt(season))
+        .limit(1000)
+        .returns<Array<{
+          home_team: string | null
+          away_team: string | null
+          player_1_team: string | null
+          player_2_team: string | null
+          player_3_team: string | null
+          player_4_team: string | null
+        }>>()
+
+      const teamKeys = new Set<string>()
+      for (const g of gameTeams || []) {
+        if (g.home_team) teamKeys.add(g.home_team)
+        if (g.away_team) teamKeys.add(g.away_team)
+        if (g.player_1_team) teamKeys.add(g.player_1_team)
+        if (g.player_2_team) teamKeys.add(g.player_2_team)
+        if (g.player_3_team) teamKeys.add(g.player_3_team)
+        if (g.player_4_team) teamKeys.add(g.player_4_team)
+      }
+
+      // Return team keys as both key and name (we don't have full names without teams table)
+      const teams = Array.from(teamKeys).sort().map(key => ({
+        key,
+        name: key // Use key as name since we don't have the mapping
+      }))
+
+      return NextResponse.json({ teams })
     }
 
     // Filter teams that played OR have lineups in this season
@@ -33,11 +67,13 @@ export async function GET(request: NextRequest) {
     let gamesData
     let gamesError
     try {
+      // IMPORTANT: Must use .order('id') for consistent pagination
       gamesData = await fetchAllRecords<{ home_team: string | null; away_team: string | null }>(
         () => supabase
           .from('games')
           .select('home_team, away_team')
           .eq('season', parseInt(season))
+          .order('id', { ascending: true })
       )
     } catch (error) {
       console.error('Error fetching games:', error)

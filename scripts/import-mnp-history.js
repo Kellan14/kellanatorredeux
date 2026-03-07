@@ -12,6 +12,8 @@
  * 6. Inserts into matches table first, then games table with match_id
  */
 
+require('dotenv').config({ path: '.env.local' });
+
 const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');

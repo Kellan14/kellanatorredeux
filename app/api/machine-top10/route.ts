@@ -1,20 +1,10 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { getMachineVariations } from '@/lib/machine-mappings'
-import fs from 'fs'
-import path from 'path'
+import { getMachineVariations, machineMappings } from '@/lib/machine-mappings'
+import { getVenueVariations } from '@/lib/venue-mappings'
+import { getScoreLimits } from '@/lib/score-limits'
 
 export const dynamic = 'force-dynamic';
-
-// Load score limits
-const scoreLimitsPath = path.join(process.cwd(), 'score_limits.json')
-let scoreLimits: Record<string, number> = {}
-try {
-  const scoreLimitsData = fs.readFileSync(scoreLimitsPath, 'utf-8')
-  scoreLimits = JSON.parse(scoreLimitsData)
-} catch (error) {
-  console.error('Failed to load score limits:', error)
-}
 
 export async function GET(request: Request) {
   try {
@@ -46,12 +36,16 @@ export async function GET(request: Request) {
       // Use fetchAllRecords with a query builder function for proper pagination
       // Query for ALL machine name variations (both short forms like "PULP" and long forms like "Pulp Fiction")
       games = await fetchAllRecords<{
+        player_1_key: string | null
         player_1_name: string | null
         player_1_score: number | null
+        player_2_key: string | null
         player_2_name: string | null
         player_2_score: number | null
+        player_3_key: string | null
         player_3_name: string | null
         player_3_score: number | null
+        player_4_key: string | null
         player_4_name: string | null
         player_4_score: number | null
         venue: string | null
@@ -67,7 +61,7 @@ export async function GET(request: Request) {
 
         let query = supabase
           .from('games')
-          .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, venue, season, week, match_key, round_number')
+          .select('player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score, venue, season, week, match_key, round_number')
           .in('machine', machineVariations)
 
         // Filter by season if "this season"
@@ -79,32 +73,43 @@ export async function GET(request: Request) {
         }
 
         // Filter by venue if context is venue-specific (not league-wide)
+        // Use venue variations to handle inconsistent naming (e.g., "Ice Box" vs "Icebox")
         if (venue && !context.includes('League-wide')) {
-          query = query.eq('venue', venue)
+          const venueVariations = getVenueVariations(venue)
+          query = query.in('venue', venueVariations)
         }
 
-        return query
+        // IMPORTANT: Must use .order('id') for consistent pagination - without ordering,
+        // PostgreSQL returns rows in arbitrary order that changes between pages
+        return query.order('id', { ascending: true })
       })
     } catch (error) {
       console.error('Supabase error:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
+    // Load score limits from database
+    const scoreLimits = await getScoreLimits()
+
     // Helper to check if a score should be filtered out based on machine limits
+    // Use standardized machine name to check limits
     const isScoreValid = (score: number): boolean => {
-      const machineLimit = scoreLimits[machineKey.toLowerCase()]
+      const standardized = (machineMappings[machineKey.toLowerCase()] || machineKey).toLowerCase()
+      const machineLimit = scoreLimits[standardized] || scoreLimits[machineKey.toLowerCase()]
       if (!machineLimit) return true
       return score <= machineLimit
     }
 
     // Extract all scores from games
-    const scores: Array<{ player: string; score: number; venue: string; season: number; week: number; match: string; round: number }> = []
+    // Include playerKey to identify same player with different name variants (e.g., "Name" vs "Name (sub)")
+    const scores: Array<{ player: string; playerKey: string; score: number; venue: string; season: number; week: number; match: string; round: number }> = []
 
     for (const game of games) {
       // Player 1
       if (game.player_1_name && game.player_1_score != null && isScoreValid(game.player_1_score)) {
         scores.push({
           player: game.player_1_name,
+          playerKey: game.player_1_key || `name:${game.player_1_name}`,
           score: game.player_1_score,
           venue: game.venue || '',
           season: game.season || 0,
@@ -117,6 +122,7 @@ export async function GET(request: Request) {
       if (game.player_2_name && game.player_2_score != null && isScoreValid(game.player_2_score)) {
         scores.push({
           player: game.player_2_name,
+          playerKey: game.player_2_key || `name:${game.player_2_name}`,
           score: game.player_2_score,
           venue: game.venue || '',
           season: game.season || 0,
@@ -129,6 +135,7 @@ export async function GET(request: Request) {
       if (game.player_3_name && game.player_3_score != null && isScoreValid(game.player_3_score)) {
         scores.push({
           player: game.player_3_name,
+          playerKey: game.player_3_key || `name:${game.player_3_name}`,
           score: game.player_3_score,
           venue: game.venue || '',
           season: game.season || 0,
@@ -141,6 +148,7 @@ export async function GET(request: Request) {
       if (game.player_4_name && game.player_4_score != null && isScoreValid(game.player_4_score)) {
         scores.push({
           player: game.player_4_name,
+          playerKey: game.player_4_key || `name:${game.player_4_name}`,
           score: game.player_4_score,
           venue: game.venue || '',
           season: game.season || 0,
@@ -155,7 +163,8 @@ export async function GET(request: Request) {
     const sortedScores = scores.sort((a, b) => b.score - a.score)
 
     // Assign ranks handling ties correctly
-    const rankedScores: Array<{ player: string; score: number; venue: string; season: number; week: number; match: string; round: number; rank: number }> = []
+    // playerKey is used to identify same player with different name variants (e.g., "Name" vs "Name (sub)")
+    const rankedScores: Array<{ player: string; playerKey: string; score: number; venue: string; season: number; week: number; match: string; round: number; rank: number }> = []
     let currentRank = 1
 
     for (let i = 0; i < sortedScores.length; i++) {

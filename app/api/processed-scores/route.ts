@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, fetchAllRecords } from '@/lib/supabase';
 import { type ProcessedScore } from '@/lib/tournament-data';
+import { standardizeVenueName } from '@/lib/venue-mappings';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,6 +33,7 @@ export async function GET(request: NextRequest) {
           .in('season', seasonList)
           .order('season', { ascending: false })
           .order('week', { ascending: false })
+          .order('id', { ascending: true }) // Unique key ensures consistent pagination
       )
     } catch (error) {
       console.error('[processed-scores] Database error:', error)
@@ -101,7 +103,7 @@ export async function GET(request: NextRequest) {
           week: game.week,
           match: game.match_key,
           round: game.round_number,
-          venue: game.venue || '',
+          venue: standardizeVenueName(game.venue) || '',
           machine: (game.machine || '').toLowerCase(),
           player_name: playerName || 'Unknown',
           team: teamKey || '',

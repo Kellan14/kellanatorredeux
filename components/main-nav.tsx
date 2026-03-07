@@ -39,9 +39,12 @@ export function MainNav() {
     { href: '/' as const, label: 'Dashboard' },
     { href: '/stats' as const, label: 'Statistics' },
     { href: '/machines' as const, label: 'Machines' },
+    { href: '/head-to-head' as const, label: 'Head to Head' },
+    { href: '/player-profile' as const, label: 'Player Profile' },
     ...(user ? [
       { href: '/strategy' as const, label: 'Strategy' },
     ] : []),
+    { href: '/options' as const, label: 'Options' },
   ] as const
 
   return (

@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trophy, Target, TrendingUp, Users, Calendar, BarChart3, Percent, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown, LineChart } from 'lucide-react'
+import { Trophy, Target, TrendingUp, Users, Calendar, BarChart3, Percent, ChevronRight, ChevronDown, ChevronUp, ArrowUpDown, ArrowUp, ArrowDown, LineChart } from 'lucide-react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,10 +26,15 @@ import {
 } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import { getMachineImagePath } from '@/lib/machine-images'
-import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { getMachineDisplayName } from '@/lib/machine-mappings'
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts'
 
-export default function HomePage() {
+function HomePageContent() {
+  const searchParams = useSearchParams()
+  const viewPlayerParam = searchParams.get('viewPlayer')
+
   const [user, setUser] = useState<SupabaseUser | null>(null)
+  const [viewingAsPlayer, setViewingAsPlayer] = useState<string | null>(null)
   const [matchLabel, setMatchLabel] = useState<string>('Loading...')
   const [opponent, setOpponent] = useState<string>('Loading...')
   const [matchDate, setMatchDate] = useState<string>('')
@@ -50,6 +56,106 @@ export default function HomePage() {
   const [opponentPlayers, setOpponentPlayers] = useState<string[]>([])
   const [showSubs, setShowSubs] = useState(false)
 
+  // Opponent top picks section
+  const [opponentTopPicks, setOpponentTopPicks] = useState<any[]>([])
+  const [topPicksSeasonStart, setTopPicksSeasonStart] = useState<number>(20)
+  const [topPicksSeasonEnd, setTopPicksSeasonEnd] = useState<number>(23)
+  const [loadingTopPicks, setLoadingTopPicks] = useState(false)
+  const [availableSeasons, setAvailableSeasons] = useState<number[]>([20, 21, 22, 23])
+  const [topPicksSortColumn, setTopPicksSortColumn] = useState<string>('timesPicked')
+  const [topPicksSortDirection, setTopPicksSortDirection] = useState<'asc' | 'desc'>('desc')
+
+  // Your performance sorting
+  const [perfSortColumn, setPerfSortColumn] = useState<string>('pctOfVenue')
+  const [perfSortDirection, setPerfSortDirection] = useState<'asc' | 'desc'>('desc')
+
+  // Least unique players section
+  const [leastUniquePlayers, setLeastUniquePlayers] = useState<any>(null)
+  const [loadingLeastUnique, setLoadingLeastUnique] = useState(false)
+  const [leastUniqueSeasonStart, setLeastUniqueSeasonStart] = useState<number>(20)
+  const [leastUniqueSeasonEnd, setLeastUniqueSeasonEnd] = useState<number>(23)
+  const [leastUniqueCollapsed, setLeastUniqueCollapsed] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('leastUniqueCollapsed')
+      return saved === 'true'
+    }
+    return false
+  })
+
+  // Hot swap players state
+  const [excludedPlayers, setExcludedPlayers] = useState<Set<string>>(new Set())
+  const [includedPlayers, setIncludedPlayers] = useState<Set<string>>(new Set())
+  const [swapDialogOpen, setSwapDialogOpen] = useState(false)
+  const [swapDialogPlayer, setSwapDialogPlayer] = useState<string | null>(null)
+  const [teamAllPlayers, setTeamAllPlayers] = useState<any[]>([])
+  const [loadingTeamPlayers, setLoadingTeamPlayers] = useState(false)
+  const [playerSearchQuery, setPlayerSearchQuery] = useState('')
+  const [playerSearchResults, setPlayerSearchResults] = useState<string[]>([])
+  const [loadingSearch, setLoadingSearch] = useState(false)
+
+  // Collapsed states for all sections
+  const [statsCollapsed, setStatsCollapsed] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('statsCollapsed')
+      return saved === 'true'
+    }
+    return false
+  })
+  const [topPicksCollapsed, setTopPicksCollapsed] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('topPicksCollapsed')
+      return saved === 'true'
+    }
+    return false
+  })
+  const [opponentPlayersCollapsed, setOpponentPlayersCollapsed] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('opponentPlayersCollapsed')
+      return saved === 'true'
+    }
+    return false
+  })
+  const [performanceCollapsed, setPerformanceCollapsed] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('performanceCollapsed')
+      return saved === 'true'
+    }
+    return false
+  })
+  const [achievementsCollapsed, setAchievementsCollapsed] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('achievementsCollapsed')
+      return saved === 'true'
+    }
+    return false
+  })
+
+  // Persist all collapsed states
+  useEffect(() => {
+    localStorage.setItem('leastUniqueCollapsed', String(leastUniqueCollapsed))
+  }, [leastUniqueCollapsed])
+  useEffect(() => {
+    localStorage.setItem('statsCollapsed', String(statsCollapsed))
+  }, [statsCollapsed])
+  useEffect(() => {
+    localStorage.setItem('topPicksCollapsed', String(topPicksCollapsed))
+  }, [topPicksCollapsed])
+  useEffect(() => {
+    localStorage.setItem('opponentPlayersCollapsed', String(opponentPlayersCollapsed))
+  }, [opponentPlayersCollapsed])
+  useEffect(() => {
+    localStorage.setItem('performanceCollapsed', String(performanceCollapsed))
+  }, [performanceCollapsed])
+  useEffect(() => {
+    localStorage.setItem('achievementsCollapsed', String(achievementsCollapsed))
+  }, [achievementsCollapsed])
+
+  // Reset swaps when opponent changes
+  useEffect(() => {
+    setExcludedPlayers(new Set())
+    setIncludedPlayers(new Set())
+  }, [opponent])
+
   // Achievements section
   const [achievements, setAchievements] = useState<any[]>([])
   const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null)
@@ -60,6 +166,20 @@ export default function HomePage() {
   const [machinesAtVenue, setMachinesAtVenue] = useState<string[]>([])
   const [playerVenueSpecific, setPlayerVenueSpecific] = useState(true)
   const [machineCounts, setMachineCounts] = useState<Record<string, { atVenue: number; allVenues: number }>>({})
+  const [playerSeasonStart, setPlayerSeasonStart] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('playerSeasonRange')
+      if (saved) return JSON.parse(saved).start
+    }
+    return 22
+  })
+  const [playerSeasonEnd, setPlayerSeasonEnd] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('playerSeasonRange')
+      if (saved) return JSON.parse(saved).end
+    }
+    return 23
+  })
 
   // Machine selection dialog
   const [selectedMachine, setSelectedMachine] = useState<string | null>(null)
@@ -72,35 +192,207 @@ export default function HomePage() {
   const [playerPerformance, setPlayerPerformance] = useState<any>(null)
   const [playerName, setPlayerName] = useState<string>('')
   const [ownPerformanceVenueSpecific, setOwnPerformanceVenueSpecific] = useState(true)
+  const [venueMachines, setVenueMachines] = useState<string[]>([])
+
 
   // IPR history dialog
   const [iprHistoryDialogOpen, setIprHistoryDialogOpen] = useState(false)
   const [iprHistory, setIprHistory] = useState<any[]>([])
+  const [iprBrushRange, setIprBrushRange] = useState<{ startIndex: number; endIndex: number } | null>(null)
 
   const supabase = createSupabaseClient()
 
   useEffect(() => {
-    checkUser()
+    // If viewing as another player, load their stats directly
+    if (viewPlayerParam) {
+      setViewingAsPlayer(viewPlayerParam)
+      loadViewPlayerStats(viewPlayerParam)
+    } else {
+      setViewingAsPlayer(null)
+      checkUser()
+    }
     fetchNextMatch()
-  }, [])
+  }, [viewPlayerParam])
 
   useEffect(() => {
-    if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable') {
+    if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venueMachines.length > 0) {
       fetchOpponentPlayers()
     }
-  }, [opponent, showSubs])
+  }, [opponent, showSubs, venueMachines])
 
   useEffect(() => {
-    if (playerName && venue && venue !== 'Loading...') {
+    if (playerName && venue && venue !== 'Loading...' && venueMachines.length > 0) {
       fetchPlayerPerformance()
     }
-  }, [playerName, venue, ownPerformanceVenueSpecific])
+  }, [playerName, venue, ownPerformanceVenueSpecific, venueMachines])
 
   useEffect(() => {
     if (playerName) {
       fetchAchievements()
     }
   }, [playerName])
+
+  // Fetch opponent top picks when opponent, venue, or season filters change
+  useEffect(() => {
+    if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venue && venue !== 'Loading...') {
+      fetchOpponentTopPicks()
+    }
+  }, [opponent, venue, topPicksSeasonStart, topPicksSeasonEnd])
+
+  const fetchOpponentTopPicks = async () => {
+    setLoadingTopPicks(true)
+    try {
+      // Build season list from range
+      const seasons: number[] = []
+      for (let s = topPicksSeasonStart; s <= topPicksSeasonEnd; s++) {
+        seasons.push(s)
+      }
+
+      const url = `/api/machine-stats?` +
+        `seasons=${seasons.join(',')}` +
+        `&venue=${encodeURIComponent(venue)}` +
+        `&teamName=The Wrecking Crew` +
+        `&opponentTeam=${encodeURIComponent(opponent)}` +
+        `&teamVenueSpecific=true`
+
+      const response = await fetch(url)
+      if (response.ok) {
+        const data = await response.json()
+        // Sort by timesPicked descending, take top 10
+        const sorted = (data.stats || [])
+          .filter((s: any) => s.timesPicked > 0)
+          .sort((a: any, b: any) => b.timesPicked - a.timesPicked)
+          .slice(0, 10)
+        setOpponentTopPicks(sorted)
+      }
+    } catch (error) {
+      console.error('Error fetching opponent top picks:', error)
+      setOpponentTopPicks([])
+    } finally {
+      setLoadingTopPicks(false)
+    }
+  }
+
+  // Fetch least unique players when opponent, venue, or season filters change
+  useEffect(() => {
+    if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venue && venue !== 'Loading...' && venueMachines.length > 0) {
+      fetchLeastUniquePlayers()
+    }
+  }, [opponent, venue, leastUniqueSeasonStart, leastUniqueSeasonEnd, venueMachines, excludedPlayers, includedPlayers])
+
+  const fetchLeastUniquePlayers = async () => {
+    setLoadingLeastUnique(true)
+    try {
+      let url = `/api/least-unique-players?` +
+        `venue=${encodeURIComponent(venue)}` +
+        `&opponent=${encodeURIComponent(opponent)}` +
+        `&seasonStart=${leastUniqueSeasonStart}` +
+        `&seasonEnd=${leastUniqueSeasonEnd}` +
+        `&machines=${encodeURIComponent(venueMachines.join(','))}`
+
+      if (excludedPlayers.size > 0) {
+        url += `&excludedPlayers=${encodeURIComponent(Array.from(excludedPlayers).join(','))}`
+      }
+      if (includedPlayers.size > 0) {
+        url += `&includedPlayers=${encodeURIComponent(Array.from(includedPlayers).join(','))}`
+      }
+
+      const response = await fetch(url)
+      if (response.ok) {
+        const data = await response.json()
+        setLeastUniquePlayers(data)
+      }
+    } catch (error) {
+      console.error('Error fetching least unique players:', error)
+      setLeastUniquePlayers(null)
+    } finally {
+      setLoadingLeastUnique(false)
+    }
+  }
+
+  const openSwapDialog = async (playerName: string) => {
+    setSwapDialogPlayer(playerName)
+    setSwapDialogOpen(true)
+    setPlayerSearchQuery('')
+    setPlayerSearchResults([])
+
+    // Fetch all players who have played for this team
+    setLoadingTeamPlayers(true)
+    try {
+      const response = await fetch(`/api/team-all-players?team=${encodeURIComponent(opponent)}`)
+      if (response.ok) {
+        const data = await response.json()
+        setTeamAllPlayers(data.players || [])
+      }
+    } catch (error) {
+      console.error('Error fetching team players:', error)
+    } finally {
+      setLoadingTeamPlayers(false)
+    }
+  }
+
+  const handleSwapPlayer = (newPlayer: string) => {
+    if (!swapDialogPlayer) return
+
+    // If swapping out a roster player, add to excluded
+    if (leastUniquePlayers?.rosterPlayers?.includes(swapDialogPlayer)) {
+      setExcludedPlayers(prev => new Set([...Array.from(prev), swapDialogPlayer]))
+    }
+    // If swapping out an included player, remove from included
+    if (includedPlayers.has(swapDialogPlayer)) {
+      setIncludedPlayers(prev => {
+        const next = new Set(prev)
+        next.delete(swapDialogPlayer)
+        return next
+      })
+    }
+
+    // Add new player to included (unless they're already a roster player)
+    if (!leastUniquePlayers?.rosterPlayers?.includes(newPlayer) || excludedPlayers.has(newPlayer)) {
+      setIncludedPlayers(prev => new Set([...Array.from(prev), newPlayer]))
+    }
+    // If new player was excluded, un-exclude them
+    if (excludedPlayers.has(newPlayer)) {
+      setExcludedPlayers(prev => {
+        const next = new Set(prev)
+        next.delete(newPlayer)
+        return next
+      })
+    }
+
+    setSwapDialogOpen(false)
+  }
+
+  const resetPlayerSwaps = () => {
+    setExcludedPlayers(new Set())
+    setIncludedPlayers(new Set())
+  }
+
+  // Search players in database
+  useEffect(() => {
+    if (playerSearchQuery.length < 2) {
+      setPlayerSearchResults([])
+      return
+    }
+
+    const searchPlayers = async () => {
+      setLoadingSearch(true)
+      try {
+        const response = await fetch(`/api/search-players?q=${encodeURIComponent(playerSearchQuery)}`)
+        if (response.ok) {
+          const data = await response.json()
+          setPlayerSearchResults(data.players || [])
+        }
+      } catch (error) {
+        console.error('Error searching players:', error)
+      } finally {
+        setLoadingSearch(false)
+      }
+    }
+
+    const debounce = setTimeout(searchPlayers, 300)
+    return () => clearTimeout(debounce)
+  }, [playerSearchQuery])
 
   const checkUser = async () => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -128,13 +420,13 @@ export default function HomePage() {
         return
       }
 
-      const playerName = profile.player_name
+      const pName = profile.player_name
 
       // Save player name for performance profile
-      setPlayerName(playerName)
+      setPlayerName(pName)
 
       // Fetch comprehensive stats from most recent matches
-      const statsResponse = await fetch(`/api/player-ipr?name=${encodeURIComponent(playerName)}`)
+      const statsResponse = await fetch(`/api/player-ipr?name=${encodeURIComponent(pName)}`)
 
       if (statsResponse.ok) {
         const statsData = await statsResponse.json()
@@ -148,22 +440,63 @@ export default function HomePage() {
           currentSeason: statsData.currentSeason || 23
         })
       } else {
-        console.log(`Player "${playerName}" not found in recent matches`)
+        console.log(`Player "${pName}" not found in recent matches`)
       }
     } catch (error) {
       console.error('Error loading player stats:', error)
     }
   }
 
+  // Load stats for a player when viewing as them (from player profile)
+  const loadViewPlayerStats = async (viewPlayer: string) => {
+    try {
+      setLoading(true)
+      setPlayerName(viewPlayer)
+
+      // Fetch stats for the view player
+      const statsResponse = await fetch(`/api/player-ipr?name=${encodeURIComponent(viewPlayer)}`)
+
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json()
+
+        setPlayerStats({
+          ipr: statsData.ipr || 0,
+          matchesPlayed: statsData.matchesPlayed || 0,
+          pointsWon: statsData.pointsWon || 0,
+          pointsPerMatch: statsData.pointsPerMatch || 0,
+          pops: statsData.pops || 0,
+          currentSeason: statsData.currentSeason || 23
+        })
+      } else {
+        console.log(`Player "${viewPlayer}" not found in recent matches`)
+      }
+    } catch (error) {
+      console.error('Error loading view player stats:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const fetchNextMatch = async () => {
     try {
-      const response = await fetch('/api/latest-twc-match')
-      const data = await response.json()
+      // Fetch match info and venue machine list in parallel
+      const [matchResponse, venuesResponse] = await Promise.all([
+        fetch('/api/latest-twc-match'),
+        fetch('/api/venues')
+      ])
+      const [data, venuesData] = await Promise.all([
+        matchResponse.json(),
+        venuesResponse.json()
+      ])
 
       if (data.opponent && data.venue) {
         setOpponent(data.opponent)
         setVenue(data.venue)
         setMatchState(data.state)
+
+        // Set venue machines immediately
+        const venueEntry = (venuesData.venues || []).find((v: any) => v.name === data.venue)
+        setVenueMachines(venueEntry?.machines || [])
 
         // Set label based on match state
         if (data.state === 'complete') {
@@ -192,10 +525,18 @@ export default function HomePage() {
 
   const fetchOpponentPlayers = async () => {
     try {
-      // Fetch roster/players for the opponent team
-      // Use previous season for historical advantages (current season likely has no games yet)
       const currentSeason = playerStats.currentSeason || 23
       const historicalSeason = currentSeason - 1
+
+      // Fetch roster independently so it doesn't depend on machine-advantages
+      const playersResponse = await fetch(`/api/team-roster?team=${encodeURIComponent(opponent)}&season=${currentSeason}&showSubs=${showSubs}`)
+      if (playersResponse.ok) {
+        const playersData = await playersResponse.json()
+        const playerNames = (playersData.players || []).map((p: any) => p.name)
+        setOpponentPlayers(playerNames)
+      }
+
+      // Fetch machine advantages (uses venueMachines from state)
       const response = await fetch(
         `/api/machine-advantages?` +
         `venue=${encodeURIComponent(venue)}` +
@@ -203,26 +544,12 @@ export default function HomePage() {
         `&seasonStart=20` +
         `&seasonEnd=${historicalSeason}` +
         `&teamVenueSpecific=true` +
-        `&twcVenueSpecific=false`
+        `&twcVenueSpecific=false` +
+        `&machines=${encodeURIComponent(venueMachines.join(','))}`
       )
 
       if (response.ok) {
         const data = await response.json()
-        // Get unique players from the advantages data
-        const allPlayers = new Set<string>()
-
-        // We need to fetch the actual roster - let me use a different approach
-        // For now, we'll get players from match data
-        const playersResponse = await fetch(`/api/team-roster?team=${encodeURIComponent(opponent)}&season=${currentSeason}&showSubs=${showSubs}`)
-
-        if (playersResponse.ok) {
-          const playersData = await playersResponse.json()
-          // Extract just the names from player objects
-          const playerNames = (playersData.players || []).map((p: any) => p.name)
-          setOpponentPlayers(playerNames)
-        }
-
-        // Also fetch machines at venue for machine selection dialog
         const machines = data.advantages?.map((adv: any) => adv.machine) || []
         setMachinesAtVenue(machines)
       }
@@ -241,7 +568,8 @@ export default function HomePage() {
         `&venue=${encodeURIComponent(venue)}` +
         `&seasonStart=20` +
         `&seasonEnd=${historicalSeason}` +
-        `&allVenues=${!ownPerformanceVenueSpecific}`
+        `&allVenues=${!ownPerformanceVenueSpecific}` +
+        `&machines=${encodeURIComponent(venueMachines.join(','))}`
 
       console.log('Performance API URL:', url)
       const response = await fetch(url)
@@ -311,15 +639,13 @@ export default function HomePage() {
     setPlayerDialogOpen(true)
 
     // Fetch machine play counts for this player
-    // Use previous season for historical data (current season likely has no games yet)
     try {
-      const historicalSeason = (playerStats.currentSeason || 23) - 1
       const response = await fetch(
         `/api/player-machine-counts?` +
         `player=${encodeURIComponent(playerName)}` +
         `&venue=${encodeURIComponent(venue)}` +
-        `&seasonStart=20` +
-        `&seasonEnd=${historicalSeason}`
+        `&seasonStart=${playerSeasonStart}` +
+        `&seasonEnd=${playerSeasonEnd}`
       )
 
       if (response.ok) {
@@ -345,16 +671,14 @@ export default function HomePage() {
     const venueFilter = useVenueSpecific !== undefined ? useVenueSpecific : playerVenueSpecific
 
     // Fetch stats for this player on this machine
-    // Use season 22 for historical data since season 23 has no games yet
     try {
-      const currentSeason = 22
       // Add timestamp to bust cache
       const url = `/api/player-machine-stats?` +
         `player=${encodeURIComponent(selectedPlayer)}` +
         `&machine=${encodeURIComponent(machine)}` +
         `&venue=${venueFilter ? encodeURIComponent(venue) : ''}` +
-        `&seasonStart=20` +
-        `&seasonEnd=${currentSeason}` +
+        `&seasonStart=${playerSeasonStart}` +
+        `&seasonEnd=${playerSeasonEnd}` +
         `&_t=${Date.now()}`
 
       console.log('Fetching player machine stats:', url)
@@ -425,6 +749,7 @@ export default function HomePage() {
     if (!playerName) return
 
     setIprHistoryDialogOpen(true)
+    setIprBrushRange(null)
 
     try {
       const response = await fetch(`/api/player-ipr-history?name=${encodeURIComponent(playerName)}`)
@@ -472,6 +797,73 @@ export default function HomePage() {
     return { mean, median, mode, iqr }
   }
 
+  // Sort handler for Their Top Picks
+  const handleTopPicksSort = (column: string) => {
+    if (topPicksSortColumn === column) {
+      setTopPicksSortDirection(topPicksSortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setTopPicksSortColumn(column)
+      setTopPicksSortDirection(column === 'machine' ? 'asc' : 'desc')
+    }
+  }
+
+  const getSortedTopPicks = () => {
+    return [...opponentTopPicks].sort((a, b) => {
+      let aVal = a[topPicksSortColumn]
+      let bVal = b[topPicksSortColumn]
+
+      if (typeof aVal === 'string') {
+        aVal = aVal.toLowerCase()
+        bVal = bVal?.toLowerCase() || ''
+        return topPicksSortDirection === 'asc'
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal)
+      }
+
+      aVal = aVal || 0
+      bVal = bVal || 0
+      return topPicksSortDirection === 'asc' ? aVal - bVal : bVal - aVal
+    })
+  }
+
+  // Sort handler for Your Performance
+  const handlePerfSort = (column: string) => {
+    if (perfSortColumn === column) {
+      setPerfSortDirection(perfSortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setPerfSortColumn(column)
+      setPerfSortDirection(column === 'machine' ? 'asc' : 'desc')
+    }
+  }
+
+  const getSortedPerformance = () => {
+    if (!playerPerformance?.machinePerformance) return []
+    return [...playerPerformance.machinePerformance].sort((a: any, b: any) => {
+      let aVal = a[perfSortColumn]
+      let bVal = b[perfSortColumn]
+
+      if (typeof aVal === 'string') {
+        aVal = aVal.toLowerCase()
+        bVal = bVal?.toLowerCase() || ''
+        return perfSortDirection === 'asc'
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal)
+      }
+
+      aVal = aVal || 0
+      bVal = bVal || 0
+      return perfSortDirection === 'asc' ? aVal - bVal : bVal - aVal
+    })
+  }
+
+  // Sort icon component
+  const SortIcon = ({ column, currentColumn, direction }: { column: string, currentColumn: string, direction: 'asc' | 'desc' }) => {
+    if (column !== currentColumn) return <ArrowUpDown className="h-3 w-3 ml-1 opacity-30" />
+    return direction === 'asc'
+      ? <ArrowUp className="h-3 w-3 ml-1" />
+      : <ArrowDown className="h-3 w-3 ml-1" />
+  }
+
   return (
     <div className="container py-8 px-4 md:px-6">
       {/* Match Header */}
@@ -498,10 +890,39 @@ export default function HomePage() {
         )}
       </div>
 
-      {user ? (
+      {/* Viewing as another player banner */}
+      {viewingAsPlayer && (
+        <div className="mb-6 p-4 bg-neon-blue/10 border border-neon-blue/30 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-sm text-muted-foreground">Viewing dashboard as: </span>
+              <span className="font-semibold text-neon-blue">{viewingAsPlayer}</span>
+            </div>
+            <Link href="/" className="text-sm text-neon-blue hover:underline">
+              Return to your dashboard
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {(user || viewingAsPlayer) ? (
         <>
           {/* Personal Stats Grid - Only shown when logged in */}
-          <div className="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-2 lg:grid-cols-5 mb-8">
+          <Card className="mb-8">
+            <CardHeader className="pb-2">
+              <button
+                className="flex items-center gap-2 w-full text-left"
+                onClick={() => setStatsCollapsed(!statsCollapsed)}
+              >
+                {statsCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                <CardTitle className="text-base">
+                  {viewingAsPlayer ? `${viewingAsPlayer}'s Season Stats` : 'Your Season Stats'}
+                </CardTitle>
+              </button>
+            </CardHeader>
+            {!statsCollapsed && (
+              <CardContent>
+                <div className="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-2 lg:grid-cols-5">
             <Card
               className="hover:shadow-lg transition-shadow hover:border-neon-blue/50 cursor-pointer"
               onClick={handleIPRClick}
@@ -579,34 +1000,293 @@ export default function HomePage() {
                 </p>
               </CardContent>
             </Card>
-          </div>
+                </div>
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Their Top Picks Section */}
+          {opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venue && (
+            <Card className="mb-8">
+              <CardHeader className="pb-2">
+                <button
+                  className="flex items-center gap-2 w-full text-left"
+                  onClick={() => setTopPicksCollapsed(!topPicksCollapsed)}
+                >
+                  {topPicksCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <div className="flex-1">
+                    <CardTitle className="text-base">Their Top Picks</CardTitle>
+                    <CardDescription className="text-xs">
+                      {opponent}'s most picked machines at {venue}
+                    </CardDescription>
+                  </div>
+                </button>
+              </CardHeader>
+              {!topPicksCollapsed && (
+              <CardContent>
+                <div className="flex items-center gap-2 mb-3">
+                  <label className="text-xs text-muted-foreground whitespace-nowrap">Seasons:</label>
+                  <select
+                    value={topPicksSeasonStart}
+                    onChange={(e) => setTopPicksSeasonStart(parseInt(e.target.value))}
+                    className="w-16 px-2 py-1 text-sm border rounded bg-background"
+                  >
+                    {availableSeasons.map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                  <span className="text-xs text-muted-foreground">to</span>
+                  <select
+                    value={topPicksSeasonEnd}
+                    onChange={(e) => setTopPicksSeasonEnd(parseInt(e.target.value))}
+                    className="w-16 px-2 py-1 text-sm border rounded bg-background"
+                  >
+                    {availableSeasons.map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+                {loadingTopPicks ? (
+                  <div className="text-center py-4 text-muted-foreground">Loading top picks...</div>
+                ) : opponentTopPicks.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() => handleTopPicksSort('machine')}
+                          >
+                            <div className="flex items-center">
+                              Machine
+                              <SortIcon column="machine" currentColumn={topPicksSortColumn} direction={topPicksSortDirection} />
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="text-right cursor-pointer hover:bg-muted/50"
+                            onClick={() => handleTopPicksSort('timesPicked')}
+                          >
+                            <div className="flex items-center justify-end">
+                              Times Picked
+                              <SortIcon column="timesPicked" currentColumn={topPicksSortColumn} direction={topPicksSortDirection} />
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="text-right cursor-pointer hover:bg-muted/50"
+                            onClick={() => handleTopPicksSort('teamAverage')}
+                          >
+                            <div className="flex items-center justify-end">
+                              Avg Score
+                              <SortIcon column="teamAverage" currentColumn={topPicksSortColumn} direction={topPicksSortDirection} />
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="text-right cursor-pointer hover:bg-muted/50"
+                            onClick={() => handleTopPicksSort('percentOfVenueAvg')}
+                          >
+                            <div className="flex items-center justify-end">
+                              % of Venue Avg
+                              <SortIcon column="percentOfVenueAvg" currentColumn={topPicksSortColumn} direction={topPicksSortDirection} />
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="text-right cursor-pointer hover:bg-muted/50"
+                            onClick={() => handleTopPicksSort('pops')}
+                          >
+                            <div className="flex items-center justify-end">
+                              POPS
+                              <SortIcon column="pops" currentColumn={topPicksSortColumn} direction={topPicksSortDirection} />
+                            </div>
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {getSortedTopPicks().map((pick: any) => (
+                          <TableRow key={pick.machine}>
+                            <TableCell className="font-medium">{getMachineDisplayName(pick.machine)}</TableCell>
+                            <TableCell className="text-right">{pick.timesPicked}</TableCell>
+                            <TableCell className="text-right">{(pick.teamAverage || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</TableCell>
+                            <TableCell className="text-right">
+                              <span className={
+                                pick.percentOfVenueAvg >= 100 ? 'text-green-600 font-semibold' :
+                                pick.percentOfVenueAvg >= 90 ? 'text-yellow-600' :
+                                'text-muted-foreground'
+                              }>
+                                {(pick.percentOfVenueAvg || 0).toFixed(1)}%
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <span className={
+                                pick.pops >= 50 ? 'text-green-600 font-semibold' :
+                                pick.pops >= 40 ? 'text-yellow-600' :
+                                'text-muted-foreground'
+                              }>
+                                {(pick.pops || 0).toFixed(1)}%
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="text-center py-4 text-muted-foreground">
+                    No pick data available for {opponent} at {venue}
+                  </div>
+                )}
+              </CardContent>
+              )}
+            </Card>
+          )}
+
+          {/* Least Unique Players Section */}
+          {opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venue && (
+            <Card className="mb-8">
+              <CardHeader className="pb-2">
+                <button
+                  className="flex items-center gap-2 w-full text-left"
+                  onClick={() => setLeastUniqueCollapsed(!leastUniqueCollapsed)}
+                >
+                  {leastUniqueCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <div className="flex-1">
+                    <CardTitle className="text-base">Least Unique Players</CardTitle>
+                    <CardDescription className="text-xs">
+                      4 machines with fewest {opponent} players who have played them
+                    </CardDescription>
+                  </div>
+                </button>
+              </CardHeader>
+              {!leastUniqueCollapsed && (
+                <CardContent>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs text-muted-foreground whitespace-nowrap">Seasons:</label>
+                      <select
+                        value={leastUniqueSeasonStart}
+                        onChange={(e) => setLeastUniqueSeasonStart(parseInt(e.target.value))}
+                        className="w-16 px-2 py-1 text-sm border rounded bg-background"
+                      >
+                        {availableSeasons.map(s => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                      <span className="text-xs text-muted-foreground">to</span>
+                      <select
+                        value={leastUniqueSeasonEnd}
+                        onChange={(e) => setLeastUniqueSeasonEnd(parseInt(e.target.value))}
+                        className="w-16 px-2 py-1 text-sm border rounded bg-background"
+                      >
+                        {availableSeasons.map(s => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {(excludedPlayers.size > 0 || includedPlayers.size > 0) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={resetPlayerSwaps}
+                        className="text-xs"
+                      >
+                        Reset to Roster
+                      </Button>
+                    )}
+                  </div>
+
+                  {loadingLeastUnique ? (
+                    <div className="text-center py-4 text-muted-foreground">Loading...</div>
+                  ) : leastUniquePlayers && leastUniquePlayers.machines && leastUniquePlayers.machines.length > 0 ? (
+                    <div className="space-y-3">
+                      <div className="text-sm font-medium text-center p-2 bg-muted/50 rounded">
+                        {leastUniquePlayers.totalUniquePlayers} unique player{leastUniquePlayers.totalUniquePlayers !== 1 ? 's' : ''} across these 4 machines
+                        {(excludedPlayers.size > 0 || includedPlayers.size > 0) && (
+                          <span className="text-yellow-600 ml-1">(modified roster)</span>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {leastUniquePlayers.machines.map((m: any, index: number) => (
+                          <div key={m.machine} className="border rounded-lg p-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="font-medium">{getMachineDisplayName(m.machine)}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {m.playerCount} player{m.playerCount !== 1 ? 's' : ''}
+                                {index > 0 && m.addedPlayers > 0 && (
+                                  <span className="text-yellow-600 ml-1">(+{m.addedPlayers} new)</span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-xs text-muted-foreground flex flex-wrap gap-1">
+                              {m.players.length > 0 ? m.players.map((p: string) => (
+                                <button
+                                  key={p}
+                                  onClick={() => openSwapDialog(p)}
+                                  className="hover:text-primary hover:underline cursor-pointer"
+                                >
+                                  {p}
+                                </button>
+                              )) : 'No players have played this'}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {leastUniquePlayers.allPlayers && leastUniquePlayers.allPlayers.length > 0 && (
+                        <div className="text-xs text-muted-foreground mt-2 pt-2 border-t">
+                          <span className="font-medium">All players (click to swap):</span>{' '}
+                          {leastUniquePlayers.allPlayers.map((p: string, i: number) => (
+                            <span key={p}>
+                              {i > 0 && ', '}
+                              <button
+                                onClick={() => openSwapDialog(p)}
+                                className="hover:text-primary hover:underline cursor-pointer"
+                              >
+                                {p}
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-muted-foreground">
+                      No data available
+                    </div>
+                  )}
+                </CardContent>
+              )}
+            </Card>
+          )}
 
           {/* Opponent Players Section */}
           <Card className="mb-8">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>{opponent} Players</CardTitle>
-                  <CardDescription>
+            <CardHeader className="pb-2">
+              <button
+                className="flex items-center gap-2 w-full text-left"
+                onClick={() => setOpponentPlayersCollapsed(!opponentPlayersCollapsed)}
+              >
+                {opponentPlayersCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                <div className="flex-1">
+                  <CardTitle className="text-base">{opponent} Players</CardTitle>
+                  <CardDescription className="text-xs">
                     Click a player to view their machine stats
                   </CardDescription>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="show-subs"
-                    checked={showSubs}
-                    onCheckedChange={(checked) => setShowSubs(!!checked)}
-                  />
-                  <label
-                    htmlFor="show-subs"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Show Subs
-                  </label>
-                </div>
-              </div>
+              </button>
             </CardHeader>
+            {!opponentPlayersCollapsed && (
             <CardContent>
+              <div className="flex items-center space-x-2 mb-3">
+                <Checkbox
+                  id="show-subs"
+                  checked={showSubs}
+                  onCheckedChange={(checked) => setShowSubs(!!checked)}
+                />
+                <label
+                  htmlFor="show-subs"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Show Subs
+                </label>
+              </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 {opponentPlayers.map((playerName) => (
                   <Button
@@ -621,21 +1301,33 @@ export default function HomePage() {
                 ))}
               </div>
             </CardContent>
+            )}
           </Card>
 
           {/* Player Performance Profile */}
           {playerName && venue && (
-            playerPerformance && playerPerformance.machinePerformance && playerPerformance.machinePerformance.length > 0 ? (
             <Card className="mb-8">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Your Performance {ownPerformanceVenueSpecific ? `at ${venue}` : '(All Venues)'}</CardTitle>
-                    <CardDescription>
-                      Your machine performance profile for the upcoming venue
+              <CardHeader className="pb-2">
+                <button
+                  className="flex items-center gap-2 w-full text-left"
+                  onClick={() => setPerformanceCollapsed(!performanceCollapsed)}
+                >
+                  {performanceCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <div className="flex-1">
+                    <CardTitle className="text-base">
+                      {viewingAsPlayer ? `${viewingAsPlayer}'s Performance` : 'Your Performance'} {ownPerformanceVenueSpecific ? `at ${venue}` : '(All Venues)'}
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      {viewingAsPlayer ? `${viewingAsPlayer}'s` : 'Your'} machine performance profile for the upcoming venue
                     </CardDescription>
                   </div>
-                  <div className="flex items-center space-x-2">
+                </button>
+              </CardHeader>
+              {!performanceCollapsed && (
+              <CardContent>
+                {playerPerformance && playerPerformance.machinePerformance && playerPerformance.machinePerformance.length > 0 ? (
+                <>
+                  <div className="flex items-center space-x-2 mb-3">
                     <Checkbox
                       id="own-performance-venue-specific"
                       checked={ownPerformanceVenueSpecific}
@@ -648,73 +1340,102 @@ export default function HomePage() {
                       Venue Specific
                     </label>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Machine</TableHead>
-                        <TableHead>Avg Score</TableHead>
-                        <TableHead>% of Venue Avg</TableHead>
-                        <TableHead>Times Played</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {playerPerformance.machinePerformance.slice(0, 10).map((machine: any) => (
-                        <TableRow key={machine.machine}>
-                          <TableCell className="font-medium">{machine.machine}</TableCell>
-                          <TableCell>{(machine.avgScore || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</TableCell>
-                          <TableCell>
-                            <span className={
-                              machine.pctOfVenue >= 100 ? 'text-green-600 font-semibold' :
-                              machine.pctOfVenue >= 90 ? 'text-yellow-600' :
-                              'text-muted-foreground'
-                            }>
-                              {(machine.pctOfVenue || 0).toFixed(1)}%
-                            </span>
-                          </TableCell>
-                          <TableCell>{machine.timesPlayed}</TableCell>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() => handlePerfSort('machine')}
+                          >
+                            <div className="flex items-center">
+                              Machine
+                              <SortIcon column="machine" currentColumn={perfSortColumn} direction={perfSortDirection} />
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() => handlePerfSort('avgScore')}
+                          >
+                            <div className="flex items-center">
+                              Avg Score
+                              <SortIcon column="avgScore" currentColumn={perfSortColumn} direction={perfSortDirection} />
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() => handlePerfSort('pctOfVenue')}
+                          >
+                            <div className="flex items-center">
+                              % of Venue Avg
+                              <SortIcon column="pctOfVenue" currentColumn={perfSortColumn} direction={perfSortDirection} />
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() => handlePerfSort('timesPlayed')}
+                          >
+                            <div className="flex items-center">
+                              Times Played
+                              <SortIcon column="timesPlayed" currentColumn={perfSortColumn} direction={perfSortDirection} />
+                            </div>
+                          </TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-            ) : (
-              <Card className="mb-8">
-                <CardHeader>
-                  <CardTitle>Performance Profile</CardTitle>
-                  <CardDescription>
-                    Debug info: Player={playerName}, Venue={venue}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+                      </TableHeader>
+                      <TableBody>
+                        {getSortedPerformance().map((machine: any) => (
+                          <TableRow key={machine.machine}>
+                            <TableCell className="font-medium">{machine.machine}</TableCell>
+                            <TableCell>{(machine.avgScore || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</TableCell>
+                            <TableCell>
+                              <span className={
+                                machine.pctOfVenue >= 100 ? 'text-green-600 font-semibold' :
+                                machine.pctOfVenue >= 90 ? 'text-yellow-600' :
+                                'text-muted-foreground'
+                              }>
+                                {(machine.pctOfVenue || 0).toFixed(1)}%
+                              </span>
+                            </TableCell>
+                            <TableCell>{machine.timesPlayed}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </>
+                ) : (
                   <div className="text-sm text-muted-foreground">
                     {!playerPerformance ? 'No performance data loaded yet...' :
                      !playerPerformance.machinePerformance ? 'No machine performance data...' :
                      playerPerformance.machinePerformance.length === 0 ? 'No machines played at this venue yet' :
                      'Unknown state'}
                   </div>
-                  <div className="text-xs text-muted-foreground mt-2">
-                    Check browser console for more details
-                  </div>
-                </CardContent>
-              </Card>
-            )
+                )}
+              </CardContent>
+              )}
+            </Card>
           )}
 
           {/* Top 10 Achievements Section */}
           {achievements.length > 0 && (
             <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>Your Top 10 Rankings</CardTitle>
-                <CardDescription>
-                  Your top 10 scores across all machines (league-wide and venue-specific)
-                </CardDescription>
+              <CardHeader className="pb-2">
+                <button
+                  className="flex items-center gap-2 w-full text-left"
+                  onClick={() => setAchievementsCollapsed(!achievementsCollapsed)}
+                >
+                  {achievementsCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <div className="flex-1">
+                    <CardTitle className="text-base">
+                      {viewingAsPlayer ? `${viewingAsPlayer}'s Top 10 Rankings` : 'Your Top 10 Rankings'}
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      {viewingAsPlayer ? `${viewingAsPlayer}'s` : 'Your'} top 10 scores across all machines (league-wide and venue-specific)
+                    </CardDescription>
+                  </div>
+                </button>
               </CardHeader>
+              {!achievementsCollapsed && (
               <CardContent>
                 <div className="space-y-3">
                   {achievements.map((achievement, index) => (
@@ -756,12 +1477,13 @@ export default function HomePage() {
                   ))}
                 </div>
               </CardContent>
+              )}
             </Card>
           )}
 
           {/* Machine Selection Dialog */}
           <Dialog open={playerDialogOpen} onOpenChange={setPlayerDialogOpen}>
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
               <DialogHeader>
                 <DialogTitle>
                   {selectedPlayer} - Select Machine
@@ -770,6 +1492,53 @@ export default function HomePage() {
                   Choose a machine to view {selectedPlayer}'s stats
                 </DialogDescription>
               </DialogHeader>
+
+              {/* Season Range */}
+              <div className="flex items-center gap-2 mb-2">
+                <label className="text-xs text-muted-foreground whitespace-nowrap">Seasons:</label>
+                <input
+                  type="number"
+                  min={2}
+                  max={playerSeasonEnd}
+                  value={playerSeasonStart}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value) || 2
+                    setPlayerSeasonStart(val)
+                    localStorage.setItem('playerSeasonRange', JSON.stringify({ start: val, end: playerSeasonEnd }))
+                  }}
+                  className="w-16 px-2 py-1 text-sm border rounded bg-background"
+                />
+                <span className="text-xs text-muted-foreground">to</span>
+                <input
+                  type="number"
+                  min={playerSeasonStart}
+                  max={99}
+                  value={playerSeasonEnd}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value) || 23
+                    setPlayerSeasonEnd(val)
+                    localStorage.setItem('playerSeasonRange', JSON.stringify({ start: playerSeasonStart, end: val }))
+                  }}
+                  className="w-16 px-2 py-1 text-sm border rounded bg-background"
+                />
+                <button
+                  className="px-2 py-1 text-xs rounded border bg-muted hover:bg-accent transition-colors"
+                  onClick={() => {
+                    if (!selectedPlayer) return
+                    fetch(
+                      `/api/player-machine-counts?` +
+                      `player=${encodeURIComponent(selectedPlayer)}` +
+                      `&venue=${encodeURIComponent(venue)}` +
+                      `&seasonStart=${playerSeasonStart}` +
+                      `&seasonEnd=${playerSeasonEnd}`
+                    ).then(r => r.json()).then(data => {
+                      setMachineCounts(data.counts || {})
+                    }).catch(console.error)
+                  }}
+                >
+                  Apply
+                </button>
+              </div>
 
               {/* Machines Grid */}
               <div className="space-y-3">
@@ -811,7 +1580,7 @@ export default function HomePage() {
 
           {/* Player Machine Stats Dialog */}
           <Dialog open={machineDialogOpen} onOpenChange={setMachineDialogOpen}>
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto p-3 md:p-6">
               <DialogHeader>
                 <DialogTitle>
                   {selectedPlayer} - {selectedMachine}
@@ -848,22 +1617,22 @@ export default function HomePage() {
 
               {/* Statistical Summary */}
               {playerMachineStats.length > 0 && (
-                <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
+                <div className="grid grid-cols-3 gap-2 md:gap-4 mb-4 md:mb-6 p-2 md:p-4 bg-muted/50 rounded-lg">
                   {(() => {
                     const stats = calculateStats()
                     return (
                       <>
                         <div>
-                          <div className="text-xs text-muted-foreground">Mean</div>
-                          <div className="text-lg font-semibold">{(stats.mean || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                          <div className="text-[10px] md:text-xs text-muted-foreground">Mean</div>
+                          <div className="text-sm md:text-lg font-semibold">{(stats.mean || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
                         </div>
                         <div>
-                          <div className="text-xs text-muted-foreground">Median</div>
-                          <div className="text-lg font-semibold">{(stats.median || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                          <div className="text-[10px] md:text-xs text-muted-foreground">Median</div>
+                          <div className="text-sm md:text-lg font-semibold">{(stats.median || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
                         </div>
                         <div>
-                          <div className="text-xs text-muted-foreground">IQR</div>
-                          <div className="text-lg font-semibold">{(stats.iqr || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                          <div className="text-[10px] md:text-xs text-muted-foreground">IQR</div>
+                          <div className="text-sm md:text-lg font-semibold">{(stats.iqr || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
                         </div>
                       </>
                     )
@@ -873,80 +1642,68 @@ export default function HomePage() {
 
               {/* Scores Table */}
               {playerMachineStats.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="w-full overflow-hidden">
+                  <table className="w-full text-[11px] md:text-sm" style={{ tableLayout: 'fixed' }}>
                     <thead>
                       <tr className="border-b">
                         <th
-                          className="text-left p-2 cursor-pointer hover:bg-muted/50 select-none"
+                          className="text-left px-1 py-1 md:p-2 cursor-pointer hover:bg-muted/50 select-none overflow-hidden"
+                          style={{ width: '30%' }}
                           onClick={() => handleSort('score')}
                         >
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-0.5">
                             Score
-                            {sortColumn === 'score' && (
-                              sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            )}
-                            {sortColumn !== 'score' && <ArrowUpDown className="h-3 w-3 opacity-30" />}
+                            {sortColumn === 'score' ? (sortDirection === 'asc' ? <ArrowUp className="h-2.5 w-2.5 flex-shrink-0" /> : <ArrowDown className="h-2.5 w-2.5 flex-shrink-0" />) : <ArrowUpDown className="h-2.5 w-2.5 opacity-30 flex-shrink-0" />}
                           </div>
                         </th>
                         <th
-                          className="text-left p-2 cursor-pointer hover:bg-muted/50 select-none"
-                          onClick={() => handleSort('match')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Opponent
-                            {sortColumn === 'match' && (
-                              sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            )}
-                            {sortColumn !== 'match' && <ArrowUpDown className="h-3 w-3 opacity-30" />}
-                          </div>
-                        </th>
-                        <th
-                          className="text-left p-2 cursor-pointer hover:bg-muted/50 select-none"
-                          onClick={() => handleSort('round')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Round
-                            {sortColumn === 'round' && (
-                              sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            )}
-                            {sortColumn !== 'round' && <ArrowUpDown className="h-3 w-3 opacity-30" />}
-                          </div>
-                        </th>
-                        <th
-                          className="text-left p-2 cursor-pointer hover:bg-muted/50 select-none"
-                          onClick={() => handleSort('season')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Season
-                            {sortColumn === 'season' && (
-                              sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            )}
-                            {sortColumn !== 'season' && <ArrowUpDown className="h-3 w-3 opacity-30" />}
-                          </div>
-                        </th>
-                        <th
-                          className="text-left p-2 cursor-pointer hover:bg-muted/50 select-none"
-                          onClick={() => handleSort('venue')}
-                        >
-                          <div className="flex items-center gap-1">
-                            Venue
-                            {sortColumn === 'venue' && (
-                              sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            )}
-                            {sortColumn !== 'venue' && <ArrowUpDown className="h-3 w-3 opacity-30" />}
-                          </div>
-                        </th>
-                        <th
-                          className="text-left p-2 cursor-pointer hover:bg-muted/50 select-none"
+                          className="text-left px-1 py-1 md:p-2 cursor-pointer hover:bg-muted/50 select-none overflow-hidden"
+                          style={{ width: '8%' }}
                           onClick={() => handleSort('points')}
                         >
-                          <div className="flex items-center gap-1">
-                            Points
-                            {sortColumn === 'points' && (
-                              sortDirection === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            )}
-                            {sortColumn !== 'points' && <ArrowUpDown className="h-3 w-3 opacity-30" />}
+                          <div className="flex items-center gap-0.5">
+                            Pts
+                            {sortColumn === 'points' ? (sortDirection === 'asc' ? <ArrowUp className="h-2.5 w-2.5 flex-shrink-0" /> : <ArrowDown className="h-2.5 w-2.5 flex-shrink-0" />) : <ArrowUpDown className="h-2.5 w-2.5 opacity-30 flex-shrink-0" />}
+                          </div>
+                        </th>
+                        <th
+                          className="text-left px-1 py-1 md:p-2 cursor-pointer hover:bg-muted/50 select-none overflow-hidden"
+                          style={{ width: '28%' }}
+                          onClick={() => handleSort('match')}
+                        >
+                          <div className="flex items-center gap-0.5">
+                            Opp
+                            {sortColumn === 'match' ? (sortDirection === 'asc' ? <ArrowUp className="h-2.5 w-2.5 flex-shrink-0" /> : <ArrowDown className="h-2.5 w-2.5 flex-shrink-0" />) : <ArrowUpDown className="h-2.5 w-2.5 opacity-30 flex-shrink-0" />}
+                          </div>
+                        </th>
+                        <th
+                          className="text-left px-1 py-1 md:p-2 cursor-pointer hover:bg-muted/50 select-none overflow-hidden"
+                          style={{ width: '8%' }}
+                          onClick={() => handleSort('round')}
+                        >
+                          <div className="flex items-center gap-0.5">
+                            Rd
+                            {sortColumn === 'round' ? (sortDirection === 'asc' ? <ArrowUp className="h-2.5 w-2.5 flex-shrink-0" /> : <ArrowDown className="h-2.5 w-2.5 flex-shrink-0" />) : <ArrowUpDown className="h-2.5 w-2.5 opacity-30 flex-shrink-0" />}
+                          </div>
+                        </th>
+                        <th
+                          className="text-left px-1 py-1 md:p-2 cursor-pointer hover:bg-muted/50 select-none overflow-hidden"
+                          style={{ width: '8%' }}
+                          onClick={() => handleSort('season')}
+                        >
+                          <div className="flex items-center gap-0.5">
+                            S
+                            {sortColumn === 'season' ? (sortDirection === 'asc' ? <ArrowUp className="h-2.5 w-2.5 flex-shrink-0" /> : <ArrowDown className="h-2.5 w-2.5 flex-shrink-0" />) : <ArrowUpDown className="h-2.5 w-2.5 opacity-30 flex-shrink-0" />}
+                          </div>
+                        </th>
+                        <th
+                          className="text-left px-1 py-1 md:p-2 cursor-pointer hover:bg-muted/50 select-none overflow-hidden"
+                          style={{ width: '18%' }}
+                          onClick={() => handleSort('venue')}
+                        >
+                          <div className="flex items-center gap-0.5">
+                            Venue
+                            {sortColumn === 'venue' ? (sortDirection === 'asc' ? <ArrowUp className="h-2.5 w-2.5 flex-shrink-0" /> : <ArrowDown className="h-2.5 w-2.5 flex-shrink-0" />) : <ArrowUpDown className="h-2.5 w-2.5 opacity-30 flex-shrink-0" />}
                           </div>
                         </th>
                       </tr>
@@ -954,12 +1711,12 @@ export default function HomePage() {
                     <tbody>
                       {getSortedStats().map((stat, index) => (
                         <tr key={index} className="border-b hover:bg-muted/50">
-                          <td className="p-2 font-medium">{(stat.score || 0).toLocaleString()}</td>
-                          <td className="p-2">{stat.match}</td>
-                          <td className="p-2">{stat.round}</td>
-                          <td className="p-2">{stat.season}</td>
-                          <td className="p-2 text-xs">{stat.venue}</td>
-                          <td className="p-2">{stat.points !== undefined ? stat.points : 'N/A'}</td>
+                          <td className="px-1 py-1 md:p-2 font-medium tabular-nums overflow-hidden text-ellipsis whitespace-nowrap">{(stat.score || 0).toLocaleString()}</td>
+                          <td className="px-1 py-1 md:p-2 tabular-nums">{stat.points !== undefined ? stat.points : '-'}</td>
+                          <td className="px-1 py-1 md:p-2 overflow-hidden text-ellipsis whitespace-nowrap">{stat.match}</td>
+                          <td className="px-1 py-1 md:p-2">{stat.round}</td>
+                          <td className="px-1 py-1 md:p-2">{stat.season}</td>
+                          <td className="px-1 py-1 md:p-2 overflow-hidden text-ellipsis whitespace-nowrap">{stat.venue}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1059,81 +1816,264 @@ export default function HomePage() {
               </DialogHeader>
 
               {iprHistory.length > 0 ? (
-                <>
-                  {/* Summary Stats */}
-                  <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
-                    <div>
-                      <div className="text-xs text-muted-foreground">Recent Placement</div>
-                      <div className="text-lg font-semibold">{iprHistory[iprHistory.length - 1]?.ipr || 0}</div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-muted-foreground">Average Placement</div>
-                      <div className="text-lg font-semibold">
-                        {iprHistory.length > 0
-                          ? (iprHistory.reduce((sum, h) => sum + h.ipr, 0) / iprHistory.length).toFixed(1)
-                          : '0'}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-muted-foreground">Total Matches</div>
-                      <div className="text-lg font-semibold">{iprHistory.length}</div>
-                    </div>
-                  </div>
+                (() => {
+                  const defaultStart = Math.max(0, iprHistory.length - 30)
+                  const defaultEnd = iprHistory.length - 1
+                  const startIdx = iprBrushRange?.startIndex ?? defaultStart
+                  const endIdx = iprBrushRange?.endIndex ?? defaultEnd
+                  const visibleData = iprHistory.slice(startIdx, endIdx + 1)
+                  const visibleIPRs = visibleData.map((d: any) => d.ipr)
+                  const minIPR = Math.max(1, Math.floor(Math.min(...visibleIPRs)) - 1)
+                  const maxIPR = Math.min(10, Math.ceil(Math.max(...visibleIPRs)) + 1)
+                  const visibleAvg = visibleData.length > 0
+                    ? (visibleData.reduce((sum: number, h: any) => sum + h.ipr, 0) / visibleData.length).toFixed(1)
+                    : '0'
 
-                  {/* Line Chart */}
-                  <div className="w-full h-96">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RechartsLineChart
-                        data={iprHistory}
-                        margin={{ top: 5, right: 30, left: 20, bottom: 25 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                          dataKey="matchNumber"
-                          tickFormatter={(value, index) => {
-                            const match = iprHistory[index]
-                            return match ? `S${match.season}W${match.week}` : value
-                          }}
-                          label={{ value: 'Season & Week', position: 'insideBottom', offset: -10 }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                        />
-                        <YAxis
-                          domain={[1, 6]}
-                          ticks={[1, 2, 3, 4, 5, 6]}
-                        />
-                        <Tooltip
-                          content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                              const data = payload[0].payload
-                              return (
-                                <div className="bg-background border rounded-lg p-3 shadow-lg">
-                                  <p className="font-semibold">Season {data.season}, Week {data.week}</p>
-                                  <p className="text-sm">Placement: {data.ipr}</p>
-                                </div>
-                              )
-                            }
-                            return null
-                          }}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="ipr"
-                          stroke="hsl(var(--primary))"
-                          strokeWidth={2}
-                          dot={{ r: 3 }}
-                          activeDot={{ r: 6 }}
-                        />
-                      </RechartsLineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </>
+                  // Build unique seasons list for quick-select buttons
+                  const seasonIndices = new Map<number, { start: number; end: number }>()
+                  iprHistory.forEach((h: any, i: number) => {
+                    const existing = seasonIndices.get(h.season)
+                    if (!existing) {
+                      seasonIndices.set(h.season, { start: i, end: i })
+                    } else {
+                      existing.end = i
+                    }
+                  })
+                  const seasons = Array.from(seasonIndices.keys()).sort((a, b) => a - b)
+
+                  // Determine which seasons are visible for the label
+                  const visibleSeasons = Array.from(new Set(visibleData.map((d: any) => d.season))).sort((a: number, b: number) => a - b)
+                  const rangeLabel = visibleSeasons.length === 1
+                    ? `S${visibleSeasons[0]}`
+                    : `S${visibleSeasons[0]}-S${visibleSeasons[visibleSeasons.length - 1]}`
+
+                  // Calculate tick interval to prevent overlap
+                  const visibleCount = endIdx - startIdx + 1
+                  const tickInterval = visibleCount <= 15 ? 0 : Math.floor(visibleCount / 12)
+
+                  return (
+                    <>
+                      {/* Summary Stats */}
+                      <div className="grid grid-cols-3 gap-4 mb-4 p-4 bg-muted/50 rounded-lg">
+                        <div>
+                          <div className="text-xs text-muted-foreground">Recent Placement</div>
+                          <div className="text-lg font-semibold">{visibleData[visibleData.length - 1]?.ipr || 0}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Avg Placement</div>
+                          <div className="text-lg font-semibold">{visibleAvg}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-muted-foreground">Matches</div>
+                          <div className="text-lg font-semibold">{visibleData.length} <span className="text-xs text-muted-foreground font-normal">/ {iprHistory.length}</span></div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-muted-foreground text-center mb-2">Showing {rangeLabel} ({visibleData.length} matches)</div>
+
+                      {/* Season Quick-Select */}
+                      <div className="flex flex-wrap gap-1 mb-4 justify-center">
+                        <button
+                          className={`px-2 py-1 text-xs rounded border transition-colors ${
+                            startIdx === 0 && endIdx === iprHistory.length - 1
+                              ? 'bg-primary text-primary-foreground border-primary'
+                              : 'bg-muted border-border hover:bg-accent'
+                          }`}
+                          onClick={() => setIprBrushRange({ startIndex: 0, endIndex: iprHistory.length - 1 })}
+                        >
+                          All
+                        </button>
+                        {seasons.map((s) => {
+                          const range = seasonIndices.get(s)!
+                          const isActive = startIdx === range.start && endIdx === range.end
+                          return (
+                            <button
+                              key={s}
+                              className={`px-2 py-1 text-xs rounded border transition-colors ${
+                                isActive
+                                  ? 'bg-primary text-primary-foreground border-primary'
+                                  : 'bg-muted border-border hover:bg-accent'
+                              }`}
+                              onClick={() => setIprBrushRange({ startIndex: range.start, endIndex: range.end })}
+                            >
+                              S{s}
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      {/* Line Chart with Brush */}
+                      <div className="w-full" style={{ height: '420px' }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RechartsLineChart
+                            data={iprHistory}
+                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                              dataKey="matchNumber"
+                              tickFormatter={(value, index) => {
+                                const match = iprHistory.find((h: any) => h.matchNumber === value)
+                                return match ? `S${match.season}W${match.week}` : value
+                              }}
+                              angle={-45}
+                              textAnchor="end"
+                              height={60}
+                              interval={tickInterval}
+                              tick={{ fontSize: 11 }}
+                            />
+                            <YAxis
+                              domain={[minIPR, maxIPR]}
+                              allowDecimals={false}
+                              tick={{ fontSize: 12 }}
+                            />
+                            <Tooltip
+                              content={({ active, payload }) => {
+                                if (active && payload && payload.length) {
+                                  const data = payload[0].payload
+                                  return (
+                                    <div className="bg-background border rounded-lg p-3 shadow-lg">
+                                      <p className="font-semibold">Season {data.season}, Week {data.week}</p>
+                                      <p className="text-sm">IPR: {data.ipr}</p>
+                                    </div>
+                                  )
+                                }
+                                return null
+                              }}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="ipr"
+                              stroke="hsl(var(--primary))"
+                              strokeWidth={2}
+                              dot={visibleCount <= 30 ? { r: 3 } : false}
+                              activeDot={{ r: 6 }}
+                            />
+                            <Brush
+                              dataKey="matchNumber"
+                              height={30}
+                              stroke="hsl(var(--muted-foreground))"
+                              fill="hsl(var(--muted))"
+                              startIndex={startIdx}
+                              endIndex={endIdx}
+                              onChange={(range: any) => {
+                                if (range && typeof range.startIndex === 'number' && typeof range.endIndex === 'number') {
+                                  setIprBrushRange({ startIndex: range.startIndex, endIndex: range.endIndex })
+                                }
+                              }}
+                              tickFormatter={(value: any, index: number) => {
+                                const match = iprHistory[index]
+                                return match ? `S${match.season}` : ''
+                              }}
+                            />
+                          </RechartsLineChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <p className="text-xs text-muted-foreground text-center mt-2">
+                        Drag the handles below the chart to adjust range. Drag the shaded area to pan.
+                      </p>
+                    </>
+                  )
+                })()
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
                   Loading IPR history...
                 </div>
               )}
+            </DialogContent>
+          </Dialog>
+
+          {/* Player Swap Dialog */}
+          <Dialog open={swapDialogOpen} onOpenChange={setSwapDialogOpen}>
+            <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Swap Player</DialogTitle>
+                <DialogDescription>
+                  Replace {swapDialogPlayer} with another player
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                {/* Team Players Section */}
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Team Players</h4>
+                  {loadingTeamPlayers ? (
+                    <div className="text-center py-4 text-muted-foreground">Loading...</div>
+                  ) : (
+                    <div className="max-h-40 overflow-y-auto border rounded p-2 space-y-1">
+                      {teamAllPlayers
+                        .filter(p => p.name !== swapDialogPlayer)
+                        .map(p => (
+                          <button
+                            key={p.name}
+                            onClick={() => handleSwapPlayer(p.name)}
+                            className="w-full text-left px-2 py-1 text-sm rounded hover:bg-muted flex items-center justify-between"
+                          >
+                            <span>{p.name}</span>
+                            {p.isSub && <span className="text-xs text-muted-foreground">(sub)</span>}
+                          </button>
+                        ))}
+                      {teamAllPlayers.length === 0 && (
+                        <div className="text-center py-2 text-muted-foreground text-sm">No players found</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Manual Search Section */}
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Manual Entry</h4>
+                  <input
+                    type="text"
+                    placeholder="Search all players..."
+                    value={playerSearchQuery}
+                    onChange={(e) => setPlayerSearchQuery(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border rounded bg-background"
+                  />
+                  {loadingSearch && (
+                    <div className="text-center py-2 text-muted-foreground text-sm">Searching...</div>
+                  )}
+                  {playerSearchResults.length > 0 && (
+                    <div className="max-h-32 overflow-y-auto border rounded mt-2 p-2 space-y-1">
+                      {playerSearchResults
+                        .filter(p => p !== swapDialogPlayer)
+                        .map(p => (
+                          <button
+                            key={p}
+                            onClick={() => handleSwapPlayer(p)}
+                            className="w-full text-left px-2 py-1 text-sm rounded hover:bg-muted"
+                          >
+                            {p}
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Remove Player Option */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-red-600 hover:text-red-700"
+                  onClick={() => {
+                    if (swapDialogPlayer) {
+                      // Just exclude the player without adding a replacement
+                      if (leastUniquePlayers?.rosterPlayers?.includes(swapDialogPlayer)) {
+                        setExcludedPlayers(prev => new Set([...Array.from(prev), swapDialogPlayer]))
+                      }
+                      if (includedPlayers.has(swapDialogPlayer)) {
+                        setIncludedPlayers(prev => {
+                          const next = new Set(prev)
+                          next.delete(swapDialogPlayer)
+                          return next
+                        })
+                      }
+                      setSwapDialogOpen(false)
+                    }
+                  }}
+                >
+                  Remove {swapDialogPlayer} (no replacement)
+                </Button>
+              </div>
             </DialogContent>
           </Dialog>
         </>
@@ -1162,5 +2102,13 @@ export default function HomePage() {
         </Card>
       )}
     </div>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div className="container py-8 px-4 md:px-6 text-center">Loading...</div>}>
+      <HomePageContent />
+    </Suspense>
   )
 }

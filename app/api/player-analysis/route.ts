@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists'
+import { getVenueVariations } from '@/lib/venue-mappings'
+import { getAllMachineVariations } from '@/lib/machine-mappings'
 
 export const dynamic = 'force-dynamic';
 
@@ -75,25 +76,18 @@ export async function GET(request: Request) {
       })
     }
 
-    // Get machines from the most recent season at this venue (matches machine-stats logic)
-    const latestSeason = seasonEnd
-    let venueMachinesData
-    try {
-      venueMachinesData = await fetchAllRecords<{ machine: string }>(
-        () => supabase
-          .from('games')
-          .select('machine')
-          .eq('venue', venue)
-          .eq('season', latestSeason)
-      )
-    } catch (error) {
-      console.error('Error fetching venue machines:', error)
-      return NextResponse.json({ error: 'Database error' }, { status: 500 })
-    }
+    // Use machines passed from client (sourced from venues.json with overrides already applied)
+    const machinesParam = searchParams.get('machines')
+    const machinesAtVenue = machinesParam ? machinesParam.split(',') : []
+    const venueVariations = getVenueVariations(venue)
 
-    // Get unique machines and apply venue machine list overrides
-    let machinesAtVenue = Array.from(new Set(venueMachinesData?.map(g => g.machine) || []))
-    machinesAtVenue = applyVenueMachineListOverrides(venue, machinesAtVenue)
+    // Build a lookup from any variation of a machine name to its canonical (venues.json) name
+    const machineVariationToCanonical = new Map<string, string>()
+    for (const machine of machinesAtVenue) {
+      for (const variation of getAllMachineVariations([machine])) {
+        machineVariationToCanonical.set(variation, machine)
+      }
+    }
 
     if (machinesAtVenue.length === 0) {
       return NextResponse.json({
@@ -115,8 +109,11 @@ export async function GET(request: Request) {
       .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
 
     if (!allVenues) {
-      playerQuery = playerQuery.eq('venue', venue)
+      playerQuery = playerQuery.in('venue', venueVariations)
     }
+
+    // IMPORTANT: Must use .order('id') for consistent pagination
+    playerQuery = playerQuery.order('id', { ascending: true })
 
     let playerGamesData
     try {
@@ -142,6 +139,7 @@ export async function GET(request: Request) {
     }
 
     // Step 3: Get all games at the venue for calculating venue averages
+    // IMPORTANT: Must use .order('id') for consistent pagination
     let venueGamesData
     try {
       venueGamesData = await fetchAllRecords<{
@@ -154,9 +152,10 @@ export async function GET(request: Request) {
         () => supabase
           .from('games')
           .select('machine, player_1_score, player_2_score, player_3_score, player_4_score')
-          .eq('venue', venue)
+          .in('venue', venueVariations)
           .gte('season', seasonStart)
           .lte('season', seasonEnd)
+          .order('id', { ascending: true })
       )
     } catch (error) {
       console.error('Error fetching venue games:', error)
@@ -170,7 +169,9 @@ export async function GET(request: Request) {
 
     for (const game of playerGamesData || []) {
       // Only process machines that exist at the venue (after applying overrides)
-      if (!machinesAtVenue.includes(game.machine)) continue
+      const canonical = machineVariationToCanonical.get(game.machine)
+      if (!canonical) continue
+      game.machine = canonical
 
       if (game.venue) venuesSet.add(game.venue)
 
@@ -240,7 +241,9 @@ export async function GET(request: Request) {
     const venueScores = new Map()
     for (const game of venueGamesData || []) {
       // Only process machines at the venue (after applying overrides)
-      if (!machinesAtVenue.includes(game.machine)) continue
+      const venueCanonical = machineVariationToCanonical.get(game.machine)
+      if (!venueCanonical) continue
+      game.machine = venueCanonical
 
       if (!venueScores.has(game.machine)) {
         venueScores.set(game.machine, { totalScore: 0, count: 0 })

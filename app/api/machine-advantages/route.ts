@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists'
 import { getVenueVariations } from '@/lib/venue-mappings'
+import { getAllMachineVariations, machineMappings } from '@/lib/machine-mappings'
 
 export const dynamic = 'force-dynamic';
 
@@ -25,26 +25,23 @@ export async function GET(request: Request) {
       )
     }
 
-    // Get machines at venue from latest season
-    const latestSeason = seasonEnd
-    const venueVariations = getVenueVariations(venue)
-    let venueMachinesData
-    try {
-      venueMachinesData = await fetchAllRecords<{ machine: string }>(
-        () => supabase
-          .from('games')
-          .select('machine')
-          .in('venue', venueVariations)
-          .eq('season', latestSeason)
-          .order('id', { ascending: true })
-      )
-    } catch (error) {
-      console.error('Error fetching venue machines:', error)
-      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    // Use machines passed from client (sourced from venues.json with overrides already applied)
+    const machinesParam = searchParams.get('machines')
+    const machinesAtVenue = machinesParam ? machinesParam.split(',') : []
+    if (machinesAtVenue.length === 0) {
+      return NextResponse.json({ error: 'No machines provided' }, { status: 400 })
     }
 
-    let machinesAtVenue = Array.from(new Set(venueMachinesData?.map(g => g.machine) || []))
-    machinesAtVenue = applyVenueMachineListOverrides(venue, machinesAtVenue)
+    // Build a lookup from any variation of a machine name to its canonical (venues.json) name
+    const machineVariationToCanonical = new Map<string, string>()
+    for (const machine of machinesAtVenue) {
+      for (const variation of getAllMachineVariations([machine])) {
+        machineVariationToCanonical.set(variation, machine)
+      }
+    }
+    const allMachineVariations = new Set(machineVariationToCanonical.keys())
+
+    const venueVariations = getVenueVariations(venue)
 
     // Query all games
     let gamesData
@@ -93,7 +90,10 @@ export async function GET(request: Request) {
     const venueGames: any[] = []
     const nonVenueGames: any[] = []
     for (const game of gamesData) {
-      if (!machinesAtVenue.includes(game.machine)) continue
+      const canonical = machineVariationToCanonical.get(game.machine)
+      if (!canonical) continue
+      // Normalize game machine to canonical name for consistent stats
+      game.machine = canonical
       const isVenue = venueVariations.includes(game.venue)
       if (isVenue) {
         venueGameSet.add(game.id)
@@ -212,7 +212,7 @@ export async function GET(request: Request) {
 
         for (let i = 1; i <= 4; i++) {
           const teamKey = game[`player_${i}_team`]
-          const player = game[`player_${i}`]
+          const player = game[`player_${i}_name`]
           const score = game[`player_${i}_score`]
           const teamDisplayName = teamNameMap[teamKey]
 

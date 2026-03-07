@@ -32,6 +32,7 @@ import { ChevronUp, ChevronDown, Loader2, ArrowUp, ArrowDown } from 'lucide-reac
 import { type MachineStats } from '@/lib/tournament-data'
 import { VenueMachineListManager } from '@/components/venue-machine-list-manager'
 import { MachineMappingManager } from '@/components/machine-mapping-manager'
+import { TwcPlayerAvailability } from '@/components/twc-player-availability'
 
 interface Team {
   key: string
@@ -114,7 +115,8 @@ export default function StatsPage() {
   const [teams, setTeams] = useState<Team[]>([])
   const [selectedVenue, setSelectedVenue] = useState<string>('')
   const [selectedOpponent, setSelectedOpponent] = useState<string>('')
-  const [seasonRange, setSeasonRange] = useState<[number, number]>([20, 22])
+  const [seasonRange, setSeasonRange] = useState<[number, number]>([20, 23])
+  const [availableSeasons, setAvailableSeasons] = useState<number[]>([])
   const [machineStats, setMachineStats] = useState<MachineStats[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingDropdowns, setLoadingDropdowns] = useState(true)
@@ -136,6 +138,12 @@ export default function StatsPage() {
   const [hasMachineModifications, setHasMachineModifications] = useState(false)
   const [hasRosterModifications, setHasRosterModifications] = useState(false)
   const [hasTwcRosterModifications, setHasTwcRosterModifications] = useState(false)
+  const [includeManualScores, setIncludeManualScores] = useState(false)
+
+  // Player availability
+  const [availablePlayers, setAvailablePlayers] = useState<Record<string, boolean>>({})
+  const [rosterPlayers, setRosterPlayers] = useState<string[]>([])
+  const [subPlayers, setSubPlayers] = useState<string[]>([])
 
   // Cell details dialog
   const [cellDetailsOpen, setCellDetailsOpen] = useState(false)
@@ -240,6 +248,28 @@ export default function StatsPage() {
   // Get visible columns sorted by order
   const visibleColumns = columns.filter(col => col.visible).sort((a, b) => a.order - b.order)
 
+  // Fetch TWC roster on mount
+  useEffect(() => {
+    const fetchRoster = async () => {
+      try {
+        const response = await fetch('/api/twc-roster')
+        if (response.ok) {
+          const data = await response.json()
+          setRosterPlayers(data.rosterPlayers || [])
+          setSubPlayers(data.subPlayers || [])
+          // Set defaults (component will override from localStorage)
+          const defaults: Record<string, boolean> = {}
+          ;(data.rosterPlayers || []).forEach((p: string) => { defaults[p] = true })
+          ;(data.subPlayers || []).forEach((p: string) => { defaults[p] = false })
+          setAvailablePlayers(defaults)
+        }
+      } catch (error) {
+        console.error('Error fetching TWC roster:', error)
+      }
+    }
+    fetchRoster()
+  }, [])
+
   // Load venues and teams
   useEffect(() => {
     loadVenuesAndTeams()
@@ -293,18 +323,32 @@ export default function StatsPage() {
   }, [selectedVenue])
 
   useEffect(() => {
-    if (selectedVenue && selectedOpponent) {
+    // Only load stats when venues data is available (needed for machine list)
+    if (selectedVenue && selectedOpponent && venues.length > 0) {
       loadStats()
     }
-  }, [selectedVenue, selectedOpponent, seasonRange, scoreLimits, teamVenueSpecific, twcVenueSpecific])
+  }, [selectedVenue, selectedOpponent, seasonRange, scoreLimits, teamVenueSpecific, twcVenueSpecific, includeManualScores, availablePlayers, venues])
 
   const loadVenuesAndTeams = async () => {
     setLoadingDropdowns(true)
     try {
-      // If includeHistoricalVenues is false, request only venues with scores in season 22
+      // Fetch available seasons from database
+      const seasonsResponse = await fetch('/api/seasons')
+      const seasonsData = await seasonsResponse.json()
+      if (seasonsData.seasons && seasonsData.seasons.length > 0) {
+        setAvailableSeasons(seasonsData.seasons)
+        // Update season range to use latest seasons if current default is outdated
+        const maxSeason = seasonsData.max
+        if (maxSeason && maxSeason > seasonRange[1]) {
+          setSeasonRange([seasonRange[0], maxSeason])
+        }
+      }
+
+      // If includeHistoricalVenues is false, request only venues with scores in current season
+      const currentSeason = seasonsData.max || 23
       const venuesUrl = includeHistoricalVenues
         ? '/api/venues'
-        : '/api/venues?season=22'
+        : `/api/venues?season=${currentSeason}`
 
       const venuesResponse = await fetch(venuesUrl)
       const venuesData = await venuesResponse.json()
@@ -315,7 +359,7 @@ export default function StatsPage() {
       // If includeHistoricalVenues is true, load teams from all seasons
       const teamsUrl = includeHistoricalVenues
         ? '/api/teams'
-        : '/api/teams?season=22'
+        : `/api/teams?season=${currentSeason}`
 
       const teamsResponse = await fetch(teamsUrl)
       const teamsData = await teamsResponse.json()
@@ -369,6 +413,10 @@ export default function StatsPage() {
 
       // Call new server-side API that calculates statistics on the server
       // This avoids Vercel's 4.5MB response size limit by returning only final stats (~50KB)
+      // Get selected TWC players for filtering
+      const selectedTwcPlayers = Object.keys(availablePlayers).filter(p => availablePlayers[p])
+
+      const venueMachines = venues.find(v => v.name === selectedVenue)?.machines || []
       const params = new URLSearchParams({
         seasons: seasons.join(','),
         venue: selectedVenue,
@@ -376,8 +424,15 @@ export default function StatsPage() {
         opponentTeam: selectedOpponent,
         teamVenueSpecific: teamVenueSpecific.toString(),
         twcVenueSpecific: twcVenueSpecific.toString(),
-        scoreLimits: JSON.stringify(scoreLimits)
+        scoreLimits: JSON.stringify(scoreLimits),
+        includeManualScores: includeManualScores.toString(),
+        ...(venueMachines.length > 0 ? { machines: venueMachines.join(',') } : {})
       })
+
+      // Only pass twcPlayers filter if we have a roster loaded and some are unchecked
+      if (selectedTwcPlayers.length > 0 && selectedTwcPlayers.length < Object.keys(availablePlayers).length) {
+        params.set('twcPlayers', selectedTwcPlayers.join(','))
+      }
 
       const response = await fetch(`/api/machine-stats?${params}`)
       const data = await response.json()
@@ -563,7 +618,7 @@ export default function StatsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map(s => (
+                      {availableSeasons.map(s => (
                         <SelectItem key={s} value={String(s)}>{s}</SelectItem>
                       ))}
                     </SelectContent>
@@ -577,7 +632,7 @@ export default function StatsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map(s => (
+                      {availableSeasons.map(s => (
                         <SelectItem key={s} value={String(s)}>{s}</SelectItem>
                       ))}
                     </SelectContent>
@@ -628,6 +683,19 @@ export default function StatsPage() {
                     Include Historical Venues
                   </label>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="include-manual-scores"
+                    checked={includeManualScores}
+                    onCheckedChange={(checked) => setIncludeManualScores(!!checked)}
+                  />
+                  <label
+                    htmlFor="include-manual-scores"
+                    className="text-xs md:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Include Manual Scores
+                  </label>
+                </div>
               </div>
 
               {/* Modification Indicators */}
@@ -654,88 +722,14 @@ export default function StatsPage() {
                 </div>
               )}
 
-              {/* Main Options Dialog */}
-              <Dialog open={optionsOpen} onOpenChange={setOptionsOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full md:w-auto text-xs md:text-sm">
-                    Options
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Statistics Options</DialogTitle>
-                    <DialogDescription>
-                      Choose an option to configure
-                    </DialogDescription>
-                  </DialogHeader>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 p-4">
-                    <Button
-                      variant="outline"
-                      className="h-20 md:h-24 flex items-center justify-center text-xs md:text-sm"
-                      onClick={() => {
-                        setOptionsOpen(false)
-                        setColumnOptionsOpen(true)
-                      }}
-                    >
-                      Column Options
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      className="h-20 md:h-24 flex items-center justify-center text-xs md:text-sm"
-                      onClick={() => {
-                        setOptionsOpen(false)
-                        setScoreLimitsOpen(true)
-                      }}
-                    >
-                      Machine Score Limits
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      className="h-20 md:h-24 flex items-center justify-center text-xs md:text-sm"
-                      onClick={() => {
-                        setOptionsOpen(false)
-                        setVenueListManagerOpen(true)
-                      }}
-                    >
-                      Modify Venue Machine List
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      className="h-20 md:h-24 flex items-center justify-center text-xs md:text-sm"
-                      onClick={() => {
-                        setOptionsOpen(false)
-                        setMachineMappingOpen(true)
-                      }}
-                    >
-                      Standardize Machines
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      className="h-20 md:h-24 flex items-center justify-center text-xs md:text-sm"
-                      onClick={() => {
-                        // TODO: Implement Edit Roster
-                      }}
-                    >
-                      Edit Roster
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      className="h-20 md:h-24 flex items-center justify-center text-xs md:text-sm"
-                      onClick={() => {
-                        // TODO: Implement Edit TWC Roster
-                      }}
-                    >
-                      Edit TWC Roster
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              {/* Column Options Button */}
+              <Button
+                variant="outline"
+                className="w-full md:w-auto text-xs md:text-sm"
+                onClick={() => setColumnOptionsOpen(true)}
+              >
+                Column Options
+              </Button>
             </div>
 
             {/* Column Options Dialog */}
@@ -750,16 +744,6 @@ export default function StatsPage() {
 
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setColumnOptionsOpen(false)
-                        setOptionsOpen(true)
-                      }}
-                    >
-                      ← Back
-                    </Button>
                     <h3 className="text-sm font-medium">Column Configuration</h3>
                     <Button variant="outline" size="sm" onClick={resetColumns}>
                       Reset to Default
@@ -956,6 +940,16 @@ export default function StatsPage() {
               </DialogContent>
             </Dialog>
           </div>
+
+          {/* TWC Player Availability */}
+          {rosterPlayers.length > 0 && (
+            <TwcPlayerAvailability
+              rosterPlayers={rosterPlayers}
+              subPlayers={subPlayers}
+              availablePlayers={availablePlayers}
+              onChange={setAvailablePlayers}
+            />
+          )}
 
           {loading && (
             <div className="flex items-center justify-center p-12">

@@ -1,21 +1,11 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { machineMappings } from '@/lib/machine-mappings'
-import fs from 'fs'
-import path from 'path'
+import { standardizeVenueName } from '@/lib/venue-mappings'
+import { getScoreLimits } from '@/lib/score-limits'
 
 export const dynamic = 'force-dynamic'
-export const revalidate = 3600 // Cache for 1 hour
-
-// Load score limits to filter out invalid/glitched scores
-const scoreLimitsPath = path.join(process.cwd(), 'score_limits.json')
-let scoreLimits: Record<string, number> = {}
-try {
-  const scoreLimitsData = fs.readFileSync(scoreLimitsPath, 'utf-8')
-  scoreLimits = JSON.parse(scoreLimitsData)
-} catch (error) {
-  console.error('Failed to load score limits:', error)
-}
+export const revalidate = 0 // No caching - always fetch fresh data
 
 // Helper to standardize machine names using mappings
 function standardizeMachineName(machineName: string): string {
@@ -64,10 +54,6 @@ export async function GET(request: Request) {
     }
 
     const currentSeason = 22
-    // Create explicit season list for all-time queries (2-22)
-    // Using .in() instead of .gte().lte() to ensure all seasons are included
-    // regardless of data type (some seasons may be stored as strings)
-    const allSeasons = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
 
     // First, find the player's key by looking for any game they've played
     const { data: playerGames } = await supabase
@@ -102,9 +88,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ achievements: [], count: 0 })
     }
 
+    // Load score limits from database
+    const scoreLimits = await getScoreLimits()
+
     // Function to check if a score is valid (not glitched)
+    // Use standardized machine name to check limits
     const isValidScore = (machine: string, score: number): boolean => {
-      const limit = scoreLimits[machine.toLowerCase()]
+      const standardized = standardizeMachineName(machine).toLowerCase()
+      const limit = scoreLimits[standardized] || scoreLimits[machine.toLowerCase()]
       return !limit || score <= limit
     }
 
@@ -130,7 +121,7 @@ export async function GET(request: Request) {
               playerName: name,
               score: score,
               machine: standardizedMachine, // Use standardized machine name
-              venue: game.venue,
+              venue: standardizeVenueName(game.venue), // Normalize venue names
               season: game.season
             })
           }
@@ -173,28 +164,11 @@ export async function GET(request: Request) {
         // Take top 10 scores (same player can appear multiple times)
         const machineTop10 = sortedScores.slice(0, 10)
 
-        // Debug logging for specific machines
-        if ((groupKey === 'Aerosmith' || groupKey === 'Torpedo') && context.includes('League-wide - all time')) {
-          console.log(`=== ${groupKey.toUpperCase()} DEBUG (AFTER SORT) ===`)
-          console.log('Top 10 scores after sort:')
-          machineTop10.forEach((s, i) => {
-            const isPlayer = s.playerKey === playerKey ? ' <-- THIS IS THE PLAYER' : ''
-            console.log(`${i + 1}. ${s.playerName} (key: ${s.playerKey}): ${s.score.toLocaleString()}${isPlayer}`)
-          })
-          console.log('Looking for playerKey:', playerKey)
-        }
-        
         // Find player's best score in the top 10
         for (let i = 0; i < machineTop10.length; i++) {
           if (machineTop10[i].playerKey === playerKey) {
             const [machine, venue] = groupKey.split('|||')
-            
-            // More debug logging
-            if (machine === 'Aerosmith' && context.includes('League-wide - all time')) {
-              console.log(`Found player at position ${i} (rank ${i + 1})`)
-              console.log(`Player score: ${machineTop10[i].score.toLocaleString()}`)
-            }
-            
+
             achievements.push({
               machine,
               context,
@@ -217,14 +191,18 @@ export async function GET(request: Request) {
     }
 
     // Fetch all games for all-time period (all seasons 2-22) with pagination
-    // Using .in() with explicit season list instead of .gte().lte() to ensure all seasons are included
+    // IMPORTANT: Must use .order('id') for consistent pagination - without ordering,
+    // PostgreSQL returns rows in arbitrary order that changes between pages, causing
+    // entire seasons to be missed during pagination
     let allTimeGames
     try {
       allTimeGames = await fetchAllRecords(
         () => supabase
           .from('games')
           .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
-          .in('season', allSeasons)
+          .gte('season', 2)
+          .lte('season', 22)
+          .order('id', { ascending: true })
       )
     } catch (allTimeError) {
       console.error('Error fetching all-time games:', allTimeError)
@@ -232,6 +210,7 @@ export async function GET(request: Request) {
     }
 
     // Fetch games for current season only with pagination
+    // Also needs .order('id') for consistent pagination
     let currentSeasonGames
     try {
       currentSeasonGames = await fetchAllRecords(
@@ -239,30 +218,12 @@ export async function GET(request: Request) {
           .from('games')
           .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
           .eq('season', currentSeason)
+          .order('id', { ascending: true })
       )
     } catch (seasonError) {
       console.error('Error fetching current season games:', seasonError)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
-
-    // Debug: Log total games fetched and sample machine names
-    type GameRecord = { machine?: string; season?: number }
-    const allMachines = new Set<string>()
-    const seasonsFound = new Set<number>()
-    for (const game of allTimeGames) {
-      const g = game as GameRecord
-      if (g.machine) allMachines.add(g.machine)
-      if (g.season) seasonsFound.add(g.season)
-    }
-    const seasonsList = Array.from(seasonsFound).sort((a, b) => a - b)
-    console.log(`[achievements] Total games fetched for all-time: ${allTimeGames.length}`)
-    console.log(`[achievements] Unique machines in data: ${allMachines.size}`)
-    console.log(`[achievements] Sample machines:`, Array.from(allMachines).slice(0, 20))
-    console.log(`[achievements] Seasons in data: ${seasonsList.join(', ')} (${seasonsList.length} total)`)
-
-    // Find machines that might be Torpedo (fuzzy search)
-    const torpedoLike = Array.from(allMachines).filter(m => m.toLowerCase().includes('torp') || m.toLowerCase().includes('orped'))
-    console.log(`[achievements] Machines containing 'torp' or 'orped':`, torpedoLike)
 
     // Extract scores from both datasets
     const allTimeScores = extractScores(allTimeGames)
@@ -338,60 +299,10 @@ export async function GET(request: Request) {
       return a.machine.localeCompare(b.machine)
     })
 
-    // Debug: Find IronMaiden specifically
-    const ironMaidenDebug = {
-      totalScoresCollected: allTimeScores.filter(s => s.machine === 'IronMaiden').length,
-      top10Scores: allTimeScores
-        .filter(s => s.machine === 'IronMaiden')
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 10)
-        .map((s, i) => ({
-          rank: i + 1,
-          player: s.playerName,
-          score: s.score,
-          playerKey: s.playerKey,
-          isYou: s.playerKey === playerKey
-        }))
-    }
-
-    // Debug: Find Torpedo specifically (using GameRecord type defined above)
-    const torpedoVariantsInRawData = Array.from(new Set(
-      (allTimeGames as GameRecord[])
-        .filter(g => g.machine?.toLowerCase().includes('torpedo'))
-        .map(g => g.machine)
-    ))
-    const torpedoGamesRawCount = (allTimeGames as GameRecord[]).filter(g => g.machine?.toLowerCase().includes('torpedo')).length
-
-    const torpedoDebug = {
-      totalGamesQueried: allTimeGames.length,
-      rawTorpedoGames: torpedoGamesRawCount,
-      machineVariantsFound: torpedoVariantsInRawData,
-      totalScoresCollected: allTimeScores.filter(s => s.machine === 'Torpedo').length,
-      top10Scores: allTimeScores
-        .filter(s => s.machine === 'Torpedo')
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 10)
-        .map((s, i) => ({
-          rank: i + 1,
-          player: s.playerName,
-          score: s.score,
-          playerKey: s.playerKey,
-          isYou: s.playerKey === playerKey
-        }))
-    }
-
     return NextResponse.json({
       achievements: sortedAchievements,
       count: sortedAchievements.length,
-      playerKey: playerKey,
-      debug: {
-        totalGames: allTimeGames.length,
-        uniqueMachines: allMachines.size,
-        seasonsInData: seasonsList,
-        sampleMachines: Array.from(allMachines).slice(0, 30),
-        ironMaiden: ironMaidenDebug,
-        torpedo: torpedoDebug
-      }
+      playerKey: playerKey
     })
 
   } catch (error) {

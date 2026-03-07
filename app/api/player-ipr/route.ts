@@ -3,8 +3,6 @@ import { supabase, fetchAllRecords } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic';
 
-const CURRENT_SEASON = 22
-
 // Cache for 1 hour (3600 seconds) since stats only update weekly
 export const revalidate = 3600
 
@@ -19,6 +17,16 @@ export async function GET(request: Request) {
         { status: 400 }
       )
     }
+
+    // Get the current season dynamically from the database
+    const { data: maxSeasonData } = await supabase
+      .from('games')
+      .select('season')
+      .order('season', { ascending: false })
+      .limit(1)
+      .single<{ season: number }>()
+
+    const CURRENT_SEASON = maxSeasonData?.season || 22
 
     // Query player stats from database for IPR and player_key
     const { data: playerData, error: playerError } = await supabase
@@ -47,6 +55,19 @@ export async function GET(request: Request) {
     }
 
     const playerKey = playerData.player_key
+
+    // Get the actual IPR from the most recent match participation
+    // IPR is given in lineup data, not calculated
+    const { data: latestParticipation } = await supabase
+      .from('player_match_participation')
+      .select('ipr_at_match, week')
+      .eq('player_name', playerName)
+      .eq('season', CURRENT_SEASON)
+      .order('week', { ascending: false })
+      .limit(1)
+      .single<{ ipr_at_match: number | null; week: number }>()
+
+    const currentIpr = latestParticipation?.ipr_at_match || 0
 
     // Query games table to get all games and calculate stats (single query, no player_match_participation needed)
     let gamesData
@@ -116,7 +137,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       name: playerName,
-      ipr: playerData.ipr || 0,
+      ipr: currentIpr,
       matchesPlayed: matchesPlayedCount,
       pointsWon: totalPoints,
       pointsPerMatch: pointsPerMatch,

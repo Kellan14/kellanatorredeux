@@ -155,6 +155,7 @@ export interface ProcessedScore {
   opponent_score?: number;
   is_pick?: boolean;
   is_roster_player?: boolean;
+  is_manual?: boolean;
 }
 
 export interface MachineStats {

@@ -16,6 +16,30 @@ export interface Machine {
   active: boolean
 }
 
+// Individual score data for detailed breakdown
+export interface ScoreEntry {
+  score: number
+  venue: string
+  venueAvg: number
+  ratio: number  // score / venueAvg
+  date?: string
+  won?: boolean
+  weight: number  // 1 for individual scores, 3 for self-reported average
+  source: 'league' | 'user_score' | 'user_input'  // Where this score came from
+}
+
+// Detailed breakdown of how stats were calculated
+export interface ScoreBreakdown {
+  leagueScores: ScoreEntry[]
+  userScores: ScoreEntry[]
+  userInputAverage: ScoreEntry | null
+  overallVenueAvg: number
+  leagueVenueAdjustedAvg: number
+  userVenueAdjustedAvg: number | null
+  finalVenueAdjustedAvg: number
+  userInputWeightApplied: number
+}
+
 export interface PlayerMachineStats {
   id: string
   player_id: string
@@ -25,12 +49,15 @@ export interface PlayerMachineStats {
   losses: number
   win_rate: number
   avg_score: number
+  venue_adjusted_avg: number
   high_score: number
   recent_form: number
   streak_type: 'win' | 'loss' | null
   streak_count: number
   confidence_score: number
+  user_confidence?: number
   last_played?: string
+  scoreBreakdown?: ScoreBreakdown
 }
 
 export interface Assignment {
@@ -38,6 +65,9 @@ export interface Assignment {
   machine_id: string
   expected_score: number
   confidence: number
+  venue_adjusted_avg?: number
+  user_average?: number | null
+  user_confidence?: number | null
 }
 
 export interface PairAssignment {
@@ -46,6 +76,12 @@ export interface PairAssignment {
   machine_id: string
   expected_score: number
   synergy_bonus: number
+  player1_venue_adjusted_avg?: number
+  player2_venue_adjusted_avg?: number
+  player1_user_average?: number | null
+  player2_user_average?: number | null
+  player1_user_confidence?: number | null
+  player2_user_confidence?: number | null
 }
 
 export interface OptimizationResult {
@@ -55,6 +91,7 @@ export interface OptimizationResult {
   win_probability: number
   alternative_assignments?: (Assignment | PairAssignment)[][]
   suggestions: string[]
+  benched?: string[]
 }
 
 export interface PairStats {

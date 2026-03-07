@@ -482,6 +482,35 @@ export type Database = {
           created_at?: string
         }
       }
+      login_history: {
+        Row: {
+          id: number
+          user_id: string
+          email: string | null
+          player_name: string | null
+          login_at: string
+          user_agent: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          user_id: string
+          email?: string | null
+          player_name?: string | null
+          login_at?: string
+          user_agent?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          user_id?: string
+          email?: string | null
+          player_name?: string | null
+          login_at?: string
+          user_agent?: string | null
+          created_at?: string
+        }
+      }
     }
   }
 }

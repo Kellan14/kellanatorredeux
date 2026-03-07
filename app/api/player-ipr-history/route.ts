@@ -9,6 +9,12 @@ export const revalidate = 3600
  *
  * Returns historical IPR data for a player from the matches table lineup data.
  * IPR is stored in matches.data.home.lineup[] and matches.data.away.lineup[]
+ *
+ * Uses player_first_season table to cache the earliest season per player,
+ * avoiding full table scans on subsequent requests.
+ *
+ * Params:
+ *   name - player name (required)
  */
 export async function GET(request: Request) {
   try {
@@ -22,25 +28,46 @@ export async function GET(request: Request) {
       )
     }
 
-    // Get all matches ordered by season and week
+    // Check for cached first season
+    let firstSeason: number | null = null
+    const { data: cached } = await (supabase as any)
+      .from('player_first_season')
+      .select('first_season')
+      .eq('player_name', playerName)
+      .maybeSingle()
+
+    if (cached?.first_season) {
+      firstSeason = cached.first_season
+    }
+
+    // Get matches ordered by season and week, filtered by first_season if known
+    const queryBuilder = () => {
+      let q = supabase
+        .from('matches')
+        .select('match_key, season, week, data, created_at')
+        .order('season', { ascending: true })
+        .order('week', { ascending: true })
+
+      if (firstSeason) {
+        q = q.gte('season', firstSeason)
+      }
+
+      return q
+    }
+
     const matchesData = await fetchAllRecords<{
       match_key: string
       season: number
       week: number | null
       data: any
       created_at: string | null
-    }>(
-      () => supabase
-        .from('matches')
-        .select('match_key, season, week, data, created_at')
-        .order('season', { ascending: true })
-        .order('week', { ascending: true })
-    )
+    }>(queryBuilder)
 
     if (!matchesData || matchesData.length === 0) {
       return NextResponse.json({
         playerName,
         history: [],
+        firstSeason: null,
         totalMatches: 0,
         message: 'No matches found'
       })
@@ -92,9 +119,27 @@ export async function GET(request: Request) {
       }
     }
 
+    // Determine first season from the data
+    const computedFirstSeason = history.length > 0 ? history[0].season : null
+
+    // Cache first season if not cached yet or if it changed
+    if (computedFirstSeason !== null && computedFirstSeason !== firstSeason) {
+      await (supabase as any)
+        .from('player_first_season')
+        .upsert(
+          {
+            player_name: playerName,
+            first_season: computedFirstSeason,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: 'player_name' }
+        )
+    }
+
     return NextResponse.json({
       playerName,
       history,
+      firstSeason: computedFirstSeason,
       totalMatches: history.length
     })
   } catch (error) {

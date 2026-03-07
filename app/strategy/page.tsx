@@ -22,7 +22,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -369,6 +369,15 @@ export default function StrategyPage() {
     } catch { return {} }
   })
 
+  // Excluded machines (whole machine exclusion across all optimizers)
+  const [excludedMachines, setExcludedMachines] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return []
+    try {
+      const saved = localStorage.getItem('excludedMachines')
+      return saved ? JSON.parse(saved) : []
+    } catch { return [] }
+  })
+
   // Cell details dialog
   const [cellDetailsOpen, setCellDetailsOpen] = useState(false)
   const [selectedCell, setSelectedCell] = useState<{machine: string, column: string} | null>(null)
@@ -406,6 +415,16 @@ export default function StrategyPage() {
   } | null>(null)
   const [loadingMatrix, setLoadingMatrix] = useState(false)
   const [optimizationFormat, setOptimizationFormat] = useState<'7x7' | '4x2'>('7x7')
+
+  // Memoize filtered arrays so MachinePicker's useEffect doesn't reset assignments on every render
+  const pickerPlayerNames = useMemo(
+    () => matrixData?.playerNames.filter(p => !sitThisRound.has(p)) ?? [],
+    [matrixData?.playerNames, sitThisRound]
+  )
+  const pickerMachines = useMemo(
+    () => matrixData?.machines.filter(m => !excludedMachines.includes(m)) ?? [],
+    [matrixData?.machines, excludedMachines]
+  )
 
   // Report dialog state
   const [reportDialogOpen, setReportDialogOpen] = useState(false)
@@ -545,16 +564,19 @@ export default function StrategyPage() {
         setRosterPlayers(data.rosterPlayers || [])
         setSubPlayers(data.subPlayers || [])
 
-        // Initialize player availability with defaults (the TwcPlayerAvailability
-        // component will override from localStorage on mount)
-        const initialAvailability: Record<string, boolean> = {}
-        ;(data.rosterPlayers || []).forEach((player: string) => {
-          initialAvailability[player] = true
+        // Merge new roster with existing availability state so persisted values
+        // are not overwritten when the venue/opponent changes but the roster is the same.
+        // New players get defaults (roster=true, subs=false); existing players keep their value.
+        setAvailablePlayers(prev => {
+          const next: Record<string, boolean> = {}
+          ;(data.rosterPlayers || []).forEach((player: string) => {
+            next[player] = prev[player] !== undefined ? prev[player] : true
+          })
+          ;(data.subPlayers || []).forEach((player: string) => {
+            next[player] = prev[player] !== undefined ? prev[player] : false
+          })
+          return next
         })
-        ;(data.subPlayers || []).forEach((player: string) => {
-          initialAvailability[player] = false
-        })
-        setAvailablePlayers(initialAvailability)
       }
     } catch (error) {
       console.error('Error loading machine advantages:', error)
@@ -591,7 +613,7 @@ export default function StrategyPage() {
           scoreWeights,
           exclusions: singlesExclusions,
           mustPlay: Array.from(satOutPlayers),
-          machines: venues.find(v => v.name === selectedVenue)?.machines || [],
+          machines: (venues.find(v => v.name === selectedVenue)?.machines || []).filter(m => !excludedMachines.includes(m)),
         }),
       })
 
@@ -643,7 +665,7 @@ export default function StrategyPage() {
           scoreWeights,
           exclusions: doublesExclusions,
           mustPlay: Array.from(satOutPlayers),
-          machines: venues.find(v => v.name === selectedVenue)?.machines || [],
+          machines: (venues.find(v => v.name === selectedVenue)?.machines || []).filter(m => !excludedMachines.includes(m)),
         }),
       })
 
@@ -685,7 +707,7 @@ export default function StrategyPage() {
           seasonStart: seasonRange[0],
           seasonEnd: seasonRange[1],
           format: 'singles',
-          machines: singlesOpponentPicks,
+          machines: singlesOpponentPicks.filter(m => !excludedMachines.includes(m)),
           availablePlayers: selectedPlayers,
           teamVenueSpecific,
           twcVenueSpecific,
@@ -722,7 +744,7 @@ export default function StrategyPage() {
           seasonStart: seasonRange[0],
           seasonEnd: seasonRange[1],
           format: 'doubles',
-          machines: doublesOpponentPicks,
+          machines: doublesOpponentPicks.filter(m => !excludedMachines.includes(m)),
           availablePlayers: selectedPlayers,
           teamVenueSpecific,
           twcVenueSpecific,
@@ -751,7 +773,7 @@ export default function StrategyPage() {
 
     const selectedPlayers = Object.keys(availablePlayers).filter(p => availablePlayers[p] && !sitThisRound.has(p))
     const venueData = venues.find(v => v.name === selectedVenue)
-    const machinesAtVenue = venueData?.machines || []
+    const machinesAtVenue = (venueData?.machines || []).filter(m => !excludedMachines.includes(m))
 
     // Run all 4 optimizations in parallel
     const [greedySingles, greedyDoubles, hungarianSingles, hungarianDoubles] = await Promise.all([
@@ -929,11 +951,14 @@ export default function StrategyPage() {
     }
 
     // Exclusions
-    const hasExclusions = Object.keys(singlesExclusions).length > 0 || Object.keys(doublesExclusions).length > 0
+    const hasExclusions = Object.keys(singlesExclusions).length > 0 || Object.keys(doublesExclusions).length > 0 || excludedMachines.length > 0
     if (hasExclusions) {
       lines.push('')
       lines.push('ACTIVE EXCLUSIONS')
       lines.push('-'.repeat(40))
+      if (excludedMachines.length > 0) {
+        lines.push('Excluded Machines: ' + excludedMachines.map(m => getMachineDisplayName(m)).join(', '))
+      }
       if (Object.keys(singlesExclusions).length > 0) {
         lines.push('Singles:')
         Object.entries(singlesExclusions).forEach(([machine, players]) => {
@@ -999,6 +1024,16 @@ export default function StrategyPage() {
     }
   }
 
+  const addMachineExclusion = (machine: string) => {
+    if (!excludedMachines.includes(machine)) {
+      setExcludedMachines(prev => [...prev, machine])
+    }
+  }
+
+  const removeMachineExclusion = (machine: string) => {
+    setExcludedMachines(prev => prev.filter(m => m !== machine))
+  }
+
   // Save exclusions to localStorage
   useEffect(() => {
     try {
@@ -1019,6 +1054,17 @@ export default function StrategyPage() {
       }
     } catch { /* ignore */ }
   }, [doublesExclusions])
+
+  // Save excluded machines to localStorage
+  useEffect(() => {
+    try {
+      if (excludedMachines.length > 0) {
+        localStorage.setItem('excludedMachines', JSON.stringify(excludedMachines))
+      } else {
+        localStorage.removeItem('excludedMachines')
+      }
+    } catch { /* ignore */ }
+  }, [excludedMachines])
 
   // Auto re-run optimization when exclusions change
   useEffect(() => {
@@ -1099,6 +1145,14 @@ export default function StrategyPage() {
       optimizeDoublesAssignments()
     }
   }, [doublesAssignExclusions]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto re-run all active optimizations when machine exclusions change
+  useEffect(() => {
+    if (singlesRecommendations.length > 0) optimizeSinglesPicks()
+    if (doublesRecommendations.length > 0) optimizeDoublesPicks()
+    if (singlesAssignments.length > 0) optimizeSinglesAssignments()
+    if (doublesAssignments.length > 0) optimizeDoublesAssignments()
+  }, [excludedMachines]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleMachine = (machine: string, format: 'singles' | 'doubles') => {
     if (format === 'singles') {
@@ -1826,6 +1880,23 @@ export default function StrategyPage() {
                         </Button>
                       </div>
 
+                      {/* Active machine exclusions */}
+                      {excludedMachines.length > 0 && (
+                        <div className="mt-4 space-y-1">
+                          {excludedMachines.map((machine) => (
+                            <div key={`machine-excl-${machine}`} className="flex items-center gap-2 text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded px-2 py-1">
+                              <span>{getMachineDisplayName(machine)} excluded from all results</span>
+                              <button
+                                className="ml-auto text-amber-500 hover:text-amber-700 dark:hover:text-amber-200"
+                                onClick={() => removeMachineExclusion(machine)}
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
                       {/* Active singles exclusions - shown above all results */}
                       {Object.keys(singlesExclusions).length > 0 && (
                         <div className="mt-4 space-y-1">
@@ -1949,22 +2020,28 @@ export default function StrategyPage() {
                                         </div>
                                       )}
 
-                                      {/* Exclude player buttons */}
-                                      {rec.players && rec.players.length > 0 && (
-                                        <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
-                                          {rec.players.map((player) => (
-                                            <Button
-                                              key={player}
-                                              variant="outline"
-                                              size="sm"
-                                              className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3"
-                                              onClick={() => addExclusion(rec.machine, player, 'singles')}
-                                            >
-                                              Exclude {player}
-                                            </Button>
-                                          ))}
-                                        </div>
-                                      )}
+                                      {/* Exclude player/machine buttons */}
+                                      <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
+                                        {rec.players && rec.players.length > 0 && rec.players.map((player) => (
+                                          <Button
+                                            key={player}
+                                            variant="outline"
+                                            size="sm"
+                                            className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3"
+                                            onClick={() => addExclusion(rec.machine, player, 'singles')}
+                                          >
+                                            Exclude {player}
+                                          </Button>
+                                        ))}
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3 text-destructive border-destructive/50 hover:bg-destructive/10"
+                                          onClick={() => addMachineExclusion(rec.machine)}
+                                        >
+                                          Exclude Machine
+                                        </Button>
+                                      </div>
 
                                       {/* Show Full Stats button and breakdown */}
                                       <div className="mt-3 pt-3 border-t">
@@ -2158,6 +2235,23 @@ export default function StrategyPage() {
                         </Button>
                       </div>
 
+                      {/* Active machine exclusions */}
+                      {excludedMachines.length > 0 && (
+                        <div className="mt-4 space-y-1">
+                          {excludedMachines.map((machine) => (
+                            <div key={`machine-excl-${machine}`} className="flex items-center gap-2 text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded px-2 py-1">
+                              <span>{getMachineDisplayName(machine)} excluded from all results</span>
+                              <button
+                                className="ml-auto text-amber-500 hover:text-amber-700 dark:hover:text-amber-200"
+                                onClick={() => removeMachineExclusion(machine)}
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
                       {/* Active doubles exclusions - shown above all results */}
                       {Object.keys(doublesExclusions).length > 0 && (
                         <div className="mt-4 space-y-1">
@@ -2281,22 +2375,28 @@ export default function StrategyPage() {
                                         </div>
                                       )}
 
-                                      {/* Exclude player buttons */}
-                                      {rec.players && rec.players.length > 0 && (
-                                        <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
-                                          {rec.players.map((player) => (
-                                            <Button
-                                              key={player}
-                                              variant="outline"
-                                              size="sm"
-                                              className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3"
-                                              onClick={() => addExclusion(rec.machine, player, 'doubles')}
-                                            >
-                                              Exclude {player}
-                                            </Button>
-                                          ))}
-                                        </div>
-                                      )}
+                                      {/* Exclude player/machine buttons */}
+                                      <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
+                                        {rec.players && rec.players.length > 0 && rec.players.map((player) => (
+                                          <Button
+                                            key={player}
+                                            variant="outline"
+                                            size="sm"
+                                            className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3"
+                                            onClick={() => addExclusion(rec.machine, player, 'doubles')}
+                                          >
+                                            Exclude {player}
+                                          </Button>
+                                        ))}
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3 text-destructive border-destructive/50 hover:bg-destructive/10"
+                                          onClick={() => addMachineExclusion(rec.machine)}
+                                        >
+                                          Exclude Machine
+                                        </Button>
+                                      </div>
 
                                       {/* Show Full Stats button and breakdown */}
                                       <div className="mt-3 pt-3 border-t">
@@ -2684,6 +2784,23 @@ export default function StrategyPage() {
                         </div>
                       </div>
 
+                      {/* Active machine exclusions */}
+                      {excludedMachines.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-2">
+                          {excludedMachines.map((machine) => (
+                            <div key={`machine-excl-${machine}`} className="flex items-center gap-2 text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded px-2 py-1">
+                              <span>{getMachineDisplayName(machine)} excluded from all results</span>
+                              <button
+                                className="ml-auto text-amber-500 hover:text-amber-700 dark:hover:text-amber-200"
+                                onClick={() => removeMachineExclusion(machine)}
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
                       {/* Active assignment exclusions */}
                       {Object.keys(singlesAssignExclusions).length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mb-2">
@@ -2796,21 +2913,27 @@ export default function StrategyPage() {
                                         </div>
                                       )}
 
-                                      {assignment.players && assignment.players.length > 0 && (
-                                        <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
-                                          {assignment.players.map((player) => (
-                                            <Button
-                                              key={player}
-                                              variant="outline"
-                                              size="sm"
-                                              className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3"
-                                              onClick={() => addAssignExclusion(assignment.machine, player, 'singles')}
-                                            >
-                                              Exclude {player}
-                                            </Button>
-                                          ))}
-                                        </div>
-                                      )}
+                                      <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
+                                        {assignment.players && assignment.players.length > 0 && assignment.players.map((player) => (
+                                          <Button
+                                            key={player}
+                                            variant="outline"
+                                            size="sm"
+                                            className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3"
+                                            onClick={() => addAssignExclusion(assignment.machine, player, 'singles')}
+                                          >
+                                            Exclude {player}
+                                          </Button>
+                                        ))}
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3 text-destructive border-destructive/50 hover:bg-destructive/10"
+                                          onClick={() => addMachineExclusion(assignment.machine)}
+                                        >
+                                          Exclude Machine
+                                        </Button>
+                                      </div>
 
                                       {/* Show Full Stats button and breakdown */}
                                       <div className="mt-3 pt-3 border-t">
@@ -3043,6 +3166,23 @@ export default function StrategyPage() {
                         </div>
                       </div>
 
+                      {/* Active machine exclusions */}
+                      {excludedMachines.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-2">
+                          {excludedMachines.map((machine) => (
+                            <div key={`machine-excl-${machine}`} className="flex items-center gap-2 text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded px-2 py-1">
+                              <span>{getMachineDisplayName(machine)} excluded from all results</span>
+                              <button
+                                className="ml-auto text-amber-500 hover:text-amber-700 dark:hover:text-amber-200"
+                                onClick={() => removeMachineExclusion(machine)}
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
                       {/* Active assignment exclusions */}
                       {Object.keys(doublesAssignExclusions).length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mb-2">
@@ -3155,21 +3295,27 @@ export default function StrategyPage() {
                                         </div>
                                       )}
 
-                                      {assignment.players && assignment.players.length > 0 && (
-                                        <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
-                                          {assignment.players.map((player) => (
-                                            <Button
-                                              key={player}
-                                              variant="outline"
-                                              size="sm"
-                                              className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3"
-                                              onClick={() => addAssignExclusion(assignment.machine, player, 'doubles')}
-                                            >
-                                              Exclude {player}
-                                            </Button>
-                                          ))}
-                                        </div>
-                                      )}
+                                      <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
+                                        {assignment.players && assignment.players.length > 0 && assignment.players.map((player) => (
+                                          <Button
+                                            key={player}
+                                            variant="outline"
+                                            size="sm"
+                                            className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3"
+                                            onClick={() => addAssignExclusion(assignment.machine, player, 'doubles')}
+                                          >
+                                            Exclude {player}
+                                          </Button>
+                                        ))}
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3 text-destructive border-destructive/50 hover:bg-destructive/10"
+                                          onClick={() => addMachineExclusion(assignment.machine)}
+                                        >
+                                          Exclude Machine
+                                        </Button>
+                                      </div>
 
                                       {/* Show Full Stats button and breakdown */}
                                       <div className="mt-3 pt-3 border-t">
@@ -3601,6 +3747,23 @@ export default function StrategyPage() {
                   Drag players onto machines for manual assignments, or use auto-optimize for algorithmic recommendations.
                 </p>
 
+                {/* Active machine exclusions */}
+                {excludedMachines.length > 0 && (
+                  <div className="space-y-1">
+                    {excludedMachines.map((machine) => (
+                      <div key={`machine-excl-${machine}`} className="flex items-center gap-2 text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded px-2 py-1">
+                        <span>{getMachineDisplayName(machine)} excluded from all results</span>
+                        <button
+                          className="ml-auto text-amber-500 hover:text-amber-700 dark:hover:text-amber-200"
+                          onClick={() => removeMachineExclusion(machine)}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {/* Format selector */}
                 <div className="flex items-center gap-4 mb-4">
                   <label className="text-sm font-medium">Format:</label>
@@ -3622,11 +3785,11 @@ export default function StrategyPage() {
                   </div>
                 </div>
 
-                {matrixData && matrixData.playerNames.length > 0 && matrixData.machines.length > 0 ? (
+                {pickerPlayerNames.length > 0 && pickerMachines.length > 0 ? (
                   <MachinePicker
                     format={optimizationFormat}
-                    playerNames={matrixData.playerNames.filter(p => !sitThisRound.has(p))}
-                    machines={matrixData.machines}
+                    playerNames={pickerPlayerNames}
+                    machines={pickerMachines}
                     seasonStart={seasonRange[0]}
                     seasonEnd={seasonRange[1]}
                     venue={selectedVenue}
@@ -3638,6 +3801,7 @@ export default function StrategyPage() {
                     mustPlay={Array.from(satOutPlayers)}
                     onAddExclusion={(machine, player) => addExclusion(machine, player, optimizationFormat === '7x7' ? 'singles' : 'doubles')}
                     onRemoveExclusion={(machine, player) => removeExclusion(machine, player, optimizationFormat === '7x7' ? 'singles' : 'doubles')}
+                    onExcludeMachine={addMachineExclusion}
                     onOptimize={(result: OptimizationResult) => {
                       console.log('Optimization result:', result)
                       if (optimizationFormat === '7x7') {

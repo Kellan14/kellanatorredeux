@@ -21,10 +21,11 @@ export async function GET(request: Request) {
     }
 
     // Check if this player name exists in player_stats (TWC data)
+    // Use case-insensitive matching with ilike
     const { data, error } = await supabase
       .from('player_stats')
       .select('player_name, player_key')
-      .eq('player_name', playerName)
+      .ilike('player_name', playerName)
       .limit(1)
       .maybeSingle()
 
