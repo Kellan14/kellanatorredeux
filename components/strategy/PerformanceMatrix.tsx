@@ -47,13 +47,13 @@ export function PerformanceMatrix({
   const isCompact = machines.length > 8
 
   return (
-    <div className="w-full">
-      <table className="w-full table-fixed border-collapse">
+    <div className="w-full overflow-x-auto">
+      <table className="border-collapse" style={{ minWidth: `${(isCompact ? 100 : 120) + machines.length * 56}px` }}>
         <thead>
           <tr>
             <th
-              className="border border-gray-600 bg-gray-800 p-1 text-left text-xs font-medium text-gray-100"
-              style={{ width: isCompact ? '100px' : '120px' }}
+              className="border border-gray-600 bg-gray-800 p-1 text-left text-xs font-medium text-gray-100 sticky left-0 z-10"
+              style={{ width: isCompact ? '100px' : '120px', minWidth: isCompact ? '100px' : '120px' }}
             >
               Player
             </th>
@@ -61,6 +61,7 @@ export function PerformanceMatrix({
               <th
                 key={machine}
                 className="border border-gray-600 bg-gray-800 p-1 text-center font-medium text-gray-100 align-bottom"
+                style={{ minWidth: '56px' }}
               >
                 <div
                   className="text-[10px] leading-tight"
@@ -79,7 +80,7 @@ export function PerformanceMatrix({
 
             return (
               <tr key={playerName}>
-                <td className="border border-gray-600 bg-gray-800 p-1 text-xs font-medium text-gray-100">
+                <td className="border border-gray-600 bg-gray-800 p-1 text-xs font-medium text-gray-100 sticky left-0 z-10">
                   <div className="truncate" title={playerName}>
                     {playerName}
                   </div>
