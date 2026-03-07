@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'TWC Stats - The Wrecking Crew MNP',
   description: 'Monday Night Pinball statistics and strategic planning for The Wrecking Crew',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+  viewport: 'width=device-width, initial-scale=1',
 }
 
 export default function RootLayout({

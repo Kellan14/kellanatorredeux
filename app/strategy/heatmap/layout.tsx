@@ -4,7 +4,7 @@ export default function HeatmapLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="fixed inset-0 z-50 bg-gray-900">
+    <div className="min-h-screen z-50 bg-gray-900 overflow-auto">
       {children}
     </div>
   )
