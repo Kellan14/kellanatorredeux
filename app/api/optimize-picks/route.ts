@@ -156,7 +156,7 @@ function blendStats(
           avg_score: vs.avg_score * venueWeight + as.avg_score * (1 - venueWeight),
           venue_adjusted_avg: vs.venue_adjusted_avg * venueWeight + as.venue_adjusted_avg * (1 - venueWeight),
           recent_form: vs.recent_form * venueWeight + as.recent_form * (1 - venueWeight),
-          games_played: vs.games_played + as.games_played,
+          games_played: as.games_played,
           confidence_score: Math.max(vs.confidence_score, as.confidence_score),
         })
       } else if (vs) {
