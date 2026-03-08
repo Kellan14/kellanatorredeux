@@ -132,9 +132,19 @@ async function getBlendedStats(
           user_confidence: vs.user_confidence || as_.user_confidence,
           last_played: vs.last_played || as_.last_played
         })
-      } else {
-        // Use whichever exists
-        playerBlended.set(machine, (vs || as_)!)
+      } else if (vs) {
+        // Only venue stats exist — always use them
+        playerBlended.set(machine, vs)
+      } else if (as_ && vw < 1) {
+        // Only all-venue stats exist — scale by (1 - venueWeight)
+        // At venue weight 1.0 (venue only), non-venue data is excluded entirely
+        playerBlended.set(machine, {
+          ...as_,
+          win_rate: as_.win_rate * (1 - vw),
+          avg_score: as_.avg_score * (1 - vw),
+          venue_adjusted_avg: as_.venue_adjusted_avg * (1 - vw),
+          recent_form: as_.recent_form * (1 - vw),
+        })
       }
     }
 
