@@ -36,9 +36,9 @@ export function calculatePerformanceScore(
 
   const W = weights || DEFAULT_WEIGHTS
 
-  // Venue-adjusted avg: 1.0 = venue average. Normalize to 0-1 scale:
-  // 0.0 ratio → 0, 1.0 ratio → 0.5, 2.0+ ratio → 1.0
-  const normalizedVenueAdj = Math.min(stats.venue_adjusted_avg / 2, 1)
+  // Venue-adjusted avg: 1.0 = venue average. Normalize so 1.0 ratio → 0.5.
+  // No cap — players who score well above venue average should be differentiated.
+  const normalizedVenueAdj = stats.venue_adjusted_avg / 2
 
   // Confidence score is already 1-10, normalize to 0-1
   const normalizedConfidence = stats.confidence_score / 10
