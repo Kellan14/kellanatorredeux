@@ -520,9 +520,9 @@ export async function POST(request: Request) {
       const venueAvg = machineVenueAvgs.get(machine as string)
       const stats = selectedPlayers.map(p => {
         const playerStats = blendedStatsMap.get(p.player)?.get(machine as string)
-        const pctOfVenue = playerStats?.venue_adjusted_avg
-          ? Math.round(playerStats.venue_adjusted_avg * 100)
-          : (venueAvg && p.avg > 0 ? Math.round((playerStats?.avg_score || 0) / venueAvg * 100) : null)
+        const pctOfVenue = venueAvg && playerStats?.avg_score
+          ? Math.round((playerStats.avg_score / venueAvg) * 100)
+          : (playerStats?.venue_adjusted_avg ? Math.round(playerStats.venue_adjusted_avg * 100) : null)
         const ui = userInputMap.get(p.player)?.get(machine as string)
         return {
           player: p.player,
