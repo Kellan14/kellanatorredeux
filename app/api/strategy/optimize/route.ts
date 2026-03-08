@@ -250,6 +250,8 @@ export async function POST(request: NextRequest) {
 
       // Helper: run opponent Hungarian against a set of machines, return machine -> oppAvg map
       const runOpponentHungarian = (targetMachines: string[]): Map<string, number[]> => {
+        if (oppPlayerList.length === 0 || targetMachines.length === 0) return new Map()
+
         const mSlots: { machine: string; slotIndex: number }[] = []
         for (const machine of targetMachines) {
           for (let s = 0; s < playersPerMachine; s++) {
@@ -265,7 +267,7 @@ export async function POST(request: NextRequest) {
             if (r < oppPlayerList.length && c < mSlots.length) {
               row.push(getBlendedAvg(oppPlayerList[r], mSlots[c].machine))
             } else {
-              row.push(-Infinity)
+              row.push(-1e9)
             }
           }
           matrix.push(row)
@@ -514,6 +516,8 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      if (oppPlayerList.length === 0 || machineSlots.length === 0) return null
+
       const dim = Math.max(oppPlayerList.length, machineSlots.length)
       const oppCostMatrix: number[][] = []
       for (let r = 0; r < dim; r++) {
@@ -522,7 +526,7 @@ export async function POST(request: NextRequest) {
           if (r < oppPlayerList.length && c < machineSlots.length) {
             row.push(getBlendedAvg(oppPlayerList[r], machineSlots[c].machine))
           } else {
-            row.push(-Infinity)
+            row.push(-1e9)
           }
         }
         oppCostMatrix.push(row)
