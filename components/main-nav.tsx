@@ -13,6 +13,8 @@ export function MainNav() {
   const pathname = usePathname()
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
+
+  if (pathname === '/strategy/heatmap') return null
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const supabase = createSupabaseClient()
 
