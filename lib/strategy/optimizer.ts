@@ -221,13 +221,13 @@ export class LineupOptimizer {
     // Build cost matrix (automatically padded to square)
     const { matrix: costMatrix, realRows, realCols } = buildCostMatrix(playerNames, machines, statsMap, confidenceBoost, scoreWeights)
 
-    // Apply opponent edge bonuses: adjust each column (machine) by its edge value
-    // This makes Hungarian favor machines where TWC has a bigger edge over the opponent
+    // Apply per-player-per-machine opponent edge bonuses
+    // Each cell gets its own bonus based on how this specific TWC player compares to the assigned opponent
     if (machineEdgeBonuses && machineEdgeBonuses.size > 0) {
-      for (let j = 0; j < realCols; j++) {
-        const bonus = machineEdgeBonuses.get(machines[j])
-        if (bonus == null) continue
-        for (let i = 0; i < realRows; i++) {
+      for (let i = 0; i < realRows; i++) {
+        for (let j = 0; j < realCols; j++) {
+          const bonus = machineEdgeBonuses.get(`${playerNames[i]}|${machines[j]}`)
+          if (bonus == null) continue
           costMatrix[i][j] *= (1 + bonus)
         }
       }

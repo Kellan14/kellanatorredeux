@@ -288,7 +288,8 @@ export async function POST(request: NextRequest) {
         return oppAvgMap
       }
 
-      // Helper: compute edge bonuses from opponent assignments
+      // Helper: compute per-player-per-machine edge bonuses from opponent assignments
+      // Each TWC player's blended avg is compared against the specific opponent assigned to that machine
       const computeEdgeBonuses = (oppAvgMap: Map<string, number[]>): Map<string, number> => {
         const bonuses = new Map<string, number>()
         for (const machine of allMachinesForStats) {
@@ -298,12 +299,21 @@ export async function POST(request: NextRequest) {
 
           const oppAvgs = oppAvgMap.get(machine)
           if (!oppAvgs || oppAvgs.length === 0) continue
-
           const oppAvg = oppAvgs.reduce((a, b) => a + b, 0) / oppAvgs.length
           if (oppAvg <= 0) continue
 
-          const weakness = Math.max(-0.5, Math.min(0.5, (venueAvg - oppAvg) / venueAvg))
-          bonuses.set(machine, ow * weakness)
+          // Convert opponent avg to a venue-adjusted ratio
+          const oppRatio = oppAvg / venueAvg
+
+          for (const player of allPlayers) {
+            const twcRatio = statsMap.get(player)?.get(machine)?.venue_adjusted_avg || 0
+            if (twcRatio <= 0) continue
+
+            // Compare TWC player's ratio vs opponent's ratio
+            // Positive = TWC player scores higher relative to venue avg than opponent
+            const edge = Math.max(-0.5, Math.min(0.5, (twcRatio - oppRatio) / Math.max(twcRatio, oppRatio)))
+            bonuses.set(`${player}|${machine}`, ow * edge)
+          }
         }
         return bonuses
       }
@@ -354,11 +364,11 @@ export async function POST(request: NextRequest) {
         const { matrix: twcMatrix, realRows: rr, realCols: rc } = buildCostMatrix(
           allPlayers, selectedMachines, statsMap, confidenceBoost, scoreWeights
         )
-        // Apply edge bonuses to cost matrix
-        for (let j = 0; j < rc; j++) {
-          const bonus = machineEdgeBonuses.get(selectedMachines[j])
-          if (bonus == null) continue
-          for (let i = 0; i < rr; i++) {
+        // Apply per-player-per-machine edge bonuses to cost matrix
+        for (let i = 0; i < rr; i++) {
+          for (let j = 0; j < rc; j++) {
+            const bonus = machineEdgeBonuses.get(`${allPlayers[i]}|${selectedMachines[j]}`)
+            if (bonus == null) continue
             twcMatrix[i][j] *= (1 + bonus)
           }
         }
