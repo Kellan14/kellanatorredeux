@@ -164,8 +164,16 @@ function blendStats(
         })
       } else if (vs) {
         blended.get(player)!.set(machine, vs)
-      } else if (as) {
-        blended.get(player)!.set(machine, as)
+      } else if (as && venueWeight < 1) {
+        // Only all-venue stats exist — scale by (1 - venueWeight)
+        // At venue weight 1.0 (venue only), non-venue data is excluded entirely
+        blended.get(player)!.set(machine, {
+          ...as,
+          win_rate: as.win_rate * (1 - venueWeight),
+          avg_score: as.avg_score * (1 - venueWeight),
+          venue_adjusted_avg: as.venue_adjusted_avg * (1 - venueWeight),
+          recent_form: as.recent_form * (1 - venueWeight),
+        })
       }
     }
   }

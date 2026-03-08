@@ -1,51 +1,13 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 import { getVenueVariations } from '@/lib/venue-mappings'
-import { getAllMachineVariations } from '@/lib/machine-mappings'
+import { getAllMachineVariations, getCanonicalMachineKey } from '@/lib/machine-mappings'
+import { calculatePlayerMachineStats, type UserInputData } from '@/lib/strategy/stats-calculator'
+import { calculatePerformanceScore, type ScoreWeights } from '@/lib/strategy/calculator'
+import type { PlayerMachineStats } from '@/types/strategy'
 
 export const dynamic = 'force-dynamic';
-
-type StatsMap = Map<string, Map<string, { total: number; count: number }>>
-
-function buildPlayerMachineStats(games: any[], availablePlayers: string[]): StatsMap {
-  const stats: StatsMap = new Map()
-  for (const game of games) {
-    for (let i = 1; i <= 4; i++) {
-      const playerName = game[`player_${i}_name`]
-      const score = game[`player_${i}_score`]
-      if (!playerName || score == null || !availablePlayers.includes(playerName)) continue
-      if (!stats.has(playerName)) stats.set(playerName, new Map())
-      const playerStats = stats.get(playerName)!
-      if (!playerStats.has(game.machine)) playerStats.set(game.machine, { total: 0, count: 0 })
-      const ms = playerStats.get(game.machine)!
-      ms.total += score
-      ms.count++
-    }
-  }
-  return stats
-}
-
-function getBlendedAvg(
-  player: string,
-  machine: string,
-  venueStats: StatsMap,
-  allStats: StatsMap,
-  venueWeight: number
-): { avg: number; source: 'venue' | 'all' | 'blended' | 'none' } {
-  const vs = venueStats.get(player)?.get(machine)
-  const as_ = allStats.get(player)?.get(machine)
-  const venueAvg = vs ? vs.total / vs.count : null
-  const allAvg = as_ ? as_.total / as_.count : null
-
-  if (venueAvg !== null && allAvg !== null) {
-    return { avg: venueAvg * venueWeight + allAvg * (1 - venueWeight), source: 'blended' }
-  } else if (venueAvg !== null) {
-    return { avg: venueAvg, source: 'venue' }
-  } else if (allAvg !== null) {
-    return { avg: allAvg, source: 'all' }
-  }
-  return { avg: 0, source: 'none' }
-}
 
 interface AdvantageData {
   twcPctOfVenue: number
@@ -170,7 +132,7 @@ function computePlayerAdvantage(
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { venue, opponent, seasonStart = 20, seasonEnd = 22, format, machines, availablePlayers, venueWeight = 0.7, exclusions = {}, mustPlay = [], opponentPlayers, opponentWeight = 0 } = body
+    const { venue, opponent, seasonStart = 20, seasonEnd = 22, format, machines, availablePlayers, venueWeight = 0.7, exclusions = {}, mustPlay = [], opponentPlayers, opponentWeight = 0, userInputWeight = 0, confidenceBoost = 0, scoreWeights } = body
 
     if (!venue || !opponent || !machines || !availablePlayers || availablePlayers.length === 0) {
       return NextResponse.json(
@@ -181,7 +143,17 @@ export async function POST(request: Request) {
 
     const vw = Math.max(0, Math.min(1, venueWeight))
     const ow = Math.max(0, Math.min(1, opponentWeight))
+    const uiw = Math.max(0, Math.min(1, userInputWeight))
+    const cb = Math.max(0, Math.min(1, confidenceBoost))
     const playersPerMachine = format === 'singles' ? 1 : 2
+
+    // Parse scoreWeights if provided
+    const weights: ScoreWeights | undefined = scoreWeights ? {
+      winRate: scoreWeights.winRate ?? 0.4,
+      recentForm: scoreWeights.recentForm ?? 0.3,
+      venueAdjustedAvg: scoreWeights.venueAdjustedAvg ?? 0.2,
+      confidence: scoreWeights.confidence ?? 0.1,
+    } : undefined
 
     if (availablePlayers.length < machines.length * playersPerMachine) {
       return NextResponse.json(
@@ -281,31 +253,82 @@ export async function POST(request: Request) {
       }
     }
 
-    // Filter games to only requested machines for player stats
-    const venueGamesFiltered = venueGames.filter(g => machineSet.has(g.machine))
-    const allVenueGamesFiltered = allVenueGames.filter(g => machineSet.has(g.machine))
+    // Fetch user inputs (self-reported averages and confidence)
+    const machineVariationsForInputs = getAllMachineVariations(machines as string[])
+    const userInputMap = new Map<string, Map<string, UserInputData>>()
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-    // Build stats maps
-    const venuePlayerStats = buildPlayerMachineStats(venueGamesFiltered, availablePlayers)
-    const allPlayerStats = buildPlayerMachineStats(allVenueGamesFiltered, availablePlayers)
-
-    // Fetch user inputs for all players/machines
-    let userInputMap = new Map<string, { average: number | null; confidence: number | null }>()
-    try {
-      const { data: userInputs } = await supabase
+    if (supabaseUrl && supabaseKey) {
+      const sb = createClient(supabaseUrl, supabaseKey)
+      const { data: uiData } = await sb
         .from('user_machine_inputs')
-        .select('player_name, machine_name, venue, average_score, confidence')
+        .select('player_name, machine, user_average, user_confidence')
         .in('player_name', availablePlayers)
-        .in('machine_name', machines)
-        .eq('venue', venue) as { data: Array<{ player_name: string; machine_name: string; average_score: number | null; confidence: number | null }> | null }
-      if (userInputs) {
-        for (const ui of userInputs) {
-          const key = `${ui.player_name}|${ui.machine_name}`
-          userInputMap.set(key, { average: ui.average_score, confidence: ui.confidence })
+        .in('machine', machineVariationsForInputs)
+        .in('venue', [venue, ''])
+
+      if (uiData) {
+        for (const row of uiData) {
+          const canonicalMachine = getCanonicalMachineKey(row.machine)
+          const machineKey = (machines as string[]).includes(canonicalMachine) ? canonicalMachine
+            : (machines as string[]).find(m => m.toLowerCase() === canonicalMachine.toLowerCase()) || canonicalMachine
+          if (!userInputMap.has(row.player_name)) userInputMap.set(row.player_name, new Map())
+          userInputMap.get(row.player_name)!.set(machineKey, {
+            userAverage: row.user_average,
+            userConfidence: row.user_confidence,
+          })
         }
       }
-    } catch (e) {
-      // non-critical
+    }
+
+    // Calculate stats using the shared stats calculator (includes win_rate, recent_form, venue_adjusted_avg, etc.)
+    const [venuePlayerStats, allPlayerStats] = await Promise.all([
+      calculatePlayerMachineStats(availablePlayers, machines as string[], seasonStart, seasonEnd, venue, userInputMap, uiw),
+      calculatePlayerMachineStats(availablePlayers, machines as string[], seasonStart, seasonEnd, undefined, userInputMap, uiw)
+    ])
+
+    // Blend venue-specific and all-venue stats (same logic as optimizer.ts getBlendedStats)
+    const blendedStatsMap = new Map<string, Map<string, PlayerMachineStats>>()
+    for (const player of availablePlayers as string[]) {
+      const playerBlended = new Map<string, PlayerMachineStats>()
+      const venuePS = venuePlayerStats.get(player)
+      const allPS = allPlayerStats.get(player)
+
+      for (const machine of machines as string[]) {
+        const vs = venuePS?.get(machine)
+        const as_ = allPS?.get(machine)
+
+        if (!vs && !as_) continue
+
+        if (vs && as_) {
+          playerBlended.set(machine, {
+            ...vs,
+            games_played: as_.games_played,
+            win_rate: vs.win_rate * vw + as_.win_rate * (1 - vw),
+            avg_score: vs.avg_score * vw + as_.avg_score * (1 - vw),
+            venue_adjusted_avg: vs.venue_adjusted_avg * vw + as_.venue_adjusted_avg * (1 - vw),
+            high_score: Math.max(vs.high_score, as_.high_score),
+            recent_form: vs.recent_form * vw + as_.recent_form * (1 - vw),
+            confidence_score: Math.max(vs.confidence_score, as_.confidence_score),
+            user_confidence: vs.user_confidence || as_.user_confidence,
+          })
+        } else if (vs) {
+          playerBlended.set(machine, vs)
+        } else if (as_ && vw < 1) {
+          playerBlended.set(machine, {
+            ...as_,
+            win_rate: as_.win_rate * (1 - vw),
+            avg_score: as_.avg_score * (1 - vw),
+            venue_adjusted_avg: as_.venue_adjusted_avg * (1 - vw),
+            recent_form: as_.recent_form * (1 - vw),
+          })
+        }
+      }
+
+      if (playerBlended.size > 0) {
+        blendedStatsMap.set(player, playerBlended)
+      }
     }
 
     // Build per-opponent-player stats and greedily assign opponents to machines BEFORE TWC optimization
@@ -447,23 +470,32 @@ export async function POST(request: Request) {
       for (const player of availablePlayers) {
         if (assignedPlayers.has(player)) continue
         if (machineExclusions.includes(player)) continue
-        const blended = getBlendedAvg(player, machine, venuePlayerStats, allPlayerStats, vw)
-        let avg = blended.avg
-        // Per-player edge: compare this player's avg vs assigned opponent's avg
-        if (ow > 0 && avg > 0) {
+        const stats = blendedStatsMap.get(player)?.get(machine as string) || null
+        let performanceScore = calculatePerformanceScore(stats, cb, weights)
+
+        // Determine data source
+        const hasVenue = venuePlayerStats.get(player)?.has(machine as string)
+        const hasAll = allPlayerStats.get(player)?.has(machine as string)
+        let source = 'none'
+        if (hasVenue && hasAll) source = 'blended'
+        else if (hasVenue) source = 'venue'
+        else if (hasAll) source = 'all'
+
+        // Per-player edge: compare this player's venue_adjusted_avg vs assigned opponent's avg
+        if (ow > 0 && performanceScore > 0) {
           const oppForMachine = oppAssignmentsPerMachine.get(machine as string)
           const mVenueAvg = machineVenueAvgs.get(machine as string)
-          if (oppForMachine && oppForMachine.length > 0 && mVenueAvg && mVenueAvg > 0) {
+          if (oppForMachine && oppForMachine.length > 0 && mVenueAvg && mVenueAvg > 0 && stats?.venue_adjusted_avg) {
             const oppAvg = oppForMachine.reduce((sum, p) => sum + p.avgScore, 0) / oppForMachine.length
             if (oppAvg > 0) {
-              const twcRatio = avg / mVenueAvg
+              const twcRatio = stats.venue_adjusted_avg
               const oppRatio = oppAvg / mVenueAvg
               const edge = Math.max(-0.5, Math.min(0.5, (twcRatio - oppRatio) / Math.max(twcRatio, oppRatio)))
-              avg *= (1 + ow * edge)
+              performanceScore *= (1 + ow * edge)
             }
           }
         }
-        playersToAssign.push({ player, avg, source: blended.source, isMustPlay: mustPlaySet.has(player) })
+        playersToAssign.push({ player, avg: performanceScore, source, isMustPlay: mustPlaySet.has(player) })
       }
 
       playersToAssign.sort((a, b) => {
@@ -487,18 +519,22 @@ export async function POST(request: Request) {
       // Build per-player stats
       const venueAvg = machineVenueAvgs.get(machine as string)
       const stats = selectedPlayers.map(p => {
-        const vs = venuePlayerStats.get(p.player)?.get(machine as string)
-        const as_ = allPlayerStats.get(p.player)?.get(machine as string)
-        const totalPlays = (vs?.count || 0) + (as_?.count || 0)
-        const pctOfVenue = venueAvg && p.avg > 0 ? Math.round((p.avg / venueAvg) * 100) : null
-        const userInput = userInputMap.get(`${p.player}|${machine}`)
+        const playerStats = blendedStatsMap.get(p.player)?.get(machine as string)
+        const pctOfVenue = playerStats?.venue_adjusted_avg
+          ? Math.round(playerStats.venue_adjusted_avg * 100)
+          : (venueAvg && p.avg > 0 ? Math.round((playerStats?.avg_score || 0) / venueAvg * 100) : null)
+        const ui = userInputMap.get(p.player)?.get(machine as string)
         return {
           player: p.player,
           pctOfVenue,
-          playsCount: totalPlays,
-          avgScore: Math.round(p.avg),
-          userAverage: userInput?.average ?? null,
-          userConfidence: userInput?.confidence ?? null,
+          playsCount: playerStats?.games_played || 0,
+          avgScore: playerStats?.avg_score ? Math.round(playerStats.avg_score) : 0,
+          winRate: playerStats?.win_rate ? Math.round(playerStats.win_rate * 100) : null,
+          recentForm: playerStats?.recent_form ? Math.round(playerStats.recent_form * 100) : null,
+          confidenceScore: playerStats?.confidence_score || 0,
+          performanceScore: Math.round(p.avg * 100),
+          userAverage: ui?.userAverage ?? null,
+          userConfidence: ui?.userConfidence ?? (playerStats?.user_confidence ?? null),
         }
       })
 

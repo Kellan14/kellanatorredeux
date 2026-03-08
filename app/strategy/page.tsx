@@ -887,6 +887,9 @@ export default function StrategyPage() {
           opponentWeight: opponentWeight / 100,
           exclusions: singlesAssignExclusions,
           mustPlay: Array.from(satOutPlayers),
+          scoreWeights,
+          confidenceBoost: confidenceBoost / 100,
+          userInputWeight: userInputWeight / 100,
         }),
       })
 
@@ -926,6 +929,9 @@ export default function StrategyPage() {
           opponentWeight: opponentWeight / 100,
           exclusions: doublesAssignExclusions,
           mustPlay: Array.from(satOutPlayers),
+          scoreWeights,
+          confidenceBoost: confidenceBoost / 100,
+          userInputWeight: userInputWeight / 100,
         }),
       })
 
