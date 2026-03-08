@@ -65,7 +65,8 @@ function computePlayerAdvantage(
   opponentName: string,
   teamNameMap: Record<string, string>,
   vw: number,
-  teamName: string
+  teamName: string,
+  opponentPlayers?: string[]
 ): AdvantageData {
   // Build TWC stats from assigned players only
   let twcVenueTotal = 0, twcVenueCount = 0, twcNonVenueTotal = 0, twcNonVenueCount = 0
@@ -87,10 +88,12 @@ function computePlayerAdvantage(
           if (isVenue) { twcVenueTotal += score; twcVenueCount++ }
           else { twcNonVenueTotal += score; twcNonVenueCount++ }
         }
-        // Opponent side: all opponent players
+        // Opponent side: filter by opponentPlayers if provided
         if (teamDisplayName === opponentName) {
-          if (isVenue) { oppVenueTotal += score; oppVenueCount++ }
-          else { oppNonVenueTotal += score; oppNonVenueCount++ }
+          if (!opponentPlayers || opponentPlayers.length === 0 || opponentPlayers.includes(playerName)) {
+            if (isVenue) { oppVenueTotal += score; oppVenueCount++ }
+            else { oppNonVenueTotal += score; oppNonVenueCount++ }
+          }
         }
       }
     }
@@ -167,7 +170,7 @@ function computePlayerAdvantage(
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { venue, opponent, seasonStart = 20, seasonEnd = 22, format, machines, availablePlayers, venueWeight = 0.7, exclusions = {}, mustPlay = [] } = body
+    const { venue, opponent, seasonStart = 20, seasonEnd = 22, format, machines, availablePlayers, venueWeight = 0.7, exclusions = {}, mustPlay = [], opponentPlayers } = body
 
     if (!venue || !opponent || !machines || !availablePlayers || availablePlayers.length === 0) {
       return NextResponse.json(
@@ -381,7 +384,8 @@ export async function POST(request: Request) {
         opponent,
         teamNameMap,
         vw,
-        teamName
+        teamName,
+        opponentPlayers
       )
 
       assignments.push({

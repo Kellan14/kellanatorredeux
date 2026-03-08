@@ -17,6 +17,8 @@ export async function GET(request: Request) {
     const twcVenueSpecific = searchParams.get('twcVenueSpecific') === 'true'
     const venueWeightParam = parseFloat(searchParams.get('venueWeight') || '0.7')
     const vw = Math.max(0, Math.min(1, venueWeightParam))
+    const opponentPlayersParam = searchParams.get('opponentPlayers')
+    const opponentPlayersList = opponentPlayersParam ? opponentPlayersParam.split(',').filter(Boolean) : []
 
     if (!venue || !opponent) {
       return NextResponse.json(
@@ -116,10 +118,15 @@ export async function GET(request: Request) {
         for (let i = 1; i <= 4; i++) {
           const teamKey = game[`player_${i}_team`]
           const score = game[`player_${i}_score`]
+          const playerName = game[`player_${i}_name`]
           const teamDisplayName = teamNameMap[teamKey]
           if (!score || !teamDisplayName) continue
           if (teamDisplayName === teamName) { ms.twcTotal += score; ms.twcCount++ }
-          else if (teamDisplayName === opponent) { ms.oppTotal += score; ms.oppCount++ }
+          else if (teamDisplayName === opponent) {
+            if (opponentPlayersList.length === 0 || opponentPlayersList.includes(playerName)) {
+              ms.oppTotal += score; ms.oppCount++
+            }
+          }
         }
       }
       return stats

@@ -60,6 +60,7 @@ import { getMachineImagePath } from '@/lib/machine-images'
 import { getMachineDisplayName } from '@/lib/machine-mappings'
 import { MachinePicker } from '@/components/strategy/MachinePicker'
 import { TwcPlayerAvailability } from '@/components/twc-player-availability'
+import { PlayerAvailability } from '@/components/player-availability'
 import type { PlayerMachineStats, OptimizationResult } from '@/types/strategy'
 
 interface Team {
@@ -144,11 +145,30 @@ export default function StrategyPage() {
   const [advSortColumn, setAdvSortColumn] = useState<string>('compositeScore')
   const [advSortDirection, setAdvSortDirection] = useState<'asc' | 'desc'>('desc')
 
-  // Player availability
+  // TWC Player availability
   const [availablePlayers, setAvailablePlayers] = useState<Record<string, boolean>>({})
   const [allPlayers, setAllPlayers] = useState<string[]>([])
   const [rosterPlayers, setRosterPlayers] = useState<string[]>([])
   const [subPlayers, setSubPlayers] = useState<string[]>([])
+  const [twcAddedSubs, setTwcAddedSubs] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return []
+    try {
+      const saved = localStorage.getItem('twcAddedSubs')
+      return saved ? JSON.parse(saved) : []
+    } catch { return [] }
+  })
+
+  // Opponent Player availability
+  const [opponentAvailablePlayers, setOpponentAvailablePlayers] = useState<Record<string, boolean>>({})
+  const [opponentRosterPlayers, setOpponentRosterPlayers] = useState<string[]>([])
+  const [opponentSubPlayers, setOpponentSubPlayers] = useState<string[]>([])
+  const [opponentAddedSubs, setOpponentAddedSubs] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return []
+    try {
+      const saved = localStorage.getItem('opponentAddedSubs')
+      return saved ? JSON.parse(saved) : []
+    } catch { return [] }
+  })
 
   // Sat-out tracking - players who have already sat out must play
   const [satOutPlayers, setSatOutPlayers] = useState<Set<string>>(() => {
@@ -458,6 +478,46 @@ export default function StrategyPage() {
     }
   }, [selectedVenue, selectedOpponent, seasonRange, teamVenueSpecific, twcVenueSpecific]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Load opponent roster when opponent changes
+  useEffect(() => {
+    if (!selectedOpponent) return
+    const loadOpponentRoster = async () => {
+      try {
+        const maxSeason = availableSeasons.length > 0 ? Math.max(...availableSeasons) : 22
+        const response = await fetch(`/api/opponent-roster?team=${encodeURIComponent(selectedOpponent)}&currentSeason=${maxSeason}`)
+        if (response.ok) {
+          const data = await response.json()
+          const roster = data.rosterPlayers || []
+          const subs = [...(data.subPlayers || []), ...opponentAddedSubs.filter((s: string) => !roster.includes(s) && !(data.subPlayers || []).includes(s))]
+          setOpponentRosterPlayers(roster)
+          setOpponentSubPlayers(subs)
+          // Merge with existing availability state
+          setOpponentAvailablePlayers(prev => {
+            const next: Record<string, boolean> = {}
+            roster.forEach((player: string) => {
+              next[player] = prev[player] !== undefined ? prev[player] : true
+            })
+            subs.forEach((player: string) => {
+              next[player] = prev[player] !== undefined ? prev[player] : false
+            })
+            return next
+          })
+        }
+      } catch (error) {
+        console.error('Error loading opponent roster:', error)
+      }
+    }
+    loadOpponentRoster()
+  }, [selectedOpponent, availableSeasons]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Persist added subs to localStorage
+  useEffect(() => {
+    try { localStorage.setItem('twcAddedSubs', JSON.stringify(twcAddedSubs)) } catch {}
+  }, [twcAddedSubs])
+  useEffect(() => {
+    try { localStorage.setItem('opponentAddedSubs', JSON.stringify(opponentAddedSubs)) } catch {}
+  }, [opponentAddedSubs])
+
   const loadVenuesAndTeams = async () => {
     setLoadingDropdowns(true)
     try {
@@ -545,6 +605,7 @@ export default function StrategyPage() {
   const loadMachineAdvantages = async () => {
     setLoading(true)
     try {
+      const opponentPlayersList = getSelectedOpponentPlayers()
       const response = await fetch(
         `/api/machine-advantages?` +
         `venue=${encodeURIComponent(selectedVenue)}` +
@@ -554,7 +615,8 @@ export default function StrategyPage() {
         `&teamVenueSpecific=${teamVenueSpecific}` +
         `&twcVenueSpecific=${twcVenueSpecific}` +
         `&venueWeight=${venueWeight / 100}` +
-        `&machines=${encodeURIComponent((venues.find(v => v.name === selectedVenue)?.machines || []).join(','))}`
+        `&machines=${encodeURIComponent((venues.find(v => v.name === selectedVenue)?.machines || []).join(','))}` +
+        (opponentPlayersList.length > 0 ? `&opponentPlayers=${encodeURIComponent(opponentPlayersList.join(','))}` : '')
       )
 
       if (response.ok) {
@@ -562,7 +624,9 @@ export default function StrategyPage() {
         setMachineAdvantages(data.advantages || [])
         setAllPlayers(data.players || [])
         setRosterPlayers(data.rosterPlayers || [])
-        setSubPlayers(data.subPlayers || [])
+        const baseSubs = data.subPlayers || []
+        const allSubs = [...baseSubs, ...twcAddedSubs.filter((s: string) => !(data.rosterPlayers || []).includes(s) && !baseSubs.includes(s))]
+        setSubPlayers(allSubs)
 
         // Merge new roster with existing availability state so persisted values
         // are not overwritten when the venue/opponent changes but the roster is the same.
@@ -572,7 +636,7 @@ export default function StrategyPage() {
           ;(data.rosterPlayers || []).forEach((player: string) => {
             next[player] = prev[player] !== undefined ? prev[player] : true
           })
-          ;(data.subPlayers || []).forEach((player: string) => {
+          allSubs.forEach((player: string) => {
             next[player] = prev[player] !== undefined ? prev[player] : false
           })
           return next
@@ -583,6 +647,45 @@ export default function StrategyPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Sub management handlers
+  const handleAddTwcSub = (name: string) => {
+    if (!subPlayers.includes(name) && !rosterPlayers.includes(name)) {
+      setSubPlayers(prev => [...prev, name])
+      setTwcAddedSubs(prev => [...prev, name])
+      setAvailablePlayers(prev => ({ ...prev, [name]: false }))
+    }
+  }
+  const handleRemoveTwcSub = (name: string) => {
+    setTwcAddedSubs(prev => prev.filter(s => s !== name))
+    setSubPlayers(prev => prev.filter(s => s !== name))
+    setAvailablePlayers(prev => {
+      const next = { ...prev }
+      delete next[name]
+      return next
+    })
+  }
+  const handleAddOpponentSub = (name: string) => {
+    if (!opponentSubPlayers.includes(name) && !opponentRosterPlayers.includes(name)) {
+      setOpponentSubPlayers(prev => [...prev, name])
+      setOpponentAddedSubs(prev => [...prev, name])
+      setOpponentAvailablePlayers(prev => ({ ...prev, [name]: false }))
+    }
+  }
+  const handleRemoveOpponentSub = (name: string) => {
+    setOpponentAddedSubs(prev => prev.filter(s => s !== name))
+    setOpponentSubPlayers(prev => prev.filter(s => s !== name))
+    setOpponentAvailablePlayers(prev => {
+      const next = { ...prev }
+      delete next[name]
+      return next
+    })
+  }
+
+  // Get selected opponent players for API calls
+  const getSelectedOpponentPlayers = () => {
+    return Object.keys(opponentAvailablePlayers).filter(p => opponentAvailablePlayers[p])
   }
 
   const optimizeSinglesPicks = async () => {
@@ -600,6 +703,7 @@ export default function StrategyPage() {
         body: JSON.stringify({
           venue: selectedVenue,
           opponent: selectedOpponent,
+          opponentPlayers: getSelectedOpponentPlayers(),
           seasonStart: seasonRange[0],
           seasonEnd: seasonRange[1],
           format: 'singles',
@@ -652,6 +756,7 @@ export default function StrategyPage() {
         body: JSON.stringify({
           venue: selectedVenue,
           opponent: selectedOpponent,
+          opponentPlayers: getSelectedOpponentPlayers(),
           seasonStart: seasonRange[0],
           seasonEnd: seasonRange[1],
           format: 'doubles',
@@ -704,6 +809,7 @@ export default function StrategyPage() {
         body: JSON.stringify({
           venue: selectedVenue,
           opponent: selectedOpponent,
+          opponentPlayers: getSelectedOpponentPlayers(),
           seasonStart: seasonRange[0],
           seasonEnd: seasonRange[1],
           format: 'singles',
@@ -741,6 +847,7 @@ export default function StrategyPage() {
         body: JSON.stringify({
           venue: selectedVenue,
           opponent: selectedOpponent,
+          opponentPlayers: getSelectedOpponentPlayers(),
           seasonStart: seasonRange[0],
           seasonEnd: seasonRange[1],
           format: 'doubles',
@@ -784,6 +891,7 @@ export default function StrategyPage() {
         body: JSON.stringify({
           venue: selectedVenue,
           opponent: selectedOpponent,
+          opponentPlayers: getSelectedOpponentPlayers(),
           seasonStart: seasonRange[0],
           seasonEnd: seasonRange[1],
           format: 'singles',
@@ -808,6 +916,7 @@ export default function StrategyPage() {
         body: JSON.stringify({
           venue: selectedVenue,
           opponent: selectedOpponent,
+          opponentPlayers: getSelectedOpponentPlayers(),
           seasonStart: seasonRange[0],
           seasonEnd: seasonRange[1],
           format: 'doubles',
@@ -1558,12 +1667,29 @@ export default function StrategyPage() {
           {!loading && selectedVenue && selectedOpponent && (
             <>
               {/* Player Availability Section */}
-              <TwcPlayerAvailability
+              <PlayerAvailability
+                storageKey="twcPlayerAvailability"
+                title="TWC Player Availability"
                 rosterPlayers={rosterPlayers}
                 subPlayers={subPlayers}
                 availablePlayers={availablePlayers}
                 onChange={setAvailablePlayers}
                 lockedPlayers={satOutPlayers}
+                onAddSub={handleAddTwcSub}
+                onRemoveSub={handleRemoveTwcSub}
+                addedSubs={twcAddedSubs}
+              />
+
+              <PlayerAvailability
+                storageKey={`opponentPlayerAvailability_${selectedOpponent}`}
+                title={`${selectedOpponent} Player Availability`}
+                rosterPlayers={opponentRosterPlayers}
+                subPlayers={opponentSubPlayers}
+                availablePlayers={opponentAvailablePlayers}
+                onChange={setOpponentAvailablePlayers}
+                onAddSub={handleAddOpponentSub}
+                onRemoveSub={handleRemoveOpponentSub}
+                addedSubs={opponentAddedSubs}
               />
 
               {/* Machine Advantage Table */}

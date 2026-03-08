@@ -27,7 +27,8 @@ function computePlayerAdvantage(
   opponentName: string,
   teamNameMap: Record<string, string>,
   vw: number,
-  teamName: string
+  teamName: string,
+  opponentPlayers?: string[]
 ): AdvantageData {
   let twcVenueTotal = 0, twcVenueCount = 0, twcNonVenueTotal = 0, twcNonVenueCount = 0
   let oppVenueTotal = 0, oppVenueCount = 0, oppNonVenueTotal = 0, oppNonVenueCount = 0
@@ -48,8 +49,10 @@ function computePlayerAdvantage(
           else { twcNonVenueTotal += score; twcNonVenueCount++ }
         }
         if (teamDisplayName === opponentName) {
-          if (isVenue) { oppVenueTotal += score; oppVenueCount++ }
-          else { oppNonVenueTotal += score; oppNonVenueCount++ }
+          if (!opponentPlayers || opponentPlayers.length === 0 || opponentPlayers.includes(playerName)) {
+            if (isVenue) { oppVenueTotal += score; oppVenueCount++ }
+            else { oppNonVenueTotal += score; oppNonVenueCount++ }
+          }
         }
       }
     }
@@ -187,7 +190,8 @@ export async function POST(request: Request) {
       scoreWeights,
       exclusions = {},
       mustPlay = [],
-      machines: machinesParam
+      machines: machinesParam,
+      opponentPlayers
     } = body
 
     if (!venue || !opponent || !availablePlayers || availablePlayers.length === 0) {
@@ -433,7 +437,8 @@ export async function POST(request: Request) {
         opponent,
         teamNameMap,
         vw,
-        teamName
+        teamName,
+        opponentPlayers
       )
 
       recommendations.push({
