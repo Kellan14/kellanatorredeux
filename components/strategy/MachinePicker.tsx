@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { X, Info } from 'lucide-react'
+import { X, Info, ChevronDown, ChevronUp } from 'lucide-react'
 import type { OptimizationResult, Assignment, PairAssignment } from '@/types/strategy'
 
 interface ScoreWeights {
@@ -187,10 +187,18 @@ function AssignedPlayer({
   )
 }
 
+interface MachineAssignmentData {
+  expected_score?: number
+  confidence?: number
+  player1_venue_adjusted_avg?: number
+  player2_venue_adjusted_avg?: number
+}
+
 function MachineSlot({
   machine,
   assignedPlayers,
   playerStatsMap,
+  assignmentData,
   onDrop,
   onExclude,
   onExcludeMachine,
@@ -202,6 +210,7 @@ function MachineSlot({
   machine: string
   assignedPlayers: string[]
   playerStatsMap?: Record<string, PlayerStats>
+  assignmentData?: MachineAssignmentData
   onDrop: (playerName: string, machine: string) => void
   onExclude?: (machine: string, player: string) => void
   onExcludeMachine?: (machine: string) => void
@@ -211,6 +220,7 @@ function MachineSlot({
   onUnforce?: (machine: string, player: string) => void
 }) {
   const maxPlayers = format === '7x7' ? 1 : 2
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'PLAYER',
@@ -225,6 +235,7 @@ function MachineSlot({
 
   const showDropZone = canDrop && isOver
   const hasForced = assignedPlayers.some(p => forcedPlayers?.has(p))
+  const hasPlayers = assignedPlayers.length > 0
 
   return (
     <div
@@ -236,9 +247,18 @@ function MachineSlot({
       `}
     >
       <div className="flex items-center justify-between gap-1">
-        <div className="font-medium text-[11px] text-foreground truncate" title={machine}>
+        <button
+          className="font-medium text-[11px] text-foreground truncate text-left flex-1 hover:text-primary transition-colors"
+          title={`${machine} — click for details`}
+          onClick={() => hasPlayers && setIsExpanded(!isExpanded)}
+        >
           {machine}
-        </div>
+          {hasPlayers && (
+            <span className="ml-1 inline-block align-middle">
+              {isExpanded ? <ChevronUp className="h-2.5 w-2.5 inline" /> : <ChevronDown className="h-2.5 w-2.5 inline" />}
+            </span>
+          )}
+        </button>
         {onExcludeMachine && (
           <button
             className="text-[9px] text-destructive hover:text-destructive/80 shrink-0"
@@ -264,6 +284,41 @@ function MachineSlot({
       {assignedPlayers.length < maxPlayers && (
         <div className="mt-0.5 px-1.5 py-0.5 border border-dashed border-border rounded text-[10px] text-muted-foreground text-center">
           {canDrop ? 'Drop' : 'Empty'}
+        </div>
+      )}
+      {/* Expanded details panel */}
+      {isExpanded && hasPlayers && (
+        <div className="mt-1.5 pt-1.5 border-t border-dashed space-y-1.5">
+          {assignmentData && (
+            <div className="grid grid-cols-2 gap-0.5 text-[9px] text-muted-foreground">
+              {assignmentData.expected_score != null && (
+                <div><strong>Score:</strong> {assignmentData.expected_score.toFixed(3)}</div>
+              )}
+              {assignmentData.confidence != null && (
+                <div><strong>Confidence:</strong> {assignmentData.confidence}/10</div>
+              )}
+            </div>
+          )}
+          {assignedPlayers.map(player => {
+            const stats = playerStatsMap?.[player]
+            if (!stats) return null
+            return (
+              <div key={player} className="text-[9px] text-muted-foreground bg-muted/50 rounded p-1">
+                <div className="font-medium text-foreground mb-0.5">{player}</div>
+                <div className="grid grid-cols-2 gap-0.5">
+                  {stats.venue_adjusted_avg != null && (
+                    <div>% of Venue: {(stats.venue_adjusted_avg * 100).toFixed(0)}%</div>
+                  )}
+                  {stats.user_average != null && (
+                    <div>User Avg: {stats.user_average >= 1_000_000 ? `${(stats.user_average / 1_000_000).toFixed(1)}M` : stats.user_average >= 1_000 ? `${(stats.user_average / 1_000).toFixed(1)}K` : stats.user_average}</div>
+                  )}
+                  {stats.user_confidence != null && (
+                    <div>User Conf: {stats.user_confidence}/10</div>
+                  )}
+                </div>
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
@@ -661,6 +716,30 @@ export function MachinePicker({
     return result
   }, [assignments, statsCacheVersion]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Build assignment data map for expanded details
+  const machineAssignmentData = React.useMemo(() => {
+    const result: Record<string, MachineAssignmentData> = {}
+    if (!optimizationResult) return result
+    for (const assignment of optimizationResult.assignments) {
+      if ('player1_id' in assignment) {
+        const pa = assignment as import('@/types/strategy').PairAssignment
+        result[pa.machine_id] = {
+          expected_score: pa.expected_score,
+          confidence: undefined,
+          player1_venue_adjusted_avg: pa.player1_venue_adjusted_avg,
+          player2_venue_adjusted_avg: pa.player2_venue_adjusted_avg,
+        }
+      } else {
+        const a = assignment as import('@/types/strategy').Assignment
+        result[a.machine_id] = {
+          expected_score: a.expected_score,
+          confidence: a.confidence,
+        }
+      }
+    }
+    return result
+  }, [optimizationResult])
+
   const machineCount = machines.length
   const gridCols = machineCount <= 4 ? 2 : machineCount <= 9 ? 3 : 4
 
@@ -805,6 +884,7 @@ export function MachinePicker({
               machine={machine}
               assignedPlayers={assignments.get(machine) || []}
               playerStatsMap={machinePlayerStats[machine]}
+              assignmentData={machineAssignmentData[machine]}
               onDrop={handleDrop}
               onExclude={onAddExclusion}
               onExcludeMachine={onExcludeMachine}

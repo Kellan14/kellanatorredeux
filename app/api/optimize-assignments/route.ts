@@ -380,6 +380,8 @@ export async function POST(request: Request) {
         userConfidence: number | null
       }>
       advantage: AdvantageData
+      opponentWeakness: number
+      opponentWeight: number
     }> = []
     const assignedPlayers = new Set<string>()
 
@@ -459,6 +461,8 @@ export async function POST(request: Request) {
         blendedScore: Math.round(expectedAvg),
         stats,
         advantage,
+        opponentWeakness: ow > 0 ? (oppWeaknessPerMachine.get(machine as string) || 0) : 0,
+        opponentWeight: ow,
       })
     }
 

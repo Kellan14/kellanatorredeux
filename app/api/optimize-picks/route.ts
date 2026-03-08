@@ -510,6 +510,8 @@ export async function POST(request: Request) {
         blendedScore: Math.round(bestScore * 100),
         stats: playerStatsDisplay,
         advantage,
+        opponentWeakness: ow > 0 ? (oppWeaknessPerMachine.get(bestMachine) || 0) : 0,
+        opponentWeight: ow,
       })
     }
 

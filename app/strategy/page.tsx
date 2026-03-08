@@ -110,6 +110,8 @@ interface PlayerAssignment {
     userConfidence?: number | null
   }[]
   advantage?: PlayerAdvantage
+  opponentWeakness?: number
+  opponentWeight?: number
 }
 
 export default function StrategyPage() {
@@ -2170,6 +2172,12 @@ export default function StrategyPage() {
                                           <div><strong>Score Edge:</strong> {adv.statisticalAdvantage.toFixed(1)}</div>
                                           <div><strong>Experience Edge:</strong> {adv.experienceAdvantage} plays</div>
                                           <div><strong>Player Plays:</strong> {adv.twcPlays}</div>
+                                          {rec.opponentWeight != null && rec.opponentWeight > 0 && (
+                                            <>
+                                              <div><strong>Opp Weakness:</strong> <span className={rec.opponentWeakness != null && rec.opponentWeakness > 0 ? 'text-green-600 dark:text-green-400' : rec.opponentWeakness != null && rec.opponentWeakness < 0 ? 'text-red-600 dark:text-red-400' : ''}>{rec.opponentWeakness != null ? `${(rec.opponentWeakness * 100).toFixed(1)}%` : 'N/A'}</span></div>
+                                              <div><strong>Score Boost:</strong> <span className={rec.opponentWeakness != null && rec.opponentWeakness > 0 ? 'text-green-600 dark:text-green-400' : rec.opponentWeakness != null && rec.opponentWeakness < 0 ? 'text-red-600 dark:text-red-400' : ''}>{rec.opponentWeakness != null && rec.opponentWeight != null ? `${(rec.opponentWeight * rec.opponentWeakness * 100).toFixed(1)}%` : 'N/A'}</span></div>
+                                            </>
+                                          )}
                                         </div>
                                       )}
 
@@ -2216,6 +2224,7 @@ export default function StrategyPage() {
                                                 <div>Venue Weight: {venueWeight}%</div>
                                                 <div>User Input Weight: {userInputWeight}%</div>
                                                 <div>Confidence Boost: {confidenceBoost}%</div>
+                                                <div>Opponent Weight: {opponentWeight}%</div>
                                                 <div>Win Rate Weight: {winRateWeight}%</div>
                                                 <div>Recent Form Weight: {recentFormWeight}%</div>
                                                 <div>Data Confidence Weight: {dataConfidenceWeight}%</div>
@@ -2366,6 +2375,7 @@ export default function StrategyPage() {
                                                 <li><strong>User Input Weight:</strong> Blends your logged scores/averages ({userInputWeight}%) with league data ({100-userInputWeight}%)</li>
                                                 <li><strong>Confidence Boost:</strong> Blends your self-reported confidence ({confidenceBoost}%) into the final score</li>
                                                 <li><strong>Score Factors:</strong> Win Rate ({winRateWeight}%), Recent Form ({recentFormWeight}%), Venue Avg ({venueAvgWeight}%), Data Confidence ({dataConfidenceWeight}%)</li>
+                                                {opponentWeight > 0 && <li><strong>Opponent Weight:</strong> Scores are adjusted by {opponentWeight}% of opponent weakness per machine. Positive weakness (opponent below venue avg) boosts scores, negative (above avg) penalizes.</li>}
                                               </ul>
                                             </div>
                                           </div>
@@ -2525,6 +2535,12 @@ export default function StrategyPage() {
                                           <div><strong>Score Edge:</strong> {adv.statisticalAdvantage.toFixed(1)}</div>
                                           <div><strong>Experience Edge:</strong> {adv.experienceAdvantage} plays</div>
                                           <div><strong>Players Plays:</strong> {adv.twcPlays}</div>
+                                          {rec.opponentWeight != null && rec.opponentWeight > 0 && (
+                                            <>
+                                              <div><strong>Opp Weakness:</strong> <span className={rec.opponentWeakness != null && rec.opponentWeakness > 0 ? 'text-green-600 dark:text-green-400' : rec.opponentWeakness != null && rec.opponentWeakness < 0 ? 'text-red-600 dark:text-red-400' : ''}>{rec.opponentWeakness != null ? `${(rec.opponentWeakness * 100).toFixed(1)}%` : 'N/A'}</span></div>
+                                              <div><strong>Score Boost:</strong> <span className={rec.opponentWeakness != null && rec.opponentWeakness > 0 ? 'text-green-600 dark:text-green-400' : rec.opponentWeakness != null && rec.opponentWeakness < 0 ? 'text-red-600 dark:text-red-400' : ''}>{rec.opponentWeakness != null && rec.opponentWeight != null ? `${(rec.opponentWeight * rec.opponentWeakness * 100).toFixed(1)}%` : 'N/A'}</span></div>
+                                            </>
+                                          )}
                                         </div>
                                       )}
 
@@ -2571,6 +2587,7 @@ export default function StrategyPage() {
                                                 <div>Venue Weight: {venueWeight}%</div>
                                                 <div>User Input Weight: {userInputWeight}%</div>
                                                 <div>Confidence Boost: {confidenceBoost}%</div>
+                                                <div>Opponent Weight: {opponentWeight}%</div>
                                                 <div>Win Rate Weight: {winRateWeight}%</div>
                                                 <div>Recent Form Weight: {recentFormWeight}%</div>
                                                 <div>Data Confidence Weight: {dataConfidenceWeight}%</div>
@@ -2721,6 +2738,7 @@ export default function StrategyPage() {
                                                 <li><strong>User Input Weight:</strong> Blends your logged scores/averages ({userInputWeight}%) with league data ({100-userInputWeight}%)</li>
                                                 <li><strong>Confidence Boost:</strong> Blends your self-reported confidence ({confidenceBoost}%) into the final score</li>
                                                 <li><strong>Score Factors:</strong> Win Rate ({winRateWeight}%), Recent Form ({recentFormWeight}%), Venue Avg ({venueAvgWeight}%), Data Confidence ({dataConfidenceWeight}%)</li>
+                                                {opponentWeight > 0 && <li><strong>Opponent Weight:</strong> Scores are adjusted by {opponentWeight}% of opponent weakness per machine. Positive weakness (opponent below venue avg) boosts scores, negative (above avg) penalizes.</li>}
                                               </ul>
                                             </div>
                                           </div>
@@ -3079,6 +3097,12 @@ export default function StrategyPage() {
                                           <div><strong>Score Edge:</strong> {adv.statisticalAdvantage.toFixed(1)}</div>
                                           <div><strong>Experience Edge:</strong> {adv.experienceAdvantage} plays</div>
                                           <div><strong>Player Plays:</strong> {adv.twcPlays}</div>
+                                          {assignment.opponentWeight != null && assignment.opponentWeight > 0 && (
+                                            <>
+                                              <div><strong>Opp Weakness:</strong> <span className={assignment.opponentWeakness != null && assignment.opponentWeakness > 0 ? 'text-green-600 dark:text-green-400' : assignment.opponentWeakness != null && assignment.opponentWeakness < 0 ? 'text-red-600 dark:text-red-400' : ''}>{assignment.opponentWeakness != null ? `${(assignment.opponentWeakness * 100).toFixed(1)}%` : 'N/A'}</span></div>
+                                              <div><strong>Score Boost:</strong> <span className={assignment.opponentWeakness != null && assignment.opponentWeakness > 0 ? 'text-green-600 dark:text-green-400' : assignment.opponentWeakness != null && assignment.opponentWeakness < 0 ? 'text-red-600 dark:text-red-400' : ''}>{assignment.opponentWeakness != null && assignment.opponentWeight != null ? `${(assignment.opponentWeight * assignment.opponentWeakness * 100).toFixed(1)}%` : 'N/A'}</span></div>
+                                            </>
+                                          )}
                                         </div>
                                       )}
 
@@ -3124,6 +3148,7 @@ export default function StrategyPage() {
                                                 <div>Venue Weight: {venueWeight}%</div>
                                                 <div>User Input Weight: {userInputWeight}%</div>
                                                 <div>Confidence Boost: {confidenceBoost}%</div>
+                                                <div>Opponent Weight: {opponentWeight}%</div>
                                                 <div>Win Rate Weight: {winRateWeight}%</div>
                                                 <div>Recent Form Weight: {recentFormWeight}%</div>
                                                 <div>Data Confidence Weight: {dataConfidenceWeight}%</div>
@@ -3274,6 +3299,7 @@ export default function StrategyPage() {
                                                 <li><strong>User Input Weight:</strong> Blends your logged scores/averages ({userInputWeight}%) with league data ({100-userInputWeight}%)</li>
                                                 <li><strong>Confidence Boost:</strong> Blends your self-reported confidence ({confidenceBoost}%) into the final score</li>
                                                 <li><strong>Score Factors:</strong> Win Rate ({winRateWeight}%), Recent Form ({recentFormWeight}%), Venue Avg ({venueAvgWeight}%), Data Confidence ({dataConfidenceWeight}%)</li>
+                                                {opponentWeight > 0 && <li><strong>Opponent Weight:</strong> Scores are adjusted by {opponentWeight}% of opponent weakness per machine. Positive weakness (opponent below venue avg) boosts scores, negative (above avg) penalizes.</li>}
                                               </ul>
                                             </div>
                                           </div>
@@ -3461,6 +3487,12 @@ export default function StrategyPage() {
                                           <div><strong>Score Edge:</strong> {adv.statisticalAdvantage.toFixed(1)}</div>
                                           <div><strong>Experience Edge:</strong> {adv.experienceAdvantage} plays</div>
                                           <div><strong>Players Plays:</strong> {adv.twcPlays}</div>
+                                          {assignment.opponentWeight != null && assignment.opponentWeight > 0 && (
+                                            <>
+                                              <div><strong>Opp Weakness:</strong> <span className={assignment.opponentWeakness != null && assignment.opponentWeakness > 0 ? 'text-green-600 dark:text-green-400' : assignment.opponentWeakness != null && assignment.opponentWeakness < 0 ? 'text-red-600 dark:text-red-400' : ''}>{assignment.opponentWeakness != null ? `${(assignment.opponentWeakness * 100).toFixed(1)}%` : 'N/A'}</span></div>
+                                              <div><strong>Score Boost:</strong> <span className={assignment.opponentWeakness != null && assignment.opponentWeakness > 0 ? 'text-green-600 dark:text-green-400' : assignment.opponentWeakness != null && assignment.opponentWeakness < 0 ? 'text-red-600 dark:text-red-400' : ''}>{assignment.opponentWeakness != null && assignment.opponentWeight != null ? `${(assignment.opponentWeight * assignment.opponentWeakness * 100).toFixed(1)}%` : 'N/A'}</span></div>
+                                            </>
+                                          )}
                                         </div>
                                       )}
 
@@ -3506,6 +3538,7 @@ export default function StrategyPage() {
                                                 <div>Venue Weight: {venueWeight}%</div>
                                                 <div>User Input Weight: {userInputWeight}%</div>
                                                 <div>Confidence Boost: {confidenceBoost}%</div>
+                                                <div>Opponent Weight: {opponentWeight}%</div>
                                                 <div>Win Rate Weight: {winRateWeight}%</div>
                                                 <div>Recent Form Weight: {recentFormWeight}%</div>
                                                 <div>Data Confidence Weight: {dataConfidenceWeight}%</div>
@@ -3656,6 +3689,7 @@ export default function StrategyPage() {
                                                 <li><strong>User Input Weight:</strong> Blends your logged scores/averages ({userInputWeight}%) with league data ({100-userInputWeight}%)</li>
                                                 <li><strong>Confidence Boost:</strong> Blends your self-reported confidence ({confidenceBoost}%) into the final score</li>
                                                 <li><strong>Score Factors:</strong> Win Rate ({winRateWeight}%), Recent Form ({recentFormWeight}%), Venue Avg ({venueAvgWeight}%), Data Confidence ({dataConfidenceWeight}%)</li>
+                                                {opponentWeight > 0 && <li><strong>Opponent Weight:</strong> Scores are adjusted by {opponentWeight}% of opponent weakness per machine. Positive weakness (opponent below venue avg) boosts scores, negative (above avg) penalizes.</li>}
                                               </ul>
                                             </div>
                                           </div>
