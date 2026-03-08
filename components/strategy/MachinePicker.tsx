@@ -904,17 +904,11 @@ export function MachinePicker({
           <div className="p-2 bg-primary/10 border border-primary/30 rounded">
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-foreground">
               <span><span className="font-medium">Score:</span> {optimizationResult.total_score.toFixed(2)}</span>
-              <span><span className="font-medium">Win Prob:</span> {(optimizationResult.win_probability * 100).toFixed(1)}%</span>
               <span><span className="font-medium">Format:</span> {optimizationResult.format}</span>
             </div>
             {optimizationResult.suggestions && optimizationResult.suggestions.length > 0 && (
               <div className="mt-1 text-[10px] text-muted-foreground">
                 {optimizationResult.suggestions.join(' | ')}
-              </div>
-            )}
-            {optimizationResult.benched && optimizationResult.benched.length > 0 && (
-              <div className="mt-1 text-[10px] text-amber-600 dark:text-amber-400">
-                <span className="font-medium">Benched:</span> {optimizationResult.benched.join(', ')}
               </div>
             )}
           </div>

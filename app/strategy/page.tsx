@@ -1028,6 +1028,8 @@ export default function StrategyPage() {
           scoreWeights,
           exclusions: singlesExclusions,
           mustPlay: Array.from(satOutPlayers),
+          opponent: selectedOpponent,
+          opponentPlayers: getSelectedOpponentPlayers(),
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
 
@@ -1049,6 +1051,8 @@ export default function StrategyPage() {
           scoreWeights,
           exclusions: doublesExclusions,
           mustPlay: Array.from(satOutPlayers),
+          opponent: selectedOpponent,
+          opponentPlayers: getSelectedOpponentPlayers(),
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
     ])
@@ -1073,12 +1077,13 @@ export default function StrategyPage() {
       greedySingles.recommendations.forEach((rec: any, i: number) => {
         const machineName = getMachineDisplayName(rec.machine)
         const players = rec.players.join(', ')
-        // For singles (1 player), don't repeat the player name in pctInfo
         const pctInfo = rec.stats?.length === 1
           ? `${rec.stats[0].pctOfVenue ?? 'N/A'}%`
           : rec.stats?.map((s: any) => `${s.player}: ${s.pctOfVenue ?? 'N/A'}%`).join(', ') || ''
+        const opponents = rec.assumedOpponents?.map((o: any) => o.player).join(', ')
         lines.push(`${i + 1}. ${machineName}: ${players}`)
         if (pctInfo) lines.push(`   % of Venue Avg: ${pctInfo}`)
+        if (opponents) lines.push(`   vs ${opponents}`)
       })
     } else {
       lines.push('Could not generate singles picks.')
@@ -1093,8 +1098,10 @@ export default function StrategyPage() {
         const machineName = getMachineDisplayName(rec.machine)
         const players = rec.players.join(' & ')
         const pctInfo = rec.stats?.map((s: any) => `${s.player}: ${s.pctOfVenue ?? 'N/A'}%`).join(', ') || ''
+        const opponents = rec.assumedOpponents?.map((o: any) => o.player).join(' & ')
         lines.push(`${i + 1}. ${machineName}: ${players}`)
         if (pctInfo) lines.push(`   % of Venue Avg: ${pctInfo}`)
+        if (opponents) lines.push(`   vs ${opponents}`)
       })
     } else {
       lines.push('Could not generate doubles picks.')
@@ -1105,16 +1112,14 @@ export default function StrategyPage() {
     lines.push('HUNGARIAN ALGORITHM - SINGLES (7x7)')
     lines.push('-'.repeat(40))
     if (hungarianSingles?.assignments?.length > 0) {
-      lines.push(`Score: ${hungarianSingles.total_score?.toFixed(2) || 'N/A'} | Win Prob: ${((hungarianSingles.win_probability || 0) * 100).toFixed(1)}%`)
       hungarianSingles.assignments.forEach((asn: any, i: number) => {
         const machineName = getMachineDisplayName(asn.machine_id)
         const player = asn.player_id
         const pct = asn.venue_adjusted_avg != null ? `${(asn.venue_adjusted_avg * 100).toFixed(0)}% of avg` : ''
+        const opponents = hungarianSingles.assumedOpponents?.[asn.machine_id]?.map((o: any) => o.player).join(', ')
         lines.push(`${i + 1}. ${machineName}: ${player}${pct ? ` (${pct})` : ''}`)
+        if (opponents) lines.push(`   vs ${opponents}`)
       })
-      if (hungarianSingles.benched?.length > 0) {
-        lines.push(`Benched: ${hungarianSingles.benched.join(', ')}`)
-      }
     } else {
       lines.push('Could not generate Hungarian singles assignments.')
     }
@@ -1124,15 +1129,13 @@ export default function StrategyPage() {
     lines.push('HUNGARIAN ALGORITHM - DOUBLES (4x2)')
     lines.push('-'.repeat(40))
     if (hungarianDoubles?.assignments?.length > 0) {
-      lines.push(`Score: ${hungarianDoubles.total_score?.toFixed(2) || 'N/A'} | Win Prob: ${((hungarianDoubles.win_probability || 0) * 100).toFixed(1)}%`)
       hungarianDoubles.assignments.forEach((asn: any, i: number) => {
         const machineName = getMachineDisplayName(asn.machine_id)
         const players = asn.player1_id && asn.player2_id ? `${asn.player1_id} & ${asn.player2_id}` : asn.player_id
+        const opponents = hungarianDoubles.assumedOpponents?.[asn.machine_id]?.map((o: any) => o.player).join(' & ')
         lines.push(`${i + 1}. ${machineName}: ${players}`)
+        if (opponents) lines.push(`   vs ${opponents}`)
       })
-      if (hungarianDoubles.benched?.length > 0) {
-        lines.push(`Benched: ${hungarianDoubles.benched.join(', ')}`)
-      }
     } else {
       lines.push('Could not generate Hungarian doubles assignments.')
     }
