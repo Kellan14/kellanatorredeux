@@ -323,6 +323,7 @@ export default function StrategyPage() {
   const [userInputWeight, setUserInputWeight] = useState(() => getPersistedSliders().userInputWeight)
   const [confidenceBoost, setConfidenceBoost] = useState(() => getPersistedSliders().confidenceBoost)
   const [opponentWeight, setOpponentWeight] = useState(() => getPersistedSliders().opponentWeight)
+  const [useNashEquilibrium, setUseNashEquilibrium] = useState(true)
   const [winRateWeight, setWinRateWeight] = useState(() => getPersistedSliders().winRateWeight)
   const [recentFormWeight, setRecentFormWeight] = useState(() => getPersistedSliders().recentFormWeight)
   const [dataConfidenceWeight, setDataConfidenceWeight] = useState(() => getPersistedSliders().dataConfidenceWeight)
@@ -2015,6 +2016,17 @@ export default function StrategyPage() {
                         </div>
                         <div className="w-10 md:w-12 text-xs text-right shrink-0">{opponentWeight}%</div>
                       </div>
+                      {opponentWeight > 0 && (
+                        <label className="flex items-center gap-1.5 mt-1 ml-24 md:ml-48 text-[10px] text-muted-foreground cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={useNashEquilibrium}
+                            onChange={() => setUseNashEquilibrium(!useNashEquilibrium)}
+                            className="h-3 w-3 accent-primary"
+                          />
+                          Nash Equilibrium (Hungarian iterates until stable)
+                        </label>
+                      )}
                     </div>
                   </div>
 
@@ -2922,6 +2934,17 @@ export default function StrategyPage() {
                         </div>
                         <div className="w-10 md:w-12 text-xs text-right shrink-0">{opponentWeight}%</div>
                       </div>
+                      {opponentWeight > 0 && (
+                        <label className="flex items-center gap-1.5 mt-1 ml-24 md:ml-48 text-[10px] text-muted-foreground cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={useNashEquilibrium}
+                            onChange={() => setUseNashEquilibrium(!useNashEquilibrium)}
+                            className="h-3 w-3 accent-primary"
+                          />
+                          Nash Equilibrium (Hungarian iterates until stable)
+                        </label>
+                      )}
                     </div>
                   </div>
 
@@ -4083,6 +4106,10 @@ export default function StrategyPage() {
                     onAddExclusion={(machine, player) => addExclusion(machine, player, optimizationFormat === '7x7' ? 'singles' : 'doubles')}
                     onRemoveExclusion={(machine, player) => removeExclusion(machine, player, optimizationFormat === '7x7' ? 'singles' : 'doubles')}
                     onExcludeMachine={addMachineExclusion}
+                    opponent={selectedOpponent}
+                    opponentPlayers={getSelectedOpponentPlayers()}
+                    opponentWeight={opponentWeight / 100}
+                    useNashEquilibrium={useNashEquilibrium}
                     onOptimize={(result: OptimizationResult) => {
                       console.log('Optimization result:', result)
                       if (optimizationFormat === '7x7') {

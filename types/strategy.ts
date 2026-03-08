@@ -84,6 +84,17 @@ export interface PairAssignment {
   player2_user_confidence?: number | null
 }
 
+export interface AssumedOpponent {
+  player: string
+  avgScore: number
+  venueAvg: number
+  venueGames: number
+  venueWinRate: number
+  allAvg: number
+  allGames: number
+  allWinRate: number
+}
+
 export interface OptimizationResult {
   format: '7x7' | '4x2'
   assignments: (Assignment | PairAssignment)[]
@@ -92,6 +103,7 @@ export interface OptimizationResult {
   alternative_assignments?: (Assignment | PairAssignment)[][]
   suggestions: string[]
   benched?: string[]
+  assumedOpponents?: Record<string, AssumedOpponent[]>
 }
 
 export interface PairStats {

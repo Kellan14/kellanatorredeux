@@ -193,7 +193,8 @@ export class LineupOptimizer {
     userInputs: Map<string, Map<string, UserInputData>> | undefined,
     exclusions: Record<string, string[]> = {},
     confidenceBoost: number = 0,
-    scoreWeights?: ScoreWeights
+    scoreWeights?: ScoreWeights,
+    machineEdgeBonuses?: Map<string, number>
   ): OptimizationResult {
 
     // Helper to get extra fields for an assignment
@@ -209,6 +210,18 @@ export class LineupOptimizer {
 
     // Build cost matrix (automatically padded to square)
     const { matrix: costMatrix, realRows, realCols } = buildCostMatrix(playerNames, machines, statsMap, confidenceBoost, scoreWeights)
+
+    // Apply opponent edge bonuses: adjust each column (machine) by its edge value
+    // This makes Hungarian favor machines where TWC has a bigger edge over the opponent
+    if (machineEdgeBonuses && machineEdgeBonuses.size > 0) {
+      for (let j = 0; j < realCols; j++) {
+        const bonus = machineEdgeBonuses.get(machines[j])
+        if (bonus == null) continue
+        for (let i = 0; i < realRows; i++) {
+          costMatrix[i][j] *= (1 + bonus)
+        }
+      }
+    }
 
     // Apply exclusions: set excluded player-machine combos to a very low score
     for (const [machine, excludedPlayers] of Object.entries(exclusions)) {

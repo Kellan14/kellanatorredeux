@@ -4,6 +4,8 @@ import { calculatePairStats } from '@/lib/strategy/stats-calculator'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getAllMachineVariations } from '@/lib/machine-mappings'
+import { hungarianAlgorithm } from '@/lib/strategy/hungarian'
+import { buildCostMatrix } from '@/lib/strategy/calculator'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,7 +45,8 @@ export async function POST(request: NextRequest) {
       forcedAssignments = [],  // Array of { player: string, machine: string }
       opponentWeight = 0,
       opponentPlayers,
-      opponent
+      opponent,
+      useNashEquilibrium = true
     } = body
 
     if (!format || !playerNames || !machines) {
@@ -105,9 +108,21 @@ export async function POST(request: NextRequest) {
       allPlayersForStats, allMachinesForStats, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost
     )
 
-    // Apply opponent weakness to statsMap if opponent weight is active
+    // Compute opponent edge bonuses per machine (does NOT mutate statsMap)
     const ow = Math.max(0, Math.min(1, opponentWeight || 0))
     const vw = Math.max(0, Math.min(1, venueWeight || 0.7))
+    let assumedOpponents: Record<string, any[]> | null = null
+    const machineEdgeBonuses = new Map<string, number>()
+    let oppDataForDisplay: {
+      oppPlayerList: string[]
+      oppPlayerStats: Map<string, Map<string, { vTotal: number; vCount: number; nvTotal: number; nvCount: number }>>
+      getBlendedAvg: (player: string, machine: string) => number
+      allGames: any[]
+      venueVariations: string[]
+      teamNameMap: Record<string, string>
+      venueAvgPerMachine: Map<string, { total: number; count: number }>
+    } | null = null
+
     if (ow > 0 && venue && opponent) {
       const venueVariations = getVenueVariations(venue)
       const machineVariationToCanonical = new Map<string, string>()
@@ -152,69 +167,211 @@ export async function POST(request: NextRequest) {
       const teamNameMap: Record<string, string> = {}
       ;(teamsData || []).forEach((t: any) => { teamNameMap[t.team_key] = t.team_name })
 
-      // Build venue avg and opponent avg per machine
-      const machineStats = new Map<string, { venueTotal: number; venueCount: number; oppVTotal: number; oppVCount: number; oppNvTotal: number; oppNvCount: number }>()
+      // Build venue avg per machine (all scores at venue on that machine)
+      const venueAvgPerMachine = new Map<string, { total: number; count: number }>()
+      for (const game of venueGames) {
+        for (let i = 1; i <= 4; i++) {
+          const score = game[`player_${i}_score`]
+          if (!score) continue
+          const entry = venueAvgPerMachine.get(game.machine) || { total: 0, count: 0 }
+          entry.total += score
+          entry.count++
+          venueAvgPerMachine.set(game.machine, entry)
+        }
+      }
 
-      const processBatch = (games: any[], isVenue: boolean) => {
-        for (const game of games) {
-          if (!machineStats.has(game.machine)) {
-            machineStats.set(game.machine, { venueTotal: 0, venueCount: 0, oppVTotal: 0, oppVCount: 0, oppNvTotal: 0, oppNvCount: 0 })
-          }
-          const ms = machineStats.get(game.machine)!
+      // Discover opponent players from games or use provided list
+      const oppPlayerSet = new Set<string>()
+      if (opponentPlayers && opponentPlayers.length > 0) {
+        for (const p of opponentPlayers) oppPlayerSet.add(p)
+      } else {
+        for (const game of allGames) {
           for (let i = 1; i <= 4; i++) {
-            const playerName = game[`player_${i}_name`]
             const teamKey = game[`player_${i}_team`]
-            const score = game[`player_${i}_score`]
-            if (!score || !teamKey) continue
-            if (isVenue) { ms.venueTotal += score; ms.venueCount++ }
-            const teamDisplayName = teamNameMap[teamKey]
-            if (teamDisplayName === opponent) {
-              if (!opponentPlayers || opponentPlayers.length === 0 || opponentPlayers.includes(playerName)) {
-                if (isVenue) { ms.oppVTotal += score; ms.oppVCount++ }
-                else { ms.oppNvTotal += score; ms.oppNvCount++ }
-              }
+            const playerName = game[`player_${i}_name`]
+            if (teamKey && playerName && teamNameMap[teamKey] === opponent) {
+              oppPlayerSet.add(playerName)
             }
           }
         }
       }
+      const oppPlayerList = Array.from(oppPlayerSet)
 
-      processBatch(venueGames, true)
-      processBatch(nonVenueGames, false)
+      // Build per-opponent-player stats: venue and non-venue scores per machine
+      const oppPlayerStats = new Map<string, Map<string, { vTotal: number; vCount: number; nvTotal: number; nvCount: number }>>()
+      for (const p of oppPlayerList) {
+        oppPlayerStats.set(p, new Map())
+      }
 
-      // Compute weakness and apply to statsMap
-      for (const machine of allMachinesForStats) {
-        const ms = machineStats.get(machine)
-        if (!ms) continue
-
-        const venueAvg = ms.venueCount > 0 ? ms.venueTotal / ms.venueCount : 0
-        const oppVAvg = ms.oppVCount > 0 ? ms.oppVTotal / ms.oppVCount : null
-        const oppNvAvg = ms.oppNvCount > 0 ? ms.oppNvTotal / ms.oppNvCount : null
-        let oppAvg = 0
-        if (oppVAvg !== null && oppNvAvg !== null) {
-          oppAvg = oppVAvg * vw + oppNvAvg * (1 - vw)
-        } else if (oppVAvg !== null) {
-          oppAvg = oppVAvg
-        } else if (oppNvAvg !== null) {
-          oppAvg = oppNvAvg
-        }
-
-        if (venueAvg > 0 && oppAvg > 0) {
-          const weakness = Math.max(-0.5, Math.min(0.5, (venueAvg - oppAvg) / venueAvg))
-          const multiplier = 1 + ow * weakness
-
-          // Scale all player stats for this machine
-          for (const [, playerStats] of Array.from(statsMap.entries())) {
-            const s = playerStats.get(machine)
-            if (!s) continue
-            playerStats.set(machine, {
-              ...s,
-              win_rate: s.win_rate * multiplier,
-              venue_adjusted_avg: s.venue_adjusted_avg * multiplier,
-              recent_form: s.recent_form * multiplier,
-            })
+      const collectOppStats = (games: any[], isVenue: boolean) => {
+        for (const game of games) {
+          for (let i = 1; i <= 4; i++) {
+            const playerName = game[`player_${i}_name`]
+            const teamKey = game[`player_${i}_team`]
+            const score = game[`player_${i}_score`]
+            if (!score || !teamKey || !playerName) continue
+            if (!oppPlayerSet.has(playerName)) continue
+            if (teamNameMap[teamKey] !== opponent) continue
+            const playerMap = oppPlayerStats.get(playerName)!
+            const entry = playerMap.get(game.machine) || { vTotal: 0, vCount: 0, nvTotal: 0, nvCount: 0 }
+            if (isVenue) { entry.vTotal += score; entry.vCount++ }
+            else { entry.nvTotal += score; entry.nvCount++ }
+            playerMap.set(game.machine, entry)
           }
         }
       }
+      collectOppStats(venueGames, true)
+      collectOppStats(nonVenueGames, false)
+
+      // Compute blended avg for each opponent player on each machine
+      const getBlendedAvg = (player: string, machine: string): number => {
+        const playerMap = oppPlayerStats.get(player)
+        if (!playerMap) return 0
+        const entry = playerMap.get(machine)
+        if (!entry) return 0
+        const vAvg = entry.vCount > 0 ? entry.vTotal / entry.vCount : null
+        const nvAvg = entry.nvCount > 0 ? entry.nvTotal / entry.nvCount : null
+        if (vAvg !== null && nvAvg !== null) return vAvg * vw + nvAvg * (1 - vw)
+        if (vAvg !== null) return vAvg
+        if (nvAvg !== null) return nvAvg
+        return 0
+      }
+
+      // Nash Equilibrium via Iterative Best Response
+      // TWC picks first, opponent responds, TWC re-responds, until convergence.
+      // Each iteration is one Hungarian (O(n³)), guaranteed to converge for zero-sum games.
+      //
+      // 1. TWC picks optimal lineup (pure strength, no opponent consideration)
+      // 2. Opponent responds: Hungarian assigns their best players to TWC's chosen machines
+      // 3. TWC re-responds: Hungarian with edge bonuses against that opponent lineup
+      // 4. Repeat until neither side changes
+
+      const playersPerMachine = format === '4x2' ? 2 : 1
+
+      // Helper: run opponent Hungarian against a set of machines, return machine -> oppAvg map
+      const runOpponentHungarian = (targetMachines: string[]): Map<string, number[]> => {
+        const mSlots: { machine: string; slotIndex: number }[] = []
+        for (const machine of targetMachines) {
+          for (let s = 0; s < playersPerMachine; s++) {
+            mSlots.push({ machine, slotIndex: s })
+          }
+        }
+
+        const d = Math.max(oppPlayerList.length, mSlots.length)
+        const matrix: number[][] = []
+        for (let r = 0; r < d; r++) {
+          const row: number[] = []
+          for (let c = 0; c < d; c++) {
+            if (r < oppPlayerList.length && c < mSlots.length) {
+              row.push(getBlendedAvg(oppPlayerList[r], mSlots[c].machine))
+            } else {
+              row.push(-Infinity)
+            }
+          }
+          matrix.push(row)
+        }
+
+        const result = hungarianAlgorithm(matrix, true)
+        const oppAvgMap = new Map<string, number[]>()
+        for (let r = 0; r < oppPlayerList.length; r++) {
+          const col = result.assignments[r]
+          if (col < 0 || col >= mSlots.length) continue
+          const { machine } = mSlots[col]
+          const avg = getBlendedAvg(oppPlayerList[r], machine)
+          if (avg <= 0) continue
+          const list = oppAvgMap.get(machine) || []
+          list.push(avg)
+          oppAvgMap.set(machine, list)
+        }
+        return oppAvgMap
+      }
+
+      // Helper: compute edge bonuses from opponent assignments
+      const computeEdgeBonuses = (oppAvgMap: Map<string, number[]>): Map<string, number> => {
+        const bonuses = new Map<string, number>()
+        for (const machine of allMachinesForStats) {
+          const venueEntry = venueAvgPerMachine.get(machine)
+          const venueAvg = venueEntry && venueEntry.count > 0 ? venueEntry.total / venueEntry.count : 0
+          if (venueAvg <= 0) continue
+
+          const oppAvgs = oppAvgMap.get(machine)
+          if (!oppAvgs || oppAvgs.length === 0) continue
+
+          const oppAvg = oppAvgs.reduce((a, b) => a + b, 0) / oppAvgs.length
+          if (oppAvg <= 0) continue
+
+          const weakness = Math.max(-0.5, Math.min(0.5, (venueAvg - oppAvg) / venueAvg))
+          bonuses.set(machine, ow * weakness)
+        }
+        return bonuses
+      }
+
+      // Iteration 1: TWC picks first (pure strength, no opponent weight)
+      // We don't actually run the optimizer here — we just need TWC's chosen machines.
+      // Use the TWC cost matrix to find initial assignment via Hungarian.
+      const { matrix: twcInitMatrix, realRows: twcRows, realCols: twcCols } = buildCostMatrix(
+        allPlayers, selectedMachines, statsMap, confidenceBoost, scoreWeights
+      )
+      const twcInitResult = hungarianAlgorithm(twcInitMatrix, true)
+      let twcMachines: string[] = []
+      for (let i = 0; i < twcRows; i++) {
+        const mIdx = twcInitResult.assignments[i]
+        if (mIdx >= 0 && mIdx < twcCols) {
+          twcMachines.push(selectedMachines[mIdx])
+        }
+      }
+
+      // Iterate: opponent responds to TWC's machines, TWC re-responds with edge bonuses
+      // With Nash off: single iteration (double Hungarian — TWC picks first, opponent responds once)
+      // With Nash on: iterate until convergence (Nash equilibrium)
+      const MAX_ITERATIONS = useNashEquilibrium ? 10 : 1
+      let prevBonusKey = ''
+      for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
+        // Opponent responds: assign best opponent players to TWC's chosen machines
+        const oppAvgMap = runOpponentHungarian(twcMachines.length > 0 ? twcMachines : selectedMachines)
+
+        // Compute edge bonuses from opponent response
+        const newBonuses = computeEdgeBonuses(oppAvgMap)
+
+        // Check convergence: have the bonuses stabilized?
+        const bonusKey = Array.from(newBonuses.entries())
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(([m, v]) => `${m}:${v.toFixed(6)}`)
+          .join('|')
+
+        if (bonusKey === prevBonusKey) break // Nash equilibrium reached
+        prevBonusKey = bonusKey
+
+        // Update edge bonuses for next TWC response
+        machineEdgeBonuses.clear()
+        for (const [m, v] of Array.from(newBonuses.entries())) {
+          machineEdgeBonuses.set(m, v)
+        }
+
+        // TWC re-responds: re-run Hungarian with updated edge bonuses
+        const { matrix: twcMatrix, realRows: rr, realCols: rc } = buildCostMatrix(
+          allPlayers, selectedMachines, statsMap, confidenceBoost, scoreWeights
+        )
+        // Apply edge bonuses to cost matrix
+        for (let j = 0; j < rc; j++) {
+          const bonus = machineEdgeBonuses.get(selectedMachines[j])
+          if (bonus == null) continue
+          for (let i = 0; i < rr; i++) {
+            twcMatrix[i][j] *= (1 + bonus)
+          }
+        }
+        const twcResult = hungarianAlgorithm(twcMatrix, true)
+        twcMachines = []
+        for (let i = 0; i < rr; i++) {
+          const mIdx = twcResult.assignments[i]
+          if (mIdx >= 0 && mIdx < rc) {
+            twcMachines.push(selectedMachines[mIdx])
+          }
+        }
+      }
+
+      // Save data for post-optimization opponent assignment display
+      oppDataForDisplay = { oppPlayerList, oppPlayerStats, getBlendedAvg, allGames, venueVariations, teamNameMap, venueAvgPerMachine }
     }
 
     // Pre-fetch pair stats for doubles
@@ -228,7 +385,7 @@ export async function POST(request: NextRequest) {
 
     const runOptimize = (players: string[]) => {
       if (format === '7x7') {
-        return optimizer.optimize7x7WithStats(players, selectedMachines, statsMap, userInputs, exclusions, confidenceBoost, scoreWeights)
+        return optimizer.optimize7x7WithStats(players, selectedMachines, statsMap, userInputs, exclusions, confidenceBoost, scoreWeights, machineEdgeBonuses.size > 0 ? machineEdgeBonuses : undefined)
       } else {
         return optimizer.optimize4x2WithStats(players, selectedMachines, statsMap, userInputs, pairStatsMap, exclusions, confidenceBoost, scoreWeights)
       }
@@ -343,11 +500,88 @@ export async function POST(request: NextRequest) {
       return result
     }
 
+    // After TWC optimization, compute assumed opponents via Hungarian for display
+    const computeAssumedOpponents = (assignedMachines: string[]) => {
+      if (!oppDataForDisplay) return null
+      const { oppPlayerList, getBlendedAvg, allGames, venueVariations, teamNameMap, venueAvgPerMachine } = oppDataForDisplay
+
+      // Build opponent cost matrix for the machines that TWC is actually playing
+      const playersPerMachine = format === '4x2' ? 2 : 1
+      const machineSlots: { machine: string; slotIndex: number }[] = []
+      for (const machine of assignedMachines) {
+        for (let s = 0; s < playersPerMachine; s++) {
+          machineSlots.push({ machine, slotIndex: s })
+        }
+      }
+
+      const dim = Math.max(oppPlayerList.length, machineSlots.length)
+      const oppCostMatrix: number[][] = []
+      for (let r = 0; r < dim; r++) {
+        const row: number[] = []
+        for (let c = 0; c < dim; c++) {
+          if (r < oppPlayerList.length && c < machineSlots.length) {
+            row.push(getBlendedAvg(oppPlayerList[r], machineSlots[c].machine))
+          } else {
+            row.push(-Infinity)
+          }
+        }
+        oppCostMatrix.push(row)
+      }
+
+      const oppResult = hungarianAlgorithm(oppCostMatrix, true)
+
+      // Map assignments and build detailed stats
+      const result: Record<string, any[]> = {}
+      for (let r = 0; r < oppPlayerList.length; r++) {
+        const col = oppResult.assignments[r]
+        if (col < 0 || col >= machineSlots.length) continue
+        const { machine } = machineSlots[col]
+        const blendedAvg = getBlendedAvg(oppPlayerList[r], machine)
+        if (blendedAvg <= 0) continue
+
+        // Compute per-player detailed stats
+        const playerName = oppPlayerList[r]
+        let vTotal = 0, vCount = 0, vWins = 0, allTotal = 0, allCount = 0, allWins = 0
+        for (const game of allGames) {
+          for (let i = 1; i <= 4; i++) {
+            const pn = game[`player_${i}_name`]
+            const tk = game[`player_${i}_team`]
+            const score = game[`player_${i}_score`]
+            if (pn !== playerName || !tk || !score) continue
+            if (teamNameMap[tk] !== opponent) continue
+            const isVenueGame = venueVariations.includes(game.venue)
+            const position = game[`player_${i}_position`]
+            if (isVenueGame) { vTotal += score; vCount++; if (position === 1) vWins++ }
+            allTotal += score; allCount++; if (position === 1) allWins++
+          }
+        }
+
+        const venueEntry = venueAvgPerMachine.get(machine)
+        const machineVenueAvg = venueEntry && venueEntry.count > 0 ? venueEntry.total / venueEntry.count : 0
+
+        if (!result[machine]) result[machine] = []
+        result[machine].push({
+          player: playerName,
+          avgScore: Math.round(blendedAvg),
+          venueAvg: Math.round(machineVenueAvg),
+          venueGames: vCount,
+          venueWinRate: vCount > 0 ? Math.round((vWins / vCount) * 100) : 0,
+          allAvg: allCount > 0 ? Math.round(allTotal / allCount) : 0,
+          allGames: allCount,
+          allWinRate: allCount > 0 ? Math.round((allWins / allCount) * 100) : 0,
+        })
+      }
+      return result
+    }
+
     // Exact match or fewer players — run directly
     if (allPlayers.length <= adjustedRequiredPlayers) {
       const result = runOptimize(allPlayers)
       result.benched = []
-      return NextResponse.json(mergeForced(result))
+      const merged = mergeForced(result)
+      const assignedMachines = merged.assignments.map((a: any) => a.machine_id)
+      assumedOpponents = computeAssumedOpponents(assignedMachines)
+      return NextResponse.json({ ...merged, ...(assumedOpponents ? { assumedOpponents } : {}) })
     }
 
     // More players than required — exhaustive combination search
@@ -393,7 +627,10 @@ export async function POST(request: NextRequest) {
     }
 
     bestResult.benched = bestBenched
-    return NextResponse.json(mergeForced(bestResult))
+    const merged = mergeForced(bestResult)
+    const assignedMachines = merged.assignments.map((a: any) => a.machine_id)
+    assumedOpponents = computeAssumedOpponents(assignedMachines)
+    return NextResponse.json({ ...merged, ...(assumedOpponents ? { assumedOpponents } : {}) })
   } catch (error: any) {
     console.error('Optimization error:', error)
     return NextResponse.json(

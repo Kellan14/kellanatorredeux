@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { X, Info, ChevronDown, ChevronUp } from 'lucide-react'
-import type { OptimizationResult, Assignment, PairAssignment } from '@/types/strategy'
+import type { OptimizationResult, Assignment, PairAssignment, AssumedOpponent } from '@/types/strategy'
 
 interface ScoreWeights {
   winRate: number
@@ -35,6 +35,10 @@ interface MachinePickerProps {
   onRemoveExclusion?: (machine: string, player: string) => void
   onExcludeMachine?: (machine: string) => void
   onOptimize?: (result: OptimizationResult) => void
+  opponent?: string
+  opponentPlayers?: string[]
+  opponentWeight?: number
+  useNashEquilibrium?: boolean
 }
 
 interface DragItem {
@@ -199,6 +203,7 @@ function MachineSlot({
   assignedPlayers,
   playerStatsMap,
   assignmentData,
+  assumedOpponents,
   onDrop,
   onExclude,
   onExcludeMachine,
@@ -211,6 +216,7 @@ function MachineSlot({
   assignedPlayers: string[]
   playerStatsMap?: Record<string, PlayerStats>
   assignmentData?: MachineAssignmentData
+  assumedOpponents?: AssumedOpponent[]
   onDrop: (playerName: string, machine: string) => void
   onExclude?: (machine: string, player: string) => void
   onExcludeMachine?: (machine: string) => void
@@ -221,6 +227,8 @@ function MachineSlot({
 }) {
   const maxPlayers = format === '7x7' ? 1 : 2
   const [isExpanded, setIsExpanded] = useState(false)
+  const [showOppDetail, setShowOppDetail] = useState(false)
+  const [oppVenueOnly, setOppVenueOnly] = useState(false)
 
   const [{ isOver, canDrop }, drop] = useDrop({
     accept: 'PLAYER',
@@ -253,6 +261,9 @@ function MachineSlot({
           onClick={() => hasPlayers && setIsExpanded(!isExpanded)}
         >
           {machine}
+          {assumedOpponents && assumedOpponents.length > 0 && (
+            <span className="text-red-500/70 dark:text-red-400/70 ml-1 text-[9px] font-normal"> vs {assumedOpponents.map(o => o.player).join(', ')}</span>
+          )}
           {hasPlayers && (
             <span className="ml-1 inline-block align-middle">
               {isExpanded ? <ChevronUp className="h-2.5 w-2.5 inline" /> : <ChevronDown className="h-2.5 w-2.5 inline" />}
@@ -319,6 +330,41 @@ function MachineSlot({
               </div>
             )
           })}
+          {/* Assumed Opponents */}
+          {assumedOpponents && assumedOpponents.length > 0 && (
+            <div className="mt-1.5">
+              <button
+                className="text-[9px] font-medium text-red-500/80 dark:text-red-400/80 hover:text-red-600 dark:hover:text-red-300 flex items-center gap-0.5"
+                onClick={(e) => { e.stopPropagation(); setShowOppDetail(!showOppDetail) }}
+              >
+                Assumed Opponent: {assumedOpponents.map(o => o.player).join(', ')}
+                {showOppDetail ? <ChevronUp className="h-2.5 w-2.5" /> : <ChevronDown className="h-2.5 w-2.5" />}
+              </button>
+              {showOppDetail && (
+                <div className="mt-1 p-1.5 bg-red-500/5 border border-red-500/20 rounded text-[9px] space-y-1">
+                  <label className="flex items-center gap-1 text-[8px] text-muted-foreground cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={oppVenueOnly}
+                      onChange={() => setOppVenueOnly(!oppVenueOnly)}
+                      className="h-2.5 w-2.5 accent-primary"
+                    />
+                    Venue-specific only
+                  </label>
+                  {assumedOpponents.map(opp => (
+                    <div key={opp.player} className="space-y-0.5">
+                      <div className="font-medium text-red-600 dark:text-red-400">{opp.player}</div>
+                      <div className="grid grid-cols-3 gap-0.5 text-muted-foreground">
+                        <div>Avg: {oppVenueOnly ? (opp.venueAvg > 0 ? opp.venueAvg.toLocaleString() : 'N/A') : opp.allAvg.toLocaleString()}</div>
+                        <div>Games: {oppVenueOnly ? opp.venueGames : opp.allGames}</div>
+                        <div>Win: {oppVenueOnly ? (opp.venueGames > 0 ? `${opp.venueWinRate}%` : 'N/A') : `${opp.allWinRate}%`}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -341,7 +387,11 @@ export function MachinePicker({
   onAddExclusion,
   onRemoveExclusion,
   onExcludeMachine,
-  onOptimize
+  onOptimize,
+  opponent,
+  opponentPlayers,
+  opponentWeight = 0,
+  useNashEquilibrium = true
 }: MachinePickerProps) {
   const [assignments, setAssignments] = useState<Map<string, string[]>>(new Map())
   const [isOptimizing, setIsOptimizing] = useState(false)
@@ -478,7 +528,11 @@ export function MachinePicker({
           exclusions,
           mustPlay,
           useCache: false,
-          forcedAssignments: newForced
+          forcedAssignments: newForced,
+          opponent,
+          opponentPlayers,
+          opponentWeight,
+          useNashEquilibrium
         })
       })
 
@@ -542,7 +596,11 @@ export function MachinePicker({
           exclusions,
           mustPlay,
           useCache: false,
-          forcedAssignments: newForced
+          forcedAssignments: newForced,
+          opponent,
+          opponentPlayers,
+          opponentWeight,
+          useNashEquilibrium
         })
       })
 
@@ -603,7 +661,11 @@ export function MachinePicker({
           exclusions,
           mustPlay,
           useCache: false,
-          forcedAssignments
+          forcedAssignments,
+          opponent,
+          opponentPlayers,
+          opponentWeight,
+          useNashEquilibrium
         })
       })
 
@@ -885,6 +947,7 @@ export function MachinePicker({
               assignedPlayers={assignments.get(machine) || []}
               playerStatsMap={machinePlayerStats[machine]}
               assignmentData={machineAssignmentData[machine]}
+              assumedOpponents={optimizationResult?.assumedOpponents?.[machine]}
               onDrop={handleDrop}
               onExclude={onAddExclusion}
               onExcludeMachine={onExcludeMachine}
