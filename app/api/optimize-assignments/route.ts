@@ -379,6 +379,27 @@ export async function POST(request: Request) {
 
         eligible.sort((a, b) => b.avgScore - a.avgScore)
         const topN = eligible.slice(0, playersPerMachine)
+
+        // If not enough opponents with data on this machine, fill remaining slots
+        // with unused opponents (no machine-specific data, just their overall stats)
+        if (topN.length < playersPerMachine) {
+          for (const [player] of Array.from(oppPlayerMachineStats.entries())) {
+            if (topN.length >= playersPerMachine) break
+            if (usedOppPlayers.has(player)) continue
+            if (topN.some(p => p.player === player)) continue
+            topN.push({
+              player,
+              avgScore: 0,
+              venueAvg: 0,
+              venueGames: 0,
+              venueWinRate: 0,
+              allAvg: 0,
+              allGames: 0,
+              allWinRate: 0,
+            })
+          }
+        }
+
         topN.forEach(p => usedOppPlayers.add(p.player))
         oppAssignmentsPerMachine.set(machineStr, topN)
 
