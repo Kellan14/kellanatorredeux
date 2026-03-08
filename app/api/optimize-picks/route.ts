@@ -337,8 +337,9 @@ export async function POST(request: Request) {
     const teamName = 'The Wrecking Crew'
 
     // Build opponent weakness per machine for opponent weight scoring
-    // Weakness > 0 means opponent is below venue avg (weak), < 0 means above (strong)
-    const oppWeaknessPerMachine = new Map<string, number>()
+    // Store opponent blended avg and venue avg per machine for per-player edge computation
+    const oppAvgPerMachine = new Map<string, { oppAvg: number; venueAvg: number }>()
+    const oppWeaknessPerMachine = new Map<string, number>() // kept for display
     if (ow > 0) {
       const oppMachineStats = new Map<string, { vTotal: number; vCount: number; nvTotal: number; nvCount: number }>()
 
@@ -387,6 +388,7 @@ export async function POST(request: Request) {
         if (venueAvg > 0 && oppAvg > 0) {
           const weakness = Math.max(-0.5, Math.min(0.5, (venueAvg - oppAvg) / venueAvg))
           oppWeaknessPerMachine.set(machine, weakness)
+          oppAvgPerMachine.set(machine, { oppAvg, venueAvg })
         }
       }
     }
@@ -416,11 +418,15 @@ export async function POST(request: Request) {
             const stats = blendedStats.get(player)?.get(machine) || null
             // Calculate performance score using all the weights
             let performanceScore = calculatePerformanceScore(stats, cb, weights)
-            // Boost score on machines where opponent is weak (positive weakness)
-            // Penalize on machines where opponent is strong (negative weakness)
+            // Per-player edge: compare this player's venue_adjusted_avg vs opponent's avg
             if (ow > 0) {
-              const weakness = oppWeaknessPerMachine.get(machine) || 0
-              performanceScore *= (1 + ow * weakness)
+              const oppData = oppAvgPerMachine.get(machine)
+              if (oppData && stats?.venue_adjusted_avg) {
+                const oppRatio = oppData.oppAvg / oppData.venueAvg
+                const twcRatio = stats.venue_adjusted_avg
+                const edge = Math.max(-0.5, Math.min(0.5, (twcRatio - oppRatio) / Math.max(twcRatio, oppRatio)))
+                performanceScore *= (1 + ow * edge)
+              }
             }
             return {
               player,

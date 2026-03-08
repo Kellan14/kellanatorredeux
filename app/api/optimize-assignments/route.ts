@@ -403,7 +403,7 @@ export async function POST(request: Request) {
         topN.forEach(p => usedOppPlayers.add(p.player))
         oppAssignmentsPerMachine.set(machineStr, topN)
 
-        // Compute per-machine weakness using assigned opponent's blended avg
+        // Store opponent avg for per-player edge computation during TWC assignment
         if (topN.length > 0) {
           const assignedOppAvg = topN.reduce((sum, p) => sum + p.avgScore, 0) / topN.length
           const mVenueAvg = machineVenueAvgs.get(machineStr)
@@ -449,10 +449,19 @@ export async function POST(request: Request) {
         if (machineExclusions.includes(player)) continue
         const blended = getBlendedAvg(player, machine, venuePlayerStats, allPlayerStats, vw)
         let avg = blended.avg
-        // Boost score on machines where opponent is weak, penalize where strong
-        if (ow > 0) {
-          const weakness = oppWeaknessPerMachine.get(machine as string) || 0
-          avg *= (1 + ow * weakness)
+        // Per-player edge: compare this player's avg vs assigned opponent's avg
+        if (ow > 0 && avg > 0) {
+          const oppForMachine = oppAssignmentsPerMachine.get(machine as string)
+          const mVenueAvg = machineVenueAvgs.get(machine as string)
+          if (oppForMachine && oppForMachine.length > 0 && mVenueAvg && mVenueAvg > 0) {
+            const oppAvg = oppForMachine.reduce((sum, p) => sum + p.avgScore, 0) / oppForMachine.length
+            if (oppAvg > 0) {
+              const twcRatio = avg / mVenueAvg
+              const oppRatio = oppAvg / mVenueAvg
+              const edge = Math.max(-0.5, Math.min(0.5, (twcRatio - oppRatio) / Math.max(twcRatio, oppRatio)))
+              avg *= (1 + ow * edge)
+            }
+          }
         }
         playersToAssign.push({ player, avg, source: blended.source, isMustPlay: mustPlaySet.has(player) })
       }
