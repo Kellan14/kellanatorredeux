@@ -96,6 +96,17 @@ interface PlayerAdvantage {
   twcPlays: number
 }
 
+interface AssumedOpponent {
+  player: string
+  avgScore: number
+  venueAvg: number
+  venueGames: number
+  venueWinRate: number
+  allAvg: number
+  allGames: number
+  allWinRate: number
+}
+
 interface PlayerAssignment {
   machine: string
   players: string[]
@@ -112,6 +123,7 @@ interface PlayerAssignment {
   advantage?: PlayerAdvantage
   opponentWeakness?: number
   opponentWeight?: number
+  assumedOpponents?: AssumedOpponent[]
 }
 
 export default function StrategyPage() {
@@ -136,6 +148,50 @@ export default function StrategyPage() {
     }
     return getMachineImagePath(machineName, machineName)
   }
+  // Render assumed opponent detail section
+  const renderAssumedOpponents = (opponents: AssumedOpponent[] | undefined, cardKey: string) => {
+    if (!opponents || opponents.length === 0) return null
+    const isOpen = showAssumedOpponent[cardKey] ?? false
+    const venueOnly = assumedOppVenueOnly[cardKey] ?? false
+
+    return (
+      <div className="mt-2">
+        <button
+          className="text-xs font-medium text-red-500/80 dark:text-red-400/80 hover:text-red-600 dark:hover:text-red-300 flex items-center gap-1"
+          onClick={(e) => { e.stopPropagation(); setShowAssumedOpponent(prev => ({ ...prev, [cardKey]: !isOpen })) }}
+        >
+          Assumed Opponent: {opponents.map(o => o.player).join(', ')}
+          {isOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        </button>
+        {isOpen && (
+          <div className="mt-1.5 p-2 bg-red-500/5 border border-red-500/20 rounded text-xs space-y-2">
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-1.5 text-[10px] text-muted-foreground cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={venueOnly}
+                  onChange={() => setAssumedOppVenueOnly(prev => ({ ...prev, [cardKey]: !venueOnly }))}
+                  className="h-3 w-3 accent-primary"
+                />
+                Venue-specific only
+              </label>
+            </div>
+            {opponents.map(opp => (
+              <div key={opp.player} className="space-y-0.5">
+                <div className="font-medium text-red-600 dark:text-red-400">{opp.player}</div>
+                <div className="grid grid-cols-3 gap-1 text-muted-foreground">
+                  <div>Avg: {venueOnly ? (opp.venueAvg > 0 ? opp.venueAvg.toLocaleString() : 'N/A') : opp.allAvg.toLocaleString()}</div>
+                  <div>Games: {venueOnly ? opp.venueGames : opp.allGames}</div>
+                  <div>Win: {venueOnly ? (opp.venueGames > 0 ? `${opp.venueWinRate}%` : 'N/A') : `${opp.allWinRate}%`}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   const [loadingDropdowns, setLoadingDropdowns] = useState(true)
   const [teamVenueSpecific, setTeamVenueSpecific] = useState(true)
   const [twcVenueSpecific, setTwcVenueSpecific] = useState(false)
@@ -414,6 +470,8 @@ export default function StrategyPage() {
   // Expanded recommendations state
   const [expandedRecommendations, setExpandedRecommendations] = useState<Record<string, boolean>>({})
   const [showFullStats, setShowFullStats] = useState<Record<string, boolean>>({})
+  const [showAssumedOpponent, setShowAssumedOpponent] = useState<Record<string, boolean>>({})
+  const [assumedOppVenueOnly, setAssumedOppVenueOnly] = useState<Record<string, boolean>>({})
   const [showVenueAvgInfo, setShowVenueAvgInfo] = useState(false)
   const [showAdvantageTable, setShowAdvantageTable] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -2125,6 +2183,9 @@ export default function StrategyPage() {
                                       {rec.players && rec.players.length > 0 && (
                                         <div className="text-sm text-muted-foreground mt-1">
                                           {rec.players.join(', ')}
+                                          {rec.assumedOpponents && rec.assumedOpponents.length > 0 && (
+                                            <span className="text-red-500/70 dark:text-red-400/70"> vs {rec.assumedOpponents.map(o => o.player).join(', ')}</span>
+                                          )}
                                         </div>
                                       )}
                                       <div className="text-sm text-muted-foreground mt-1">
@@ -2180,6 +2241,8 @@ export default function StrategyPage() {
                                           )}
                                         </div>
                                       )}
+
+                                      {renderAssumedOpponents(rec.assumedOpponents, `singles-pick-${rec.machine}`)}
 
                                       {/* Exclude player/machine buttons */}
                                       <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
@@ -2488,6 +2551,9 @@ export default function StrategyPage() {
                                       {rec.players && rec.players.length > 0 && (
                                         <div className="text-sm text-muted-foreground mt-1">
                                           {rec.players.join(', ')}
+                                          {rec.assumedOpponents && rec.assumedOpponents.length > 0 && (
+                                            <span className="text-red-500/70 dark:text-red-400/70"> vs {rec.assumedOpponents.map(o => o.player).join(', ')}</span>
+                                          )}
                                         </div>
                                       )}
                                       <div className="text-sm text-muted-foreground mt-1">
@@ -2543,6 +2609,8 @@ export default function StrategyPage() {
                                           )}
                                         </div>
                                       )}
+
+                                      {renderAssumedOpponents(rec.assumedOpponents, `doubles-pick-${rec.machine}`)}
 
                                       {/* Exclude player/machine buttons */}
                                       <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
@@ -3050,6 +3118,9 @@ export default function StrategyPage() {
                                       {assignment.players && assignment.players.length > 0 && (
                                         <div className="text-sm text-muted-foreground mt-1">
                                           {assignment.players.join(', ')}
+                                          {assignment.assumedOpponents && assignment.assumedOpponents.length > 0 && (
+                                            <span className="text-red-500/70 dark:text-red-400/70"> vs {assignment.assumedOpponents.map(o => o.player).join(', ')}</span>
+                                          )}
                                         </div>
                                       )}
                                       <div className="text-sm text-muted-foreground mt-1">
@@ -3105,6 +3176,8 @@ export default function StrategyPage() {
                                           )}
                                         </div>
                                       )}
+
+                                      {renderAssumedOpponents(assignment.assumedOpponents, `singles-assign-${assignment.machine}`)}
 
                                       <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
                                         {assignment.players && assignment.players.length > 0 && assignment.players.map((player) => (
@@ -3440,6 +3513,9 @@ export default function StrategyPage() {
                                       {assignment.players && assignment.players.length > 0 && (
                                         <div className="text-sm text-muted-foreground mt-1">
                                           {assignment.players.join(', ')}
+                                          {assignment.assumedOpponents && assignment.assumedOpponents.length > 0 && (
+                                            <span className="text-red-500/70 dark:text-red-400/70"> vs {assignment.assumedOpponents.map(o => o.player).join(', ')}</span>
+                                          )}
                                         </div>
                                       )}
                                       <div className="text-sm text-muted-foreground mt-1">
@@ -3495,6 +3571,8 @@ export default function StrategyPage() {
                                           )}
                                         </div>
                                       )}
+
+                                      {renderAssumedOpponents(assignment.assumedOpponents, `doubles-assign-${assignment.machine}`)}
 
                                       <div className="mt-2 md:mt-3 flex flex-wrap gap-1.5 md:gap-2">
                                         {assignment.players && assignment.players.length > 0 && assignment.players.map((player) => (

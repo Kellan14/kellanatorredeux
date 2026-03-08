@@ -466,6 +466,89 @@ export async function POST(request: Request) {
       })
     }
 
+    // Compute assumed opponent assignments for each machine
+    {
+      const oppPlayerMachineStats = new Map<string, Map<string, { venueTotal: number; venueCount: number; venueWins: number; allTotal: number; allCount: number; allWins: number }>>()
+
+      const collectOppPlayerStats = (games: any[], isVenue: boolean) => {
+        for (const game of games) {
+          if (!machineSet.has(game.machine)) continue
+          for (let i = 1; i <= 4; i++) {
+            const playerName = game[`player_${i}_name`]
+            const teamKey = game[`player_${i}_team`]
+            const score = game[`player_${i}_score`]
+            if (!score || !teamKey || !playerName) continue
+            if (teamNameMap[teamKey] !== opponent) continue
+            if (opponentPlayers && opponentPlayers.length > 0 && !opponentPlayers.includes(playerName)) continue
+
+            if (!oppPlayerMachineStats.has(playerName)) oppPlayerMachineStats.set(playerName, new Map())
+            const playerMap = oppPlayerMachineStats.get(playerName)!
+            if (!playerMap.has(game.machine)) playerMap.set(game.machine, { venueTotal: 0, venueCount: 0, venueWins: 0, allTotal: 0, allCount: 0, allWins: 0 })
+            const ms = playerMap.get(game.machine)!
+
+            let maxScore = 0
+            for (let j = 1; j <= 4; j++) {
+              const s = game[`player_${j}_score`]
+              if (s && s > maxScore) maxScore = s
+            }
+            const won = score >= maxScore
+
+            if (isVenue) {
+              ms.venueTotal += score; ms.venueCount++
+              if (won) ms.venueWins++
+            }
+            ms.allTotal += score; ms.allCount++
+            if (won) ms.allWins++
+          }
+        }
+      }
+
+      collectOppPlayerStats(venueGames, true)
+      collectOppPlayerStats(allVenueGames, false)
+
+      const usedOppPlayers = new Set<string>()
+      for (const assignment of assignments) {
+        const machine = assignment.machine
+        const eligible: { player: string; avgScore: number; venueAvg: number; venueGames: number; venueWinRate: number; allAvg: number; allGames: number; allWinRate: number }[] = []
+
+        for (const [player, machineMap] of Array.from(oppPlayerMachineStats.entries())) {
+          if (usedOppPlayers.has(player)) continue
+          const ms = machineMap.get(machine)
+          if (!ms || ms.allCount === 0) continue
+
+          const venueAvg = ms.venueCount > 0 ? ms.venueTotal / ms.venueCount : 0
+          const allAvg = ms.allTotal / ms.allCount
+          const blendedAvg = ms.venueCount > 0 ? venueAvg * vw + allAvg * (1 - vw) : allAvg
+
+          eligible.push({
+            player,
+            avgScore: blendedAvg,
+            venueAvg,
+            venueGames: ms.venueCount,
+            venueWinRate: ms.venueCount > 0 ? ms.venueWins / ms.venueCount : 0,
+            allAvg,
+            allGames: ms.allCount,
+            allWinRate: ms.allCount > 0 ? ms.allWins / ms.allCount : 0,
+          })
+        }
+
+        eligible.sort((a, b) => b.avgScore - a.avgScore)
+        const topN = eligible.slice(0, playersPerMachine)
+        topN.forEach(p => usedOppPlayers.add(p.player))
+
+        ;(assignment as any).assumedOpponents = topN.map(p => ({
+          player: p.player,
+          avgScore: Math.round(p.avgScore),
+          venueAvg: Math.round(p.venueAvg),
+          venueGames: p.venueGames,
+          venueWinRate: Math.round(p.venueWinRate * 100),
+          allAvg: Math.round(p.allAvg),
+          allGames: p.allGames,
+          allWinRate: Math.round(p.allWinRate * 100),
+        }))
+      }
+    }
+
     return NextResponse.json({
       assignments,
       format,
