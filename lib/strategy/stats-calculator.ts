@@ -2,6 +2,7 @@ import { supabase, fetchAllRecords } from '@/lib/supabase'
 import type { PlayerMachineStats, ScoreBreakdown, ScoreEntry } from '@/types/strategy'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getMachineVariations, machineMappings } from '@/lib/machine-mappings'
+import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
 
 // Helper to standardize machine name using mappings
 function standardizeMachineName(machineName: string): string {
@@ -56,6 +57,9 @@ export async function calculatePlayerMachineStats(
 
   // Optionally get venue variations
   const venueVariations = venue ? getVenueVariations(venue) : null
+
+  // Fetch score limits for filtering impossible scores
+  const scoreLimits = await getScoreLimits()
 
   // Fetch all relevant games with proper pagination (MUST use .order('id') for consistent results)
   const gamesData = await fetchAllRecords<any>(() => {
@@ -124,7 +128,7 @@ export async function calculatePlayerMachineStats(
 
     for (let i = 1; i <= 4; i++) {
       const score = game[`player_${i}_score`]
-      if (score != null && score > 0) {
+      if (score != null && score > 0 && isScoreValid(inputMachine, score, scoreLimits)) {
         const entry = venueScoresByMachine.get(vKey)!
         entry.total += score
         entry.count++
@@ -191,6 +195,9 @@ export async function calculatePlayerMachineStats(
 
     if (!inputMachine) continue
 
+    // Filter out scores that exceed machine score limits
+    if (userScore.score != null && !isScoreValid(inputMachine, userScore.score, scoreLimits)) continue
+
     const playerName = userScore.player_name
     if (!playerName || !playerNames.includes(playerName)) continue
 
@@ -229,15 +236,16 @@ export async function calculatePlayerMachineStats(
       const playerScore = game[`player_${i}_score`]
       const playerPoints = game[`player_${i}_points`]
 
-      // Skip if player doesn't exist or not in our target list
+      // Skip if player doesn't exist, not in our target list, or score exceeds limit
       if (!playerName || !playerNames.includes(playerName) || playerScore == null) continue
+      if (!isScoreValid(inputMachine, playerScore, scoreLimits)) continue
 
       // Get opponent scores (all other players in this same game row)
       const opponentScores: number[] = []
       for (let j = 1; j <= 4; j++) {
         if (j !== i) {
           const oppScore = game[`player_${j}_score`]
-          if (oppScore != null) {
+          if (oppScore != null && isScoreValid(inputMachine, oppScore, scoreLimits)) {
             opponentScores.push(oppScore)
           }
         }

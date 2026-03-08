@@ -6,6 +6,7 @@ import { getVenueVariations } from '@/lib/venue-mappings'
 import { getAllMachineVariations } from '@/lib/machine-mappings'
 import { hungarianAlgorithm } from '@/lib/strategy/hungarian'
 import { buildCostMatrix } from '@/lib/strategy/calculator'
+import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
 
 export const dynamic = 'force-dynamic'
 
@@ -108,6 +109,9 @@ export async function POST(request: NextRequest) {
       allPlayersForStats, allMachinesForStats, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost
     )
 
+    // Fetch score limits for filtering impossible scores
+    const scoreLimits = await getScoreLimits()
+
     // Compute opponent edge bonuses per machine (does NOT mutate statsMap)
     const ow = Math.max(0, Math.min(1, opponentWeight || 0))
     const vw = Math.max(0, Math.min(1, venueWeight || 0.7))
@@ -172,7 +176,7 @@ export async function POST(request: NextRequest) {
       for (const game of venueGames) {
         for (let i = 1; i <= 4; i++) {
           const score = game[`player_${i}_score`]
-          if (!score) continue
+          if (!score || !isScoreValid(game.machine, score, scoreLimits)) continue
           const entry = venueAvgPerMachine.get(game.machine) || { total: 0, count: 0 }
           entry.total += score
           entry.count++
@@ -210,6 +214,7 @@ export async function POST(request: NextRequest) {
             const teamKey = game[`player_${i}_team`]
             const score = game[`player_${i}_score`]
             if (!score || !teamKey || !playerName) continue
+            if (!isScoreValid(game.machine, score, scoreLimits)) continue
             if (!oppPlayerSet.has(playerName)) continue
             if (teamNameMap[teamKey] !== opponent) continue
             const playerMap = oppPlayerStats.get(playerName)!
@@ -570,6 +575,7 @@ export async function POST(request: NextRequest) {
             const tk = game[`player_${i}_team`]
             const score = game[`player_${i}_score`]
             if (pn !== playerName || !tk || !score) continue
+            if (!isScoreValid(game.machine, score, scoreLimits)) continue
             if (teamNameMap[tk] !== opponent) continue
             const isVenueGame = venueVariations.includes(game.venue)
             const position = game[`player_${i}_position`]

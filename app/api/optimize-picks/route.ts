@@ -5,6 +5,7 @@ import { getVenueVariations } from '@/lib/venue-mappings'
 import { getAllMachineVariations, getCanonicalMachineKey } from '@/lib/machine-mappings'
 import { calculatePlayerMachineStats, type UserInputData } from '@/lib/strategy/stats-calculator'
 import { calculatePerformanceScore, type ScoreWeights } from '@/lib/strategy/calculator'
+import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
 import type { PlayerMachineStats } from '@/types/strategy'
 
 export const dynamic = 'force-dynamic';
@@ -28,7 +29,8 @@ function computePlayerAdvantage(
   teamNameMap: Record<string, string>,
   vw: number,
   teamName: string,
-  opponentPlayers?: string[]
+  opponentPlayers?: string[],
+  scoreLimits?: Record<string, number>
 ): AdvantageData {
   let twcVenueTotal = 0, twcVenueCount = 0, twcNonVenueTotal = 0, twcNonVenueCount = 0
   let oppVenueTotal = 0, oppVenueCount = 0, oppNonVenueTotal = 0, oppNonVenueCount = 0
@@ -41,6 +43,7 @@ function computePlayerAdvantage(
         const teamKey = game[`player_${i}_team`]
         const score = game[`player_${i}_score`]
         if (!score || !teamKey) continue
+        if (scoreLimits && !isScoreValid(machine, score, scoreLimits)) continue
         const teamDisplayName = teamNameMap[teamKey]
         if (!teamDisplayName) continue
 
@@ -88,7 +91,7 @@ function computePlayerAdvantage(
     if (game.machine !== machine) continue
     for (let i = 1; i <= 4; i++) {
       const score = game[`player_${i}_score`]
-      if (score) venueScores.push(score)
+      if (score && (!scoreLimits || isScoreValid(machine, score, scoreLimits))) venueScores.push(score)
     }
   }
   const venueBaseline = venueScores.length > 0 ? venueScores.reduce((a, b) => a + b, 0) / venueScores.length : 0
@@ -212,6 +215,7 @@ export async function POST(request: Request) {
     const vw = Math.max(0, Math.min(1, venueWeight))
     const uiw = Math.max(0, Math.min(1, userInputWeight))
     const cb = Math.max(0, Math.min(1, confidenceBoost))
+    const scoreLimits = await getScoreLimits()
     const ow = Math.max(0, Math.min(1, body.opponentWeight || 0))
 
     // Parse scoreWeights if provided
@@ -319,7 +323,7 @@ export async function POST(request: Request) {
       if (!machinesAtVenue.includes(game.machine)) continue
       for (let i = 1; i <= 4; i++) {
         const score = game[`player_${i}_score`]
-        if (score == null) continue
+        if (score == null || !isScoreValid(game.machine, score, scoreLimits)) continue
         if (!venueAvgPerMachine.has(game.machine)) venueAvgPerMachine.set(game.machine, { total: 0, count: 0 })
         const entry = venueAvgPerMachine.get(game.machine)!
         entry.total += score
@@ -359,6 +363,7 @@ export async function POST(request: Request) {
             const teamKey = game[`player_${i}_team`]
             const score = game[`player_${i}_score`]
             if (!score || !teamKey) continue
+            if (!isScoreValid(game.machine, score, scoreLimits)) continue
             if (teamNameMap[teamKey] !== opponent) continue
             if (opponentPlayers && opponentPlayers.length > 0 && !opponentPlayers.includes(playerName)) continue
 
@@ -514,7 +519,8 @@ export async function POST(request: Request) {
         teamNameMap,
         vw,
         teamName,
-        opponentPlayers
+        opponentPlayers,
+        scoreLimits
       )
 
       recommendations.push({
@@ -542,6 +548,7 @@ export async function POST(request: Request) {
             const teamKey = game[`player_${i}_team`]
             const score = game[`player_${i}_score`]
             if (!score || !teamKey || !playerName) continue
+            if (!isScoreValid(game.machine, score, scoreLimits)) continue
             if (teamNameMap[teamKey] !== opponent) continue
             if (opponentPlayers && opponentPlayers.length > 0 && !opponentPlayers.includes(playerName)) continue
 

@@ -5,6 +5,7 @@ import { getVenueVariations } from '@/lib/venue-mappings'
 import { getAllMachineVariations, getCanonicalMachineKey } from '@/lib/machine-mappings'
 import { calculatePlayerMachineStats, type UserInputData } from '@/lib/strategy/stats-calculator'
 import { calculatePerformanceScore, type ScoreWeights } from '@/lib/strategy/calculator'
+import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
 import type { PlayerMachineStats } from '@/types/strategy'
 
 export const dynamic = 'force-dynamic';
@@ -28,7 +29,8 @@ function computePlayerAdvantage(
   teamNameMap: Record<string, string>,
   vw: number,
   teamName: string,
-  opponentPlayers?: string[]
+  opponentPlayers?: string[],
+  scoreLimits?: Record<string, number>
 ): AdvantageData {
   // Build TWC stats from assigned players only
   let twcVenueTotal = 0, twcVenueCount = 0, twcNonVenueTotal = 0, twcNonVenueCount = 0
@@ -42,6 +44,7 @@ function computePlayerAdvantage(
         const teamKey = game[`player_${i}_team`]
         const score = game[`player_${i}_score`]
         if (!score || !teamKey) continue
+        if (scoreLimits && !isScoreValid(machine, score, scoreLimits)) continue
         const teamDisplayName = teamNameMap[teamKey]
         if (!teamDisplayName) continue
 
@@ -96,7 +99,7 @@ function computePlayerAdvantage(
     if (game.machine !== machine) continue
     for (let i = 1; i <= 4; i++) {
       const score = game[`player_${i}_score`]
-      if (score) venueScores.push(score)
+      if (score && (!scoreLimits || isScoreValid(machine, score, scoreLimits))) venueScores.push(score)
     }
   }
   const venueBaseline = venueScores.length > 0 ? venueScores.reduce((a, b) => a + b, 0) / venueScores.length : 0
@@ -145,6 +148,7 @@ export async function POST(request: Request) {
     const ow = Math.max(0, Math.min(1, opponentWeight))
     const uiw = Math.max(0, Math.min(1, userInputWeight))
     const cb = Math.max(0, Math.min(1, confidenceBoost))
+    const scoreLimits = await getScoreLimits()
     const playersPerMachine = format === 'singles' ? 1 : 2
 
     // Parse scoreWeights if provided
@@ -245,7 +249,7 @@ export async function POST(request: Request) {
       for (const g of machineGames) {
         for (let i = 1; i <= 4; i++) {
           const s = g[`player_${i}_score`]
-          if (s != null && s > 0) scores.push(s)
+          if (s != null && s > 0 && isScoreValid(machineStr, s, scoreLimits)) scores.push(s)
         }
       }
       if (scores.length > 0) {
@@ -345,6 +349,7 @@ export async function POST(request: Request) {
             const teamKey = game[`player_${i}_team`]
             const score = game[`player_${i}_score`]
             if (!score || !teamKey || !playerName) continue
+            if (!isScoreValid(game.machine, score, scoreLimits)) continue
             if (teamNameMap[teamKey] !== opponent) continue
             if (opponentPlayers && opponentPlayers.length > 0 && !opponentPlayers.includes(playerName)) continue
 
@@ -548,7 +553,8 @@ export async function POST(request: Request) {
         teamNameMap,
         vw,
         teamName,
-        opponentPlayers
+        opponentPlayers,
+        scoreLimits
       )
 
       assignments.push({
