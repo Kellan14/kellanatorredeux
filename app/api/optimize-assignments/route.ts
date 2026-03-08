@@ -170,7 +170,7 @@ function computePlayerAdvantage(
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { venue, opponent, seasonStart = 20, seasonEnd = 22, format, machines, availablePlayers, venueWeight = 0.7, exclusions = {}, mustPlay = [], opponentPlayers } = body
+    const { venue, opponent, seasonStart = 20, seasonEnd = 22, format, machines, availablePlayers, venueWeight = 0.7, exclusions = {}, mustPlay = [], opponentPlayers, opponentWeight = 0 } = body
 
     if (!venue || !opponent || !machines || !availablePlayers || availablePlayers.length === 0) {
       return NextResponse.json(
@@ -180,6 +180,7 @@ export async function POST(request: Request) {
     }
 
     const vw = Math.max(0, Math.min(1, venueWeight))
+    const ow = Math.max(0, Math.min(1, opponentWeight))
     const playersPerMachine = format === 'singles' ? 1 : 2
 
     if (availablePlayers.length < machines.length * playersPerMachine) {
@@ -260,16 +261,10 @@ export async function POST(request: Request) {
     ;(teamsData || []).forEach((t: any) => { teamNameMap[t.team_key] = t.team_name })
     const teamName = 'The Wrecking Crew'
 
-    // Filter games to only requested machines for player stats
+    // Filter games to only requested machines
     const machineSet = new Set(machines as string[])
-    const venueGamesFiltered = venueGames.filter(g => machineSet.has(g.machine))
-    const allVenueGamesFiltered = allVenueGames.filter(g => machineSet.has(g.machine))
 
-    // Build stats maps
-    const venuePlayerStats = buildPlayerMachineStats(venueGamesFiltered, availablePlayers)
-    const allPlayerStats = buildPlayerMachineStats(allVenueGamesFiltered, availablePlayers)
-
-    // Compute venue averages per machine (for pctOfVenue calculation)
+    // Compute venue averages per machine (for pctOfVenue and opponent weakness)
     const machineVenueAvgs = new Map<string, number>()
     for (const machine of machines) {
       const machineStr = machine as string
@@ -285,6 +280,68 @@ export async function POST(request: Request) {
         machineVenueAvgs.set(machineStr, scores.reduce((a, b) => a + b, 0) / scores.length)
       }
     }
+
+    // Build opponent weakness per machine for opponent weight scoring
+    const oppWeaknessPerMachine = new Map<string, number>()
+    if (ow > 0) {
+      const oppMachineStats = new Map<string, { vTotal: number; vCount: number; nvTotal: number; nvCount: number }>()
+
+      const collectOppStats = (games: any[], isVenue: boolean) => {
+        for (const game of games) {
+          const machine = game.machine as string
+          if (!machineSet.has(machine)) continue
+          for (let i = 1; i <= 4; i++) {
+            const playerName = game[`player_${i}_name`]
+            const teamKey = game[`player_${i}_team`]
+            const score = game[`player_${i}_score`]
+            if (!score || !teamKey) continue
+            if (teamNameMap[teamKey] !== opponent) continue
+            if (opponentPlayers && opponentPlayers.length > 0 && !opponentPlayers.includes(playerName)) continue
+
+            if (!oppMachineStats.has(machine)) {
+              oppMachineStats.set(machine, { vTotal: 0, vCount: 0, nvTotal: 0, nvCount: 0 })
+            }
+            const ms = oppMachineStats.get(machine)!
+            if (isVenue) { ms.vTotal += score; ms.vCount++ }
+            else { ms.nvTotal += score; ms.nvCount++ }
+          }
+        }
+      }
+
+      collectOppStats(venueGames, true)
+      collectOppStats(allVenueGames, false)
+
+      for (const machine of machines) {
+        const machineStr = machine as string
+        const opp = oppMachineStats.get(machineStr)
+        if (!opp) continue
+
+        const oppVAvg = opp.vCount > 0 ? opp.vTotal / opp.vCount : null
+        const oppNvAvg = opp.nvCount > 0 ? opp.nvTotal / opp.nvCount : null
+        let oppAvg = 0
+        if (oppVAvg !== null && oppNvAvg !== null) {
+          oppAvg = oppVAvg * vw + oppNvAvg * (1 - vw)
+        } else if (oppVAvg !== null) {
+          oppAvg = oppVAvg
+        } else if (oppNvAvg !== null) {
+          oppAvg = oppNvAvg
+        }
+
+        const venueAvg = machineVenueAvgs.get(machineStr)
+        if (venueAvg && venueAvg > 0 && oppAvg > 0) {
+          const weakness = Math.max(-0.5, Math.min(0.5, (venueAvg - oppAvg) / venueAvg))
+          oppWeaknessPerMachine.set(machineStr, weakness)
+        }
+      }
+    }
+
+    // Filter games to only requested machines for player stats
+    const venueGamesFiltered = venueGames.filter(g => machineSet.has(g.machine))
+    const allVenueGamesFiltered = allVenueGames.filter(g => machineSet.has(g.machine))
+
+    // Build stats maps
+    const venuePlayerStats = buildPlayerMachineStats(venueGamesFiltered, availablePlayers)
+    const allPlayerStats = buildPlayerMachineStats(allVenueGamesFiltered, availablePlayers)
 
     // Fetch user inputs for all players/machines
     let userInputMap = new Map<string, { average: number | null; confidence: number | null }>()
@@ -336,7 +393,13 @@ export async function POST(request: Request) {
         if (assignedPlayers.has(player)) continue
         if (machineExclusions.includes(player)) continue
         const blended = getBlendedAvg(player, machine, venuePlayerStats, allPlayerStats, vw)
-        playersToAssign.push({ player, avg: blended.avg, source: blended.source, isMustPlay: mustPlaySet.has(player) })
+        let avg = blended.avg
+        // Boost score on machines where opponent is weak, penalize where strong
+        if (ow > 0) {
+          const weakness = oppWeaknessPerMachine.get(machine as string) || 0
+          avg *= (1 + ow * weakness)
+        }
+        playersToAssign.push({ player, avg, source: blended.source, isMustPlay: mustPlaySet.has(player) })
       }
 
       playersToAssign.sort((a, b) => {

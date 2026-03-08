@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { LineupOptimizer } from '@/lib/strategy/optimizer'
 import { calculatePairStats } from '@/lib/strategy/stats-calculator'
+import { supabase, fetchAllRecords } from '@/lib/supabase'
+import { getVenueVariations } from '@/lib/venue-mappings'
+import { getAllMachineVariations } from '@/lib/machine-mappings'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,7 +40,10 @@ export async function POST(request: NextRequest) {
       userInputWeight = 0,
       confidenceBoost = 0,
       scoreWeights,
-      forcedAssignments = []  // Array of { player: string, machine: string }
+      forcedAssignments = [],  // Array of { player: string, machine: string }
+      opponentWeight = 0,
+      opponentPlayers,
+      opponent
     } = body
 
     if (!format || !playerNames || !machines) {
@@ -98,6 +104,118 @@ export async function POST(request: NextRequest) {
     const { statsMap, userInputs } = await optimizer.prefetchStats(
       allPlayersForStats, allMachinesForStats, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost
     )
+
+    // Apply opponent weakness to statsMap if opponent weight is active
+    const ow = Math.max(0, Math.min(1, opponentWeight || 0))
+    const vw = Math.max(0, Math.min(1, venueWeight || 0.7))
+    if (ow > 0 && venue && opponent) {
+      const venueVariations = getVenueVariations(venue)
+      const machineVariationToCanonical = new Map<string, string>()
+      for (const machine of allMachinesForStats) {
+        for (const variation of getAllMachineVariations([machine])) {
+          machineVariationToCanonical.set(variation, machine)
+        }
+      }
+
+      const allGames = await fetchAllRecords<any>(
+        () => supabase
+          .from('games')
+          .select('*')
+          .gte('season', seasonStart)
+          .lte('season', seasonEnd)
+          .order('id', { ascending: true })
+      )
+
+      // Normalize machine names and separate venue/non-venue
+      const venueGames: any[] = []
+      const nonVenueGames: any[] = []
+      for (const game of allGames) {
+        const canonical = machineVariationToCanonical.get(game.machine)
+        if (!canonical) continue
+        game.machine = canonical
+        if (venueVariations.includes(game.venue)) venueGames.push(game)
+        else nonVenueGames.push(game)
+      }
+
+      // Build team name map
+      const teamKeys = new Set<string>()
+      for (const game of allGames) {
+        for (let i = 1; i <= 4; i++) {
+          const tk = game[`player_${i}_team`]
+          if (tk) teamKeys.add(tk)
+        }
+      }
+      const { data: teamsData } = await supabase
+        .from('teams')
+        .select('team_key, team_name')
+        .in('team_key', Array.from(teamKeys))
+      const teamNameMap: Record<string, string> = {}
+      ;(teamsData || []).forEach((t: any) => { teamNameMap[t.team_key] = t.team_name })
+
+      // Build venue avg and opponent avg per machine
+      const machineStats = new Map<string, { venueTotal: number; venueCount: number; oppVTotal: number; oppVCount: number; oppNvTotal: number; oppNvCount: number }>()
+
+      const processBatch = (games: any[], isVenue: boolean) => {
+        for (const game of games) {
+          if (!machineStats.has(game.machine)) {
+            machineStats.set(game.machine, { venueTotal: 0, venueCount: 0, oppVTotal: 0, oppVCount: 0, oppNvTotal: 0, oppNvCount: 0 })
+          }
+          const ms = machineStats.get(game.machine)!
+          for (let i = 1; i <= 4; i++) {
+            const playerName = game[`player_${i}_name`]
+            const teamKey = game[`player_${i}_team`]
+            const score = game[`player_${i}_score`]
+            if (!score || !teamKey) continue
+            if (isVenue) { ms.venueTotal += score; ms.venueCount++ }
+            const teamDisplayName = teamNameMap[teamKey]
+            if (teamDisplayName === opponent) {
+              if (!opponentPlayers || opponentPlayers.length === 0 || opponentPlayers.includes(playerName)) {
+                if (isVenue) { ms.oppVTotal += score; ms.oppVCount++ }
+                else { ms.oppNvTotal += score; ms.oppNvCount++ }
+              }
+            }
+          }
+        }
+      }
+
+      processBatch(venueGames, true)
+      processBatch(nonVenueGames, false)
+
+      // Compute weakness and apply to statsMap
+      for (const machine of allMachinesForStats) {
+        const ms = machineStats.get(machine)
+        if (!ms) continue
+
+        const venueAvg = ms.venueCount > 0 ? ms.venueTotal / ms.venueCount : 0
+        const oppVAvg = ms.oppVCount > 0 ? ms.oppVTotal / ms.oppVCount : null
+        const oppNvAvg = ms.oppNvCount > 0 ? ms.oppNvTotal / ms.oppNvCount : null
+        let oppAvg = 0
+        if (oppVAvg !== null && oppNvAvg !== null) {
+          oppAvg = oppVAvg * vw + oppNvAvg * (1 - vw)
+        } else if (oppVAvg !== null) {
+          oppAvg = oppVAvg
+        } else if (oppNvAvg !== null) {
+          oppAvg = oppNvAvg
+        }
+
+        if (venueAvg > 0 && oppAvg > 0) {
+          const weakness = Math.max(-0.5, Math.min(0.5, (venueAvg - oppAvg) / venueAvg))
+          const multiplier = 1 + ow * weakness
+
+          // Scale all player stats for this machine
+          for (const [, playerStats] of Array.from(statsMap.entries())) {
+            const s = playerStats.get(machine)
+            if (!s) continue
+            playerStats.set(machine, {
+              ...s,
+              win_rate: s.win_rate * multiplier,
+              venue_adjusted_avg: s.venue_adjusted_avg * multiplier,
+              recent_form: s.recent_form * multiplier,
+            })
+          }
+        }
+      }
+    }
 
     // Pre-fetch pair stats for doubles
     let pairStatsMap = new Map<string, { winRate: number; gamesPlayed: number }>()

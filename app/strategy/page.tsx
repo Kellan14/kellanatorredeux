@@ -246,6 +246,7 @@ export default function StrategyPage() {
     venueWeight: 70,
     userInputWeight: 0,
     confidenceBoost: 0,
+    opponentWeight: 0,
     winRateWeight: 40,
     recentFormWeight: 30,
     dataConfidenceWeight: 10,
@@ -263,6 +264,7 @@ export default function StrategyPage() {
   const [venueWeight, setVenueWeight] = useState(() => getPersistedSliders().venueWeight)
   const [userInputWeight, setUserInputWeight] = useState(() => getPersistedSliders().userInputWeight)
   const [confidenceBoost, setConfidenceBoost] = useState(() => getPersistedSliders().confidenceBoost)
+  const [opponentWeight, setOpponentWeight] = useState(() => getPersistedSliders().opponentWeight)
   const [winRateWeight, setWinRateWeight] = useState(() => getPersistedSliders().winRateWeight)
   const [recentFormWeight, setRecentFormWeight] = useState(() => getPersistedSliders().recentFormWeight)
   const [dataConfidenceWeight, setDataConfidenceWeight] = useState(() => getPersistedSliders().dataConfidenceWeight)
@@ -273,7 +275,7 @@ export default function StrategyPage() {
   // Track last-applied slider values for dirty detection
   const [appliedWeights, setAppliedWeights] = useState<Record<string, number> | null>(null)
 
-  const currentWeights = { venueWeight, userInputWeight, confidenceBoost, winRateWeight, recentFormWeight, dataConfidenceWeight }
+  const currentWeights = { venueWeight, userInputWeight, confidenceBoost, opponentWeight, winRateWeight, recentFormWeight, dataConfidenceWeight }
   const isSlidersDirty = appliedWeights !== null && Object.keys(currentWeights).some(
     k => (currentWeights as any)[k] !== appliedWeights[k]
   )
@@ -282,7 +284,7 @@ export default function StrategyPage() {
   useEffect(() => {
     if (typeof window === 'undefined') return
     localStorage.setItem('strategySliderSettings', JSON.stringify(currentWeights))
-  }, [venueWeight, userInputWeight, confidenceBoost, winRateWeight, recentFormWeight, dataConfidenceWeight])
+  }, [venueWeight, userInputWeight, confidenceBoost, opponentWeight, winRateWeight, recentFormWeight, dataConfidenceWeight])
 
   // Proportional adjustment when a score factor slider changes
   const handleScoreWeightChange = (
@@ -332,6 +334,7 @@ export default function StrategyPage() {
     setVenueWeight(SLIDER_DEFAULTS.venueWeight)
     setUserInputWeight(SLIDER_DEFAULTS.userInputWeight)
     setConfidenceBoost(SLIDER_DEFAULTS.confidenceBoost)
+    setOpponentWeight(SLIDER_DEFAULTS.opponentWeight)
     setWinRateWeight(SLIDER_DEFAULTS.winRateWeight)
     setRecentFormWeight(SLIDER_DEFAULTS.recentFormWeight)
     setDataConfidenceWeight(SLIDER_DEFAULTS.dataConfidenceWeight)
@@ -714,6 +717,7 @@ export default function StrategyPage() {
           venueWeight: venueWeight / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
+          opponentWeight: opponentWeight / 100,
           scoreWeights,
           exclusions: singlesExclusions,
           mustPlay: Array.from(satOutPlayers),
@@ -767,6 +771,7 @@ export default function StrategyPage() {
           venueWeight: venueWeight / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
+          opponentWeight: opponentWeight / 100,
           scoreWeights,
           exclusions: doublesExclusions,
           mustPlay: Array.from(satOutPlayers),
@@ -818,6 +823,7 @@ export default function StrategyPage() {
           teamVenueSpecific,
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
+          opponentWeight: opponentWeight / 100,
           exclusions: singlesAssignExclusions,
           mustPlay: Array.from(satOutPlayers),
         }),
@@ -856,6 +862,7 @@ export default function StrategyPage() {
           teamVenueSpecific,
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
+          opponentWeight: opponentWeight / 100,
           exclusions: doublesAssignExclusions,
           mustPlay: Array.from(satOutPlayers),
         }),
@@ -902,6 +909,7 @@ export default function StrategyPage() {
           venueWeight: venueWeight / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
+          opponentWeight: opponentWeight / 100,
           scoreWeights,
           exclusions: singlesExclusions,
           mustPlay: Array.from(satOutPlayers),
@@ -927,6 +935,7 @@ export default function StrategyPage() {
           venueWeight: venueWeight / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
+          opponentWeight: opponentWeight / 100,
           scoreWeights,
           exclusions: doublesExclusions,
           mustPlay: Array.from(satOutPlayers),
@@ -948,6 +957,7 @@ export default function StrategyPage() {
           venueWeight: venueWeight / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
+          opponentWeight: opponentWeight / 100,
           scoreWeights,
           exclusions: singlesExclusions,
           mustPlay: Array.from(satOutPlayers),
@@ -968,6 +978,7 @@ export default function StrategyPage() {
           venueWeight: venueWeight / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
+          opponentWeight: opponentWeight / 100,
           scoreWeights,
           exclusions: doublesExclusions,
           mustPlay: Array.from(satOutPlayers),
@@ -1929,6 +1940,22 @@ export default function StrategyPage() {
                         className="flex-1 min-w-0 accent-primary h-2" />
                       <div className="w-10 md:w-12 text-xs text-right shrink-0">{confidenceBoost}%</div>
                     </div>
+
+                    <div className="space-y-0">
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 md:w-48 text-[10px] md:text-xs truncate shrink-0">Opponent Weight</div>
+                        <div className="flex-1 min-w-0">
+                          <input type="range" min={0} max={100} step={1} value={opponentWeight}
+                            onChange={(e) => setOpponentWeight(parseInt(e.target.value))}
+                            className="w-full accent-primary h-2" />
+                          <div className="flex justify-between text-[10px] text-muted-foreground -mt-0.5">
+                            <span>Ignore</span>
+                            <span>Target Weakness</span>
+                          </div>
+                        </div>
+                        <div className="w-10 md:w-12 text-xs text-right shrink-0">{opponentWeight}%</div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Sat-Out Tracking */}
@@ -2793,6 +2820,22 @@ export default function StrategyPage() {
                         onChange={(e) => setConfidenceBoost(parseInt(e.target.value))}
                         className="flex-1 min-w-0 accent-primary h-2" />
                       <div className="w-10 md:w-12 text-xs text-right shrink-0">{confidenceBoost}%</div>
+                    </div>
+
+                    <div className="space-y-0">
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 md:w-48 text-[10px] md:text-xs truncate shrink-0">Opponent Weight</div>
+                        <div className="flex-1 min-w-0">
+                          <input type="range" min={0} max={100} step={1} value={opponentWeight}
+                            onChange={(e) => setOpponentWeight(parseInt(e.target.value))}
+                            className="w-full accent-primary h-2" />
+                          <div className="flex justify-between text-[10px] text-muted-foreground -mt-0.5">
+                            <span>Ignore</span>
+                            <span>Target Weakness</span>
+                          </div>
+                        </div>
+                        <div className="w-10 md:w-12 text-xs text-right shrink-0">{opponentWeight}%</div>
+                      </div>
                     </div>
                   </div>
 
