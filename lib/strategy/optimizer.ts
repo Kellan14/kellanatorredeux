@@ -234,8 +234,26 @@ export class LineupOptimizer {
       }
     }
 
+    // DEBUG: Log cost matrix
+    console.log(`\n--- Hungarian Cost Matrix (${realRows} players x ${realCols} machines) ---`)
+    const header = [''.padEnd(20), ...machines.slice(0, realCols).map(m => m.substring(0, 12).padEnd(12))]
+    console.log(header.join(' '))
+    for (let i = 0; i < realRows; i++) {
+      const row = [playerNames[i].padEnd(20), ...costMatrix[i].slice(0, realCols).map((v: number) => v.toFixed(4).padEnd(12))]
+      console.log(row.join(' '))
+    }
+
     // Run Hungarian algorithm
     const { assignments: hungarianAssignments } = hungarianAlgorithm(costMatrix, true)
+
+    // DEBUG: Log Hungarian result
+    console.log(`--- Hungarian Assignments ---`)
+    for (let i = 0; i < realRows; i++) {
+      const mIdx = hungarianAssignments[i]
+      const machine = mIdx >= 0 && mIdx < realCols ? machines[mIdx] : 'DUMMY'
+      const cellScore = mIdx >= 0 && mIdx < realCols ? costMatrix[i][mIdx].toFixed(4) : 'N/A'
+      console.log(`  ${playerNames[i]} -> ${machine} (matrix cell: ${cellScore})`)
+    }
 
     // Convert to Assignment objects, filtering out dummy assignments
     const assignments: Assignment[] = []

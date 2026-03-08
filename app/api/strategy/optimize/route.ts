@@ -534,6 +534,15 @@ export async function POST(request: NextRequest) {
 
       const oppResult = hungarianAlgorithm(oppCostMatrix, true)
 
+      // DEBUG: Log opponent assignment
+      console.log('\n--- Assumed Opponent Assignments ---')
+      for (let r = 0; r < oppPlayerList.length; r++) {
+        const col = oppResult.assignments[r]
+        const machine = col >= 0 && col < machineSlots.length ? machineSlots[col].machine : 'DUMMY'
+        const avg = col >= 0 && col < machineSlots.length ? getBlendedAvg(oppPlayerList[r], machine) : 0
+        console.log(`  ${oppPlayerList[r]} -> ${machine} (blendedAvg: ${avg.toFixed(1)})`)
+      }
+
       // Map assignments and build detailed stats
       const result: Record<string, any[]> = {}
       for (let r = 0; r < oppPlayerList.length; r++) {
@@ -541,7 +550,6 @@ export async function POST(request: NextRequest) {
         if (col < 0 || col >= machineSlots.length) continue
         const { machine } = machineSlots[col]
         const blendedAvg = getBlendedAvg(oppPlayerList[r], machine)
-        if (blendedAvg <= 0) continue
 
         // Compute per-player detailed stats
         const playerName = oppPlayerList[r]
@@ -613,9 +621,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // DEBUG: Log per-player per-machine performance scores
+    console.log('\n=== OPTIMIZER DEBUG: Per-Player Per-Machine Scores ===')
+    for (const player of allPlayers) {
+      const scores: Record<string, string> = {}
+      for (const machine of selectedMachines) {
+        const stats = statsMap.get(player)?.get(machine)
+        const perfScore = stats ? (stats.venue_adjusted_avg || 0).toFixed(3) : 'NO_STATS'
+        const gamesPlayed = stats?.games_played || 0
+        scores[machine] = `${perfScore} (${gamesPlayed}g)`
+      }
+      console.log(`  ${player}: ${JSON.stringify(scores)}`)
+    }
+
     let bestResult: any = null
     let bestScore = -Infinity
     let bestBenched: string[] = []
+    const comboResults: { players: string[]; benched: string[]; score: number; assignments: string }[] = []
 
     for (const flexCombo of flexCombos) {
       const comboPlayers = [...mustPlayPlayers, ...flexCombo]
@@ -623,12 +645,30 @@ export async function POST(request: NextRequest) {
 
       const result = runOptimize(comboPlayers)
 
+      comboResults.push({
+        players: comboPlayers,
+        benched,
+        score: result.total_score,
+        assignments: result.assignments.map((a: any) => `${a.player_id}->${a.machine_id}(${a.expected_score.toFixed(3)})`).join(', ')
+      })
+
       if (result.total_score > bestScore) {
         bestScore = result.total_score
         bestResult = result
         bestBenched = benched
       }
     }
+
+    // DEBUG: Log all combo results sorted by score
+    console.log('\n=== OPTIMIZER DEBUG: Combo Results (sorted by score) ===')
+    comboResults.sort((a, b) => b.score - a.score)
+    for (const c of comboResults.slice(0, 10)) {
+      console.log(`  Score: ${c.score.toFixed(4)} | Benched: [${c.benched.join(', ')}]`)
+      console.log(`    Assignments: ${c.assignments}`)
+    }
+    console.log(`  Total combos evaluated: ${comboResults.length}`)
+    console.log(`  Best score: ${bestScore.toFixed(4)}, Benched: [${bestBenched.join(', ')}]`)
+    console.log('=== END OPTIMIZER DEBUG ===\n')
 
     bestResult.benched = bestBenched
     const merged = mergeForced(bestResult)
