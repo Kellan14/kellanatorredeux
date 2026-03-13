@@ -5,7 +5,7 @@ import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getAllMachineVariations } from '@/lib/machine-mappings'
 import { hungarianAlgorithm } from '@/lib/strategy/hungarian'
-import { buildCostMatrix } from '@/lib/strategy/calculator'
+import { buildCostMatrix, calculatePerformanceScore, calculatePairSynergy } from '@/lib/strategy/calculator'
 import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
 
 export const dynamic = 'force-dynamic'
@@ -47,7 +47,8 @@ export async function POST(request: NextRequest) {
       opponentWeight = 0,
       opponentPlayers,
       opponent,
-      useNashEquilibrium = true
+      useNashEquilibrium = true,
+      assignAll = false,  // When true, greedily assign remaining players after normal optimization
     } = body
 
     if (!format || !playerNames || !machines) {
@@ -602,14 +603,131 @@ export async function POST(request: NextRequest) {
       return result
     }
 
+    // Helper: greedily assign remaining (benched) players to their best machines
+    // Used when assignAll is true to extend the normal optimization
+    const greedyAssignRemaining = (merged: any, benchedPlayers: string[]) => {
+      if (!assignAll || benchedPlayers.length === 0) return
+      const regularCount = merged.assignments.length
+      merged.regularCount = regularCount
+
+      const assignedMachineSet = new Set<string>(merged.assignments.map((a: any) => a.machine_id))
+      const usedPlayers = new Set<string>()
+      for (const a of merged.assignments) {
+        if (a.player_id) usedPlayers.add(a.player_id)
+        if (a.player1_id) usedPlayers.add(a.player1_id)
+        if (a.player2_id) usedPlayers.add(a.player2_id)
+      }
+
+      const remainingPlayers = benchedPlayers.filter(p => !usedPlayers.has(p))
+      // All machines at venue (including already-used ones for reuse)
+      const allMachines = machines as string[]
+
+      if (format === '7x7') {
+        // Singles: greedily assign each remaining player to their best machine
+        for (const player of remainingPlayers) {
+          let bestMachine = ''
+          let bestScore = -Infinity
+          let bestStats: any = null
+
+          for (const machine of allMachines) {
+            const stats = statsMap.get(player)?.get(machine) || null
+            const score = calculatePerformanceScore(stats, confidenceBoost, scoreWeights)
+            // Prefer unused machines
+            const bonus = assignedMachineSet.has(machine) ? 0 : 0.001
+            if (score + bonus > bestScore) {
+              bestScore = score + bonus
+              bestMachine = machine
+              bestStats = stats
+            }
+          }
+
+          if (bestMachine) {
+            const ui = userInputs?.get(player)?.get(bestMachine)
+            merged.assignments.push({
+              player_id: player,
+              machine_id: bestMachine,
+              expected_score: bestScore,
+              confidence: bestStats?.confidence_score || 0,
+              venue_adjusted_avg: bestStats?.venue_adjusted_avg,
+              user_average: ui?.userAverage ?? null,
+              user_confidence: ui?.userConfidence ?? null,
+              isExtra: true,
+            })
+            assignedMachineSet.add(bestMachine)
+          }
+        }
+      } else {
+        // Doubles: pair remaining players and assign to best machine
+        const remaining = [...remainingPlayers]
+        while (remaining.length >= 2) {
+          let bestMachine = ''
+          let bestPair: [string, string] | null = null
+          let bestScore = -Infinity
+
+          for (let i = 0; i < remaining.length; i++) {
+            for (let j = i + 1; j < remaining.length; j++) {
+              const p1 = remaining[i], p2 = remaining[j]
+              for (const machine of allMachines) {
+                const stats1 = statsMap.get(p1)?.get(machine) || null
+                const stats2 = statsMap.get(p2)?.get(machine) || null
+                const score1 = calculatePerformanceScore(stats1, confidenceBoost, scoreWeights)
+                const score2 = calculatePerformanceScore(stats2, confidenceBoost, scoreWeights)
+                const pairKey1 = `${p1}|${p2}|${machine}`
+                const pairKey2 = `${p2}|${p1}|${machine}`
+                const pStats = pairStatsMap.get(pairKey1) || pairStatsMap.get(pairKey2)
+                const synergy = calculatePairSynergy(stats1, stats2, pStats?.winRate, confidenceBoost, scoreWeights)
+                const combined = score1 + score2 + synergy
+                const bonus = assignedMachineSet.has(machine) ? 0 : 0.001
+                if (combined + bonus > bestScore) {
+                  bestScore = combined + bonus
+                  bestMachine = machine
+                  bestPair = [p1, p2]
+                }
+              }
+            }
+          }
+
+          if (bestPair && bestMachine) {
+            const stats1 = statsMap.get(bestPair[0])?.get(bestMachine)
+            const stats2 = statsMap.get(bestPair[1])?.get(bestMachine)
+            const ui1 = userInputs?.get(bestPair[0])?.get(bestMachine)
+            const ui2 = userInputs?.get(bestPair[1])?.get(bestMachine)
+            merged.assignments.push({
+              player1_id: bestPair[0],
+              player2_id: bestPair[1],
+              machine_id: bestMachine,
+              expected_score: bestScore,
+              confidence: ((stats1?.confidence_score || 0) + (stats2?.confidence_score || 0)) / 2,
+              player1_venue_adjusted_avg: stats1?.venue_adjusted_avg,
+              player2_venue_adjusted_avg: stats2?.venue_adjusted_avg,
+              player1_user_average: ui1?.userAverage ?? null,
+              player2_user_average: ui2?.userAverage ?? null,
+              player1_user_confidence: ui1?.userConfidence ?? null,
+              player2_user_confidence: ui2?.userConfidence ?? null,
+              isExtra: true,
+            })
+            assignedMachineSet.add(bestMachine)
+            remaining.splice(remaining.indexOf(bestPair[1]), 1)
+            remaining.splice(remaining.indexOf(bestPair[0]), 1)
+          } else {
+            break
+          }
+        }
+      }
+
+      // Clear benched since all are now assigned
+      merged.benched = []
+    }
+
     // Exact match or fewer players — run directly
     if (allPlayers.length <= adjustedRequiredPlayers) {
       const result = runOptimize(allPlayers)
       result.benched = []
       const merged = mergeForced(result)
+      if (assignAll) merged.regularCount = merged.assignments.length
       const assignedMachines = merged.assignments.map((a: any) => a.machine_id)
       assumedOpponents = computeAssumedOpponents(assignedMachines)
-      return NextResponse.json({ ...merged, ...(assumedOpponents ? { assumedOpponents } : {}) })
+      return NextResponse.json({ ...merged, ...(assumedOpponents ? { assumedOpponents } : {}), ...(assignAll ? { regularCount: merged.regularCount } : {}) })
     }
 
     // More players than required — exhaustive combination search
@@ -688,9 +806,10 @@ export async function POST(request: NextRequest) {
 
     bestResult.benched = bestBenched
     const merged = mergeForced(bestResult)
+    greedyAssignRemaining(merged, bestBenched)
     const assignedMachines = merged.assignments.map((a: any) => a.machine_id)
     assumedOpponents = computeAssumedOpponents(assignedMachines)
-    return NextResponse.json({ ...merged, ...(assumedOpponents ? { assumedOpponents } : {}) })
+    return NextResponse.json({ ...merged, ...(assumedOpponents ? { assumedOpponents } : {}), ...(assignAll ? { regularCount: merged.regularCount } : {}) })
   } catch (error: any) {
     console.error('Optimization error:', error)
     return NextResponse.json(

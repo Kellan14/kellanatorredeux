@@ -420,9 +420,11 @@ export async function POST(request: Request) {
       const unassignedMustPlay = (availablePlayers as string[]).filter(p => mustPlaySet.has(p) && !usedPlayers.has(p))
       const hasMustPlayRemaining = unassignedMustPlay.length > 0
 
-      for (const machine of machinesAtVenue) {
-        if (usedMachines.has(machine)) continue
+      // Try unused machines first, then allow reuse if all machines are taken
+      const unusedMachines = machinesAtVenue.filter(m => !usedMachines.has(m))
+      const machinesToTry = unusedMachines.length > 0 ? unusedMachines : machinesAtVenue
 
+      for (const machine of machinesToTry) {
         const machineExclusions: string[] = exclusions[machine] || []
 
         const eligible = (availablePlayers as string[])
@@ -471,7 +473,7 @@ export async function POST(request: Request) {
         }
       }
 
-      if (!bestMachine) break // No more viable machines
+      if (!bestMachine) break // No more viable assignments
 
       bestPlayers.forEach(p => usedPlayers.add(p.player))
       usedMachines.add(bestMachine)

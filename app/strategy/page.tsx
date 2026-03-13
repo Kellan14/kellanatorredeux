@@ -957,8 +957,9 @@ export default function StrategyPage() {
     const machinesAtVenue = (venueData?.machines || []).filter(m => !excludedMachines.includes(m))
 
     // Run all 4 optimizations in parallel
+    // For the report, assign ALL players (not just the normal round count)
     const [greedySingles, greedyDoubles, hungarianSingles, hungarianDoubles] = await Promise.all([
-      // Greedy Singles
+      // Greedy Singles - use all players (1 per machine)
       fetch('/api/optimize-picks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -969,7 +970,7 @@ export default function StrategyPage() {
           seasonStart: seasonRange[0],
           seasonEnd: seasonRange[1],
           format: 'singles',
-          numMachines: numSinglesMachines,
+          numMachines: selectedPlayers.length,
           availablePlayers: selectedPlayers,
           teamVenueSpecific,
           twcVenueSpecific,
@@ -984,7 +985,7 @@ export default function StrategyPage() {
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
 
-      // Greedy Doubles
+      // Greedy Doubles - use all players (2 per machine)
       fetch('/api/optimize-picks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -995,7 +996,7 @@ export default function StrategyPage() {
           seasonStart: seasonRange[0],
           seasonEnd: seasonRange[1],
           format: 'doubles',
-          numMachines: numDoublesMachines,
+          numMachines: Math.floor(selectedPlayers.length / 2),
           availablePlayers: selectedPlayers,
           teamVenueSpecific,
           twcVenueSpecific,
@@ -1010,7 +1011,7 @@ export default function StrategyPage() {
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
 
-      // Hungarian Singles (7x7)
+      // Hungarian Singles (7x7) - assign all players
       fetch('/api/strategy/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1030,10 +1031,11 @@ export default function StrategyPage() {
           mustPlay: Array.from(satOutPlayers),
           opponent: selectedOpponent,
           opponentPlayers: getSelectedOpponentPlayers(),
+          assignAll: true,
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
 
-      // Hungarian Doubles (4x2)
+      // Hungarian Doubles (4x2) - assign all players
       fetch('/api/strategy/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1053,6 +1055,7 @@ export default function StrategyPage() {
           mustPlay: Array.from(satOutPlayers),
           opponent: selectedOpponent,
           opponentPlayers: getSelectedOpponentPlayers(),
+          assignAll: true,
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
     ])
@@ -1075,6 +1078,9 @@ export default function StrategyPage() {
     lines.push('-'.repeat(40))
     if (greedySingles?.recommendations?.length > 0) {
       greedySingles.recommendations.forEach((rec: any, i: number) => {
+        if (i === numSinglesMachines) {
+          lines.push('  - - - remaining players - - -')
+        }
         const machineName = getMachineDisplayName(rec.machine)
         const players = rec.players.join(', ')
         const pctInfo = rec.stats?.length === 1
@@ -1095,6 +1101,9 @@ export default function StrategyPage() {
     lines.push('-'.repeat(40))
     if (greedyDoubles?.recommendations?.length > 0) {
       greedyDoubles.recommendations.forEach((rec: any, i: number) => {
+        if (i === numDoublesMachines) {
+          lines.push('  - - - remaining players - - -')
+        }
         const machineName = getMachineDisplayName(rec.machine)
         const players = rec.players.join(' & ')
         const pctInfo = rec.stats?.map((s: any) => `${s.player}: ${s.pctOfVenue ?? 'N/A'}%`).join(', ') || ''
@@ -1112,7 +1121,11 @@ export default function StrategyPage() {
     lines.push('HUNGARIAN ALGORITHM - SINGLES (7x7)')
     lines.push('-'.repeat(40))
     if (hungarianSingles?.assignments?.length > 0) {
+      const regularSinglesCount = hungarianSingles.regularCount || 7
       hungarianSingles.assignments.forEach((asn: any, i: number) => {
+        if (i === regularSinglesCount) {
+          lines.push('  - - - remaining players - - -')
+        }
         const machineName = getMachineDisplayName(asn.machine_id)
         const player = asn.player_id
         const pct = asn.venue_adjusted_avg != null ? `${(asn.venue_adjusted_avg * 100).toFixed(0)}% of avg` : ''
@@ -1129,7 +1142,11 @@ export default function StrategyPage() {
     lines.push('HUNGARIAN ALGORITHM - DOUBLES (4x2)')
     lines.push('-'.repeat(40))
     if (hungarianDoubles?.assignments?.length > 0) {
+      const regularDoublesCount = hungarianDoubles.regularCount || 4
       hungarianDoubles.assignments.forEach((asn: any, i: number) => {
+        if (i === regularDoublesCount) {
+          lines.push('  - - - remaining players - - -')
+        }
         const machineName = getMachineDisplayName(asn.machine_id)
         const players = asn.player1_id && asn.player2_id ? `${asn.player1_id} & ${asn.player2_id}` : asn.player_id
         const opponents = hungarianDoubles.assumedOpponents?.[asn.machine_id]?.map((o: any) => o.player).join(' & ')
