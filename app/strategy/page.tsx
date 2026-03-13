@@ -514,6 +514,9 @@ export default function StrategyPage() {
   const [reportDialogOpen, setReportDialogOpen] = useState(false)
   const [reportText, setReportText] = useState('')
   const [reportCopied, setReportCopied] = useState(false)
+  const [discordSending, setDiscordSending] = useState(false)
+  const [discordSent, setDiscordSent] = useState(false)
+  const [discordError, setDiscordError] = useState('')
 
   // Hungarian algorithm results from Advanced Optimization section
   const [hungarianSinglesResult, setHungarianSinglesResult] = useState<OptimizationResult | null>(null)
@@ -1196,6 +1199,30 @@ export default function StrategyPage() {
       setTimeout(() => setReportCopied(false), 2000)
     } catch (error) {
       console.error('Failed to copy:', error)
+    }
+  }
+
+  const sendToDiscord = async () => {
+    setDiscordSending(true)
+    setDiscordError('')
+    setDiscordSent(false)
+    try {
+      const res = await fetch('/api/discord-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportText }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setDiscordError(data.error || 'Failed to send')
+      } else {
+        setDiscordSent(true)
+        setTimeout(() => setDiscordSent(false), 3000)
+      }
+    } catch {
+      setDiscordError('Failed to send to Discord')
+    } finally {
+      setDiscordSending(false)
     }
   }
 
@@ -4317,7 +4344,29 @@ export default function StrategyPage() {
                 'Copy to Clipboard'
               )}
             </Button>
+            <Button
+              onClick={sendToDiscord}
+              disabled={discordSending || !reportText || reportText === 'Generating report...'}
+              variant="default"
+            >
+              {discordSending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Sending...
+                </>
+              ) : discordSent ? (
+                <>
+                  <Check className="h-4 w-4 mr-2" />
+                  Sent!
+                </>
+              ) : (
+                'Send to Discord'
+              )}
+            </Button>
           </div>
+          {discordError && (
+            <p className="text-sm text-destructive mt-2 text-right">{discordError}</p>
+          )}
         </DialogContent>
       </Dialog>
     </div>
