@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trophy, Target, TrendingUp, Users, Calendar, BarChart3, Percent, ChevronRight, ChevronDown, ChevronUp, ArrowUpDown, ArrowUp, ArrowDown, LineChart } from 'lucide-react'
+import { Trophy, Target, TrendingUp, Users, Calendar, BarChart3, Percent, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, ArrowUpDown, ArrowUp, ArrowDown, LineChart, Loader2, Check, Send } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
@@ -81,6 +81,15 @@ function HomePageContent() {
     }
     return false
   })
+
+  // Least unique players pagination
+  const [luSetIndex, setLuSetIndex] = useState(0)
+
+  // Discord send state for least unique players
+  const [luDiscordSending, setLuDiscordSending] = useState(false)
+  const [luDiscordSent, setLuDiscordSent] = useState(false)
+  const [luDiscordError, setLuDiscordError] = useState('')
+  const [luDiscordConfirm, setLuDiscordConfirm] = useState(false)
 
   // Hot swap players state
   const [excludedPlayers, setExcludedPlayers] = useState<Set<string>>(new Set())
@@ -316,12 +325,55 @@ function HomePageContent() {
       if (response.ok) {
         const data = await response.json()
         setLeastUniquePlayers(data)
+        setLuSetIndex(0)
       }
     } catch (error) {
       console.error('Error fetching least unique players:', error)
       setLeastUniquePlayers(null)
     } finally {
       setLoadingLeastUnique(false)
+    }
+  }
+
+  const sendLeastUniqueToDiscord = async () => {
+    if (!leastUniquePlayers || !leastUniquePlayers.sets) return
+    const currentSet = leastUniquePlayers.sets[luSetIndex] || leastUniquePlayers.sets[0]
+    if (!currentSet || !currentSet.machines) return
+    setLuDiscordSending(true)
+    setLuDiscordError('')
+    setLuDiscordSent(false)
+    try {
+      const lines: string[] = []
+      lines.push(`LEAST UNIQUE PLAYERS — ${opponent} @ ${venue}`)
+      lines.push(`Seasons ${leastUniqueSeasonStart}–${leastUniqueSeasonEnd}${leastUniquePlayers.sets.length > 1 ? ` (option ${luSetIndex + 1} of ${leastUniquePlayers.sets.length})` : ''}`)
+      lines.push(`${currentSet.totalUniquePlayers} unique player${currentSet.totalUniquePlayers !== 1 ? 's' : ''} across 4 machines`)
+      lines.push('')
+      for (const m of currentSet.machines) {
+        const displayName = getMachineDisplayName(m.machine)
+        lines.push(`${displayName} — ${m.playerCount} player${m.playerCount !== 1 ? 's' : ''}${m.players.length > 0 ? ': ' + m.players.join(', ') : ''}`)
+      }
+      if (currentSet.allPlayers && currentSet.allPlayers.length > 0) {
+        lines.push('')
+        lines.push(`All players: ${currentSet.allPlayers.join(', ')}`)
+      }
+      const reportText = lines.join('\n')
+      const res = await fetch('/api/discord-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportText }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setLuDiscordError(data.error || 'Failed to send')
+      } else {
+        setLuDiscordSent(true)
+        setTimeout(() => setLuDiscordSent(false), 3000)
+      }
+    } catch {
+      setLuDiscordError('Failed to send to Discord')
+    } finally {
+      setLuDiscordSending(false)
+      setLuDiscordConfirm(false)
     }
   }
 
@@ -1210,55 +1262,131 @@ function HomePageContent() {
 
                   {loadingLeastUnique ? (
                     <div className="text-center py-4 text-muted-foreground">Loading...</div>
-                  ) : leastUniquePlayers && leastUniquePlayers.machines && leastUniquePlayers.machines.length > 0 ? (
+                  ) : leastUniquePlayers && leastUniquePlayers.sets && leastUniquePlayers.sets.length > 0 ? (
                     <div className="space-y-3">
-                      <div className="text-sm font-medium text-center p-2 bg-muted/50 rounded">
-                        {leastUniquePlayers.totalUniquePlayers} unique player{leastUniquePlayers.totalUniquePlayers !== 1 ? 's' : ''} across these 4 machines
-                        {(excludedPlayers.size > 0 || includedPlayers.size > 0) && (
-                          <span className="text-yellow-600 ml-1">(modified roster)</span>
+                      {(() => {
+                        const currentSet = leastUniquePlayers.sets[luSetIndex] || leastUniquePlayers.sets[0];
+                        const totalSets = leastUniquePlayers.sets.length;
+                        return (<>
+                          <div className="text-sm font-medium text-center p-2 bg-muted/50 rounded">
+                            {currentSet.totalUniquePlayers} unique player{currentSet.totalUniquePlayers !== 1 ? 's' : ''} across these 4 machines
+                            {totalSets > 1 && (
+                              <span className="text-muted-foreground ml-1">({luSetIndex + 1} of {totalSets})</span>
+                            )}
+                            {(excludedPlayers.size > 0 || includedPlayers.size > 0) && (
+                              <span className="text-yellow-600 ml-1">(modified roster)</span>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {currentSet.machines.map((m: any, index: number) => (
+                              <div key={m.machine} className="border rounded-lg p-3">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="font-medium">{getMachineDisplayName(m.machine)}</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {m.playerCount} player{m.playerCount !== 1 ? 's' : ''}
+                                    {index > 0 && m.addedPlayers > 0 && (
+                                      <span className="text-yellow-600 ml-1">(+{m.addedPlayers} new)</span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="text-xs text-muted-foreground flex flex-wrap gap-1">
+                                  {m.players.length > 0 ? m.players.map((p: string) => (
+                                    <button
+                                      key={p}
+                                      onClick={() => openSwapDialog(p)}
+                                      className="hover:text-primary hover:underline cursor-pointer"
+                                    >
+                                      {p}
+                                    </button>
+                                  )) : 'No players have played this'}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          {totalSets > 1 && (
+                            <div className="flex items-center justify-center gap-2">
+                              {luSetIndex > 0 && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setLuSetIndex(luSetIndex - 1)}
+                                  className="text-xs"
+                                >
+                                  <ChevronLeft className="h-3 w-3 mr-1" />Back
+                                </Button>
+                              )}
+                              {luSetIndex < totalSets - 1 && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setLuSetIndex(luSetIndex + 1)}
+                                  className="text-xs"
+                                >
+                                  Next<ChevronRight className="h-3 w-3 ml-1" />
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                          {currentSet.allPlayers && currentSet.allPlayers.length > 0 && (
+                            <div className="text-xs text-muted-foreground mt-2 pt-2 border-t">
+                              <span className="font-medium">All players (click to swap):</span>{' '}
+                              {currentSet.allPlayers.map((p: string, i: number) => (
+                                <span key={p}>
+                                  {i > 0 && ', '}
+                                  <button
+                                    onClick={() => openSwapDialog(p)}
+                                    className="hover:text-primary hover:underline cursor-pointer"
+                                  >
+                                    {p}
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </>);
+                      })()}
+                      <div className="flex items-center justify-end gap-2 mt-3 pt-2 border-t">
+                        {luDiscordConfirm ? (
+                          <>
+                            <span className="text-xs text-muted-foreground">Send to Discord?</span>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={sendLeastUniqueToDiscord}
+                              disabled={luDiscordSending}
+                              className="text-xs"
+                            >
+                              {luDiscordSending ? (
+                                <><Loader2 className="h-3 w-3 mr-1 animate-spin" />Sending...</>
+                              ) : 'Yes, Send'}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setLuDiscordConfirm(false)}
+                              disabled={luDiscordSending}
+                              className="text-xs"
+                            >
+                              Cancel
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => { setLuDiscordConfirm(true); setLuDiscordError('') }}
+                            className="text-xs"
+                          >
+                            {luDiscordSent ? (
+                              <><Check className="h-3 w-3 mr-1" />Sent!</>
+                            ) : (
+                              <><Send className="h-3 w-3 mr-1" />Send to Discord</>
+                            )}
+                          </Button>
                         )}
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {leastUniquePlayers.machines.map((m: any, index: number) => (
-                          <div key={m.machine} className="border rounded-lg p-3">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="font-medium">{getMachineDisplayName(m.machine)}</div>
-                              <div className="text-xs text-muted-foreground">
-                                {m.playerCount} player{m.playerCount !== 1 ? 's' : ''}
-                                {index > 0 && m.addedPlayers > 0 && (
-                                  <span className="text-yellow-600 ml-1">(+{m.addedPlayers} new)</span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="text-xs text-muted-foreground flex flex-wrap gap-1">
-                              {m.players.length > 0 ? m.players.map((p: string) => (
-                                <button
-                                  key={p}
-                                  onClick={() => openSwapDialog(p)}
-                                  className="hover:text-primary hover:underline cursor-pointer"
-                                >
-                                  {p}
-                                </button>
-                              )) : 'No players have played this'}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      {leastUniquePlayers.allPlayers && leastUniquePlayers.allPlayers.length > 0 && (
-                        <div className="text-xs text-muted-foreground mt-2 pt-2 border-t">
-                          <span className="font-medium">All players (click to swap):</span>{' '}
-                          {leastUniquePlayers.allPlayers.map((p: string, i: number) => (
-                            <span key={p}>
-                              {i > 0 && ', '}
-                              <button
-                                onClick={() => openSwapDialog(p)}
-                                className="hover:text-primary hover:underline cursor-pointer"
-                              >
-                                {p}
-                              </button>
-                            </span>
-                          ))}
-                        </div>
+                      {luDiscordError && (
+                        <p className="text-xs text-destructive mt-1 text-right">{luDiscordError}</p>
                       )}
                     </div>
                   ) : (

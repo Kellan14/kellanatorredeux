@@ -219,60 +219,110 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Greedy algorithm: pick 4 machines that minimize total unique players
-    const selectedMachines: { machine: string; players: string[]; addedPlayers: number }[] = [];
-    const allSelectedPlayers = new Set<string>();
+    // Generate up to 5 alternative sets of 4 machines
+    // Each set forces a different starting machine, then greedily picks remaining 3
+    // Sets can share machines — they're independent alternatives
+    const runGreedy = (forcedFirst?: string): { machine: string; players: string[]; addedPlayers: number }[] => {
+      const selected: { machine: string; players: string[]; addedPlayers: number }[] = [];
+      const selectedPlayers = new Set<string>();
 
-    for (let i = 0; i < Math.min(4, machinePlayersList.length); i++) {
-      let bestMachine: { machine: string; players: Set<string> } | null = null;
-      let bestNewPlayers = Infinity;
+      for (let i = 0; i < Math.min(4, machinePlayersList.length); i++) {
+        let bestMachine: { machine: string; players: Set<string> } | null = null;
+        let bestNewPlayers = Infinity;
 
-      // Find machine that adds fewest NEW players
-      for (const entry of machinePlayersList) {
-        // Skip if already selected
-        if (selectedMachines.some(s => s.machine === entry.machine)) continue;
+        for (const entry of machinePlayersList) {
+          if (selected.some(s => s.machine === entry.machine)) continue;
 
-        // Count how many NEW players this would add
-        let newPlayers = 0;
-        entry.players.forEach(p => {
-          if (!allSelectedPlayers.has(p)) newPlayers++;
-        });
+          // On first pick, force the specified machine if given
+          if (i === 0 && forcedFirst && entry.machine !== forcedFirst) continue;
 
-        if (newPlayers < bestNewPlayers) {
-          bestNewPlayers = newPlayers;
-          bestMachine = entry;
+          let newPlayers = 0;
+          entry.players.forEach(p => {
+            if (!selectedPlayers.has(p)) newPlayers++;
+          });
+
+          if (newPlayers < bestNewPlayers) {
+            bestNewPlayers = newPlayers;
+            bestMachine = entry;
+          }
+        }
+
+        if (bestMachine) {
+          bestMachine.players.forEach(p => selectedPlayers.add(p));
+          selected.push({
+            machine: bestMachine.machine,
+            players: Array.from(bestMachine.players),
+            addedPlayers: bestNewPlayers
+          });
         }
       }
+      return selected;
+    };
 
-      if (bestMachine) {
-        const newPlayersAdded = bestNewPlayers;
-        bestMachine.players.forEach(p => allSelectedPlayers.add(p));
-        selectedMachines.push({
-          machine: bestMachine.machine,
-          players: Array.from(bestMachine.players),
-          addedPlayers: newPlayersAdded
-        });
-      }
+    // Set 1: pure greedy (no forced first)
+    const set1 = runGreedy();
+
+    // Sets 2-5: force different starting machines (sorted by fewest players, skip the one already used)
+    const usedFirstMachines = new Set<string>();
+    if (set1.length > 0) usedFirstMachines.add(set1[0].machine);
+
+    const sets: Array<{
+      machines: { machine: string; playerCount: number; addedPlayers: number; players: string[] }[];
+      totalUniquePlayers: number;
+      allPlayers: string[];
+    }> = [];
+
+    const formatSet = (selected: typeof set1) => {
+      const setPlayers = new Set<string>();
+      selected.forEach(m => m.players.forEach(p => setPlayers.add(p)));
+      return {
+        machines: selected.map(m => ({
+          machine: m.machine,
+          playerCount: m.players.length,
+          addedPlayers: m.addedPlayers,
+          players: m.players
+        })),
+        totalUniquePlayers: setPlayers.size,
+        allPlayers: Array.from(setPlayers)
+      };
+    };
+
+    sets.push(formatSet(set1));
+
+    // Generate alternative sets by forcing different starting machines
+    const candidateStarts = machinePlayersList
+      .filter(m => !usedFirstMachines.has(m.machine))
+      .slice(0, 10); // check up to 10 candidates to find 4 distinct sets
+
+    for (const candidate of candidateStarts) {
+      if (sets.length >= 5) break;
+      const altSet = runGreedy(candidate.machine);
+      if (altSet.length < 4) continue;
+
+      // Skip if this set is identical to an existing one
+      const altKey = altSet.map(m => m.machine).sort().join('|');
+      const isDuplicate = sets.some(s => s.machines.map(m => m.machine).sort().join('|') === altKey);
+      if (isDuplicate) continue;
+
+      usedFirstMachines.add(candidate.machine);
+      sets.push(formatSet(altSet));
     }
 
-    // Build response
+    // Build response — first set is the primary (backward compatible)
+    const firstSet = sets[0] || { machines: [], totalUniquePlayers: 0, allPlayers: [] };
     const playersByMachine: Record<string, string[]> = {};
-    selectedMachines.forEach(m => {
+    firstSet.machines.forEach(m => {
       playersByMachine[m.machine] = m.players;
     });
 
     return NextResponse.json({
-      machines: selectedMachines.map(m => ({
-        machine: m.machine,
-        playerCount: m.players.length,
-        addedPlayers: m.addedPlayers,
-        players: m.players
-      })),
-      totalUniquePlayers: allSelectedPlayers.size,
-      allPlayers: Array.from(allSelectedPlayers),
+      machines: firstSet.machines,
+      totalUniquePlayers: firstSet.totalUniquePlayers,
+      allPlayers: firstSet.allPlayers,
       playersByMachine,
       rosterPlayers: Array.from(rosterPlayers),
-      activePlayers: Array.from(activePlayers)
+      activePlayers: Array.from(activePlayers),
+      sets
     });
   } catch (error) {
     console.error('[least-unique-players] Error:', error);
