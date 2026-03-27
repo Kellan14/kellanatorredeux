@@ -88,6 +88,72 @@ export async function GET(request: Request) {
       return NextResponse.json({ achievements: [], count: 0 })
     }
 
+    // --- Try cache-first path ---
+    {
+      const { data: cachedRows } = await supabase
+        .from('cache_machine_top_scores' as any)
+        .select('*')
+        .eq('player_name', playerName) as { data: any[] | null }
+
+      if (cachedRows && cachedRows.length > 0) {
+        const achievements: Achievement[] = []
+
+        for (const row of cachedRows) {
+          const isVenueSpecific = row.venue !== null
+          const isSeason = row.season !== null
+
+          let category: 'league-all' | 'venue-all' | 'league-season' | 'venue-season'
+          let context: string
+          let priority: number
+
+          if (!isVenueSpecific && !isSeason) {
+            category = 'league-all'; context = 'League-wide - all time'; priority = 1
+          } else if (isVenueSpecific && !isSeason) {
+            category = 'venue-all'; context = `${row.venue} - all time`; priority = 2
+          } else if (!isVenueSpecific && isSeason) {
+            category = 'league-season'; context = 'League-wide - this season'; priority = 3
+          } else {
+            category = 'venue-season'; context = `${row.venue} - this season`; priority = 4
+          }
+
+          achievements.push({
+            machine: row.machine.charAt(0).toUpperCase() + row.machine.slice(1),
+            context,
+            venue: row.venue || undefined,
+            rank: row.rank,
+            score: Number(row.score),
+            isVenueSpecific,
+            priority,
+            category
+          })
+        }
+
+        // Deduplicate by machine+context, keep best rank
+        const uniqueAchievements = new Map<string, Achievement>()
+        for (const a of achievements) {
+          const key = `${a.machine}|||${a.context}`
+          const existing = uniqueAchievements.get(key)
+          if (!existing || a.rank < existing.rank) {
+            uniqueAchievements.set(key, a)
+          }
+        }
+
+        const sorted = Array.from(uniqueAchievements.values()).sort((a, b) => {
+          if (a.priority !== b.priority) return a.priority - b.priority
+          if (a.rank !== b.rank) return a.rank - b.rank
+          if (a.score !== b.score) return b.score - a.score
+          return a.machine.localeCompare(b.machine)
+        })
+
+        return NextResponse.json({
+          achievements: sorted,
+          count: sorted.length,
+          playerKey
+        })
+      }
+    }
+
+    // --- Fallback: full games scan ---
     // Load score limits from database
     const scoreLimits = await getScoreLimits()
 

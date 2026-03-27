@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, fetchAllRecords } from '@/lib/supabase';
-import { standardizeVenueName, venuesMatch } from '@/lib/venue-mappings';
+
 import { machineMappings } from '@/lib/machine-mappings';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
 
 /**
- * Finds 4 machines that minimize the total unique opponent players who have played them.
+ * Finds 4 machines (from the venue's machine list) that minimize the total unique
+ * opponent players who have played them ANYWHERE in the league (not just at this venue).
  * Uses a greedy algorithm: start with machine with fewest players, then add machines
  * that introduce the fewest NEW unique players.
  */
@@ -96,43 +97,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Fetch all games for the opponent team at this venue
-    const gamesData = await fetchAllRecords(
-      () => supabase
-        .from('games')
-        .select('*')
-        .in('season', seasons)
-        .order('id', { ascending: true })
-    );
-
-    if (!gamesData || gamesData.length === 0) {
-      return NextResponse.json({
-        machines: [],
-        totalUniquePlayers: 0,
-        playersByMachine: {},
-        message: 'No games found'
-      });
-    }
-
-    // Build team name map
-    const teamKeys = new Set<string>();
-    gamesData.forEach((game: any) => {
-      for (let i = 1; i <= 4; i++) {
-        const teamKey = game[`player_${i}_team`];
-        if (teamKey) teamKeys.add(teamKey);
-      }
-    });
-
-    const { data: teamsData } = await supabase
-      .from('teams')
-      .select('team_key, team_name')
-      .in('team_key', Array.from(teamKeys));
-
-    const teamNameMap: Record<string, string> = {};
-    (teamsData || []).forEach((t: any) => {
-      teamNameMap[t.team_key] = t.team_name;
-    });
-
     // Parse venue machines if provided
     const venueMachines = machinesParam
       ? machinesParam.split(',').map(m => {
@@ -142,38 +106,91 @@ export async function GET(request: NextRequest) {
         })
       : null;
 
-    // Build a map of machine -> Set of unique players who played it
+    // Build a map of machine -> Set of unique players who played it ANYWHERE in the league
+    // We only track machines that are at the selected venue, but count players from all venues
     const machinePlayersMap: Map<string, Set<string>> = new Map();
 
-    gamesData.forEach((game: any) => {
-      // Check if game is at this venue
-      const gameVenue = standardizeVenueName(game.venue) || game.venue || '';
-      if (!venuesMatch(gameVenue, venue)) return;
-
-      // Normalize machine name
-      const rawMachine = (game.machine || '').toLowerCase();
-      const mappedMachine = machineMappings[rawMachine];
-      const normalizedMachine = mappedMachine ? mappedMachine.toLowerCase() : rawMachine;
-
-      // Skip if not in venue machines list
-      if (venueMachines && !venueMachines.includes(normalizedMachine)) return;
-
-      // Check each player slot
-      for (let i = 1; i <= 4; i++) {
-        const playerName = game[`player_${i}_name`];
-        const teamKey = game[`player_${i}_team`];
-
-        if (!playerName || teamKey !== opponentTeamKey) continue;
-
-        // Only count active players (roster with swaps applied)
-        if (!activePlayers.has(playerName)) continue;
-
-        if (!machinePlayersMap.has(normalizedMachine)) {
-          machinePlayersMap.set(normalizedMachine, new Set());
-        }
-        machinePlayersMap.get(normalizedMachine)!.add(playerName);
+    // Try cache-first: use cache_player_machine_stats (venue=NULL = all-venues)
+    let usedCache = false;
+    if (venueMachines) {
+      // Build all machine variations to search for
+      const machineSearchKeys: string[] = [];
+      for (const vm of venueMachines) {
+        machineSearchKeys.push(vm);
+        // Also add the raw form in case cache stored it differently
+        const mapped = machineMappings[vm];
+        if (mapped) machineSearchKeys.push(mapped.toLowerCase());
       }
-    });
+
+      const { data: cacheData } = await supabase
+        .from('cache_player_machine_stats' as any)
+        .select('player_name, machine')
+        .eq('team_key', opponentTeamKey)
+        .is('venue', null)  // all-venues = played anywhere
+        .eq('season_start', seasonStart)
+        .eq('season_end', seasonEnd)
+        .in('machine', machineSearchKeys) as { data: any[] | null };
+
+      if (cacheData && cacheData.length > 0) {
+        usedCache = true;
+        for (const row of cacheData) {
+          const normalizedMachine = row.machine.toLowerCase();
+          // Map back to venue machine name
+          const mappedBack = machineMappings[normalizedMachine];
+          const key = mappedBack ? mappedBack.toLowerCase() : normalizedMachine;
+          if (!venueMachines.includes(key) && !venueMachines.includes(normalizedMachine)) continue;
+          const machineKey = venueMachines.includes(key) ? key : normalizedMachine;
+
+          if (!activePlayers.has(row.player_name)) continue;
+
+          if (!machinePlayersMap.has(machineKey)) {
+            machinePlayersMap.set(machineKey, new Set());
+          }
+          machinePlayersMap.get(machineKey)!.add(row.player_name);
+        }
+      }
+    }
+
+    if (!usedCache) {
+      // Fallback: full games scan
+      const gamesData = await fetchAllRecords(
+        () => supabase
+          .from('games')
+          .select('*')
+          .in('season', seasons)
+          .order('id', { ascending: true })
+      );
+
+      if (!gamesData || gamesData.length === 0) {
+        return NextResponse.json({
+          machines: [],
+          totalUniquePlayers: 0,
+          playersByMachine: {},
+          message: 'No games found'
+        });
+      }
+
+      gamesData.forEach((game: any) => {
+        const rawMachine = (game.machine || '').toLowerCase();
+        const mappedMachine = machineMappings[rawMachine];
+        const normalizedMachine = mappedMachine ? mappedMachine.toLowerCase() : rawMachine;
+
+        if (venueMachines && !venueMachines.includes(normalizedMachine)) return;
+
+        for (let i = 1; i <= 4; i++) {
+          const playerName = game[`player_${i}_name`];
+          const teamKey = game[`player_${i}_team`];
+
+          if (!playerName || teamKey !== opponentTeamKey) continue;
+          if (!activePlayers.has(playerName)) continue;
+
+          if (!machinePlayersMap.has(normalizedMachine)) {
+            machinePlayersMap.set(normalizedMachine, new Set());
+          }
+          machinePlayersMap.get(normalizedMachine)!.add(playerName);
+        }
+      });
+    }
 
     // Convert to array for processing
     const machinePlayersList: { machine: string; players: Set<string> }[] = [];

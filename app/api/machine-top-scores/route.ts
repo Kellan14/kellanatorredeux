@@ -43,11 +43,61 @@ export async function GET(request: Request) {
 
     // Get all machine name variations (aliases) for better matching
     const machineVariations = getMachineVariations(machineName)
-    console.log(`[machine-top-scores] Searching for "${machineName}" with variations:`, machineVariations)
+    const lowerVariations = machineVariations.map((v: string) => v.toLowerCase())
+
+    // --- Try cache-first path ---
+    const venueVariations = venue ? getVenueVariations(venue) : []
+    {
+      // Season top scores
+      let seasonQuery = supabase
+        .from('cache_machine_top_scores' as any)
+        .select('*')
+        .in('machine', lowerVariations)
+        .eq('season', currentSeason)
+      if (venue) {
+        seasonQuery = seasonQuery.in('venue', venueVariations)
+      } else {
+        seasonQuery = seasonQuery.is('venue', null)
+      }
+      const { data: seasonCache } = await (seasonQuery.order('rank', { ascending: true }).limit(10)) as { data: any[] | null }
+
+      // All-time top scores
+      let allTimeQuery = supabase
+        .from('cache_machine_top_scores' as any)
+        .select('*')
+        .in('machine', lowerVariations)
+        .is('season', null)
+      if (venue) {
+        allTimeQuery = allTimeQuery.in('venue', venueVariations)
+      } else {
+        allTimeQuery = allTimeQuery.is('venue', null)
+      }
+      const { data: allTimeCache } = await (allTimeQuery.order('rank', { ascending: true }).limit(10)) as { data: any[] | null }
+
+      if ((seasonCache && seasonCache.length > 0) || (allTimeCache && allTimeCache.length > 0)) {
+        const mapRow = (row: any) => ({
+          player: row.player_name,
+          score: Number(row.score),
+          season: row.season || 0,
+          week: row.week || 0,
+          venue: row.venue || ''
+        })
+
+        return NextResponse.json({
+          machine: machineName,
+          topSeasonScores: (seasonCache || []).map(mapRow),
+          topAllTimeScores: (allTimeCache || []).map(mapRow),
+          venue: venue || 'all venues'
+        })
+      }
+    }
+
+    // --- Fallback: full games scan ---
+    console.log(`[machine-top-scores] Cache miss, falling back to full scan for "${machineName}"`)
 
     // Query current season games with pagination using .in() for exact matching
     // getMachineVariations returns all case variations (PULP, pulp, Pulp, etc.)
-    const venueVariations = venue ? getVenueVariations(venue) : []
+    const fallbackVenueVariations = venue ? getVenueVariations(venue) : []
     let seasonGames
     try {
       seasonGames = await fetchAllRecords<any>(() => {
@@ -58,7 +108,7 @@ export async function GET(request: Request) {
           .eq('season', currentSeason)
 
         if (venue) {
-          query = query.in('venue', venueVariations)
+          query = query.in('venue', fallbackVenueVariations)
         }
         return query
       })
@@ -79,7 +129,7 @@ export async function GET(request: Request) {
           .lte('season', currentSeason)
 
         if (venue) {
-          query = query.in('venue', venueVariations)
+          query = query.in('venue', fallbackVenueVariations)
         }
         return query
       })

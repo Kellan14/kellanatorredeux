@@ -24,8 +24,57 @@ export async function GET(request: Request) {
     const isThisSeason = context.includes('this season')
     const currentSeason = 22
 
-    // Get all machine name variations to query for (case-insensitive via ilike)
+    // --- Try cache-first path ---
     const machineVariations = getMachineVariations(machineKey)
+    const lowerVariations = machineVariations.map((v: string) => v.toLowerCase())
+    const isVenueSpecific = venue && !context.includes('League-wide')
+    const venueVariationsForCache = isVenueSpecific ? getVenueVariations(venue) : []
+
+    {
+      // Build cache query
+      let cacheQuery = supabase
+        .from('cache_machine_top_scores' as any)
+        .select('*')
+        .in('machine', lowerVariations)
+
+      if (isThisSeason) {
+        cacheQuery = cacheQuery.eq('season', currentSeason)
+      } else {
+        cacheQuery = cacheQuery.is('season', null) // null = all-time
+      }
+
+      if (isVenueSpecific) {
+        cacheQuery = cacheQuery.in('venue', venueVariationsForCache)
+      } else {
+        cacheQuery = cacheQuery.is('venue', null) // null = league-wide
+      }
+
+      const { data: cachedScores } = await (cacheQuery.order('rank', { ascending: true }).limit(10)) as { data: any[] | null }
+
+      if (cachedScores && cachedScores.length > 0) {
+        const topScores = cachedScores.map((row: any) => ({
+          player: row.player_name,
+          playerKey: row.player_key || `name:${row.player_name}`,
+          score: Number(row.score),
+          venue: row.venue || '',
+          season: row.season || 0,
+          week: row.week || 0,
+          match: row.match_key || '',
+          round: row.round_number || 0,
+          rank: row.rank
+        }))
+
+        return NextResponse.json({
+          machine: machineKey,
+          machineKey,
+          context,
+          topScores
+        })
+      }
+    }
+
+    // --- Fallback: full games scan ---
+    // Get all machine name variations to query for (case-insensitive via ilike)
     const lowerMachineKey = machineKey.toLowerCase()
     console.log(`[machine-top10] Querying for machine "${machineKey}" with variations:`, machineVariations)
     console.log(`[machine-top10] Also using ilike for case-insensitive: ${lowerMachineKey}`)

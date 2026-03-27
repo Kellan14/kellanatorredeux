@@ -445,6 +445,278 @@ export async function GET(request: Request) {
       console.error('[cron/sync-data] Error applying name standardizations:', error)
     }
 
+    // ===== PRE-COMPUTE CACHE TABLES =====
+    console.log('[cron/sync-data] Building cache tables...')
+    let cacheStats = { teamMachine: 0, playerMachine: 0, topScores: 0 }
+
+    try {
+      // Build a player name standardization map from the mappings we just applied
+      const nameStdMap = new Map<string, string>()
+      {
+        const { data: mappings } = await supabase
+          .from('player_name_mappings')
+          .select('alias, canonical_name')
+        if (mappings) {
+          for (const m of mappings) {
+            nameStdMap.set(m.alias, m.canonical_name)
+          }
+        }
+      }
+      const stdName = (name: string | null) => {
+        if (!name) return name
+        return nameStdMap.get(name) || name
+      }
+
+      // Fetch score limits for top-scores filtering
+      let scoreLimitsMap: Record<string, number> = {}
+      try {
+        const { data: slData } = await supabase.from('score_limits').select('machine, max_score')
+        if (slData) {
+          for (const row of slData) {
+            scoreLimitsMap[row.machine.toLowerCase()] = row.max_score
+          }
+        }
+      } catch { /* no score_limits table yet - that's fine */ }
+
+      // Determine season range for cache keys
+      const minSeason = Math.min(...seasons)
+      const maxSeason = Math.max(...seasons)
+
+      // Clear existing cache data for these seasons
+      await supabase.from('cache_team_machine_stats').delete().gte('season_start', minSeason).lte('season_end', maxSeason)
+      await supabase.from('cache_player_machine_stats').delete().gte('season_start', minSeason).lte('season_end', maxSeason)
+      await supabase.from('cache_machine_top_scores').delete().in('season', [...seasons, null as any])
+
+      // ---- Accumulate aggregates from in-memory gamesBatch ----
+
+      // Team-machine stats: key = "teamKey|machine|venue" (venue can be __ALL__)
+      const teamMachineAgg = new Map<string, {
+        team_key: string, machine: string, venue: string | null,
+        totalScore: number, gameCount: number,
+        pickCount: number, pickTotalPoints: number,
+        respCount: number, respTotalPoints: number,
+        totalPoints: number, possiblePoints: number
+      }>()
+
+      // Player-machine stats: key = "playerName|machine|venue"
+      const playerMachineAgg = new Map<string, {
+        player_name: string, player_key: string | null, team_key: string | null,
+        machine: string, venue: string | null,
+        totalScore: number, gameCount: number,
+        totalPoints: number, possiblePoints: number
+      }>()
+
+      // Top scores: key = "machine|venue|season" -> sorted score array
+      const topScoresAgg = new Map<string, Array<{
+        player_name: string, player_key: string | null, team_key: string | null,
+        score: number, match_key: string, week: number, round_number: number
+      }>>()
+
+      for (const game of gamesBatch) {
+        const machine = (game.machine || '').toLowerCase()
+        if (!machine) continue
+        const venue = game.venue || null
+        const playerCount = (game.player_1_key ? 1 : 0) + (game.player_2_key ? 1 : 0) +
+          (game.player_3_key ? 1 : 0) + (game.player_4_key ? 1 : 0)
+        const possiblePts = playerCount === 4 ? 2.5 : 3
+
+        for (let i = 1; i <= 4; i++) {
+          const playerKey = game[`player_${i}_key`]
+          const playerName = stdName(game[`player_${i}_name`])
+          const score = game[`player_${i}_score`]
+          const points = game[`player_${i}_points`] || 0
+          const teamKey = game[`player_${i}_team`]
+          const isPick = game[`player_${i}_is_pick`]
+
+          if (!playerKey || !playerName || !teamKey) continue
+
+          // --- Team-machine aggregation (venue-specific + all-venues) ---
+          for (const v of [venue, null]) {
+            const tmKey = `${teamKey}|${machine}|${v || '__ALL__'}`
+            if (!teamMachineAgg.has(tmKey)) {
+              teamMachineAgg.set(tmKey, {
+                team_key: teamKey, machine, venue: v,
+                totalScore: 0, gameCount: 0,
+                pickCount: 0, pickTotalPoints: 0,
+                respCount: 0, respTotalPoints: 0,
+                totalPoints: 0, possiblePoints: 0
+              })
+            }
+            const tm = teamMachineAgg.get(tmKey)!
+            if (score != null) {
+              tm.totalScore += score
+              tm.gameCount++
+            }
+            tm.totalPoints += points
+            tm.possiblePoints += possiblePts
+            if (isPick) {
+              tm.pickCount++
+              tm.pickTotalPoints += points
+            } else {
+              tm.respCount++
+              tm.respTotalPoints += points
+            }
+          }
+
+          // --- Player-machine aggregation (venue-specific + all-venues) ---
+          for (const v of [venue, null]) {
+            const pmKey = `${playerName}|${machine}|${v || '__ALL__'}`
+            if (!playerMachineAgg.has(pmKey)) {
+              playerMachineAgg.set(pmKey, {
+                player_name: playerName, player_key: playerKey, team_key: teamKey,
+                machine, venue: v,
+                totalScore: 0, gameCount: 0,
+                totalPoints: 0, possiblePoints: 0
+              })
+            }
+            const pm = playerMachineAgg.get(pmKey)!
+            if (score != null) {
+              pm.totalScore += score
+              pm.gameCount++
+            }
+            pm.totalPoints += points
+            pm.possiblePoints += possiblePts
+          }
+
+          // --- Top scores aggregation (per machine × venue × season, plus all-venues and all-time) ---
+          if (score != null && score > 0) {
+            // Check score limit
+            const machineLimit = scoreLimitsMap[machine]
+            if (machineLimit && score > machineLimit) continue
+
+            const scoreEntry = {
+              player_name: playerName, player_key: playerKey, team_key: teamKey,
+              score, match_key: game.match_key, week: game.week, round_number: game.round_number
+            }
+
+            // 4 contexts: venue+season, venue+allTime, allVenues+season, allVenues+allTime
+            for (const v of [venue, null]) {
+              for (const s of [game.season, null]) {
+                const tsKey = `${machine}|${v || '__ALL__'}|${s || '__ALL__'}`
+                if (!topScoresAgg.has(tsKey)) {
+                  topScoresAgg.set(tsKey, [])
+                }
+                const arr = topScoresAgg.get(tsKey)!
+                arr.push(scoreEntry)
+                // Keep only top 10 to save memory
+                if (arr.length > 20) {
+                  arr.sort((a, b) => b.score - a.score)
+                  arr.length = 10
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // ---- Insert cache_team_machine_stats ----
+      const teamMachineRows: any[] = []
+      for (const [, agg] of Array.from(teamMachineAgg.entries())) {
+        if (agg.gameCount === 0) continue
+        teamMachineRows.push({
+          team_key: agg.team_key,
+          machine: agg.machine,
+          venue: agg.venue,
+          season_start: minSeason,
+          season_end: maxSeason,
+          total_score: agg.totalScore,
+          game_count: agg.gameCount,
+          avg_score: Math.round(agg.totalScore / agg.gameCount),
+          pick_count: agg.pickCount,
+          pick_total_points: agg.pickTotalPoints,
+          resp_count: agg.respCount,
+          resp_total_points: agg.respTotalPoints,
+          total_points: agg.totalPoints,
+          possible_points: agg.possiblePoints
+        })
+      }
+      if (teamMachineRows.length > 0) {
+        const batchSz = 500
+        for (let i = 0; i < teamMachineRows.length; i += batchSz) {
+          const batch = teamMachineRows.slice(i, i + batchSz)
+          const { error } = await supabase.from('cache_team_machine_stats').upsert(batch, {
+            onConflict: 'team_key,machine,venue,season_start,season_end'
+          })
+          if (error) console.error('[cron/sync-data] Error inserting cache_team_machine_stats:', error.message)
+        }
+        cacheStats.teamMachine = teamMachineRows.length
+      }
+
+      // ---- Insert cache_player_machine_stats ----
+      const playerMachineRows: any[] = []
+      for (const [, agg] of Array.from(playerMachineAgg.entries())) {
+        if (agg.gameCount === 0) continue
+        playerMachineRows.push({
+          player_name: agg.player_name,
+          player_key: agg.player_key,
+          team_key: agg.team_key,
+          machine: agg.machine,
+          venue: agg.venue,
+          season_start: minSeason,
+          season_end: maxSeason,
+          total_score: agg.totalScore,
+          game_count: agg.gameCount,
+          avg_score: Math.round(agg.totalScore / agg.gameCount),
+          total_points: agg.totalPoints,
+          possible_points: agg.possiblePoints
+        })
+      }
+      if (playerMachineRows.length > 0) {
+        const batchSz = 500
+        for (let i = 0; i < playerMachineRows.length; i += batchSz) {
+          const batch = playerMachineRows.slice(i, i + batchSz)
+          const { error } = await supabase.from('cache_player_machine_stats').upsert(batch, {
+            onConflict: 'player_name,machine,venue,season_start,season_end'
+          })
+          if (error) console.error('[cron/sync-data] Error inserting cache_player_machine_stats:', error.message)
+        }
+        cacheStats.playerMachine = playerMachineRows.length
+      }
+
+      // ---- Insert cache_machine_top_scores ----
+      const topScoreRows: any[] = []
+      for (const [key, scores] of Array.from(topScoresAgg.entries())) {
+        const [machine, venueStr, seasonStr] = key.split('|')
+        const venue = venueStr === '__ALL__' ? null : venueStr
+        const season = seasonStr === '__ALL__' ? null : parseInt(seasonStr)
+
+        scores.sort((a: any, b: any) => b.score - a.score)
+        const top10 = scores.slice(0, 10)
+
+        for (let rank = 0; rank < top10.length; rank++) {
+          const s = top10[rank]
+          topScoreRows.push({
+            machine,
+            venue,
+            season,
+            rank: rank + 1,
+            player_name: s.player_name,
+            player_key: s.player_key,
+            team_key: s.team_key,
+            score: s.score,
+            match_key: s.match_key,
+            week: s.week,
+            round_number: s.round_number
+          })
+        }
+      }
+      if (topScoreRows.length > 0) {
+        const batchSz = 500
+        for (let i = 0; i < topScoreRows.length; i += batchSz) {
+          const batch = topScoreRows.slice(i, i + batchSz)
+          const { error } = await supabase.from('cache_machine_top_scores').upsert(batch, {
+            onConflict: 'machine,venue,season,rank'
+          })
+          if (error) console.error('[cron/sync-data] Error inserting cache_machine_top_scores:', error.message)
+        }
+        cacheStats.topScores = topScoreRows.length
+      }
+
+      console.log(`[cron/sync-data] Cache built: ${cacheStats.teamMachine} team-machine, ${cacheStats.playerMachine} player-machine, ${cacheStats.topScores} top-scores`)
+    } catch (cacheError) {
+      console.error('[cron/sync-data] Cache building error (non-fatal):', cacheError)
+    }
+
     return NextResponse.json({
       success: true,
       seasons,
@@ -452,7 +724,8 @@ export async function GET(request: Request) {
       gamesCreated,
       teamsUpdated: teamsMap.size,
       playersUpdated: playerStatsMap.size,
-      standardizationsApplied
+      standardizationsApplied,
+      cacheStats
     })
 
   } catch (error) {

@@ -150,10 +150,25 @@ function HomePageContent() {
     localStorage.setItem('achievementsCollapsed', String(achievementsCollapsed))
   }, [achievementsCollapsed])
 
-  // Reset swaps when opponent changes
+  // Reset swaps and fetch available seasons when opponent changes
   useEffect(() => {
     setExcludedPlayers(new Set())
     setIncludedPlayers(new Set())
+    if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable') {
+      fetch(`/api/team-seasons?team=${encodeURIComponent(opponent)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.seasons && data.seasons.length > 0) {
+            setAvailableSeasons(data.seasons)
+            // Reset season range to cover all available data
+            setLeastUniqueSeasonStart(data.seasons[0])
+            setLeastUniqueSeasonEnd(data.seasons[data.seasons.length - 1])
+            setTopPicksSeasonStart(data.seasons[0])
+            setTopPicksSeasonEnd(data.seasons[data.seasons.length - 1])
+          }
+        })
+        .catch(err => console.error('Error fetching team seasons:', err))
+    }
   }, [opponent])
 
   // Achievements section

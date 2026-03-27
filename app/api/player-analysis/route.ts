@@ -100,6 +100,88 @@ export async function GET(request: Request) {
       })
     }
 
+    // --- Try cache-first path ---
+    {
+      // Get player stats from cache
+      const allMachineVars = getAllMachineVariations(machinesAtVenue).map(v => v.toLowerCase())
+      let playerCacheQuery = supabase
+        .from('cache_player_machine_stats' as any)
+        .select('*')
+        .eq('player_name', player)
+        .in('machine', allMachineVars)
+        .eq('season_start', seasonStart)
+        .eq('season_end', seasonEnd)
+
+      if (!allVenues) {
+        playerCacheQuery = playerCacheQuery.in('venue', venueVariations)
+      } else {
+        playerCacheQuery = playerCacheQuery.is('venue', null)
+      }
+
+      const { data: playerCache } = await playerCacheQuery as { data: any[] | null }
+
+      // Get venue averages by summing all teams' stats at the venue
+      const { data: venueCache } = await (supabase
+        .from('cache_team_machine_stats' as any)
+        .select('machine, total_score, game_count')
+        .in('machine', allMachineVars)
+        .in('venue', venueVariations)
+        .eq('season_start', seasonStart)
+        .eq('season_end', seasonEnd)) as { data: any[] | null }
+
+      if (playerCache && playerCache.length > 0) {
+        // Build venue averages from cache
+        const venueAvgMap = new Map<string, { total: number; count: number }>()
+        if (venueCache) {
+          for (const row of venueCache) {
+            const existing = venueAvgMap.get(row.machine) || { total: 0, count: 0 }
+            existing.total += Number(row.total_score)
+            existing.count += Number(row.game_count)
+            venueAvgMap.set(row.machine, existing)
+          }
+        }
+
+        // Map cache rows to machine name from machinesAtVenue
+        const machineVarToCanon = new Map<string, string>()
+        for (const m of machinesAtVenue) {
+          for (const v of getAllMachineVariations([m])) {
+            machineVarToCanon.set(v.toLowerCase(), m)
+          }
+        }
+
+        let totalGames = 0
+        const machinePerformance = playerCache.map((row: any) => {
+          const canonicalMachine = machineVarToCanon.get(row.machine) || row.machine
+          const avgScore = row.game_count > 0 ? Number(row.total_score) / Number(row.game_count) : 0
+          const venueEntry = venueAvgMap.get(row.machine)
+          const venueAvg = venueEntry && venueEntry.count > 0 ? venueEntry.total / venueEntry.count : 0
+          const pctOfVenue = venueAvg > 0 ? (avgScore / venueAvg) * 100 : 0
+          totalGames += Number(row.game_count)
+
+          return {
+            machine: canonicalMachine,
+            avgScore,
+            avgPoints: row.possible_points && row.game_count > 0 ? Number(row.total_points) / Number(row.game_count) : 0,
+            timesPlayed: Number(row.game_count),
+            bestScore: 0, // Not stored in cache
+            pctOfVenue,
+            venuesPlayed: 0,
+            bestVenue: ''
+          }
+        }).sort((a: any, b: any) => b.pctOfVenue - a.pctOfVenue)
+
+        return NextResponse.json({
+          player,
+          totalGames,
+          uniqueMachines: machinePerformance.length,
+          venuesPlayed: 0, // Not available from cache
+          machinePerformance,
+          allVenues
+        })
+      }
+    }
+
+    // --- Fallback: full games scan ---
     // Step 2: Get player's games (venue-specific or all venues)
     let playerQuery = supabase
       .from('games')
