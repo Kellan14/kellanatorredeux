@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 export interface VenueMachineList {
   included?: string[]
@@ -14,8 +17,9 @@ export interface VenueMachineLists {
 
 export async function GET() {
   try {
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
     // Fetch all venue machine lists from Supabase
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('venue_machine_lists')
       .select('venue_name, included, excluded')
 
@@ -54,8 +58,9 @@ export async function POST(request: Request) {
       )
     }
 
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
     // Upsert (insert or update) the venue machine list
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('venue_machine_lists')
       .upsert({
         venue_name: venueName,
@@ -76,7 +81,7 @@ export async function POST(request: Request) {
     }
 
     // Fetch all lists to return
-    const { data: allLists } = await (supabase as any)
+    const { data: allLists } = await supabase
       .from('venue_machine_lists')
       .select('venue_name, included, excluded')
 
