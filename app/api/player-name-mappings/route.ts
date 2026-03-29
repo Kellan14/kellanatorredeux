@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 // GET - Fetch all player name mappings
 export async function GET() {
   try {
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
     const { data, error } = await supabase
       .from('player_name_mappings')
       .select('*')
@@ -34,6 +38,7 @@ export async function POST(request: Request) {
       )
     }
 
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
     const { data, error } = await (supabase
       .from('player_name_mappings') as any)
       .upsert({ alias, canonical_name }, { onConflict: 'alias' })
@@ -60,6 +65,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'alias is required' }, { status: 400 })
     }
 
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
     const { error } = await supabase
       .from('player_name_mappings')
       .delete()

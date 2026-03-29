@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 3600
@@ -124,7 +128,8 @@ export async function GET(request: Request) {
 
     // Cache first season if not cached yet or if it changed
     if (computedFirstSeason !== null && computedFirstSeason !== firstSeason) {
-      await (supabase as any)
+      const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+      await (supabaseAdmin as any)
         .from('player_first_season')
         .upsert(
           {

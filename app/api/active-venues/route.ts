@@ -3,8 +3,11 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { fetchMNPText } from '@/lib/fetch-mnp-text'
 import { fetchMNPData } from '@/lib/fetch-mnp-data'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 /**
  * Parse venues.csv into a set of venue keys.
@@ -42,6 +45,7 @@ export async function GET() {
     const venuesObj = await fetchMNPData('venues.json')
 
     // 3. Fetch overrides from Supabase (stored by venue name from venues.json)
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
     const { data: overrides } = await supabase
       .from('active_venue_overrides')
       .select('venue_name, action') as { data: Array<{ venue_name: string; action: string }> | null }
@@ -96,6 +100,7 @@ export async function POST(request: Request) {
       )
     }
 
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
     // Upsert the override
     const { error } = await (supabase
       .from('active_venue_overrides') as any)
@@ -131,6 +136,7 @@ export async function DELETE(request: Request) {
       )
     }
 
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
     // Remove the override entirely (revert to CSV default)
     const { error } = await (supabase
       .from('active_venue_overrides') as any)
