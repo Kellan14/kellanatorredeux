@@ -22,6 +22,19 @@ export async function GET(request: NextRequest) {
     const twcTeam = searchParams.get('twcTeam') || 'The Wrecking Crew';
     const seasonStart = parseInt(searchParams.get('seasonStart') || '1');
     const seasonEnd = parseInt(searchParams.get('seasonEnd') || '999');
+    const scoreLimitsParam = searchParams.get('scoreLimits');
+
+    // Parse score limits
+    let scoreLimit: number | undefined;
+    if (scoreLimitsParam) {
+      try {
+        const limits: Record<string, number> = JSON.parse(scoreLimitsParam);
+        const machineLower = (machine || '').toLowerCase();
+        scoreLimit = limits[machineLower];
+      } catch (e) {
+        // ignore invalid JSON
+      }
+    }
 
     console.log('[cell-details] Request params:', {
       machine,
@@ -178,6 +191,9 @@ export async function GET(request: NextRequest) {
         // Filter based on column type
         if (filterPicks && !isPick) continue;
         if (filterResponses && isPick) continue;
+
+        // Filter by score limit
+        if (scoreLimit && score > scoreLimit) continue;
 
         // Find opponent score in same round
         let opponent = '';

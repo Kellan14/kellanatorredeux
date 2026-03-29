@@ -522,7 +522,8 @@ export default function StatsPage() {
         `&team=${encodeURIComponent(selectedOpponent)}` +
         `&twcTeam=${encodeURIComponent('The Wrecking Crew')}` +
         `&seasonStart=${seasonRange[0]}` +
-        `&seasonEnd=${seasonRange[1]}`
+        `&seasonEnd=${seasonRange[1]}` +
+        `&scoreLimits=${encodeURIComponent(JSON.stringify(scoreLimits))}`
       )
 
       if (response.ok) {
