@@ -703,7 +703,7 @@ export default function MachinePage() {
                   <div key={i} className="flex items-center justify-between p-3 border rounded">
                     <div>
                       <div className="font-semibold">#{i + 1} {s.player}</div>
-                      <div className="text-sm text-muted-foreground">{s.venue} • Season {s.season}</div>
+                      <div className="text-sm text-muted-foreground">{s.venue}{s.season ? ` • Season ${s.season}` : ''}</div>
                     </div>
                     <div className="text-xl font-bold">{s.score.toLocaleString()}</div>
                   </div>
