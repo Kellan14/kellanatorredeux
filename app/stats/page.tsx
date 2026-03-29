@@ -229,13 +229,13 @@ export default function StatsPage() {
   }
 
   const addScoreLimit = (machine: string, limit: number) => {
-    const newLimits = { ...scoreLimits, [machine]: limit }
+    const newLimits = { ...scoreLimits, [machine.toLowerCase()]: limit }
     saveScoreLimits(newLimits)
   }
 
   const deleteScoreLimit = (machine: string) => {
     const newLimits = { ...scoreLimits }
-    delete newLimits[machine]
+    delete newLimits[machine.toLowerCase()]
     saveScoreLimits(newLimits)
   }
 

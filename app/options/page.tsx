@@ -207,13 +207,13 @@ export default function OptionsPage() {
   }
 
   const addScoreLimit = (machine: string, limit: number) => {
-    const newLimits = { ...scoreLimits, [machine]: limit }
+    const newLimits = { ...scoreLimits, [machine.toLowerCase()]: limit }
     saveScoreLimits(newLimits)
   }
 
   const deleteScoreLimit = (machine: string) => {
     const newLimits = { ...scoreLimits }
-    delete newLimits[machine]
+    delete newLimits[machine.toLowerCase()]
     saveScoreLimits(newLimits)
   }
 
@@ -417,7 +417,7 @@ export default function OptionsPage() {
                     </SelectTrigger>
                     <SelectContent>
                       {allMachines
-                        .filter(machine => !scoreLimits[machine])
+                        .filter(machine => !scoreLimits[machine.toLowerCase()])
                         .map((machine) => (
                           <SelectItem key={machine} value={machine}>
                             {machine}
