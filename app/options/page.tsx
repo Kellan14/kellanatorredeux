@@ -136,11 +136,24 @@ export default function OptionsPage() {
   const loadVenues = async () => {
     setLoadingVenues(true)
     try {
-      const response = await fetch('/api/venues')
-      const data = await response.json()
-      setVenues(data.venues || [])
-      if (data.venues && data.venues.length > 0) {
-        setSelectedVenue(data.venues[0].name)
+      const [venuesResponse, matchResponse] = await Promise.all([
+        fetch('/api/venues'),
+        fetch('/api/latest-twc-match')
+      ])
+      const [venuesData, matchData] = await Promise.all([
+        venuesResponse.json(),
+        matchResponse.json().catch(() => ({}))
+      ])
+      const venueList = venuesData.venues || []
+      setVenues(venueList)
+
+      // Default to next match venue, fall back to first venue
+      const nextMatchVenue = matchData.venue
+      const matchVenueExists = nextMatchVenue && venueList.some((v: Venue) => v.name === nextMatchVenue)
+      if (matchVenueExists) {
+        setSelectedVenue(nextMatchVenue)
+      } else if (venueList.length > 0) {
+        setSelectedVenue(venueList[0].name)
       }
     } catch (error) {
       console.error('Error loading venues:', error)
@@ -504,6 +517,8 @@ export default function OptionsPage() {
         open={venueListManagerOpen}
         onOpenChange={setVenueListManagerOpen}
         venueName={selectedVenue}
+        onVenueChange={setSelectedVenue}
+        venues={venues}
         currentMachines={allMachines}
       />
 

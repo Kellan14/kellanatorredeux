@@ -7,11 +7,20 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { X, Plus, Save, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface VenueMachineListManagerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   venueName: string
+  onVenueChange?: (venue: string) => void
+  venues?: Array<{ key: string; name: string }>
   currentMachines: string[] // The machines currently showing in stats (base + overrides)
 }
 
@@ -19,6 +28,8 @@ export function VenueMachineListManager({
   open,
   onOpenChange,
   venueName,
+  onVenueChange,
+  venues,
   currentMachines,
 }: VenueMachineListManagerProps) {
   const [included, setIncluded] = useState<string[]>([])
@@ -141,10 +152,26 @@ export function VenueMachineListManager({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh]">
         <DialogHeader>
-          <DialogTitle>Manage Machine List: {venueName}</DialogTitle>
+          <DialogTitle>Manage Machine List</DialogTitle>
           <DialogDescription>
             Add or remove machines from this venue's machine list. Changes will affect statistics calculations.
           </DialogDescription>
+          {venues && venues.length > 0 && onVenueChange ? (
+            <Select value={venueName} onValueChange={onVenueChange}>
+              <SelectTrigger className="w-full md:w-72 mt-2">
+                <SelectValue placeholder="Select venue" />
+              </SelectTrigger>
+              <SelectContent>
+                {venues.map((v) => (
+                  <SelectItem key={v.key} value={v.name}>
+                    {v.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <p className="text-sm font-medium mt-2">{venueName}</p>
+          )}
         </DialogHeader>
 
         <div className="space-y-6">
