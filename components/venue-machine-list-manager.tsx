@@ -254,6 +254,24 @@ export function VenueMachineListManager({
             <p className="text-xs text-muted-foreground">
               These machines are removed from the venue's list even if they appear in recent games.
             </p>
+            <Select
+              value=""
+              onValueChange={(key) => handleAddToExcluded(key)}
+            >
+              <SelectTrigger className="w-full md:w-72">
+                <SelectValue placeholder="Select machine to exclude..." />
+              </SelectTrigger>
+              <SelectContent>
+                {currentMachines
+                  .filter((m) => !excluded.includes(m))
+                  .sort((a, b) => getMachineName(a).localeCompare(getMachineName(b)))
+                  .map((machineKey) => (
+                    <SelectItem key={machineKey} value={machineKey}>
+                      {getMachineName(machineKey)} ({machineKey})
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
             <div className="flex flex-wrap gap-2 min-h-[60px] border rounded-md p-3 bg-muted/30">
               {excluded.length === 0 ? (
                 <span className="text-sm text-muted-foreground">No machines manually excluded</span>

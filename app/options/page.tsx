@@ -30,6 +30,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js'
 interface Venue {
   key: string
   name: string
+  machines?: string[]
 }
 
 export default function OptionsPage() {
@@ -519,7 +520,7 @@ export default function OptionsPage() {
         venueName={selectedVenue}
         onVenueChange={setSelectedVenue}
         venues={venues}
-        currentMachines={allMachines}
+        currentMachines={venues.find(v => v.name === selectedVenue)?.machines || []}
       />
 
       {/* Machine Mapping Manager Dialog */}
