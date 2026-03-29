@@ -131,6 +131,7 @@ export function VenueMachineListManager({
       })
 
       if (response.ok) {
+        onOpenChange(false)
         // Reload the page to refresh stats with new machine list
         window.location.reload()
       } else {
