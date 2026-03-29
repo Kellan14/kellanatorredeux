@@ -164,30 +164,20 @@ export default function StatsPage() {
       }
     }
 
-    // Load default score limits from JSON file
-    const loadDefaultLimits = async () => {
+    // Load score limits from database
+    const loadScoreLimits = async () => {
       try {
-        const response = await fetch('/score_limits.json')
-        const defaultLimits = await response.json()
-
-        const savedLimits = localStorage.getItem('machineScoreLimits')
-        if (savedLimits) {
-          try {
-            const userLimits = JSON.parse(savedLimits)
-            // Merge default limits with user limits (user limits override)
-            setScoreLimits({ ...defaultLimits, ...userLimits })
-          } catch (e) {
-            setScoreLimits(defaultLimits)
-          }
-        } else {
-          setScoreLimits(defaultLimits)
+        const response = await fetch('/api/score-limits')
+        if (response.ok) {
+          const data = await response.json()
+          setScoreLimits(data.limits || {})
         }
       } catch (e) {
         console.error('Failed to load score limits')
       }
     }
 
-    loadDefaultLimits()
+    loadScoreLimits()
   }, [])
 
   // Save column config
@@ -225,9 +215,17 @@ export default function StatsPage() {
   }
 
   // Score limits management
-  const saveScoreLimits = (newLimits: Record<string, number>) => {
+  const saveScoreLimits = async (newLimits: Record<string, number>) => {
     setScoreLimits(newLimits)
-    localStorage.setItem('machineScoreLimits', JSON.stringify(newLimits))
+    try {
+      await fetch('/api/score-limits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limits: newLimits })
+      })
+    } catch (error) {
+      console.error('Error saving score limits:', error)
+    }
   }
 
   const addScoreLimit = (machine: string, limit: number) => {
