@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { machineMappings } from '@/lib/machine-mappings'
 
 // Vercel Cron job to sync MNP data from GitHub
 // Runs every Tuesday at 2am UTC
@@ -513,8 +514,10 @@ export async function GET(request: Request) {
       }>>()
 
       for (const game of gamesBatch) {
-        const machine = (game.machine || '').toLowerCase()
-        if (!machine) continue
+        const rawMachine = (game.machine || '').toLowerCase()
+        if (!rawMachine) continue
+        // Standardize machine name so aliases (e.g., "king kong" and "kong") use one key
+        const machine = (machineMappings[rawMachine] || rawMachine).toLowerCase()
         const venue = game.venue || null
         const playerCount = (game.player_1_key ? 1 : 0) + (game.player_2_key ? 1 : 0) +
           (game.player_3_key ? 1 : 0) + (game.player_4_key ? 1 : 0)

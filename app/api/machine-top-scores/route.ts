@@ -48,7 +48,8 @@ export async function GET(request: Request) {
     // --- Try cache-first path ---
     const venueVariations = venue ? getVenueVariations(venue) : []
     {
-      // Season top scores
+      // Season top scores — fetch extra rows since multiple machine name variants
+      // may have separate cache entries with overlapping scores
       let seasonQuery = supabase
         .from('cache_machine_top_scores' as any)
         .select('*')
@@ -59,7 +60,7 @@ export async function GET(request: Request) {
       } else {
         seasonQuery = seasonQuery.is('venue', null)
       }
-      const { data: seasonCache } = await (seasonQuery.order('rank', { ascending: true }).limit(10)) as { data: any[] | null }
+      const { data: seasonCache } = await (seasonQuery.order('score', { ascending: false }).limit(50)) as { data: any[] | null }
 
       // All-time top scores
       let allTimeQuery = supabase
@@ -72,7 +73,7 @@ export async function GET(request: Request) {
       } else {
         allTimeQuery = allTimeQuery.is('venue', null)
       }
-      const { data: allTimeCache } = await (allTimeQuery.order('rank', { ascending: true }).limit(10)) as { data: any[] | null }
+      const { data: allTimeCache } = await (allTimeQuery.order('score', { ascending: false }).limit(50)) as { data: any[] | null }
 
       if ((seasonCache && seasonCache.length > 0) || (allTimeCache && allTimeCache.length > 0)) {
         const mapRow = (row: any) => ({
@@ -83,10 +84,21 @@ export async function GET(request: Request) {
           venue: row.venue || ''
         })
 
+        // Deduplicate: same player + score + week = same game result
+        const dedup = (rows: any[]) => {
+          const seen = new Set<string>()
+          return rows.filter(row => {
+            const key = `${row.player_name}|${row.score}|${row.week}`
+            if (seen.has(key)) return false
+            seen.add(key)
+            return true
+          }).slice(0, 10)
+        }
+
         return NextResponse.json({
           machine: machineName,
-          topSeasonScores: (seasonCache || []).map(mapRow),
-          topAllTimeScores: (allTimeCache || []).map(mapRow),
+          topSeasonScores: dedup(seasonCache || []).map(mapRow),
+          topAllTimeScores: dedup(allTimeCache || []).map(mapRow),
           venue: venue || 'all venues'
         })
       }
