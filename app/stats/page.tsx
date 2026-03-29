@@ -838,7 +838,7 @@ export default function StatsPage() {
                           </SelectTrigger>
                           <SelectContent>
                             {machineStats
-                              .filter(stat => !scoreLimits[stat.machine])
+                              .filter(stat => !scoreLimits[stat.machine.toLowerCase()])
                               .map((stat) => (
                                 <SelectItem key={stat.machine} value={stat.machine}>
                                   {stat.machine}
