@@ -61,15 +61,16 @@ export async function GET() {
     }
 
     // 4. Filter venues.json by CSV keys, then apply overrides
-    const venues = Object.values(venuesObj)
+    const venueArray = Object.values(venuesObj)
       .filter((v: any) => v.name !== 'No Available Venue')
-      .map((v: any) => ({
-        key: v.key,
-        name: v.name,
-        address: v.address || '',
-        neighborhood: v.neighborhood || '',
-        machines: applyVenueMachineListOverrides(v.name, v.machines || [])
-      }))
+    const venuesWithMachines = await Promise.all(venueArray.map(async (v: any) => ({
+      key: v.key,
+      name: v.name,
+      address: v.address || '',
+      neighborhood: v.neighborhood || '',
+      machines: await applyVenueMachineListOverrides(v.name, v.machines || [])
+    })))
+    const venues = venuesWithMachines
       .filter((v: any) => {
         // Removed by user override
         if (removedVenues.has(v.name)) return false

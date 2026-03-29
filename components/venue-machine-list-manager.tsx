@@ -130,15 +130,18 @@ export function VenueMachineListManager({
         }),
       })
 
-      if (response.ok) {
+      const result = await response.json()
+
+      if (response.ok && result.success) {
         onOpenChange(false)
-        // Reload the page to refresh stats with new machine list
         window.location.reload()
       } else {
-        console.error('Failed to save venue machine lists')
+        console.error('Failed to save venue machine lists:', result)
+        alert(`Failed to save: ${result.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Error saving venue machine lists:', error)
+      alert('Error saving changes. Check console for details.')
     } finally {
       setSaving(false)
     }

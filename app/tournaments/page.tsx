@@ -43,17 +43,16 @@ export default function TournamentsPage() {
   // Recalculate stats when filters change
   useEffect(() => {
     if (processedData.length > 0) {
-      const stats = calculateMachineStats(
+      calculateMachineStats(
         processedData,
         selectedTeam,
         selectedVenue,
         selectedSeasons,
-        { 
+        {
           includeVenueSpecific: true,
           includeTWCStats: selectedTeam !== 'The Wrecking Crew'
         }
-      )
-      setMachineStats(stats)
+      ).then(stats => setMachineStats(stats))
     }
   }, [processedData, selectedTeam, selectedVenue, selectedSeasons])
 

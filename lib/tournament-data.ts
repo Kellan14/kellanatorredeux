@@ -298,7 +298,7 @@ export function processMatchData(matches: Match[]): ProcessedScore[] {
 }
 
 // Calculate machine statistics for a team at a venue
-export function calculateMachineStats(
+export async function calculateMachineStats(
   data: ProcessedScore[],
   teamName: string,
   venueName: string,
@@ -311,7 +311,7 @@ export function calculateMachineStats(
     teamVenueSpecific?: boolean;
     twcVenueSpecific?: boolean;
   } = { includeVenueSpecific: true }
-): MachineStats[] {
+): Promise<MachineStats[]> {
 
   // Filter data by seasons
   const seasonData = data.filter(d =>
@@ -343,7 +343,7 @@ export function calculateMachineStats(
   let machines = Array.from(recentMachines).sort();
 
   // Apply venue machine list overrides (included/excluded machines)
-  machines = applyVenueMachineListOverrides(venueName, machines);
+  machines = await applyVenueMachineListOverrides(venueName, machines);
   
   const stats: MachineStats[] = [];
   

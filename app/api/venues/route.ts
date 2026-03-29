@@ -15,16 +15,16 @@ export async function GET(request: Request) {
     const venuesObj = await fetchMNPData('venues.json');
 
     // Convert to array and sort by name
-    let venues = Object.values(venuesObj)
+    const venueArray = Object.values(venuesObj)
       .filter((v: any) => v.name !== 'No Available Venue') // Filter out NAV
-      .map((v: any) => ({
-        key: v.key,
-        name: v.name,
-        address: v.address || '',
-        neighborhood: v.neighborhood || '',
-        machines: applyVenueMachineListOverrides(v.name, v.machines || [])
-      }))
-      .sort((a: any, b: any) => a.name.localeCompare(b.name));
+    let venues = await Promise.all(venueArray.map(async (v: any) => ({
+      key: v.key,
+      name: v.name,
+      address: v.address || '',
+      neighborhood: v.neighborhood || '',
+      machines: await applyVenueMachineListOverrides(v.name, v.machines || [])
+    })))
+    venues.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
     // If season is specified, filter venues to only those with scores in that season
     if (season) {
