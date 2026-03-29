@@ -76,13 +76,21 @@ export async function GET(request: Request) {
       const { data: allTimeCache } = await (allTimeQuery.order('score', { ascending: false }).limit(50)) as { data: any[] | null }
 
       if ((seasonCache && seasonCache.length > 0) || (allTimeCache && allTimeCache.length > 0)) {
-        const mapRow = (row: any) => ({
-          player: row.player_name,
-          score: Number(row.score),
-          season: row.season || 0,
-          week: row.week || 0,
-          venue: row.venue || ''
-        })
+        const mapRow = (row: any) => {
+          // For all-time rows, season is null — extract from match_key (e.g., "mnp-23-1-TWC-SHK")
+          let season = row.season
+          if (!season && row.match_key) {
+            const match = row.match_key.match(/^mnp-(\d+)-/)
+            if (match) season = parseInt(match[1])
+          }
+          return {
+            player: row.player_name,
+            score: Number(row.score),
+            season: season || 0,
+            week: row.week || 0,
+            venue: row.venue || ''
+          }
+        }
 
         // Deduplicate: same player + score + week = same game result
         const dedup = (rows: any[]) => {
