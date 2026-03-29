@@ -42,17 +42,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Get the public URL
+    // Get the public URL with cache-busting parameter
     const { data: urlData } = supabase.storage
       .from('backglass-images')
       .getPublicUrl(path)
+
+    const cacheBustedUrl = `${urlData.publicUrl}?t=${Date.now()}`
 
     // Record in database (using service role bypasses RLS)
     const { error: dbError } = await supabase.from('custom_backglass_images').upsert({
       machine_key: machineKey,
       image_type: imageType,
       storage_path: path,
-      public_url: urlData.publicUrl,
+      public_url: cacheBustedUrl,
       updated_at: new Date().toISOString()
     }, {
       onConflict: 'machine_key,image_type'
@@ -66,7 +68,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       path: data.path,
-      publicUrl: urlData.publicUrl
+      publicUrl: cacheBustedUrl
     })
   } catch (error) {
     console.error('Error uploading image:', error)
@@ -87,7 +89,15 @@ export async function GET() {
       return NextResponse.json({ images: [] })
     }
 
-    return NextResponse.json({ images: data || [] })
+    // Add cache-busting to URLs using updated_at timestamp
+    const images = (data || []).map((img: any) => ({
+      ...img,
+      public_url: img.public_url
+        ? `${img.public_url.split('?')[0]}?t=${new Date(img.updated_at).getTime()}`
+        : img.public_url
+    }))
+
+    return NextResponse.json({ images })
   } catch (error) {
     return NextResponse.json({ images: [] })
   }
