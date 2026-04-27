@@ -23,6 +23,10 @@ export async function GET(request: NextRequest) {
     const seasonStart = parseInt(searchParams.get('seasonStart') || '1');
     const seasonEnd = parseInt(searchParams.get('seasonEnd') || '999');
     const scoreLimitsParam = searchParams.get('scoreLimits');
+    const twcPlayersParam = searchParams.get('twcPlayers');
+    const twcPlayersFilter = twcPlayersParam
+      ? new Set(twcPlayersParam.split(',').map(p => p.trim()).filter(Boolean))
+      : null;
 
     // Parse score limits
     let scoreLimit: number | undefined;
@@ -181,6 +185,12 @@ export async function GET(request: NextRequest) {
 
         // Only include scores from the target team
         if (!targetTeam || teamName.toLowerCase() !== targetTeam.toLowerCase()) {
+          continue;
+        }
+
+        // Match the same TWC roster filter the parent stats call applied,
+        // otherwise the drilldown can show players excluded from POPS.
+        if (isTWCColumn && twcPlayersFilter && !twcPlayersFilter.has(playerName)) {
           continue;
         }
 

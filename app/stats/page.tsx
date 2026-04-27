@@ -514,17 +514,29 @@ export default function StatsPage() {
         seasons.push(s)
       }
 
-      const response = await fetch(
-        `/api/cell-details?` +
-        `machine=${encodeURIComponent(machine)}` +
-        `&column=${encodeURIComponent(columnLabel)}` +
-        `&venue=${encodeURIComponent(selectedVenue)}` +
-        `&team=${encodeURIComponent(selectedOpponent)}` +
-        `&twcTeam=${encodeURIComponent('The Wrecking Crew')}` +
-        `&seasonStart=${seasonRange[0]}` +
-        `&seasonEnd=${seasonRange[1]}` +
-        `&scoreLimits=${encodeURIComponent(JSON.stringify(scoreLimits))}`
-      )
+      // Match the same filters the parent stats call applied, otherwise the
+      // drilldown can show rows that were excluded from the cell's value.
+      const selectedTwcPlayersForDrill = Object.keys(availablePlayers).filter(p => availablePlayers[p])
+      const cellParams = new URLSearchParams({
+        machine,
+        column: columnLabel,
+        venue: selectedVenue,
+        team: selectedOpponent,
+        twcTeam: 'The Wrecking Crew',
+        seasonStart: String(seasonRange[0]),
+        seasonEnd: String(seasonRange[1]),
+        scoreLimits: JSON.stringify(scoreLimits),
+        teamVenueSpecific: teamVenueSpecific.toString(),
+        twcVenueSpecific: twcVenueSpecific.toString(),
+      })
+      if (
+        selectedTwcPlayersForDrill.length > 0 &&
+        selectedTwcPlayersForDrill.length < Object.keys(availablePlayers).length
+      ) {
+        cellParams.set('twcPlayers', selectedTwcPlayersForDrill.join(','))
+      }
+
+      const response = await fetch(`/api/cell-details?${cellParams}`)
 
       if (response.ok) {
         const data = await response.json()

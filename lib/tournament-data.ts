@@ -196,12 +196,15 @@ export function computePops(
   if (rows.length === 0) return 0;
   const games = new Map<string, { round: number; teamPoints: number }>();
   for (const r of rows) {
-    const key = `${r.match}-${r.round}`;
+    // Supabase returns DECIMAL columns as strings; coerce so += doesn't concat.
+    const points = Number(r.points) || 0;
+    const round = Number(r.round);
+    const key = `${r.match}-${round}`;
     const existing = games.get(key);
     if (existing) {
-      existing.teamPoints += r.points;
+      existing.teamPoints += points;
     } else {
-      games.set(key, { round: r.round, teamPoints: r.points });
+      games.set(key, { round, teamPoints: points });
     }
   }
   let total = 0;
