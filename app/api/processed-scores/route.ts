@@ -94,9 +94,10 @@ export async function GET(request: NextRequest) {
 
         if (!playerKey || score === null || score === undefined) continue;
 
-        // Calculate is_pick: home team picks odd rounds, away team picks even rounds
+        // Per MNP rules: away team picks rounds 1 (doubles) and 3 (singles);
+        // home team picks rounds 2 (singles) and 4 (doubles).
         const isHomeTeam = teamKey === game.home_team;
-        const isPick = game.round_number % 2 === 1 ? isHomeTeam : !isHomeTeam;
+        const isPick = game.round_number % 2 === 1 ? !isHomeTeam : isHomeTeam;
 
         processedScores.push({
           season: game.season || 0,

@@ -180,6 +180,44 @@ export interface MachineStats {
   popsComparison?: string | number; // TWC POPS - Team POPS, can be "+", "-", "N/A" or number
 }
 
+/**
+ * Compute MNP POPS (Percentage Of Points Scored) for a set of player-game rows.
+ *
+ * MNP awards 5 team points per doubles game (rounds 1 & 4) and 3 per singles
+ * game (rounds 2 & 3). Each game appears as 1 row per participating teammate
+ * (1 row in singles, 2 in doubles), so we group rows by (match, round) to
+ * recover team-level points and the correct round-based denominator.
+ *
+ * Rows with rounds outside 1–4 (e.g. manual scores with round 0) are ignored.
+ */
+export function computePops(
+  rows: Array<{ match: string; round: number; points: number }>
+): number {
+  if (rows.length === 0) return 0;
+  const games = new Map<string, { round: number; teamPoints: number }>();
+  for (const r of rows) {
+    const key = `${r.match}-${r.round}`;
+    const existing = games.get(key);
+    if (existing) {
+      existing.teamPoints += r.points;
+    } else {
+      games.set(key, { round: r.round, teamPoints: r.points });
+    }
+  }
+  let total = 0;
+  let max = 0;
+  for (const g of Array.from(games.values())) {
+    if (g.round === 1 || g.round === 4) {
+      total += g.teamPoints;
+      max += 5;
+    } else if (g.round === 2 || g.round === 3) {
+      total += g.teamPoints;
+      max += 3;
+    }
+  }
+  return max > 0 ? (total / max) * 100 : 0;
+}
+
 // Helper function to get player name from lineup by player key
 function getPlayerName(match: MNPMatch, playerKey: string): string {
   // Search in both home and away lineups
@@ -228,10 +266,11 @@ export function processMNPMatchData(matches: MNPMatch[]): ProcessedScore[] {
           const playerName = getPlayerName(match, playerKey);
           const playerTeam = getPlayerTeam(match, playerKey);
 
-          // Determine if this is a pick round (home picks odd rounds)
+          // Per MNP rules: away team picks rounds 1 (doubles) and 3 (singles);
+          // home team picks rounds 2 (singles) and 4 (doubles).
           const isPick = round.n % 2 === 1
-            ? playerTeam.key === match.home.key
-            : playerTeam.key === match.away.key;
+            ? playerTeam.key === match.away.key
+            : playerTeam.key === match.home.key;
 
           processedScores.push({
             season: match.season || 0,
@@ -286,7 +325,7 @@ export function processMatchData(matches: Match[]): ProcessedScore[] {
             score: player.score,
             points: player.points,
             opponent_score: opponent?.score,
-            is_pick: round.round % 2 === 1 ? isHomeTeam : !isHomeTeam, // Home picks odd rounds
+            is_pick: round.round % 2 === 1 ? !isHomeTeam : isHomeTeam, // Away picks rounds 1, 3; home picks rounds 2, 4
             is_roster_player: true // This would be determined by roster data
           });
         });
@@ -390,26 +429,11 @@ export async function calculateMachineStats(
     );
     const timesPicked = pickedGames.size;
     
-    // Calculate POPS (Percentage of Points Scored)
-    const teamPoints = machineTeamData.reduce((sum, d) => sum + d.points, 0);
-    const maxPoints = machineTeamData.length * 10; // Assuming max 10 points per game
-    const pops = maxPoints > 0 ? (teamPoints / maxPoints) * 100 : 0;
-    
-    // POPS when picking
-    const pickingData = machineTeamData.filter(d => d.is_pick);
-    const pickingPoints = pickingData.reduce((sum, d) => sum + d.points, 0);
-    const maxPickingPoints = pickingData.length * 10;
-    const popsPicking = maxPickingPoints > 0 
-      ? (pickingPoints / maxPickingPoints) * 100 
-      : 0;
-    
-    // POPS when responding
-    const respondingData = machineTeamData.filter(d => !d.is_pick);
-    const respondingPoints = respondingData.reduce((sum, d) => sum + d.points, 0);
-    const maxRespondingPoints = respondingData.length * 10;
-    const popsResponding = maxRespondingPoints > 0
-      ? (respondingPoints / maxRespondingPoints) * 100
-      : 0;
+    // POPS uses 5 pts/game for doubles (R1, R4) and 3 for singles (R2, R3),
+    // summed over unique games — see computePops().
+    const pops = computePops(machineTeamData);
+    const popsPicking = computePops(machineTeamData.filter(d => d.is_pick));
+    const popsResponding = computePops(machineTeamData.filter(d => !d.is_pick));
     
     const percentOfVenueAvg = venueAverage > 0
       ? (teamAverage / venueAverage) * 100
@@ -466,28 +490,9 @@ export async function calculateMachineStats(
       );
       machineStats.twcTimesPicked = twcPickedGames.size;
       
-      // TWC POPS calculations
-      const twcPoints = twcData.reduce((sum, d) => sum + d.points, 0);
-      const maxTwcPoints = twcData.length * 10;
-      machineStats.twcPops = maxTwcPoints > 0 
-        ? (twcPoints / maxTwcPoints) * 100 
-        : 0;
-      
-      // TWC POPS Picking
-      const twcPickingData = twcData.filter(d => d.is_pick);
-      const twcPickingPoints = twcPickingData.reduce((sum, d) => sum + d.points, 0);
-      const maxTwcPickingPoints = twcPickingData.length * 10;
-      machineStats.twcPopsPicking = maxTwcPickingPoints > 0
-        ? (twcPickingPoints / maxTwcPickingPoints) * 100
-        : 0;
-      
-      // TWC POPS Responding
-      const twcRespondingData = twcData.filter(d => !d.is_pick);
-      const twcRespondingPoints = twcRespondingData.reduce((sum, d) => sum + d.points, 0);
-      const maxTwcRespondingPoints = twcRespondingData.length * 10;
-      machineStats.twcPopsResponding = maxTwcRespondingPoints > 0
-        ? (twcRespondingPoints / maxTwcRespondingPoints) * 100
-        : 0;
+      machineStats.twcPops = computePops(twcData);
+      machineStats.twcPopsPicking = computePops(twcData.filter(d => d.is_pick));
+      machineStats.twcPopsResponding = computePops(twcData.filter(d => !d.is_pick));
     }
     
     stats.push(machineStats);

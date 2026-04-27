@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, fetchAllRecords } from '@/lib/supabase';
 import { createClient } from '@supabase/supabase-js';
-import { type MachineStats, type ProcessedScore } from '@/lib/tournament-data';
+import { type MachineStats, type ProcessedScore, computePops } from '@/lib/tournament-data';
 import { standardizeVenueName, venuesMatch } from '@/lib/venue-mappings';
 import { machineMappings } from '@/lib/machine-mappings';
 
@@ -144,9 +144,10 @@ export async function GET(request: NextRequest) {
 
         if (!playerKey || score === null || score === undefined) continue;
 
-        // Calculate is_pick
+        // Per MNP rules: away team picks rounds 1 (doubles) and 3 (singles);
+        // home team picks rounds 2 (singles) and 4 (doubles).
         const isHomeTeam = teamKey === game.home_team;
-        const isPick = game.round_number % 2 === 1 ? isHomeTeam : !isHomeTeam;
+        const isPick = game.round_number % 2 === 1 ? !isHomeTeam : isHomeTeam;
 
         // Normalize machine name using mappings
         const rawMachine = (game.machine || '').toLowerCase();
@@ -391,26 +392,11 @@ function calculateMachineStatsServerSide(
     );
     const timesPicked = pickedGames.size;
 
-    // Calculate POPS (Percentage of Points Scored)
-    const teamPoints = machineTeamData.reduce((sum, d) => sum + d.points, 0);
-    const maxPoints = machineTeamData.length * 10;
-    const pops = maxPoints > 0 ? (teamPoints / maxPoints) * 100 : 0;
-
-    // POPS when picking
-    const pickingData = machineTeamData.filter(d => d.is_pick);
-    const pickingPoints = pickingData.reduce((sum, d) => sum + d.points, 0);
-    const maxPickingPoints = pickingData.length * 10;
-    const popsPicking = maxPickingPoints > 0
-      ? (pickingPoints / maxPickingPoints) * 100
-      : 0;
-
-    // POPS when responding
-    const respondingData = machineTeamData.filter(d => !d.is_pick);
-    const respondingPoints = respondingData.reduce((sum, d) => sum + d.points, 0);
-    const maxRespondingPoints = respondingData.length * 10;
-    const popsResponding = maxRespondingPoints > 0
-      ? (respondingPoints / maxRespondingPoints) * 100
-      : 0;
+    // POPS uses 5 pts/game for doubles (R1, R4) and 3 for singles (R2, R3),
+    // summed over unique games — see computePops().
+    const pops = computePops(machineTeamData);
+    const popsPicking = computePops(machineTeamData.filter(d => d.is_pick));
+    const popsResponding = computePops(machineTeamData.filter(d => !d.is_pick));
 
     const percentOfVenueAvg = venueAverage > 0
       ? (teamAverage / venueAverage) * 100
@@ -480,28 +466,9 @@ function calculateMachineStatsServerSide(
       );
       machineStats.twcTimesPicked = twcPickedGames.size;
 
-      // TWC POPS calculations
-      const twcPoints = twcData.reduce((sum, d) => sum + d.points, 0);
-      const maxTwcPoints = twcData.length * 10;
-      machineStats.twcPops = maxTwcPoints > 0
-        ? (twcPoints / maxTwcPoints) * 100
-        : 0;
-
-      // TWC POPS Picking
-      const twcPickingData = twcData.filter(d => d.is_pick);
-      const twcPickingPoints = twcPickingData.reduce((sum, d) => sum + d.points, 0);
-      const maxTwcPickingPoints = twcPickingData.length * 10;
-      machineStats.twcPopsPicking = maxTwcPickingPoints > 0
-        ? (twcPickingPoints / maxTwcPickingPoints) * 100
-        : 0;
-
-      // TWC POPS Responding
-      const twcRespondingData = twcData.filter(d => !d.is_pick);
-      const twcRespondingPoints = twcRespondingData.reduce((sum, d) => sum + d.points, 0);
-      const maxTwcRespondingPoints = twcRespondingData.length * 10;
-      machineStats.twcPopsResponding = maxTwcRespondingPoints > 0
-        ? (twcRespondingPoints / maxTwcRespondingPoints) * 100
-        : 0;
+      machineStats.twcPops = computePops(twcData);
+      machineStats.twcPopsPicking = computePops(twcData.filter(d => d.is_pick));
+      machineStats.twcPopsResponding = computePops(twcData.filter(d => !d.is_pick));
     }
 
     stats.push(machineStats);

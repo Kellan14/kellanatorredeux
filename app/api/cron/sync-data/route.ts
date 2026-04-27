@@ -237,6 +237,13 @@ export async function GET(request: Request) {
               const player3Team = isPlayerPick(game.player_3, homeTeam, awayTeam, homeLineup, awayLineup)
               const player4Team = isPlayerPick(game.player_4, homeTeam, awayTeam, homeLineup, awayLineup)
 
+              // Per MNP rules: away team picks rounds 1 (doubles) and 3 (singles);
+              // home team picks rounds 2 (singles) and 4 (doubles).
+              const pickingTeam =
+                roundNumber === 1 || roundNumber === 3 ? awayTeam :
+                roundNumber === 2 || roundNumber === 4 ? homeTeam :
+                null
+
               gamesBatch.push({
                 match_key: matchData.key,
                 season,
@@ -250,25 +257,25 @@ export async function GET(request: Request) {
                 player_1_score: game.score_1 || null,
                 player_1_points: game.points_1 !== undefined ? game.points_1 : null,
                 player_1_team: player1Team,
-                player_1_is_pick: player1Team === homeTeam || player1Team === awayTeam,
+                player_1_is_pick: pickingTeam !== null && player1Team === pickingTeam,
                 player_2_key: game.player_2 || null,
                 player_2_name: game.player_2 ? playerMap.get(game.player_2) : null,
                 player_2_score: game.score_2 || null,
                 player_2_points: game.points_2 !== undefined ? game.points_2 : null,
                 player_2_team: player2Team,
-                player_2_is_pick: player2Team === homeTeam || player2Team === awayTeam,
+                player_2_is_pick: pickingTeam !== null && player2Team === pickingTeam,
                 player_3_key: game.player_3 || null,
                 player_3_name: game.player_3 ? playerMap.get(game.player_3) : null,
                 player_3_score: game.score_3 || null,
                 player_3_points: game.points_3 !== undefined ? game.points_3 : null,
                 player_3_team: player3Team,
-                player_3_is_pick: player3Team === homeTeam || player3Team === awayTeam,
+                player_3_is_pick: pickingTeam !== null && player3Team === pickingTeam,
                 player_4_key: game.player_4 || null,
                 player_4_name: game.player_4 ? playerMap.get(game.player_4) : null,
                 player_4_score: game.score_4 || null,
                 player_4_points: game.points_4 !== undefined ? game.points_4 : null,
                 player_4_team: player4Team,
-                player_4_is_pick: player4Team === homeTeam || player4Team === awayTeam,
+                player_4_is_pick: pickingTeam !== null && player4Team === pickingTeam,
                 home_team: homeTeam,
                 away_team: awayTeam,
                 home_points: game.home_points !== undefined ? game.home_points : null,
