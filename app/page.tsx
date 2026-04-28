@@ -65,6 +65,14 @@ function HomePageContent() {
   const [topPicksSortColumn, setTopPicksSortColumn] = useState<string>('timesPicked')
   const [topPicksSortDirection, setTopPicksSortDirection] = useState<'asc' | 'desc'>('desc')
 
+  // Top Picks cell-details drilldown (mirrors stats page)
+  const [topPickCellOpen, setTopPickCellOpen] = useState(false)
+  const [topPickCell, setTopPickCell] = useState<{ machine: string; columnLabel: string } | null>(null)
+  const [topPickCellDetails, setTopPickCellDetails] = useState<any>(null)
+  const [loadingTopPickCell, setLoadingTopPickCell] = useState(false)
+  const [topPickDetailSortColumn, setTopPickDetailSortColumn] = useState<string>('score')
+  const [topPickDetailSortDirection, setTopPickDetailSortDirection] = useState<'asc' | 'desc'>('desc')
+
   // Your performance sorting
   const [perfSortColumn, setPerfSortColumn] = useState<string>('pctOfVenue')
   const [perfSortDirection, setPerfSortDirection] = useState<'asc' | 'desc'>('desc')
@@ -311,6 +319,52 @@ function HomePageContent() {
       setOpponentTopPicks([])
     } finally {
       setLoadingTopPicks(false)
+    }
+  }
+
+  // Open the cell-details drilldown for a Top Picks row, mirroring the stats
+  // page modal. Filters MUST match fetchOpponentTopPicks (league-wide team
+  // scope, opponent roster) so the drilled-down rows match the cell value.
+  const handleTopPickCellClick = async (machine: string, columnLabel: string) => {
+    setTopPickCell({ machine, columnLabel })
+    setTopPickCellOpen(true)
+    setLoadingTopPickCell(true)
+    setTopPickCellDetails(null)
+    setTopPickDetailSortColumn('score')
+    setTopPickDetailSortDirection('desc')
+    try {
+      const cellParams = new URLSearchParams({
+        machine,
+        column: columnLabel,
+        venue,
+        team: opponent,
+        twcTeam: 'The Wrecking Crew',
+        seasonStart: String(topPicksSeasonStart),
+        seasonEnd: String(topPicksSeasonEnd),
+        // Match the parent fetch: opponent stats are league-wide here.
+        teamVenueSpecific: 'false',
+        twcVenueSpecific: 'false',
+      })
+      if (opponentPlayers.length > 0) {
+        cellParams.set('opponentRoster', opponentPlayers.join(','))
+      }
+      const res = await fetch(`/api/cell-details?${cellParams}`)
+      if (res.ok) {
+        setTopPickCellDetails(await res.json())
+      }
+    } catch (err) {
+      console.error('Error fetching top-pick cell details:', err)
+    } finally {
+      setLoadingTopPickCell(false)
+    }
+  }
+
+  const handleTopPickDetailSort = (column: string) => {
+    if (topPickDetailSortColumn === column) {
+      setTopPickDetailSortDirection(topPickDetailSortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setTopPickDetailSortColumn(column)
+      setTopPickDetailSortDirection('desc')
     }
   }
 
@@ -1188,9 +1242,22 @@ function HomePageContent() {
                         {getSortedTopPicks().map((pick: any) => (
                           <TableRow key={pick.machine}>
                             <TableCell className="font-medium">{getMachineDisplayName(pick.machine)}</TableCell>
-                            <TableCell className="text-right">{pick.timesPicked}</TableCell>
-                            <TableCell className="text-right">{(pick.teamAverage || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</TableCell>
-                            <TableCell className="text-right">
+                            <TableCell
+                              className="text-right cursor-pointer hover:bg-muted/50"
+                              onClick={() => handleTopPickCellClick(pick.machine, 'Times Picked')}
+                            >
+                              {pick.timesPicked}
+                            </TableCell>
+                            <TableCell
+                              className="text-right cursor-pointer hover:bg-muted/50"
+                              onClick={() => handleTopPickCellClick(pick.machine, 'Team Avg')}
+                            >
+                              {(pick.teamAverage || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            </TableCell>
+                            <TableCell
+                              className="text-right cursor-pointer hover:bg-muted/50"
+                              onClick={() => handleTopPickCellClick(pick.machine, '% of V. Avg.')}
+                            >
                               <span className={
                                 pick.percentOfVenueAvg >= 100 ? 'text-green-600 font-semibold' :
                                 pick.percentOfVenueAvg >= 90 ? 'text-yellow-600' :
@@ -1199,7 +1266,10 @@ function HomePageContent() {
                                 {(pick.percentOfVenueAvg || 0).toFixed(1)}%
                               </span>
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell
+                              className="text-right cursor-pointer hover:bg-muted/50"
+                              onClick={() => handleTopPickCellClick(pick.machine, 'POPS')}
+                            >
                               <span className={
                                 pick.pops >= 50 ? 'text-green-600 font-semibold' :
                                 pick.pops >= 40 ? 'text-yellow-600' :
@@ -2234,6 +2304,83 @@ function HomePageContent() {
                   Remove {swapDialogPlayer} (no replacement)
                 </Button>
               </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Top Picks cell-details drilldown */}
+          <Dialog open={topPickCellOpen} onOpenChange={setTopPickCellOpen}>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>
+                  {topPickCell && (() => {
+                    const displayLabel = topPickCell.columnLabel
+                      .replace(/\bTeam\b/g, opponent)
+                      .replace(/\bTWC\b/g, 'The Wrecking Crew')
+                    return `${displayLabel} for ${getMachineDisplayName(topPickCell.machine)}`
+                  })()}
+                </DialogTitle>
+                <DialogDescription>
+                  {topPickCellDetails && topPickCellDetails.summary}
+                </DialogDescription>
+              </DialogHeader>
+
+              {loadingTopPickCell && (
+                <div className="flex items-center justify-center p-12">
+                  <Loader2 className="h-8 w-8 animate-spin mr-2" />
+                  <span>Loading details...</span>
+                </div>
+              )}
+
+              {!loadingTopPickCell && topPickCellDetails?.details?.length > 0 && (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="cursor-pointer" onClick={() => handleTopPickDetailSort('player')}>Player</TableHead>
+                        <TableHead className="cursor-pointer" onClick={() => handleTopPickDetailSort('score')}>Score</TableHead>
+                        <TableHead className="cursor-pointer" onClick={() => handleTopPickDetailSort('match')}>Match</TableHead>
+                        <TableHead className="cursor-pointer" onClick={() => handleTopPickDetailSort('round')}>Round</TableHead>
+                        <TableHead className="cursor-pointer" onClick={() => handleTopPickDetailSort('season')}>Season</TableHead>
+                        <TableHead className="cursor-pointer" onClick={() => handleTopPickDetailSort('venue')}>Venue</TableHead>
+                        {topPickCellDetails.details[0].points !== undefined && (
+                          <TableHead className="cursor-pointer" onClick={() => handleTopPickDetailSort('points')}>Points</TableHead>
+                        )}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(() => {
+                        const sorted = [...topPickCellDetails.details].sort((a: any, b: any) => {
+                          const aVal = a[topPickDetailSortColumn]
+                          const bVal = b[topPickDetailSortColumn]
+                          if (aVal === undefined || aVal === null) return 1
+                          if (bVal === undefined || bVal === null) return -1
+                          if (typeof aVal === 'string' && typeof bVal === 'string') {
+                            return topPickDetailSortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal)
+                          }
+                          return topPickDetailSortDirection === 'asc' ? aVal - bVal : bVal - aVal
+                        })
+                        return sorted.map((d: any, i: number) => (
+                          <TableRow key={i}>
+                            <TableCell className="font-medium">{d.player}</TableCell>
+                            <TableCell>{d.score?.toLocaleString?.() ?? d.score}</TableCell>
+                            <TableCell>{d.match}</TableCell>
+                            <TableCell>{d.round}</TableCell>
+                            <TableCell>{d.season}</TableCell>
+                            <TableCell className="text-xs">{d.venue}</TableCell>
+                            {d.points !== undefined && <TableCell>{d.points}</TableCell>}
+                          </TableRow>
+                        ))
+                      })()}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+
+              {!loadingTopPickCell && topPickCellDetails?.details?.length === 0 && (
+                <div className="text-center p-12 text-muted-foreground">
+                  No detailed data available for this cell
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         </>
