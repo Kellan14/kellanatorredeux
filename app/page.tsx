@@ -256,15 +256,20 @@ function HomePageContent() {
     }
   }, [playerName])
 
-  // Fetch opponent top picks when opponent, venue, season filters, OR the
-  // loaded opponent roster change. Including opponentPlayers in the deps
-  // ensures the picks re-fetch once the roster is known so the dashboard's
-  // Times Picked matches the stats page (both filter to current roster).
+  // Top Picks shows machines available at the NEXT venue, but counts how
+  // many times the opponent has picked each of them LEAGUE-WIDE in the
+  // selected season range. So: scope machine list to next venue (via
+  // machines=), but turn off venue-specific filtering so picks across
+  // every venue are counted.
   useEffect(() => {
-    if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venue && venue !== 'Loading...') {
+    if (
+      opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' &&
+      venue && venue !== 'Loading...' &&
+      venueMachines.length > 0
+    ) {
       fetchOpponentTopPicks()
     }
-  }, [opponent, venue, topPicksSeasonStart, topPicksSeasonEnd, opponentPlayers])
+  }, [opponent, venue, topPicksSeasonStart, topPicksSeasonEnd, opponentPlayers, venueMachines])
 
   const fetchOpponentTopPicks = async () => {
     setLoadingTopPicks(true)
@@ -280,7 +285,11 @@ function HomePageContent() {
         venue,
         teamName: 'The Wrecking Crew',
         opponentTeam: opponent,
-        teamVenueSpecific: 'true',
+        // Count opponent's picks across ALL venues (league-wide), not just
+        // games at the next venue.
+        teamVenueSpecific: 'false',
+        // But limit the rows we render to machines at the next venue.
+        machines: venueMachines.join(','),
       })
       // Restrict opponent stats (incl. Times Picked) to current roster.
       if (opponentPlayers.length > 0) {
