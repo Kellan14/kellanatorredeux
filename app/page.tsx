@@ -65,10 +65,15 @@ function HomePageContent() {
   const [topPicksSortColumn, setTopPicksSortColumn] = useState<string>('timesPicked')
   const [topPicksSortDirection, setTopPicksSortDirection] = useState<'asc' | 'desc'>('desc')
 
-  // Top Picks → Discord (mirrors strategy page's Send-to-Discord)
+  // Top Picks → Discord (mirrors strategy page's Send-to-Discord).
+  // Click "Send to Discord" → opens a preview dialog with the formatted
+  // text, then the user clicks Send inside the dialog to actually POST.
   const [topPicksDiscordSending, setTopPicksDiscordSending] = useState(false)
   const [topPicksDiscordSent, setTopPicksDiscordSent] = useState(false)
   const [topPicksDiscordError, setTopPicksDiscordError] = useState('')
+  const [topPicksPreviewOpen, setTopPicksPreviewOpen] = useState(false)
+  const [topPicksPreviewText, setTopPicksPreviewText] = useState('')
+  const [topPicksPreviewCopied, setTopPicksPreviewCopied] = useState(false)
 
   // Top Picks cell-details drilldown (mirrors stats page)
   const [topPickCellOpen, setTopPickCellOpen] = useState(false)
@@ -389,56 +394,83 @@ function HomePageContent() {
     }
   }
 
-  // Build a monospace-friendly text snapshot of the current Top Picks table
-  // and POST it to /api/discord-webhook. Uses the user's current sort so the
-  // Discord post matches what they're looking at.
-  const sendTopPicksToDiscord = async () => {
-    setTopPicksDiscordSending(true)
+  // Build the Discord-ready text snapshot of the current Top Picks table.
+  // Uses the user's current sort so the post matches what they're looking at.
+  const buildTopPicksReportText = (): string => {
+    const rows = getSortedTopPicks() as any[]
+    if (rows.length === 0) return ''
+    const seasonsLabel = topPicksSeasonStart === topPicksSeasonEnd
+      ? `Season ${topPicksSeasonStart}`
+      : `Seasons ${topPicksSeasonStart}–${topPicksSeasonEnd}`
+    const header = `${opponent} — Top Picks at ${venue} (${seasonsLabel})`
+    const colHeader =
+      'Machine'.padEnd(28) +
+      'Picks'.padStart(7) +
+      'Avg Score'.padStart(15) +
+      '% V.Avg'.padStart(10) +
+      'POPS'.padStart(9)
+    const sep = '-'.repeat(colHeader.length)
+    const lines = rows.map((r) => {
+      const machine = (getMachineDisplayName(r.machine) || r.machine).slice(0, 28).padEnd(28)
+      const picks = String(r.timesPicked ?? 0).padStart(7)
+      const avg = (Math.round(r.teamAverage || 0)).toLocaleString().padStart(15)
+      const pctVenue = `${(r.percentOfVenueAvg || 0).toFixed(1)}%`.padStart(10)
+      const pops = `${(r.pops || 0).toFixed(1)}%`.padStart(9)
+      return `${machine}${picks}${avg}${pctVenue}${pops}`
+    })
+    return [header, '', colHeader, sep, ...lines].join('\n')
+  }
+
+  // Step 1 of the flow: render the preview dialog. The actual POST to
+  // Discord happens only when the user confirms inside the dialog.
+  const openTopPicksPreview = () => {
+    const text = buildTopPicksReportText()
+    if (!text) {
+      setTopPicksDiscordError('No data to send')
+      return
+    }
     setTopPicksDiscordError('')
     setTopPicksDiscordSent(false)
-    try {
-      const rows = getSortedTopPicks() as any[]
-      if (rows.length === 0) {
-        setTopPicksDiscordError('No data to send')
-        return
-      }
-      const seasonsLabel = topPicksSeasonStart === topPicksSeasonEnd
-        ? `Season ${topPicksSeasonStart}`
-        : `Seasons ${topPicksSeasonStart}–${topPicksSeasonEnd}`
-      const header = `${opponent} — Top Picks at ${venue} (${seasonsLabel})`
-      const colHeader =
-        'Machine'.padEnd(28) +
-        'Picks'.padStart(7) +
-        'Avg Score'.padStart(15) +
-        '% V.Avg'.padStart(10) +
-        'POPS'.padStart(9)
-      const sep = '-'.repeat(colHeader.length)
-      const lines = rows.map((r) => {
-        const machine = (getMachineDisplayName(r.machine) || r.machine).slice(0, 28).padEnd(28)
-        const picks = String(r.timesPicked ?? 0).padStart(7)
-        const avg = (Math.round(r.teamAverage || 0)).toLocaleString().padStart(15)
-        const pctVenue = `${(r.percentOfVenueAvg || 0).toFixed(1)}%`.padStart(10)
-        const pops = `${(r.pops || 0).toFixed(1)}%`.padStart(9)
-        return `${machine}${picks}${avg}${pctVenue}${pops}`
-      })
-      const reportText = [header, '', colHeader, sep, ...lines].join('\n')
+    setTopPicksPreviewCopied(false)
+    setTopPicksPreviewText(text)
+    setTopPicksPreviewOpen(true)
+  }
 
+  // Step 2: confirm-send from inside the preview dialog.
+  const confirmSendTopPicksToDiscord = async () => {
+    if (!topPicksPreviewText) return
+    setTopPicksDiscordSending(true)
+    setTopPicksDiscordError('')
+    try {
       const res = await fetch('/api/discord-webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reportText }),
+        body: JSON.stringify({ reportText: topPicksPreviewText }),
       })
       const data = await res.json()
       if (!res.ok) {
         setTopPicksDiscordError(data.error || 'Failed to send')
       } else {
         setTopPicksDiscordSent(true)
-        setTimeout(() => setTopPicksDiscordSent(false), 3000)
+        setTimeout(() => {
+          setTopPicksDiscordSent(false)
+          setTopPicksPreviewOpen(false)
+        }, 1500)
       }
     } catch {
       setTopPicksDiscordError('Failed to send to Discord')
     } finally {
       setTopPicksDiscordSending(false)
+    }
+  }
+
+  const copyTopPicksPreview = async () => {
+    try {
+      await navigator.clipboard.writeText(topPicksPreviewText)
+      setTopPicksPreviewCopied(true)
+      setTimeout(() => setTopPicksPreviewCopied(false), 2000)
+    } catch (err) {
+      console.error('Clipboard write failed:', err)
     }
   }
 
@@ -1270,28 +1302,14 @@ function HomePageContent() {
                     size="sm"
                     variant="outline"
                     className="ml-auto"
-                    onClick={sendTopPicksToDiscord}
-                    disabled={topPicksDiscordSending || loadingTopPicks || opponentTopPicks.length === 0}
+                    onClick={openTopPicksPreview}
+                    disabled={loadingTopPicks || opponentTopPicks.length === 0}
                   >
-                    {topPicksDiscordSending ? (
-                      <>
-                        <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-                        Sending...
-                      </>
-                    ) : topPicksDiscordSent ? (
-                      <>
-                        <Check className="h-3.5 w-3.5 mr-1.5" />
-                        Sent!
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-3.5 w-3.5 mr-1.5" />
-                        Send to Discord
-                      </>
-                    )}
+                    <Send className="h-3.5 w-3.5 mr-1.5" />
+                    Send to Discord
                   </Button>
                 </div>
-                {topPicksDiscordError && (
+                {topPicksDiscordError && !topPicksPreviewOpen && (
                   <p className="text-xs text-destructive mb-2">{topPicksDiscordError}</p>
                 )}
                 {loadingTopPicks ? (
@@ -2414,6 +2432,64 @@ function HomePageContent() {
                   Remove {swapDialogPlayer} (no replacement)
                 </Button>
               </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Top Picks → Discord preview */}
+          <Dialog open={topPicksPreviewOpen} onOpenChange={setTopPicksPreviewOpen}>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Send Top Picks to Discord</DialogTitle>
+                <DialogDescription>
+                  Preview the message below. Click Send to post it to the configured Discord channel.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="mt-4">
+                <pre className="p-4 bg-muted rounded-lg text-xs whitespace-pre-wrap font-mono overflow-x-auto">
+                  {topPicksPreviewText}
+                </pre>
+              </div>
+
+              <div className="flex justify-end gap-2 mt-4">
+                <Button variant="outline" onClick={() => setTopPicksPreviewOpen(false)}>
+                  Close
+                </Button>
+                <Button variant="secondary" onClick={copyTopPicksPreview}>
+                  {topPicksPreviewCopied ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Copied!
+                    </>
+                  ) : (
+                    'Copy to Clipboard'
+                  )}
+                </Button>
+                <Button
+                  onClick={confirmSendTopPicksToDiscord}
+                  disabled={topPicksDiscordSending || !topPicksPreviewText}
+                >
+                  {topPicksDiscordSending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : topPicksDiscordSent ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Sent!
+                    </>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      Send
+                    </>
+                  )}
+                </Button>
+              </div>
+              {topPicksDiscordError && (
+                <p className="text-sm text-destructive mt-2 text-right">{topPicksDiscordError}</p>
+              )}
             </DialogContent>
           </Dialog>
 
