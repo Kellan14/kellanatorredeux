@@ -33,6 +33,7 @@ import { type MachineStats } from '@/lib/tournament-data'
 import { VenueMachineListManager } from '@/components/venue-machine-list-manager'
 import { MachineMappingManager } from '@/components/machine-mapping-manager'
 import { TwcPlayerAvailability } from '@/components/twc-player-availability'
+import { PlayerAvailability } from '@/components/player-availability'
 
 interface Team {
   key: string
@@ -145,9 +146,18 @@ export default function StatsPage() {
   const [rosterPlayers, setRosterPlayers] = useState<string[]>([])
   const [subPlayers, setSubPlayers] = useState<string[]>([])
 
-  // Opponent's current roster — used to limit opponent team stats to current
-  // roster players (matches Python app.py behavior of roster_only=True).
+  // Opponent player availability — same shape as TWC's, lets the user
+  // tick/untick which opponent players to include in opponent team stats.
   const [opponentRosterPlayers, setOpponentRosterPlayers] = useState<string[]>([])
+  const [opponentSubPlayers, setOpponentSubPlayers] = useState<string[]>([])
+  const [opponentAvailablePlayers, setOpponentAvailablePlayers] = useState<Record<string, boolean>>({})
+  const [opponentAddedSubs, setOpponentAddedSubs] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return []
+    try {
+      const saved = localStorage.getItem('statsOpponentAddedSubs')
+      return saved ? JSON.parse(saved) : []
+    } catch { return [] }
+  })
 
   // Cell details dialog
   const [cellDetailsOpen, setCellDetailsOpen] = useState(false)
@@ -329,14 +339,16 @@ export default function StatsPage() {
     if (selectedVenue && selectedOpponent && venues.length > 0) {
       loadStats()
     }
-  }, [selectedVenue, selectedOpponent, seasonRange, scoreLimits, teamVenueSpecific, twcVenueSpecific, includeManualScores, availablePlayers, opponentRosterPlayers, venues])
+  }, [selectedVenue, selectedOpponent, seasonRange, scoreLimits, teamVenueSpecific, twcVenueSpecific, includeManualScores, availablePlayers, opponentAvailablePlayers, venues])
 
-  // Load opponent roster whenever opponent changes; opponent stats are scoped
-  // to current roster players so retired players / one-off subs don't pollute
-  // the team's averages, POPS, etc.
+  // Load opponent roster + subs whenever opponent changes; opponent stats are
+  // scoped to current roster players so retired players / one-off subs don't
+  // pollute the team's averages, POPS, etc.
   useEffect(() => {
     if (!selectedOpponent) {
       setOpponentRosterPlayers([])
+      setOpponentSubPlayers([])
+      setOpponentAvailablePlayers({})
       return
     }
     const loadOpponentRoster = async () => {
@@ -347,17 +359,57 @@ export default function StatsPage() {
         )
         if (res.ok) {
           const data = await res.json()
-          setOpponentRosterPlayers(data.rosterPlayers || [])
+          const roster: string[] = data.rosterPlayers || []
+          const subs: string[] = [
+            ...(data.subPlayers || []),
+            ...opponentAddedSubs.filter(
+              (s) => !roster.includes(s) && !(data.subPlayers || []).includes(s)
+            ),
+          ]
+          setOpponentRosterPlayers(roster)
+          setOpponentSubPlayers(subs)
+          setOpponentAvailablePlayers((prev) => {
+            const next: Record<string, boolean> = {}
+            roster.forEach((p) => { next[p] = prev[p] !== undefined ? prev[p] : true })
+            subs.forEach((p) => { next[p] = prev[p] !== undefined ? prev[p] : false })
+            return next
+          })
         } else {
           setOpponentRosterPlayers([])
+          setOpponentSubPlayers([])
+          setOpponentAvailablePlayers({})
         }
       } catch (err) {
         console.error('Error loading opponent roster:', err)
         setOpponentRosterPlayers([])
+        setOpponentSubPlayers([])
+        setOpponentAvailablePlayers({})
       }
     }
     loadOpponentRoster()
   }, [selectedOpponent, availableSeasons]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Persist opponentAddedSubs across sessions (matches strategy page).
+  useEffect(() => {
+    try { localStorage.setItem('statsOpponentAddedSubs', JSON.stringify(opponentAddedSubs)) } catch {}
+  }, [opponentAddedSubs])
+
+  const handleAddOpponentSub = (name: string) => {
+    if (opponentSubPlayers.includes(name) || opponentRosterPlayers.includes(name)) return
+    setOpponentSubPlayers((prev) => [...prev, name])
+    setOpponentAddedSubs((prev) => [...prev, name])
+    setOpponentAvailablePlayers((prev) => ({ ...prev, [name]: false }))
+  }
+
+  const handleRemoveOpponentSub = (name: string) => {
+    setOpponentAddedSubs((prev) => prev.filter((s) => s !== name))
+    setOpponentSubPlayers((prev) => prev.filter((s) => s !== name))
+    setOpponentAvailablePlayers((prev) => {
+      const next = { ...prev }
+      delete next[name]
+      return next
+    })
+  }
 
   const loadVenuesAndTeams = async () => {
     setLoadingDropdowns(true)
@@ -464,9 +516,14 @@ export default function StatsPage() {
         params.set('twcPlayers', selectedTwcPlayers.join(','))
       }
 
-      // Limit opponent stats to the opponent team's current roster.
-      if (opponentRosterPlayers.length > 0) {
-        params.set('opponentRoster', opponentRosterPlayers.join(','))
+      // Limit opponent stats to the opponent players the user has ticked.
+      // Includes any subs the user added/checked. If the picker hasn't loaded
+      // yet (selectedOpponentPlayers empty), fall back to no filter so we
+      // don't temporarily render zero stats.
+      const selectedOpponentPlayers = Object.keys(opponentAvailablePlayers)
+        .filter((p) => opponentAvailablePlayers[p])
+      if (selectedOpponentPlayers.length > 0) {
+        params.set('opponentRoster', selectedOpponentPlayers.join(','))
       }
 
       const response = await fetch(`/api/machine-stats?${params}`)
@@ -572,8 +629,10 @@ export default function StatsPage() {
       ) {
         cellParams.set('twcPlayers', selectedTwcPlayersForDrill.join(','))
       }
-      if (opponentRosterPlayers.length > 0) {
-        cellParams.set('opponentRoster', opponentRosterPlayers.join(','))
+      const selectedOpponentPlayersForDrill = Object.keys(opponentAvailablePlayers)
+        .filter((p) => opponentAvailablePlayers[p])
+      if (selectedOpponentPlayersForDrill.length > 0) {
+        cellParams.set('opponentRoster', selectedOpponentPlayersForDrill.join(','))
       }
 
       const response = await fetch(`/api/cell-details?${cellParams}`)
@@ -999,6 +1058,21 @@ export default function StatsPage() {
               subPlayers={subPlayers}
               availablePlayers={availablePlayers}
               onChange={setAvailablePlayers}
+            />
+          )}
+
+          {/* Opponent Player Availability */}
+          {selectedOpponent && opponentRosterPlayers.length > 0 && (
+            <PlayerAvailability
+              storageKey={`statsOpponentPlayerAvailability_${selectedOpponent}`}
+              title={`${selectedOpponent} Player Availability`}
+              rosterPlayers={opponentRosterPlayers}
+              subPlayers={opponentSubPlayers}
+              availablePlayers={opponentAvailablePlayers}
+              onChange={setOpponentAvailablePlayers}
+              onAddSub={handleAddOpponentSub}
+              onRemoveSub={handleRemoveOpponentSub}
+              addedSubs={opponentAddedSubs}
             />
           )}
 
