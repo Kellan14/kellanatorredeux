@@ -145,6 +145,10 @@ export default function StatsPage() {
   const [rosterPlayers, setRosterPlayers] = useState<string[]>([])
   const [subPlayers, setSubPlayers] = useState<string[]>([])
 
+  // Opponent's current roster — used to limit opponent team stats to current
+  // roster players (matches Python app.py behavior of roster_only=True).
+  const [opponentRosterPlayers, setOpponentRosterPlayers] = useState<string[]>([])
+
   // Cell details dialog
   const [cellDetailsOpen, setCellDetailsOpen] = useState(false)
   const [selectedCell, setSelectedCell] = useState<{machine: string, column: string} | null>(null)
@@ -325,7 +329,35 @@ export default function StatsPage() {
     if (selectedVenue && selectedOpponent && venues.length > 0) {
       loadStats()
     }
-  }, [selectedVenue, selectedOpponent, seasonRange, scoreLimits, teamVenueSpecific, twcVenueSpecific, includeManualScores, availablePlayers, venues])
+  }, [selectedVenue, selectedOpponent, seasonRange, scoreLimits, teamVenueSpecific, twcVenueSpecific, includeManualScores, availablePlayers, opponentRosterPlayers, venues])
+
+  // Load opponent roster whenever opponent changes; opponent stats are scoped
+  // to current roster players so retired players / one-off subs don't pollute
+  // the team's averages, POPS, etc.
+  useEffect(() => {
+    if (!selectedOpponent) {
+      setOpponentRosterPlayers([])
+      return
+    }
+    const loadOpponentRoster = async () => {
+      try {
+        const currentSeason = availableSeasons.length > 0 ? Math.max(...availableSeasons) : seasonRange[1]
+        const res = await fetch(
+          `/api/opponent-roster?team=${encodeURIComponent(selectedOpponent)}&currentSeason=${currentSeason}`
+        )
+        if (res.ok) {
+          const data = await res.json()
+          setOpponentRosterPlayers(data.rosterPlayers || [])
+        } else {
+          setOpponentRosterPlayers([])
+        }
+      } catch (err) {
+        console.error('Error loading opponent roster:', err)
+        setOpponentRosterPlayers([])
+      }
+    }
+    loadOpponentRoster()
+  }, [selectedOpponent, availableSeasons]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadVenuesAndTeams = async () => {
     setLoadingDropdowns(true)
@@ -432,6 +464,11 @@ export default function StatsPage() {
         params.set('twcPlayers', selectedTwcPlayers.join(','))
       }
 
+      // Limit opponent stats to the opponent team's current roster.
+      if (opponentRosterPlayers.length > 0) {
+        params.set('opponentRoster', opponentRosterPlayers.join(','))
+      }
+
       const response = await fetch(`/api/machine-stats?${params}`)
       const data = await response.json()
 
@@ -534,6 +571,9 @@ export default function StatsPage() {
         selectedTwcPlayersForDrill.length < Object.keys(availablePlayers).length
       ) {
         cellParams.set('twcPlayers', selectedTwcPlayersForDrill.join(','))
+      }
+      if (opponentRosterPlayers.length > 0) {
+        cellParams.set('opponentRoster', opponentRosterPlayers.join(','))
       }
 
       const response = await fetch(`/api/cell-details?${cellParams}`)

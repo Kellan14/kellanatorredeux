@@ -27,6 +27,10 @@ export async function GET(request: NextRequest) {
     const twcPlayersFilter = twcPlayersParam
       ? new Set(twcPlayersParam.split(',').map(p => p.trim()).filter(Boolean))
       : null;
+    const opponentRosterParam = searchParams.get('opponentRoster');
+    const opponentRosterFilter = opponentRosterParam
+      ? new Set(opponentRosterParam.split(',').map(p => p.trim()).filter(Boolean))
+      : null;
 
     // Parse score limits
     let scoreLimit: number | undefined;
@@ -191,6 +195,10 @@ export async function GET(request: NextRequest) {
         // Match the same TWC roster filter the parent stats call applied,
         // otherwise the drilldown can show players excluded from POPS.
         if (isTWCColumn && twcPlayersFilter && !twcPlayersFilter.has(playerName)) {
+          continue;
+        }
+        // Same for opponent team — restrict to current roster players.
+        if (!isTWCColumn && opponentRosterFilter && !opponentRosterFilter.has(playerName)) {
           continue;
         }
 

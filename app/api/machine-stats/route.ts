@@ -40,6 +40,12 @@ export async function GET(request: NextRequest) {
   const scoreLimitsParam = searchParams.get('scoreLimits');
   const includeManualScores = searchParams.get('includeManualScores') === 'true'; // default false
   const twcPlayersParam = searchParams.get('twcPlayers'); // optional comma-separated player names
+  // Optional comma-separated player names representing the opponent team's
+  // current roster. When provided, opponent team stats (avg, max, POPS,
+  // times played, etc.) are limited to scores by these players — mirrors
+  // app.py's roster_only=True so retired players / one-off subs don't
+  // pollute opponent averages.
+  const opponentRosterParam = searchParams.get('opponentRoster');
   const machinesParam = searchParams.get('machines'); // optional comma-separated machine names from venues.json
 
   console.log('[machine-stats] Request params:', {
@@ -238,6 +244,11 @@ export async function GET(request: NextRequest) {
       ? twcPlayersParam.split(',').map(p => p.trim()).filter(Boolean)
       : undefined;
 
+    // Parse opponent roster filter if provided (current roster only)
+    const opponentRoster = opponentRosterParam
+      ? opponentRosterParam.split(',').map(p => p.trim()).filter(Boolean)
+      : undefined;
+
     // Now calculate machine stats server-side using the same logic as calculateMachineStats
     const stats = calculateMachineStatsServerSide(
       processedScores,
@@ -252,6 +263,7 @@ export async function GET(request: NextRequest) {
         teamVenueSpecific,
         twcVenueSpecific,
         twcPlayers,
+        opponentRoster,
         machines: machinesParam ? machinesParam.split(',').map(m => {
           const lower = m.toLowerCase();
           const mapped = machineMappings[lower] || machineMappings[m];
@@ -306,6 +318,7 @@ function calculateMachineStatsServerSide(
     teamVenueSpecific?: boolean;
     twcVenueSpecific?: boolean;
     twcPlayers?: string[];
+    opponentRoster?: string[];
     machines?: string[];
   }
 ): MachineStats[] {
@@ -322,11 +335,19 @@ function calculateMachineStatsServerSide(
   // Determine opponent team name (used for "Team" columns)
   const opponentName = options.opponentTeam || teamName;
 
+  // Limit opponent stats to current roster (Python's roster_only=True).
+  // If no roster supplied, fall back to no filter for backward compat.
+  const opponentRosterSet = options.opponentRoster && options.opponentRoster.length > 0
+    ? new Set(options.opponentRoster)
+    : null;
+  const isOpponentRosterPlayer = (d: ProcessedScore) =>
+    !opponentRosterSet || opponentRosterSet.has(d.player_name);
+
   // Get opponent team data (venue-specific or all venues based on teamVenueSpecific setting)
   const useTeamVenueSpecific = options.teamVenueSpecific !== undefined ? options.teamVenueSpecific : true;
   const teamData = useTeamVenueSpecific
-    ? venueData.filter(d => d.team_name.toLowerCase() === opponentName.toLowerCase())
-    : seasonData.filter(d => d.team_name.toLowerCase() === opponentName.toLowerCase());
+    ? venueData.filter(d => d.team_name.toLowerCase() === opponentName.toLowerCase() && isOpponentRosterPlayer(d))
+    : seasonData.filter(d => d.team_name.toLowerCase() === opponentName.toLowerCase() && isOpponentRosterPlayer(d));
 
   // Use machines passed from client if provided (sourced from venues.json with overrides already applied)
   // Otherwise fall back to deriving from venue data
