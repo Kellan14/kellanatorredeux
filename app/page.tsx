@@ -256,12 +256,15 @@ function HomePageContent() {
     }
   }, [playerName])
 
-  // Fetch opponent top picks when opponent, venue, or season filters change
+  // Fetch opponent top picks when opponent, venue, season filters, OR the
+  // loaded opponent roster change. Including opponentPlayers in the deps
+  // ensures the picks re-fetch once the roster is known so the dashboard's
+  // Times Picked matches the stats page (both filter to current roster).
   useEffect(() => {
     if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venue && venue !== 'Loading...') {
       fetchOpponentTopPicks()
     }
-  }, [opponent, venue, topPicksSeasonStart, topPicksSeasonEnd])
+  }, [opponent, venue, topPicksSeasonStart, topPicksSeasonEnd, opponentPlayers])
 
   const fetchOpponentTopPicks = async () => {
     setLoadingTopPicks(true)
@@ -272,14 +275,19 @@ function HomePageContent() {
         seasons.push(s)
       }
 
-      const url = `/api/machine-stats?` +
-        `seasons=${seasons.join(',')}` +
-        `&venue=${encodeURIComponent(venue)}` +
-        `&teamName=The Wrecking Crew` +
-        `&opponentTeam=${encodeURIComponent(opponent)}` +
-        `&teamVenueSpecific=true`
+      const params = new URLSearchParams({
+        seasons: seasons.join(','),
+        venue,
+        teamName: 'The Wrecking Crew',
+        opponentTeam: opponent,
+        teamVenueSpecific: 'true',
+      })
+      // Restrict opponent stats (incl. Times Picked) to current roster.
+      if (opponentPlayers.length > 0) {
+        params.set('opponentRoster', opponentPlayers.join(','))
+      }
 
-      const response = await fetch(url)
+      const response = await fetch(`/api/machine-stats?${params}`)
       if (response.ok) {
         const data = await response.json()
         // Sort by timesPicked descending, take top 10
