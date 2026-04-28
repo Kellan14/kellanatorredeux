@@ -65,6 +65,11 @@ function HomePageContent() {
   const [topPicksSortColumn, setTopPicksSortColumn] = useState<string>('timesPicked')
   const [topPicksSortDirection, setTopPicksSortDirection] = useState<'asc' | 'desc'>('desc')
 
+  // Top Picks → Discord (mirrors strategy page's Send-to-Discord)
+  const [topPicksDiscordSending, setTopPicksDiscordSending] = useState(false)
+  const [topPicksDiscordSent, setTopPicksDiscordSent] = useState(false)
+  const [topPicksDiscordError, setTopPicksDiscordError] = useState('')
+
   // Top Picks cell-details drilldown (mirrors stats page)
   const [topPickCellOpen, setTopPickCellOpen] = useState(false)
   const [topPickCell, setTopPickCell] = useState<{ machine: string; columnLabel: string } | null>(null)
@@ -356,6 +361,59 @@ function HomePageContent() {
       console.error('Error fetching top-pick cell details:', err)
     } finally {
       setLoadingTopPickCell(false)
+    }
+  }
+
+  // Build a monospace-friendly text snapshot of the current Top Picks table
+  // and POST it to /api/discord-webhook. Uses the user's current sort so the
+  // Discord post matches what they're looking at.
+  const sendTopPicksToDiscord = async () => {
+    setTopPicksDiscordSending(true)
+    setTopPicksDiscordError('')
+    setTopPicksDiscordSent(false)
+    try {
+      const rows = getSortedTopPicks() as any[]
+      if (rows.length === 0) {
+        setTopPicksDiscordError('No data to send')
+        return
+      }
+      const seasonsLabel = topPicksSeasonStart === topPicksSeasonEnd
+        ? `Season ${topPicksSeasonStart}`
+        : `Seasons ${topPicksSeasonStart}–${topPicksSeasonEnd}`
+      const header = `${opponent} — Top Picks at ${venue} (${seasonsLabel})`
+      const colHeader =
+        'Machine'.padEnd(28) +
+        'Picks'.padStart(7) +
+        'Avg Score'.padStart(15) +
+        '% V.Avg'.padStart(10) +
+        'POPS'.padStart(9)
+      const sep = '-'.repeat(colHeader.length)
+      const lines = rows.map((r) => {
+        const machine = (getMachineDisplayName(r.machine) || r.machine).slice(0, 28).padEnd(28)
+        const picks = String(r.timesPicked ?? 0).padStart(7)
+        const avg = (Math.round(r.teamAverage || 0)).toLocaleString().padStart(15)
+        const pctVenue = `${(r.percentOfVenueAvg || 0).toFixed(1)}%`.padStart(10)
+        const pops = `${(r.pops || 0).toFixed(1)}%`.padStart(9)
+        return `${machine}${picks}${avg}${pctVenue}${pops}`
+      })
+      const reportText = [header, '', colHeader, sep, ...lines].join('\n')
+
+      const res = await fetch('/api/discord-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportText }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setTopPicksDiscordError(data.error || 'Failed to send')
+      } else {
+        setTopPicksDiscordSent(true)
+        setTimeout(() => setTopPicksDiscordSent(false), 3000)
+      }
+    } catch {
+      setTopPicksDiscordError('Failed to send to Discord')
+    } finally {
+      setTopPicksDiscordSending(false)
     }
   }
 
@@ -1183,7 +1241,34 @@ function HomePageContent() {
                       <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="ml-auto"
+                    onClick={sendTopPicksToDiscord}
+                    disabled={topPicksDiscordSending || loadingTopPicks || opponentTopPicks.length === 0}
+                  >
+                    {topPicksDiscordSending ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                        Sending...
+                      </>
+                    ) : topPicksDiscordSent ? (
+                      <>
+                        <Check className="h-3.5 w-3.5 mr-1.5" />
+                        Sent!
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-3.5 w-3.5 mr-1.5" />
+                        Send to Discord
+                      </>
+                    )}
+                  </Button>
                 </div>
+                {topPicksDiscordError && (
+                  <p className="text-xs text-destructive mb-2">{topPicksDiscordError}</p>
+                )}
                 {loadingTopPicks ? (
                   <div className="text-center py-4 text-muted-foreground">Loading top picks...</div>
                 ) : opponentTopPicks.length > 0 ? (
