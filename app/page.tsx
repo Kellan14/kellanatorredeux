@@ -293,6 +293,31 @@ function HomePageContent() {
         seasons.push(s)
       }
 
+      // Cache-first: ask /api/top-picks for the pre-computed snapshot, which
+      // the weekly cron writes for TWC's next match. The cache is keyed by
+      // (opponent, venue, season_start, season_end), so it only hits when
+      // the user is on the cron's defaults; otherwise we fall through to a
+      // live compute.
+      try {
+        const cacheParams = new URLSearchParams({
+          opponentName: opponent,
+          venue,
+          seasonStart: String(topPicksSeasonStart),
+          seasonEnd: String(topPicksSeasonEnd),
+        })
+        const cacheRes = await fetch(`/api/top-picks?${cacheParams}`)
+        if (cacheRes.ok) {
+          const cacheData = await cacheRes.json()
+          if (cacheData?.cached && Array.isArray(cacheData.picks)) {
+            setOpponentTopPicks(cacheData.picks)
+            setLoadingTopPicks(false)
+            return
+          }
+        }
+      } catch {
+        // Cache lookup failed — silently fall through to live compute.
+      }
+
       const params = new URLSearchParams({
         seasons: seasons.join(','),
         venue,
