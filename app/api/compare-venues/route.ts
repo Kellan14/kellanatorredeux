@@ -117,23 +117,24 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 4. Build per-(machine, venue) value maps. Two paths:
-    //    - Cache fast path (default): sums cache_team_machine_stats and
-    //      reads cache_machine_top_scores rank 1..topN.
-    //    - Live path (roster filter or non-mean metric): pulls raw scores
-    //      from the games table and aggregates in memory. Slower but
-    //      necessary because the cache only stores totals + a top-10 list.
-    // Per-cell value (the chosen metric — mean/median/trimmed) plus the
-    // actual game count. Stored separately so display can show the metric
-    // value AND the true number of underlying games regardless of metric.
+    // 4. Build per-(machine, venue) maps. Two paths:
+    //    a) Cache fast path — Mean only, no roster filter, when
+    //       cache_team_machine_stats has rows for the *exact* requested
+    //       (season_start, season_end). Top scores still come from a small
+    //       live query (the cron's top-scores cache doesn't honor score
+    //       limits the same way and was missing rows).
+    //    b) Live fallback — for non-mean metrics, roster filtering, or
+    //       when (a) returns nothing. Pulls raw scores and aggregates
+    //       in memory; supports every metric.
     const valueByMV = new Map<string /* `${canonicalMachine}|${canonicalVenue}` */, { value: number; gameCount: number }>()
     const topScoresByMV = new Map<string, Array<{
       rank: number; player: string; team_key: string | null; score: number; matchKey: string | null
     }>>()
-    // Only populated in live mode — used when metric != 'mean'.
     const scoresByMV = new Map<string, number[]>()
+    let usedCache = false
 
-    if (!liveMode) {
+    // (a) Cache fast path
+    if (metric === 'mean' && !rosterPlayers) {
       const { data: teamStatsRows } = await supabase
         .from('cache_team_machine_stats' as any)
         .select('machine, venue, total_score, game_count')
@@ -144,94 +145,41 @@ export async function GET(request: NextRequest) {
           machine: string; venue: string | null; total_score: number; game_count: number
         }> | null }
 
-      const cacheTotals = new Map<string, { total: number; count: number }>()
-      for (const r of teamStatsRows || []) {
-        if (!r.venue) continue
-        const canonicalMachine = variationToCanonicalMachine.get(r.machine.toLowerCase())
-        const canonicalVenue = variationToCanonicalVenue.get(r.venue)
-        if (!canonicalMachine || !canonicalVenue) continue
-        const key = `${canonicalMachine}|${canonicalVenue}`
-        const existing = cacheTotals.get(key) || { total: 0, count: 0 }
-        existing.total += Number(r.total_score)
-        existing.count += Number(r.game_count)
-        cacheTotals.set(key, existing)
-      }
-      for (const [key, { total, count }] of Array.from(cacheTotals.entries())) {
-        if (count > 0) {
-          valueByMV.set(key, { value: total / count, gameCount: count })
+      if (teamStatsRows && teamStatsRows.length > 0) {
+        const cacheTotals = new Map<string, { total: number; count: number }>()
+        for (const r of teamStatsRows) {
+          if (!r.venue) continue
+          const canonicalMachine = variationToCanonicalMachine.get(r.machine.toLowerCase())
+          const canonicalVenue = variationToCanonicalVenue.get(r.venue)
+          if (!canonicalMachine || !canonicalVenue) continue
+          const key = `${canonicalMachine}|${canonicalVenue}`
+          const existing = cacheTotals.get(key) || { total: 0, count: 0 }
+          existing.total += Number(r.total_score)
+          existing.count += Number(r.game_count)
+          cacheTotals.set(key, existing)
         }
-      }
-
-      // Top scores: fetch live from the games table instead of
-      // cache_machine_top_scores. The cache had two issues:
-      //   1. The cron filters by score limits before writing, so some
-      //      (machine, venue) pairs have a venueAvg from cache_team_machine_stats
-      //      but no top-scores row at all.
-      //   2. Top-10 rows are stored per venue variation, so merging them
-      //      required de-dup gymnastics and could still come up short.
-      // Live query is small (we already have machine + venue lists in
-      // hand) and produces accurate, freshly-ranked top-N per cell.
-      const machineFilterValuesCacheMode = getAllMachineVariations(sharedMachines)
-      const { data: liveTopGames } = await supabase
-        .from('games')
-        .select('machine, venue, player_1_name, player_1_score, player_1_team, player_2_name, player_2_score, player_2_team, player_3_name, player_3_score, player_3_team, player_4_name, player_4_score, player_4_team, match_key')
-        .in('machine', machineFilterValuesCacheMode)
-        .in('venue', allVenueVariations)
-        .gte('season', seasonStart)
-        .lte('season', seasonEnd) as { data: any[] | null }
-
-      const cacheModeRecordsByMV = new Map<string, Array<{
-        player: string; team_key: string | null; score: number; matchKey: string | null
-      }>>()
-      const cacheModeDedupe = new Map<string, Set<string>>()
-      const scoreLimitsCache = await getScoreLimits()
-      for (const g of liveTopGames || []) {
-        const canonicalMachine = variationToCanonicalMachine.get((g.machine || '').toLowerCase())
-        const canonicalVenue = variationToCanonicalVenue.get(g.venue)
-        if (!canonicalMachine || !canonicalVenue) continue
-        const mvKey = `${canonicalMachine}|${canonicalVenue}`
-        for (let i = 1; i <= 4; i++) {
-          const score = g[`player_${i}_score`]
-          const playerName = g[`player_${i}_name`]
-          if (!score || !playerName) continue
-          if (!isScoreValid(canonicalMachine, score, scoreLimitsCache)) continue
-          const dedupeKey = `${playerName}|${score}|${g.match_key ?? ''}`
-          if (!cacheModeDedupe.has(mvKey)) cacheModeDedupe.set(mvKey, new Set())
-          if (cacheModeDedupe.get(mvKey)!.has(dedupeKey)) continue
-          cacheModeDedupe.get(mvKey)!.add(dedupeKey)
-          if (!cacheModeRecordsByMV.has(mvKey)) cacheModeRecordsByMV.set(mvKey, [])
-          cacheModeRecordsByMV.get(mvKey)!.push({
-            player: playerName,
-            team_key: g[`player_${i}_team`] ?? null,
-            score,
-            matchKey: g.match_key ?? null,
-          })
+        for (const [key, { total, count }] of Array.from(cacheTotals.entries())) {
+          if (count > 0) {
+            valueByMV.set(key, { value: total / count, gameCount: count })
+          }
         }
+        usedCache = valueByMV.size > 0
       }
-      for (const [mvKey, recs] of Array.from(cacheModeRecordsByMV.entries())) {
-        const sorted = [...recs].sort((a, b) => b.score - a.score).slice(0, topN)
-        topScoresByMV.set(mvKey, sorted.map((rec, idx) => ({
-          rank: idx + 1,
-          player: rec.player,
-          team_key: rec.team_key,
-          score: rec.score,
-          matchKey: rec.matchKey,
-        })))
-      }
-    } else {
-      // Live path: one (potentially large) games query covering every
-      // selected venue + every shared machine in the season range. Then
-      // aggregate per (machine, venue) in memory. Score-limits filter out
-      // glitch scores before they pollute the metric.
+    }
+
+    // (b) Live path — used for every non-cache scenario, AND to populate
+    // top scores for the cache path (the cron's top-scores cache had
+    // sparse data + per-variation duplication issues).
+    {
       const scoreLimits = await getScoreLimits()
       const rosterSet = rosterPlayers && rosterPlayers.length > 0
         ? new Set(rosterPlayers)
         : null
 
       // games.machine is stored in original case (e.g. "Tron", "POKEMON"),
-      // not lowercase. allMachineVars from getAllMachineVariations is also
-      // lowercased — using it directly returns zero rows. Build the original-
-      // case variation set instead so the SQL .in() actually matches.
+      // not lowercase. Build the original-case variation set so the SQL
+      // .in() actually matches; in-memory matching below does its own
+      // case-fold via variationToCanonicalMachine.
       const machineFilterValues = getAllMachineVariations(sharedMachines)
       const games = await fetchAllRecords<any>(() =>
         supabase
@@ -246,9 +194,12 @@ export async function GET(request: NextRequest) {
 
       // Per-(machine, venue) aggregations. Keep raw scores (for median/
       // trimmed) AND a sorted-by-score record list (for the topN list).
+      // Top scores get de-duped on (player, score, match) so a row that
+      // somehow appears twice (e.g. via venue variations) only counts once.
       const recordsByMV = new Map<string, Array<{
         score: number; player: string; team_key: string | null; matchKey: string | null
       }>>()
+      const dedupeByMV = new Map<string, Set<string>>()
 
       for (const g of games as any[]) {
         const canonicalMachine = variationToCanonicalMachine.get((g.machine || '').toLowerCase())
@@ -261,6 +212,10 @@ export async function GET(request: NextRequest) {
           if (!score || !playerName) continue
           if (!isScoreValid(canonicalMachine, score, scoreLimits)) continue
           if (rosterSet && !rosterSet.has(playerName)) continue
+          const dedupeKey = `${playerName}|${score}|${g.match_key ?? ''}`
+          if (!dedupeByMV.has(key)) dedupeByMV.set(key, new Set())
+          if (dedupeByMV.get(key)!.has(dedupeKey)) continue
+          dedupeByMV.get(key)!.add(dedupeKey)
           if (!scoresByMV.has(key)) scoresByMV.set(key, [])
           scoresByMV.get(key)!.push(score)
           if (!recordsByMV.has(key)) recordsByMV.set(key, [])
@@ -273,10 +228,23 @@ export async function GET(request: NextRequest) {
         }
       }
 
+      // Top scores per (machine, venue): sort desc, slice topN, fresh ranks.
+      for (const [mvKey, recs] of Array.from(recordsByMV.entries())) {
+        const sorted = [...recs].sort((a, b) => b.score - a.score).slice(0, topN)
+        topScoresByMV.set(mvKey, sorted.map((rec, idx) => ({
+          rank: idx + 1,
+          player: rec.player,
+          team_key: rec.team_key,
+          score: rec.score,
+          matchKey: rec.matchKey,
+        })))
+      }
+
       // Build valueByMV with the chosen metric. gameCount stays the actual
-      // number of underlying scores regardless of metric, so the UI can
-      // truthfully say "(N games)".
-      for (const [key, scores] of Array.from(scoresByMV.entries())) {
+      // number of underlying scores regardless of metric. Skip when cache
+      // already populated valueByMV (mean fast path) — we'd just overwrite
+      // with the same value at the cost of double work.
+      if (!usedCache) for (const [key, scores] of Array.from(scoresByMV.entries())) {
         if (scores.length === 0) continue
         const sorted = [...scores].sort((a, b) => a - b)
         const n = sorted.length
@@ -336,6 +304,11 @@ export async function GET(request: NextRequest) {
       topN,
       metric,
       rosterFiltered: !!rosterPlayers,
+      // True when the venue-avg numbers came from cache_team_machine_stats
+      // (Mean only, no roster filter, season range matches what the cron
+      // wrote). Useful for debugging "why is X showing?". Top scores
+      // always come from a live query regardless of this flag.
+      usedCache,
       sharedMachines,
       rows,
     })
