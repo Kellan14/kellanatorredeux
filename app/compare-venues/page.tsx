@@ -405,8 +405,12 @@ export default function CompareVenuesPage() {
                             >
                               <div className={`font-semibold ${isBest ? 'text-green-700 dark:text-green-400' : ''}`}>
                                 {Math.round(cell.venueAvg).toLocaleString()}
+                                {/* gameCount counts every player-score row,
+                                    not unique games — a doubles game contributes 4
+                                    rows and a singles game 2. Labelled "scores"
+                                    so the number is honest. */}
                                 <span className="ml-2 text-[10px] text-muted-foreground font-normal">
-                                  ({cell.gameCount} games)
+                                  ({cell.gameCount.toLocaleString()} scores)
                                 </span>
                               </div>
                               {cell.topScores.length > 0 && (

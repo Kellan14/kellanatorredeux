@@ -162,47 +162,54 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // Pull all 10 ranks per (machine, venue variation) — when multiple
-      // variations of a venue exist (e.g. "Ice Box" + "Icebox") each gets
-      // its own top-10 with overlapping scores and ranks. We need the full
-      // sets so we can merge, dedupe, and re-rank by score across them.
-      const { data: topScoreRows } = await supabase
-        .from('cache_machine_top_scores' as any)
-        .select('machine, venue, rank, player_name, team_key, score, match_key, week')
-        .in('machine', allMachineVars)
+      // Top scores: fetch live from the games table instead of
+      // cache_machine_top_scores. The cache had two issues:
+      //   1. The cron filters by score limits before writing, so some
+      //      (machine, venue) pairs have a venueAvg from cache_team_machine_stats
+      //      but no top-scores row at all.
+      //   2. Top-10 rows are stored per venue variation, so merging them
+      //      required de-dup gymnastics and could still come up short.
+      // Live query is small (we already have machine + venue lists in
+      // hand) and produces accurate, freshly-ranked top-N per cell.
+      const machineFilterValuesCacheMode = getAllMachineVariations(sharedMachines)
+      const { data: liveTopGames } = await supabase
+        .from('games')
+        .select('machine, venue, player_1_name, player_1_score, player_1_team, player_2_name, player_2_score, player_2_team, player_3_name, player_3_score, player_3_team, player_4_name, player_4_score, player_4_team, match_key')
+        .in('machine', machineFilterValuesCacheMode)
         .in('venue', allVenueVariations)
-        .is('season', null)
-        .lte('rank', 10) as { data: Array<{
-          machine: string; venue: string; rank: number; player_name: string;
-          team_key: string | null; score: number; match_key: string | null; week: number | null;
-        }> | null }
+        .gte('season', seasonStart)
+        .lte('season', seasonEnd) as { data: any[] | null }
 
-      // Stage merged candidates per canonical (machine, venue), de-duped on
-      // (player, score, match) so the same record stored under two venue
-      // variations only counts once.
-      const mergedByMV = new Map<string, Map<string, {
+      const cacheModeRecordsByMV = new Map<string, Array<{
         player: string; team_key: string | null; score: number; matchKey: string | null
       }>>()
-      for (const r of topScoreRows || []) {
-        const canonicalMachine = variationToCanonicalMachine.get(r.machine.toLowerCase())
-        const canonicalVenue = variationToCanonicalVenue.get(r.venue)
+      const cacheModeDedupe = new Map<string, Set<string>>()
+      const scoreLimitsCache = await getScoreLimits()
+      for (const g of liveTopGames || []) {
+        const canonicalMachine = variationToCanonicalMachine.get((g.machine || '').toLowerCase())
+        const canonicalVenue = variationToCanonicalVenue.get(g.venue)
         if (!canonicalMachine || !canonicalVenue) continue
         const mvKey = `${canonicalMachine}|${canonicalVenue}`
-        const dedupeKey = `${r.player_name}|${r.score}|${r.match_key ?? ''}`
-        if (!mergedByMV.has(mvKey)) mergedByMV.set(mvKey, new Map())
-        const inner = mergedByMV.get(mvKey)!
-        if (!inner.has(dedupeKey)) {
-          inner.set(dedupeKey, {
-            player: r.player_name,
-            team_key: r.team_key,
-            score: Number(r.score),
-            matchKey: r.match_key,
+        for (let i = 1; i <= 4; i++) {
+          const score = g[`player_${i}_score`]
+          const playerName = g[`player_${i}_name`]
+          if (!score || !playerName) continue
+          if (!isScoreValid(canonicalMachine, score, scoreLimitsCache)) continue
+          const dedupeKey = `${playerName}|${score}|${g.match_key ?? ''}`
+          if (!cacheModeDedupe.has(mvKey)) cacheModeDedupe.set(mvKey, new Set())
+          if (cacheModeDedupe.get(mvKey)!.has(dedupeKey)) continue
+          cacheModeDedupe.get(mvKey)!.add(dedupeKey)
+          if (!cacheModeRecordsByMV.has(mvKey)) cacheModeRecordsByMV.set(mvKey, [])
+          cacheModeRecordsByMV.get(mvKey)!.push({
+            player: playerName,
+            team_key: g[`player_${i}_team`] ?? null,
+            score,
+            matchKey: g.match_key ?? null,
           })
         }
       }
-      // Sort merged candidates by score desc, take topN, assign clean ranks.
-      for (const [mvKey, inner] of Array.from(mergedByMV.entries())) {
-        const sorted = Array.from(inner.values()).sort((a, b) => b.score - a.score).slice(0, topN)
+      for (const [mvKey, recs] of Array.from(cacheModeRecordsByMV.entries())) {
+        const sorted = [...recs].sort((a, b) => b.score - a.score).slice(0, topN)
         topScoresByMV.set(mvKey, sorted.map((rec, idx) => ({
           rank: idx + 1,
           player: rec.player,
