@@ -221,11 +221,16 @@ export async function GET(request: NextRequest) {
         ? new Set(rosterPlayers)
         : null
 
+      // games.machine is stored in original case (e.g. "Tron", "POKEMON"),
+      // not lowercase. allMachineVars from getAllMachineVariations is also
+      // lowercased — using it directly returns zero rows. Build the original-
+      // case variation set instead so the SQL .in() actually matches.
+      const machineFilterValues = getAllMachineVariations(sharedMachines)
       const games = await fetchAllRecords<any>(() =>
         supabase
           .from('games')
           .select('machine, venue, player_1_name, player_1_score, player_1_team, player_2_name, player_2_score, player_2_team, player_3_name, player_3_score, player_3_team, player_4_name, player_4_score, player_4_team, match_key, week')
-          .in('machine', allMachineVars)
+          .in('machine', machineFilterValues)
           .in('venue', allVenueVariations)
           .gte('season', seasonStart)
           .lte('season', seasonEnd)
