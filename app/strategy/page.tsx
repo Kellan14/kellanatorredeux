@@ -327,6 +327,19 @@ export default function StrategyPage() {
   const [winRateWeight, setWinRateWeight] = useState(() => getPersistedSliders().winRateWeight)
   const [recentFormWeight, setRecentFormWeight] = useState(() => getPersistedSliders().recentFormWeight)
   const [dataConfidenceWeight, setDataConfidenceWeight] = useState(() => getPersistedSliders().dataConfidenceWeight)
+  // When ON (default), every endpoint that takes a venueWeight slider
+  // ignores it and computes per-game-normalized values instead. When OFF,
+  // the legacy slider blend is used end-to-end. Persisted alongside the
+  // other slider preferences in 'strategySliderSettings'.
+  const [usePerGameNormalized, setUsePerGameNormalized] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true
+    try {
+      const saved = localStorage.getItem('strategySliderSettings')
+      if (!saved) return true
+      const parsed = JSON.parse(saved) as { usePerGameNormalized?: boolean }
+      return parsed.usePerGameNormalized !== false // default ON
+    } catch { return true }
+  })
 
   // Derived: Venue Avg Weight is the remainder
   const venueAvgWeight = 100 - winRateWeight - recentFormWeight - dataConfidenceWeight
@@ -339,11 +352,11 @@ export default function StrategyPage() {
     k => (currentWeights as any)[k] !== appliedWeights[k]
   )
 
-  // Persist slider settings to localStorage
+  // Persist slider settings to localStorage (incl. the per-game-normalized toggle).
   useEffect(() => {
     if (typeof window === 'undefined') return
-    localStorage.setItem('strategySliderSettings', JSON.stringify(currentWeights))
-  }, [venueWeight, userInputWeight, confidenceBoost, opponentWeight, winRateWeight, recentFormWeight, dataConfidenceWeight])
+    localStorage.setItem('strategySliderSettings', JSON.stringify({ ...currentWeights, usePerGameNormalized }))
+  }, [venueWeight, userInputWeight, confidenceBoost, opponentWeight, winRateWeight, recentFormWeight, dataConfidenceWeight, usePerGameNormalized])
 
   // Proportional adjustment when a score factor slider changes
   const handleScoreWeightChange = (
@@ -708,6 +721,7 @@ export default function StrategyPage() {
         `&teamVenueSpecific=${teamVenueSpecific}` +
         `&twcVenueSpecific=${twcVenueSpecific}` +
         `&venueWeight=${venueWeight / 100}` +
+        `&usePerGameNormalized=${usePerGameNormalized}` +
         `&machines=${encodeURIComponent((venues.find(v => v.name === selectedVenue)?.machines || []).join(','))}` +
         (opponentPlayersList.length > 0 ? `&opponentPlayers=${encodeURIComponent(opponentPlayersList.join(','))}` : '')
       )
@@ -805,6 +819,7 @@ export default function StrategyPage() {
           teamVenueSpecific,
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
+          usePerGameNormalized,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -859,6 +874,7 @@ export default function StrategyPage() {
           teamVenueSpecific,
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
+          usePerGameNormalized,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -913,6 +929,7 @@ export default function StrategyPage() {
           teamVenueSpecific,
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
+          usePerGameNormalized,
           opponentWeight: opponentWeight / 100,
           exclusions: singlesAssignExclusions,
           mustPlay: Array.from(satOutPlayers),
@@ -955,6 +972,7 @@ export default function StrategyPage() {
           teamVenueSpecific,
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
+          usePerGameNormalized,
           opponentWeight: opponentWeight / 100,
           exclusions: doublesAssignExclusions,
           mustPlay: Array.from(satOutPlayers),
@@ -1004,6 +1022,7 @@ export default function StrategyPage() {
           teamVenueSpecific,
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
+          usePerGameNormalized,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -1030,6 +1049,7 @@ export default function StrategyPage() {
           teamVenueSpecific,
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
+          usePerGameNormalized,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -1052,6 +1072,7 @@ export default function StrategyPage() {
           seasonEnd: seasonRange[1],
           venue: selectedVenue,
           venueWeight: venueWeight / 100,
+          usePerGameNormalized,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -1076,6 +1097,7 @@ export default function StrategyPage() {
           seasonEnd: seasonRange[1],
           venue: selectedVenue,
           venueWeight: venueWeight / 100,
+          usePerGameNormalized,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -1685,6 +1707,7 @@ export default function StrategyPage() {
       const venueParam = heatmapShowAllVenues ? '' : `&venue=${encodeURIComponent(selectedVenue)}`
       const venueWeightParam = heatmapShowAllVenues ? '' : `&venueWeight=${venueWeight / 100}`
       const userInputWeightParam = userInputWeight > 0 ? `&userInputWeight=${userInputWeight / 100}` : ''
+      const pgnParam = `&usePerGameNormalized=${usePerGameNormalized}`
 
       const response = await fetch(
         `/api/strategy/matrix?` +
@@ -1694,6 +1717,7 @@ export default function StrategyPage() {
         `&seasonEnd=${seasonRange[1]}` +
         venueParam +
         venueWeightParam +
+        pgnParam +
         userInputWeightParam
       )
 
@@ -2254,13 +2278,28 @@ export default function StrategyPage() {
                         <div className="flex-1 min-w-0">
                           <input type="range" min={0} max={100} step={1} value={venueWeight}
                             onChange={(e) => setVenueWeight(parseInt(e.target.value))}
-                            className="w-full accent-primary h-2" />
-                          <div className="flex justify-between text-[10px] text-muted-foreground -mt-0.5">
+                            disabled={usePerGameNormalized}
+                            className={`w-full accent-primary h-2 ${usePerGameNormalized ? 'opacity-40 cursor-not-allowed' : ''}`} />
+                          <div className={`flex justify-between text-[10px] text-muted-foreground -mt-0.5 ${usePerGameNormalized ? 'opacity-40' : ''}`}>
                             <span>All Venues</span>
                             <span>Venue Only</span>
                           </div>
                         </div>
-                        <div className="w-10 md:w-12 text-xs text-right shrink-0">{venueWeight}%</div>
+                        <div className={`w-10 md:w-12 text-xs text-right shrink-0 ${usePerGameNormalized ? 'opacity-40' : ''}`}>{venueWeight}%</div>
+                      </div>
+                      {/* Toggle: when ON (default), use per-game-normalized math
+                          across the strategy page and ignore the slider. When
+                          OFF, fall back to the legacy venueWeight blend. */}
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-24 md:w-48 text-[10px] md:text-xs truncate shrink-0" />
+                        <label className="flex items-center gap-2 text-[10px] md:text-xs text-muted-foreground cursor-pointer">
+                          <Checkbox
+                            checked={usePerGameNormalized}
+                            onCheckedChange={(c) => setUsePerGameNormalized(!!c)}
+                            className="h-3.5 w-3.5"
+                          />
+                          Per-game normalized (recommended) — judges each score against the venue it was played at
+                        </label>
                       </div>
                     </div>
 
@@ -3172,13 +3211,28 @@ export default function StrategyPage() {
                         <div className="flex-1 min-w-0">
                           <input type="range" min={0} max={100} step={1} value={venueWeight}
                             onChange={(e) => setVenueWeight(parseInt(e.target.value))}
-                            className="w-full accent-primary h-2" />
-                          <div className="flex justify-between text-[10px] text-muted-foreground -mt-0.5">
+                            disabled={usePerGameNormalized}
+                            className={`w-full accent-primary h-2 ${usePerGameNormalized ? 'opacity-40 cursor-not-allowed' : ''}`} />
+                          <div className={`flex justify-between text-[10px] text-muted-foreground -mt-0.5 ${usePerGameNormalized ? 'opacity-40' : ''}`}>
                             <span>All Venues</span>
                             <span>Venue Only</span>
                           </div>
                         </div>
-                        <div className="w-10 md:w-12 text-xs text-right shrink-0">{venueWeight}%</div>
+                        <div className={`w-10 md:w-12 text-xs text-right shrink-0 ${usePerGameNormalized ? 'opacity-40' : ''}`}>{venueWeight}%</div>
+                      </div>
+                      {/* Toggle: when ON (default), use per-game-normalized math
+                          across the strategy page and ignore the slider. When
+                          OFF, fall back to the legacy venueWeight blend. */}
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-24 md:w-48 text-[10px] md:text-xs truncate shrink-0" />
+                        <label className="flex items-center gap-2 text-[10px] md:text-xs text-muted-foreground cursor-pointer">
+                          <Checkbox
+                            checked={usePerGameNormalized}
+                            onCheckedChange={(c) => setUsePerGameNormalized(!!c)}
+                            className="h-3.5 w-3.5"
+                          />
+                          Per-game normalized (recommended) — judges each score against the venue it was played at
+                        </label>
                       </div>
                     </div>
 

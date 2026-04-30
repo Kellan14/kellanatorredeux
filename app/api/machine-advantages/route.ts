@@ -17,6 +17,12 @@ export async function GET(request: Request) {
     const twcVenueSpecific = searchParams.get('twcVenueSpecific') === 'true'
     const venueWeightParam = parseFloat(searchParams.get('venueWeight') || '0.7')
     const vw = Math.max(0, Math.min(1, venueWeightParam))
+    // When true (the strategy page's default), pctOfVenue is computed
+    // per-game-normalized (each score is judged against the venue avg
+    // for THE venue it was played at, then averaged across games). When
+    // false, the legacy venueWeight blend is used. The toggle is in the
+    // strategy page's slider panel.
+    const usePerGameNormalized = searchParams.get('usePerGameNormalized') !== 'false'
     const opponentPlayersParam = searchParams.get('opponentPlayers')
     const opponentPlayersList = opponentPlayersParam ? opponentPlayersParam.split(',').filter(Boolean) : []
 
@@ -67,6 +73,30 @@ export async function GET(request: Request) {
     let gamesData: any[] = []
     let usedCache = false
 
+    // Per-(machine, venue) buckets used by the per-game-normalized branch.
+    // Keys: canonical machine name. Inner keys: venue string from the cache /
+    // games table. Populated by both code paths so the per-game-normalized
+    // pctOfVenue calc can sum (team_total_v / venueAvg_v) across venues.
+    type PerVenueTeam = { twcTotal: number; twcCount: number; oppTotal: number; oppCount: number }
+    const perVenueTeamStats = new Map<string, Map<string, PerVenueTeam>>()
+    const perVenueBaseline = new Map<string, Map<string, { total: number; count: number }>>()
+    const addPerVenueTeam = (machine: string, venue: string, side: 'twc' | 'opp', total: number, count: number) => {
+      if (!perVenueTeamStats.has(machine)) perVenueTeamStats.set(machine, new Map())
+      const inner = perVenueTeamStats.get(machine)!
+      const existing = inner.get(venue) || { twcTotal: 0, twcCount: 0, oppTotal: 0, oppCount: 0 }
+      if (side === 'twc') { existing.twcTotal += total; existing.twcCount += count }
+      else { existing.oppTotal += total; existing.oppCount += count }
+      inner.set(venue, existing)
+    }
+    const addPerVenueBaseline = (machine: string, venue: string, total: number, count: number) => {
+      if (!perVenueBaseline.has(machine)) perVenueBaseline.set(machine, new Map())
+      const inner = perVenueBaseline.get(machine)!
+      const existing = inner.get(venue) || { total: 0, count: 0 }
+      existing.total += total
+      existing.count += count
+      inner.set(venue, existing)
+    }
+
     if (opponentPlayersList.length === 0 && twcTeamKey && opponentTeamKey) {
       // Try reading from cache_team_machine_stats
       const { data: cacheData } = await supabase
@@ -101,6 +131,16 @@ export async function GET(request: Request) {
             }
           }
 
+          // Per-venue bucket for the per-game-normalized branch. Skip the
+          // venue=NULL rollup row (it's a sum across venues, not a venue
+          // we can normalize against on its own).
+          if (row.venue) {
+            const side = row.team_key === twcTeamKey ? 'twc'
+              : row.team_key === opponentTeamKey ? 'opp'
+              : null
+            if (side) addPerVenueTeam(canonical, row.venue, side, Number(row.total_score), row.game_count)
+          }
+
           // All-venues row → non-venue = allVenues minus venue
           if (isAllVenuesRow) {
             if (!nonVenueStats.has(canonical)) {
@@ -123,6 +163,34 @@ export async function GET(request: Request) {
             nvs.twcTotal -= vs.twcTotal; nvs.twcCount -= vs.twcCount
             nvs.oppTotal -= vs.oppTotal; nvs.oppCount -= vs.oppCount
           }
+        }
+      }
+    }
+
+    // Populate per-(machine, venue) baselines from cache_team_machine_stats
+    // for every venue we have team data in. Needed by the per-game-normalized
+    // branch — sums across all teams give us the venue avg per machine per
+    // venue. Cache path only; the fallback path below builds baselines from
+    // gamesData directly.
+    if (usedCache && usePerGameNormalized) {
+      const allMachineKeys = Array.from(machineVariationToCanonical.keys())
+      const venuesWeNeed = new Set<string>()
+      for (const inner of Array.from(perVenueTeamStats.values())) {
+        for (const v of Array.from(inner.keys())) venuesWeNeed.add(v)
+      }
+      if (venuesWeNeed.size > 0) {
+        const { data: baselineRows } = await supabase
+          .from('cache_team_machine_stats' as any)
+          .select('machine, venue, total_score, game_count')
+          .in('machine', allMachineKeys)
+          .in('venue', Array.from(venuesWeNeed))
+          .eq('season_start', seasonStart)
+          .eq('season_end', seasonEnd) as { data: any[] | null }
+        for (const r of baselineRows || []) {
+          if (!r.venue) continue
+          const canonical = machineVariationToCanonical.get(r.machine)
+          if (!canonical) continue
+          addPerVenueBaseline(canonical, r.venue, Number(r.total_score), Number(r.game_count))
         }
       }
     }
@@ -184,6 +252,31 @@ export async function GET(request: Request) {
 
       venueStats = buildTeamStats(venueGames)
       nonVenueStats = buildTeamStats(nonVenueGames)
+
+      // Per-(machine, venue) bucketing for the per-game-normalized branch.
+      if (usePerGameNormalized) {
+        for (const game of allGamesNormalized) {
+          const v = game.venue
+          if (!v) continue
+          for (let i = 1; i <= 4; i++) {
+            const teamKey = game[`player_${i}_team`]
+            const score = game[`player_${i}_score`]
+            const playerName = game[`player_${i}_name`]
+            if (!score) continue
+            // Team scores
+            const teamDisplayName = teamNameMap[teamKey]
+            if (teamDisplayName === teamName) {
+              addPerVenueTeam(game.machine, v, 'twc', score, 1)
+            } else if (teamDisplayName === opponent) {
+              if (opponentPlayersList.length === 0 || opponentPlayersList.includes(playerName)) {
+                addPerVenueTeam(game.machine, v, 'opp', score, 1)
+              }
+            }
+            // Venue baseline includes every player's score
+            addPerVenueBaseline(game.machine, v, score, 1)
+          }
+        }
+      }
     }
 
     // Blend function for a team's average on a machine
@@ -313,7 +406,33 @@ export async function GET(request: Request) {
       let opponentPctOfVenue: number
       let statisticalAdvantage: number
 
-      if (venueAvg > 0) {
+      if (usePerGameNormalized) {
+        // Per-game normalization: every (machine, venue) bucket is judged
+        // against THAT venue's avg, then summed across venues. Equivalent
+        // to twcAvg/venueAvg when the team has data only at the selected
+        // venue; differs (correctly) when scope spans multiple venues.
+        const computeSidePct = (side: 'twc' | 'opp', isVenueSpecific: boolean): number => {
+          const inner = perVenueTeamStats.get(machine)
+          if (!inner) return 0
+          let sumPct = 0
+          let games = 0
+          for (const [venueKey, stats] of Array.from(inner.entries())) {
+            if (isVenueSpecific && !venueVariations.includes(venueKey)) continue
+            const total = side === 'twc' ? stats.twcTotal : stats.oppTotal
+            const count = side === 'twc' ? stats.twcCount : stats.oppCount
+            if (count <= 0) continue
+            const baseline = perVenueBaseline.get(machine)?.get(venueKey)
+            const venueAvgV = baseline && baseline.count > 0 ? baseline.total / baseline.count : 0
+            if (venueAvgV <= 0) continue
+            sumPct += (total / venueAvgV) * 100
+            games += count
+          }
+          return games > 0 ? sumPct / games : 0
+        }
+        twcPctOfVenue = computeSidePct('twc', twcVenueSpecific)
+        opponentPctOfVenue = computeSidePct('opp', teamVenueSpecific)
+        statisticalAdvantage = twcPctOfVenue - opponentPctOfVenue
+      } else if (venueAvg > 0) {
         twcPctOfVenue = (twcAvg / venueAvg) * 100
         opponentPctOfVenue = (oppAvg / venueAvg) * 100
         statisticalAdvantage = twcPctOfVenue - opponentPctOfVenue
