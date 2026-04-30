@@ -16,12 +16,87 @@ export async function GET(request: Request) {
     const seasonStart = parseInt(searchParams.get('seasonStart') || '20')
     const seasonEnd = parseInt(searchParams.get('seasonEnd') || '22')
     const allVenues = searchParams.get('allVenues') === 'true'
+    // Optional opponent context: when provided, each per-machine row gets
+    // oppAvg/oppPctOfVenue/edge fields so the UI can highlight where the
+    // selected player has the biggest matchup edge over the opponent's
+    // current roster. Mirrors how /api/machine-advantages applies the
+    // opponentPlayers filter.
+    const opponentTeam = searchParams.get('opponentTeam')
+    const opponentPlayersParam = searchParams.get('opponentPlayers')
+    const opponentPlayers = opponentPlayersParam
+      ? opponentPlayersParam.split(',').map(p => p.trim()).filter(Boolean)
+      : []
 
     if (!player) {
       return NextResponse.json(
         { error: 'Player parameter is required' },
         { status: 400 }
       )
+    }
+
+    /**
+     * For each machine in `rows`, compute the opponent's roster-filtered
+     * average score on that machine (venue-specific or league-wide based on
+     * `allVenues`) and attach `oppAvg`, `oppPctOfVenue`, `edge` fields.
+     * No-ops when no opponent context was supplied.
+     *
+     * Uses cache_player_machine_stats so it adds <100ms even with a roster
+     * of 10. Falls back gracefully when the cache is empty by returning
+     * zeros (which the UI renders as "—").
+     */
+    const enrichWithOpponent = async (
+      rows: Array<{ machine: string; pctOfVenue: number; [k: string]: any }>,
+      venueScoresMap: Map<string, { totalScore: number; count: number }>
+    ) => {
+      if (!opponentTeam || opponentPlayers.length === 0 || rows.length === 0) return rows
+
+      // Build the same machine variation set the player-analysis cache uses.
+      const allMachineVars = getAllMachineVariations(rows.map(r => r.machine)).map(v => v.toLowerCase())
+
+      let oppQuery = supabase
+        .from('cache_player_machine_stats' as any)
+        .select('player_name, machine, total_score, game_count, venue')
+        .in('player_name', opponentPlayers)
+        .in('machine', allMachineVars)
+        .eq('season_start', seasonStart)
+        .eq('season_end', seasonEnd)
+      if (allVenues) {
+        oppQuery = oppQuery.is('venue', null)
+      } else if (venue) {
+        oppQuery = oppQuery.in('venue', getVenueVariations(venue))
+      }
+      const { data: oppRows } = await oppQuery as { data: Array<{
+        machine: string; total_score: number; game_count: number
+      }> | null }
+
+      // Map any machine variation back to its canonical (venues.json) name.
+      const variationToCanonical = new Map<string, string>()
+      for (const m of rows.map(r => r.machine)) {
+        for (const v of getAllMachineVariations([m])) {
+          variationToCanonical.set(v.toLowerCase(), m)
+        }
+      }
+
+      // Aggregate opponent roster's totals per canonical machine.
+      const oppAgg = new Map<string, { total: number; count: number }>()
+      for (const r of oppRows || []) {
+        const canon = variationToCanonical.get(r.machine.toLowerCase())
+        if (!canon) continue
+        const existing = oppAgg.get(canon) || { total: 0, count: 0 }
+        existing.total += Number(r.total_score)
+        existing.count += Number(r.game_count)
+        oppAgg.set(canon, existing)
+      }
+
+      return rows.map(row => {
+        const agg = oppAgg.get(row.machine)
+        const oppAvg = agg && agg.count > 0 ? agg.total / agg.count : 0
+        const venueEntry = venueScoresMap.get(row.machine)
+        const venueAvg = venueEntry && venueEntry.count > 0 ? venueEntry.totalScore / venueEntry.count : 0
+        const oppPctOfVenue = venueAvg > 0 && oppAvg > 0 ? (oppAvg / venueAvg) * 100 : 0
+        const edge = oppPctOfVenue > 0 ? row.pctOfVenue - oppPctOfVenue : 0
+        return { ...row, oppAvg, oppPctOfVenue, edge, oppGamesPlayed: agg?.count || 0 }
+      })
     }
 
     // Get player's key from games table (works for all players, not just TWC)
@@ -170,12 +245,21 @@ export async function GET(request: Request) {
           }
         }).sort((a: any, b: any) => b.pctOfVenue - a.pctOfVenue)
 
+        // Build a venueScores-equivalent map from the team-level venue cache
+        // so the opponent-edge calc has a venue average to compare against.
+        const venueScoresMap = new Map<string, { totalScore: number; count: number }>()
+        for (const [m, agg] of Array.from(venueAvgMap.entries())) {
+          const canon = machineVarToCanon.get(m) || m
+          venueScoresMap.set(canon, { totalScore: agg.total, count: agg.count })
+        }
+        const enriched = await enrichWithOpponent(machinePerformance, venueScoresMap)
+
         return NextResponse.json({
           player,
           totalGames,
           uniqueMachines: machinePerformance.length,
           venuesPlayed: 0, // Not available from cache
-          machinePerformance,
+          machinePerformance: enriched,
           allVenues
         })
       }
@@ -381,12 +465,14 @@ export async function GET(request: Request) {
       }
     }).sort((a, b) => b.pctOfVenue - a.pctOfVenue)
 
+    const enriched = await enrichWithOpponent(machinePerformance, venueScores)
+
     return NextResponse.json({
       player,
       totalGames,
       uniqueMachines: machineStats.size,
       venuesPlayed: venuesSet.size,
-      machinePerformance,
+      machinePerformance: enriched,
       allVenues
     })
   } catch (error) {

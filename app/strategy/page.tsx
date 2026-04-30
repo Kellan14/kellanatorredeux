@@ -49,7 +49,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Loader2, X, ChevronDown, ChevronUp, Target, Users, Info, Check, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react'
+import { Loader2, X, ChevronDown, ChevronUp, Target, Users, Info, Check, ArrowUp, ArrowDown, ArrowUpDown, Send } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import {
   Collapsible,
@@ -488,8 +488,20 @@ export default function StrategyPage() {
   const [heatmapShowAllVenues, setHeatmapShowAllVenues] = useState(false)
   const [playerAnalysis, setPlayerAnalysis] = useState<any>(null)
   const [loadingAnalysis, setLoadingAnalysis] = useState(false)
-  const [analysisSortColumn, setAnalysisSortColumn] = useState<string>('pctOfVenue')
+  // Default sort = matchup edge so the top of the table is always "best
+  // pick vs this opponent". When no opponent context is loaded yet, edge
+  // is 0 across the board and the user sees the existing pctOfVenue order.
+  const [analysisSortColumn, setAnalysisSortColumn] = useState<string>('edge')
   const [analysisSortDirection, setAnalysisSortDirection] = useState<'asc' | 'desc'>('desc')
+
+  // Player Analysis → Discord (mirrors the strategy report flow on the
+  // Picking tab). Click the button → preview dialog → Send confirms.
+  const [analysisDiscordOpen, setAnalysisDiscordOpen] = useState(false)
+  const [analysisDiscordText, setAnalysisDiscordText] = useState('')
+  const [analysisDiscordSending, setAnalysisDiscordSending] = useState(false)
+  const [analysisDiscordSent, setAnalysisDiscordSent] = useState(false)
+  const [analysisDiscordError, setAnalysisDiscordError] = useState('')
+  const [analysisDiscordCopied, setAnalysisDiscordCopied] = useState(false)
 
   // Advanced optimization state
   const [matrixData, setMatrixData] = useState<{
@@ -1188,6 +1200,116 @@ export default function StrategyPage() {
     }
   }
 
+  // Build a Discord-friendly text snapshot of the current Player Analysis
+  // tab (for the selected player against the selected opponent's roster).
+  // Mirrors the layout of the Top 3 Picks / Top 3 Weaknesses blocks plus
+  // a compact per-machine table.
+  const buildAnalysisReportText = (): string => {
+    if (!playerAnalysis || !selectedAnalysisPlayer || !selectedOpponent) return ''
+    const rows: any[] = (playerAnalysis.machinePerformance || []).filter((m: any) => (m.oppGamesPlayed || 0) > 0)
+    if (rows.length === 0) return ''
+
+    const seasonsLabel = seasonRange[0] === seasonRange[1]
+      ? `Season ${seasonRange[0]}`
+      : `Seasons ${seasonRange[0]}–${seasonRange[1]}`
+    const venueScope = showAllVenues ? 'all venues' : selectedVenue
+    const header = `${selectedAnalysisPlayer} vs ${selectedOpponent} — ${venueScope} (${seasonsLabel})`
+
+    const picks = [...rows].sort((a, b) => (b.edge || 0) - (a.edge || 0)).slice(0, 3)
+    const weak = [...rows].sort((a, b) => (a.edge || 0) - (b.edge || 0)).slice(0, 3)
+
+    const fmt = (m: any) => {
+      const sign = m.edge >= 0 ? '+' : ''
+      return `  ${m.machine}: ${sign}${m.edge.toFixed(1)}%  (you ${m.pctOfVenue.toFixed(1)}% V.Avg, opp ${m.oppPctOfVenue.toFixed(1)}% V.Avg)`
+    }
+
+    const colHeader =
+      'Machine'.padEnd(28) +
+      'You %V'.padStart(9) +
+      'Opp %V'.padStart(9) +
+      'Edge'.padStart(9) +
+      'Played'.padStart(9)
+    const sep = '-'.repeat(colHeader.length)
+    const tableRows = [...rows]
+      .sort((a, b) => (b.edge || 0) - (a.edge || 0))
+      .map((m) => {
+        const sign = m.edge >= 0 ? '+' : ''
+        return (
+          (m.machine || '').slice(0, 28).padEnd(28) +
+          `${m.pctOfVenue.toFixed(1)}%`.padStart(9) +
+          `${m.oppPctOfVenue.toFixed(1)}%`.padStart(9) +
+          `${sign}${m.edge.toFixed(1)}%`.padStart(9) +
+          String(m.timesPlayed || 0).padStart(9)
+        )
+      })
+
+    return [
+      header,
+      '',
+      `Top 3 Picks vs ${selectedOpponent}:`,
+      ...picks.map(fmt),
+      '',
+      `Top 3 Weaknesses vs ${selectedOpponent}:`,
+      ...weak.map(fmt),
+      '',
+      colHeader,
+      sep,
+      ...tableRows,
+    ].join('\n')
+  }
+
+  const openAnalysisDiscordPreview = () => {
+    const text = buildAnalysisReportText()
+    if (!text) {
+      setAnalysisDiscordError('No matchup data to send (need both a player and opponent with overlap)')
+      setAnalysisDiscordOpen(true)
+      setAnalysisDiscordText('')
+      return
+    }
+    setAnalysisDiscordError('')
+    setAnalysisDiscordSent(false)
+    setAnalysisDiscordCopied(false)
+    setAnalysisDiscordText(text)
+    setAnalysisDiscordOpen(true)
+  }
+
+  const confirmSendAnalysisToDiscord = async () => {
+    if (!analysisDiscordText) return
+    setAnalysisDiscordSending(true)
+    setAnalysisDiscordError('')
+    try {
+      const res = await fetch('/api/discord-webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportText: analysisDiscordText }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setAnalysisDiscordError(data.error || 'Failed to send')
+      } else {
+        setAnalysisDiscordSent(true)
+        setTimeout(() => {
+          setAnalysisDiscordSent(false)
+          setAnalysisDiscordOpen(false)
+        }, 1500)
+      }
+    } catch {
+      setAnalysisDiscordError('Failed to send to Discord')
+    } finally {
+      setAnalysisDiscordSending(false)
+    }
+  }
+
+  const copyAnalysisDiscordPreview = async () => {
+    try {
+      await navigator.clipboard.writeText(analysisDiscordText)
+      setAnalysisDiscordCopied(true)
+      setTimeout(() => setAnalysisDiscordCopied(false), 2000)
+    } catch (err) {
+      console.error('Clipboard write failed:', err)
+    }
+  }
+
   const sendToDiscord = async () => {
     setDiscordSending(true)
     setDiscordError('')
@@ -1394,15 +1516,21 @@ export default function StrategyPage() {
 
     setLoadingAnalysis(true)
     try {
-      const response = await fetch(
-        `/api/player-analysis?` +
-        `player=${encodeURIComponent(selectedAnalysisPlayer)}` +
-        `&venue=${encodeURIComponent(selectedVenue)}` +
-        `&seasonStart=${seasonRange[0]}` +
-        `&seasonEnd=${seasonRange[1]}` +
-        `&allVenues=${showAllVenues}` +
-        `&machines=${encodeURIComponent((venues.find(v => v.name === selectedVenue)?.machines || []).join(','))}`
-      )
+      // Pass opponent context so each per-machine row can be enriched with
+      // oppAvg/oppPctOfVenue/edge — see /api/player-analysis. Uses the same
+      // selected-opponent-players state the rest of the page already drives.
+      const opponentPlayersList = getSelectedOpponentPlayers()
+      const params = new URLSearchParams({
+        player: selectedAnalysisPlayer,
+        venue: selectedVenue,
+        seasonStart: String(seasonRange[0]),
+        seasonEnd: String(seasonRange[1]),
+        allVenues: String(showAllVenues),
+        machines: (venues.find(v => v.name === selectedVenue)?.machines || []).join(','),
+      })
+      if (selectedOpponent) params.set('opponentTeam', selectedOpponent)
+      if (opponentPlayersList.length > 0) params.set('opponentPlayers', opponentPlayersList.join(','))
+      const response = await fetch(`/api/player-analysis?${params}`)
 
       if (response.ok) {
         const data = await response.json()
@@ -1422,7 +1550,7 @@ export default function StrategyPage() {
     if (selectedAnalysisPlayer && selectedVenue) {
       loadPlayerAnalysis()
     }
-  }, [selectedAnalysisPlayer, showAllVenues, selectedVenue, seasonRange])
+  }, [selectedAnalysisPlayer, showAllVenues, selectedVenue, seasonRange, selectedOpponent, opponentAvailablePlayers]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadMatrixData = async () => {
     if (!selectedVenue || !selectedOpponent || rosterPlayers.length === 0) {
@@ -3966,6 +4094,39 @@ export default function StrategyPage() {
                                       <SortIcon column="timesPlayed" currentColumn={analysisSortColumn} direction={analysisSortDirection} />
                                     </div>
                                   </TableHead>
+                                  {/* Opponent matchup columns — present whenever the API returned
+                                      opponent context (oppAvg key on the row). */}
+                                  {selectedOpponent && (
+                                    <>
+                                      <TableHead
+                                        className="cursor-pointer hover:bg-muted/50"
+                                        onClick={() => handleAnalysisSort('oppAvg')}
+                                      >
+                                        <div className="flex items-center">
+                                          Opp Avg
+                                          <SortIcon column="oppAvg" currentColumn={analysisSortColumn} direction={analysisSortDirection} />
+                                        </div>
+                                      </TableHead>
+                                      <TableHead
+                                        className="cursor-pointer hover:bg-muted/50"
+                                        onClick={() => handleAnalysisSort('oppPctOfVenue')}
+                                      >
+                                        <div className="flex items-center">
+                                          Opp % V.Avg
+                                          <SortIcon column="oppPctOfVenue" currentColumn={analysisSortColumn} direction={analysisSortDirection} />
+                                        </div>
+                                      </TableHead>
+                                      <TableHead
+                                        className="cursor-pointer hover:bg-muted/50"
+                                        onClick={() => handleAnalysisSort('edge')}
+                                      >
+                                        <div className="flex items-center">
+                                          Edge
+                                          <SortIcon column="edge" currentColumn={analysisSortColumn} direction={analysisSortDirection} />
+                                        </div>
+                                      </TableHead>
+                                    </>
+                                  )}
                                   {showAllVenues && (
                                     <TableHead
                                       className="cursor-pointer hover:bg-muted/50"
@@ -3991,16 +4152,45 @@ export default function StrategyPage() {
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {getSortedAnalysis().map((machine: any) => (
-                                  <TableRow key={machine.machine}>
-                                    <TableCell className="font-medium">{machine.machine}</TableCell>
-                                    <TableCell>{machine.avgScore.toLocaleString(undefined, { maximumFractionDigits: 0 })}</TableCell>
-                                    <TableCell>{machine.pctOfVenue.toFixed(1)}%</TableCell>
-                                    <TableCell>{machine.timesPlayed}</TableCell>
-                                    {showAllVenues && <TableCell>{machine.venuesPlayed}</TableCell>}
-                                    {showAllVenues && <TableCell className="text-xs">{machine.bestVenue}</TableCell>}
-                                  </TableRow>
-                                ))}
+                                {getSortedAnalysis().map((machine: any) => {
+                                  const hasOpp = selectedOpponent && (machine.oppGamesPlayed || 0) > 0
+                                  const edge = machine.edge || 0
+                                  return (
+                                    <TableRow key={machine.machine}>
+                                      <TableCell className="font-medium">{machine.machine}</TableCell>
+                                      <TableCell>{machine.avgScore.toLocaleString(undefined, { maximumFractionDigits: 0 })}</TableCell>
+                                      <TableCell>{machine.pctOfVenue.toFixed(1)}%</TableCell>
+                                      <TableCell>{machine.timesPlayed}</TableCell>
+                                      {selectedOpponent && (
+                                        <>
+                                          <TableCell>
+                                            {hasOpp
+                                              ? machine.oppAvg.toLocaleString(undefined, { maximumFractionDigits: 0 })
+                                              : <span className="text-muted-foreground">—</span>}
+                                          </TableCell>
+                                          <TableCell>
+                                            {hasOpp ? `${machine.oppPctOfVenue.toFixed(1)}%` : <span className="text-muted-foreground">—</span>}
+                                          </TableCell>
+                                          <TableCell>
+                                            {hasOpp ? (
+                                              <span className={
+                                                edge >= 25 ? 'text-green-600 font-semibold' :
+                                                edge >= 5 ? 'text-green-600' :
+                                                edge <= -25 ? 'text-red-600 font-semibold' :
+                                                edge <= -5 ? 'text-red-600' :
+                                                'text-muted-foreground'
+                                              }>
+                                                {edge >= 0 ? '+' : ''}{edge.toFixed(1)}%
+                                              </span>
+                                            ) : <span className="text-muted-foreground">—</span>}
+                                          </TableCell>
+                                        </>
+                                      )}
+                                      {showAllVenues && <TableCell>{machine.venuesPlayed}</TableCell>}
+                                      {showAllVenues && <TableCell className="text-xs">{machine.bestVenue}</TableCell>}
+                                    </TableRow>
+                                  )
+                                })}
                               </TableBody>
                             </Table>
                           </div>
@@ -4012,20 +4202,95 @@ export default function StrategyPage() {
 
                         {playerAnalysis.machinePerformance && playerAnalysis.machinePerformance.length > 0 && (
                           <>
-                            <h4 className="font-semibold mt-6 mb-3">Top Machines for {selectedAnalysisPlayer}</h4>
-                            <div className="space-y-2">
-                              {playerAnalysis.machinePerformance.slice(0, 3).map((machine: any, index: number) => (
-                                <div key={machine.machine} className="p-3 border rounded bg-background">
-                                  <div className="font-medium">
-                                    {index + 1}. {machine.machine}
-                                  </div>
-                                  <div className="text-sm text-muted-foreground mt-1">
-                                    {machine.pctOfVenue.toFixed(1)}% of venue average ({machine.avgScore.toLocaleString(undefined, { maximumFractionDigits: 0 })} avg score)
-                                    {showAllVenues && ` - Best at ${machine.bestVenue}`}
+                            {selectedOpponent ? (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                                {/* Top 3 Picks: machines where this player has the biggest
+                                    matchup edge over the opponent's current roster. */}
+                                <div>
+                                  <h4 className="font-semibold mb-3">Top 3 Picks vs {selectedOpponent}</h4>
+                                  <div className="space-y-2">
+                                    {[...playerAnalysis.machinePerformance]
+                                      .filter((m: any) => (m.oppGamesPlayed || 0) > 0)
+                                      .sort((a: any, b: any) => (b.edge || 0) - (a.edge || 0))
+                                      .slice(0, 3)
+                                      .map((machine: any, index: number) => (
+                                        <div key={machine.machine} className="p-3 border rounded bg-background">
+                                          <div className="font-medium">
+                                            {index + 1}. {machine.machine}
+                                            <span className="ml-2 text-green-600 font-semibold">
+                                              {machine.edge >= 0 ? '+' : ''}{machine.edge.toFixed(1)}% edge
+                                            </span>
+                                          </div>
+                                          <div className="text-sm text-muted-foreground mt-1">
+                                            {selectedAnalysisPlayer}: {machine.pctOfVenue.toFixed(1)}% V.Avg
+                                            {' · '}
+                                            {selectedOpponent}: {machine.oppPctOfVenue.toFixed(1)}% V.Avg
+                                          </div>
+                                        </div>
+                                      ))}
                                   </div>
                                 </div>
-                              ))}
-                            </div>
+
+                                {/* Top 3 Weaknesses: machines where the opponent's roster
+                                    out-performs this player by the largest margin. */}
+                                <div>
+                                  <h4 className="font-semibold mb-3">Top 3 Weaknesses vs {selectedOpponent}</h4>
+                                  <div className="space-y-2">
+                                    {[...playerAnalysis.machinePerformance]
+                                      .filter((m: any) => (m.oppGamesPlayed || 0) > 0)
+                                      .sort((a: any, b: any) => (a.edge || 0) - (b.edge || 0))
+                                      .slice(0, 3)
+                                      .map((machine: any, index: number) => (
+                                        <div key={machine.machine} className="p-3 border rounded bg-background">
+                                          <div className="font-medium">
+                                            {index + 1}. {machine.machine}
+                                            <span className="ml-2 text-red-600 font-semibold">
+                                              {machine.edge >= 0 ? '+' : ''}{machine.edge.toFixed(1)}% edge
+                                            </span>
+                                          </div>
+                                          <div className="text-sm text-muted-foreground mt-1">
+                                            {selectedAnalysisPlayer}: {machine.pctOfVenue.toFixed(1)}% V.Avg
+                                            {' · '}
+                                            {selectedOpponent}: {machine.oppPctOfVenue.toFixed(1)}% V.Avg
+                                          </div>
+                                        </div>
+                                      ))}
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <h4 className="font-semibold mt-6 mb-3">Top Machines for {selectedAnalysisPlayer}</h4>
+                                <div className="space-y-2">
+                                  {playerAnalysis.machinePerformance.slice(0, 3).map((machine: any, index: number) => (
+                                    <div key={machine.machine} className="p-3 border rounded bg-background">
+                                      <div className="font-medium">
+                                        {index + 1}. {machine.machine}
+                                      </div>
+                                      <div className="text-sm text-muted-foreground mt-1">
+                                        {machine.pctOfVenue.toFixed(1)}% of venue average ({machine.avgScore.toLocaleString(undefined, { maximumFractionDigits: 0 })} avg score)
+                                        {showAllVenues && ` - Best at ${machine.bestVenue}`}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+
+                            {/* Send-to-Discord button — only meaningful when there's an
+                                opponent to compare against. */}
+                            {selectedOpponent && (
+                              <div className="flex justify-end mt-4">
+                                <Button
+                                  variant="outline"
+                                  onClick={openAnalysisDiscordPreview}
+                                  disabled={!selectedAnalysisPlayer}
+                                >
+                                  <Send className="h-4 w-4 mr-2" />
+                                  Send to Discord
+                                </Button>
+                              </div>
+                            )}
                           </>
                         )}
                       </div>
@@ -4352,6 +4617,70 @@ export default function StrategyPage() {
           </div>
           {discordError && (
             <p className="text-sm text-destructive mt-2 text-right">{discordError}</p>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Player Analysis → Discord preview */}
+      <Dialog open={analysisDiscordOpen} onOpenChange={setAnalysisDiscordOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Send Player Analysis to Discord</DialogTitle>
+            <DialogDescription>
+              Preview the message below. Click Send to post it to the configured Discord channel.
+            </DialogDescription>
+          </DialogHeader>
+
+          {analysisDiscordText ? (
+            <div className="mt-4">
+              <pre className="p-4 bg-muted rounded-lg text-xs whitespace-pre-wrap font-mono overflow-x-auto">
+                {analysisDiscordText}
+              </pre>
+            </div>
+          ) : (
+            <div className="mt-4 text-sm text-muted-foreground">
+              No matchup data available — pick a player and an opponent with overlapping machines.
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setAnalysisDiscordOpen(false)}>
+              Close
+            </Button>
+            <Button variant="secondary" onClick={copyAnalysisDiscordPreview} disabled={!analysisDiscordText}>
+              {analysisDiscordCopied ? (
+                <>
+                  <Check className="h-4 w-4 mr-2" />
+                  Copied!
+                </>
+              ) : (
+                'Copy to Clipboard'
+              )}
+            </Button>
+            <Button
+              onClick={confirmSendAnalysisToDiscord}
+              disabled={analysisDiscordSending || !analysisDiscordText}
+            >
+              {analysisDiscordSending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Sending...
+                </>
+              ) : analysisDiscordSent ? (
+                <>
+                  <Check className="h-4 w-4 mr-2" />
+                  Sent!
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4 mr-2" />
+                  Send
+                </>
+              )}
+            </Button>
+          </div>
+          {analysisDiscordError && (
+            <p className="text-sm text-destructive mt-2 text-right">{analysisDiscordError}</p>
           )}
         </DialogContent>
       </Dialog>
