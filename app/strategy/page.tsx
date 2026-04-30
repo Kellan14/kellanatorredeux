@@ -484,7 +484,13 @@ export default function StrategyPage() {
 
   // Player analysis state
   const [selectedAnalysisPlayer, setSelectedAnalysisPlayer] = useState<string>('')
-  const [showAllVenues, setShowAllVenues] = useState(false)
+  // Player Analysis venue scope. Default per user spec:
+  //   - At GPA (TWC's home): player venue-specific ON, opponent venue-specific OFF.
+  //   - At any other venue: player OFF (= all venues), opponent ON.
+  // The defaults are re-applied whenever selectedVenue changes; the user can
+  // still manually flip either checkbox after that.
+  const [playerVenueSpecific, setPlayerVenueSpecific] = useState(false)
+  const [opponentVenueSpecific, setOpponentVenueSpecific] = useState(true)
   const [heatmapShowAllVenues, setHeatmapShowAllVenues] = useState(false)
   const [playerAnalysis, setPlayerAnalysis] = useState<any>(null)
   const [loadingAnalysis, setLoadingAnalysis] = useState(false)
@@ -1212,7 +1218,12 @@ export default function StrategyPage() {
     const seasonsLabel = seasonRange[0] === seasonRange[1]
       ? `Season ${seasonRange[0]}`
       : `Seasons ${seasonRange[0]}–${seasonRange[1]}`
-    const venueScope = showAllVenues ? 'all venues' : selectedVenue
+    // Convey both scopes since they can now differ.
+    const playerScope = playerVenueSpecific ? selectedVenue : 'all venues'
+    const oppScope = opponentVenueSpecific ? selectedVenue : 'all venues'
+    const venueScope = playerScope === oppScope
+      ? playerScope
+      : `${selectedAnalysisPlayer} @ ${playerScope}; ${selectedOpponent} @ ${oppScope}`
     const header = `${selectedAnalysisPlayer} vs ${selectedOpponent} — ${venueScope} (${seasonsLabel})`
 
     const picks = [...rows].sort((a, b) => (b.edge || 0) - (a.edge || 0)).slice(0, 3)
@@ -1525,7 +1536,11 @@ export default function StrategyPage() {
         venue: selectedVenue,
         seasonStart: String(seasonRange[0]),
         seasonEnd: String(seasonRange[1]),
-        allVenues: String(showAllVenues),
+        // Independent venue scopes for player vs opponent. The legacy
+        // allVenues flag is still accepted by the API for back-compat
+        // (sets both to its inverse) but we now drive each side directly.
+        playerVenueSpecific: String(playerVenueSpecific),
+        opponentVenueSpecific: String(opponentVenueSpecific),
         machines: (venues.find(v => v.name === selectedVenue)?.machines || []).join(','),
       })
       if (selectedOpponent) params.set('opponentTeam', selectedOpponent)
@@ -1550,7 +1565,23 @@ export default function StrategyPage() {
     if (selectedAnalysisPlayer && selectedVenue) {
       loadPlayerAnalysis()
     }
-  }, [selectedAnalysisPlayer, showAllVenues, selectedVenue, seasonRange, selectedOpponent, opponentAvailablePlayers]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedAnalysisPlayer, playerVenueSpecific, opponentVenueSpecific, selectedVenue, seasonRange, selectedOpponent, opponentAvailablePlayers]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Player Analysis venue-scope defaults — same shape as the stats page:
+  //   - At GPA (TWC's home venue): the player has the most data here, so
+  //     player = venue-specific; opponent rarely plays here, so opponent =
+  //     all venues to give them a meaningful sample.
+  //   - At any other venue: opponent has the most data at their home, so
+  //     opponent = venue-specific; player gets the wider all-venues view.
+  // Re-applied whenever the venue changes; the user can still flip
+  // either checkbox manually afterward.
+  useEffect(() => {
+    if (!selectedVenue) return
+    const isGPA = selectedVenue.toLowerCase().includes('georgetown') &&
+                  selectedVenue.toLowerCase().includes('pizza')
+    setPlayerVenueSpecific(isGPA)
+    setOpponentVenueSpecific(!isGPA)
+  }, [selectedVenue])
 
   const loadMatrixData = async () => {
     if (!selectedVenue || !selectedOpponent || rosterPlayers.length === 0) {
@@ -3995,18 +4026,34 @@ export default function StrategyPage() {
                     </div>
 
                     <div className="flex items-end">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="show-all-venues-analysis"
-                          checked={showAllVenues}
-                          onCheckedChange={(checked) => setShowAllVenues(!!checked)}
-                        />
-                        <label
-                          htmlFor="show-all-venues-analysis"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Show all venues
-                        </label>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="player-venue-specific-analysis"
+                            checked={playerVenueSpecific}
+                            onCheckedChange={(checked) => setPlayerVenueSpecific(!!checked)}
+                          />
+                          <label
+                            htmlFor="player-venue-specific-analysis"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {selectedAnalysisPlayer || 'Player'} - Venue Specific
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="opponent-venue-specific-analysis"
+                            checked={opponentVenueSpecific}
+                            onCheckedChange={(checked) => setOpponentVenueSpecific(!!checked)}
+                            disabled={!selectedOpponent}
+                          />
+                          <label
+                            htmlFor="opponent-venue-specific-analysis"
+                            className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${!selectedOpponent ? 'opacity-50' : ''}`}
+                          >
+                            {selectedOpponent || 'Opponent'} - Venue Specific
+                          </label>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -4028,7 +4075,7 @@ export default function StrategyPage() {
                               <div className="text-sm text-muted-foreground">Total Games Played</div>
                               <div className="text-2xl font-bold">{playerAnalysis.totalGames}</div>
                               <div className="text-xs text-muted-foreground">
-                                {showAllVenues ? 'All venues' : `At ${selectedVenue}`}
+                                {playerVenueSpecific ? `At ${selectedVenue}` : 'All venues'}
                               </div>
                             </CardContent>
                           </Card>
@@ -4127,7 +4174,7 @@ export default function StrategyPage() {
                                       </TableHead>
                                     </>
                                   )}
-                                  {showAllVenues && (
+                                  {!playerVenueSpecific && (
                                     <TableHead
                                       className="cursor-pointer hover:bg-muted/50"
                                       onClick={() => handleAnalysisSort('venuesPlayed')}
@@ -4138,7 +4185,7 @@ export default function StrategyPage() {
                                       </div>
                                     </TableHead>
                                   )}
-                                  {showAllVenues && (
+                                  {!playerVenueSpecific && (
                                     <TableHead
                                       className="cursor-pointer hover:bg-muted/50"
                                       onClick={() => handleAnalysisSort('bestVenue')}
@@ -4186,8 +4233,8 @@ export default function StrategyPage() {
                                           </TableCell>
                                         </>
                                       )}
-                                      {showAllVenues && <TableCell>{machine.venuesPlayed}</TableCell>}
-                                      {showAllVenues && <TableCell className="text-xs">{machine.bestVenue}</TableCell>}
+                                      {!playerVenueSpecific && <TableCell>{machine.venuesPlayed}</TableCell>}
+                                      {!playerVenueSpecific && <TableCell className="text-xs">{machine.bestVenue}</TableCell>}
                                     </TableRow>
                                   )
                                 })}
@@ -4269,7 +4316,7 @@ export default function StrategyPage() {
                                       </div>
                                       <div className="text-sm text-muted-foreground mt-1">
                                         {machine.pctOfVenue.toFixed(1)}% of venue average ({machine.avgScore.toLocaleString(undefined, { maximumFractionDigits: 0 })} avg score)
-                                        {showAllVenues && ` - Best at ${machine.bestVenue}`}
+                                        {!playerVenueSpecific && ` - Best at ${machine.bestVenue}`}
                                       </div>
                                     </div>
                                   ))}

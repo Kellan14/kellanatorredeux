@@ -15,7 +15,20 @@ export async function GET(request: Request) {
     const venue = searchParams.get('venue')
     const seasonStart = parseInt(searchParams.get('seasonStart') || '20')
     const seasonEnd = parseInt(searchParams.get('seasonEnd') || '22')
-    const allVenues = searchParams.get('allVenues') === 'true'
+    // Player vs opponent venue scopes are independent. The legacy
+    // `allVenues` param is still honored for back-compat — when present
+    // it sets BOTH sides to the inverse. The new params override.
+    const legacyAllVenues = searchParams.get('allVenues') === 'true'
+    const playerVenueParam = searchParams.get('playerVenueSpecific')
+    const opponentVenueParam = searchParams.get('opponentVenueSpecific')
+    const playerVenueSpecific = playerVenueParam !== null
+      ? playerVenueParam === 'true'
+      : !legacyAllVenues
+    const opponentVenueSpecific = opponentVenueParam !== null
+      ? opponentVenueParam === 'true'
+      : !legacyAllVenues
+    // Player-side scope is what controls the existing player query/cache.
+    const allVenues = !playerVenueSpecific
     // Optional opponent context: when provided, each per-machine row gets
     // oppAvg/oppPctOfVenue/edge fields so the UI can highlight where the
     // selected player has the biggest matchup edge over the opponent's
@@ -60,7 +73,8 @@ export async function GET(request: Request) {
         .in('machine', allMachineVars)
         .eq('season_start', seasonStart)
         .eq('season_end', seasonEnd)
-      if (allVenues) {
+      // Opponent scope is independent of player scope.
+      if (!opponentVenueSpecific) {
         oppQuery = oppQuery.is('venue', null)
       } else if (venue) {
         oppQuery = oppQuery.in('venue', getVenueVariations(venue))
