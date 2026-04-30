@@ -41,6 +41,10 @@ export default function CompareVenuesPage() {
   const [selected, setSelected] = useState<string[]>([])
   const [seasonStart, setSeasonStart] = useState(20)
   const [seasonEnd, setSeasonEnd] = useState(23)
+  const [metric, setMetric] = useState<'mean' | 'median' | 'trimmed'>('mean')
+  const [twcRosterOnly, setTwcRosterOnly] = useState(false)
+  // TWC roster cached after first fetch so toggling on/off doesn't re-fetch.
+  const [twcRoster, setTwcRoster] = useState<string[] | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<{
@@ -78,6 +82,24 @@ export default function CompareVenuesPage() {
     load()
   }, [])
 
+  // Lazy-load TWC roster the first time the toggle flips on.
+  useEffect(() => {
+    if (!twcRosterOnly || twcRoster !== null) return
+    const load = async () => {
+      try {
+        const currentSeason = availableSeasons.length > 0 ? Math.max(...availableSeasons) : seasonEnd
+        const res = await fetch(`/api/team-roster?team=${encodeURIComponent('The Wrecking Crew')}&season=${currentSeason}&showSubs=false`)
+        if (res.ok) {
+          const body = await res.json()
+          setTwcRoster((body.players || []).map((p: any) => p.name))
+        }
+      } catch (err) {
+        console.error('Failed to load TWC roster:', err)
+      }
+    }
+    load()
+  }, [twcRosterOnly, twcRoster, availableSeasons, seasonEnd])
+
   // Refetch comparison whenever the inputs change and we have at least 2 venues.
   useEffect(() => {
     if (selected.length < 2) {
@@ -93,7 +115,11 @@ export default function CompareVenuesPage() {
           seasonStart: String(seasonStart),
           seasonEnd: String(seasonEnd),
           topN: '3',
+          metric,
         })
+        if (twcRosterOnly && twcRoster && twcRoster.length > 0) {
+          params.set('rosterPlayers', twcRoster.join(','))
+        }
         const res = await fetch(`/api/compare-venues?${params}`)
         const body = await res.json()
         if (!res.ok) {
@@ -110,7 +136,7 @@ export default function CompareVenuesPage() {
       }
     }
     run()
-  }, [selected, seasonStart, seasonEnd])
+  }, [selected, seasonStart, seasonEnd, metric, twcRosterOnly, twcRoster])
 
   const toggleVenue = (name: string) => {
     setSelected((prev) =>
@@ -218,28 +244,54 @@ export default function CompareVenuesPage() {
             ))}
           </div>
 
-          {/* Season range */}
-          <div className="flex items-center gap-2 mt-4">
-            <label className="text-xs text-muted-foreground whitespace-nowrap">Seasons:</label>
-            <select
-              value={seasonStart}
-              onChange={(e) => setSeasonStart(parseInt(e.target.value))}
-              className="w-16 px-2 py-1 text-sm border rounded bg-background"
-            >
-              {availableSeasons.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-            <span className="text-xs text-muted-foreground">to</span>
-            <select
-              value={seasonEnd}
-              onChange={(e) => setSeasonEnd(parseInt(e.target.value))}
-              className="w-16 px-2 py-1 text-sm border rounded bg-background"
-            >
-              {availableSeasons.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+          {/* Season range + metric + roster filter */}
+          <div className="flex flex-wrap items-center gap-3 mt-4">
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted-foreground whitespace-nowrap">Seasons:</label>
+              <select
+                value={seasonStart}
+                onChange={(e) => setSeasonStart(parseInt(e.target.value))}
+                className="w-16 px-2 py-1 text-sm border rounded bg-background"
+              >
+                {availableSeasons.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+              <span className="text-xs text-muted-foreground">to</span>
+              <select
+                value={seasonEnd}
+                onChange={(e) => setSeasonEnd(parseInt(e.target.value))}
+                className="w-16 px-2 py-1 text-sm border rounded bg-background"
+              >
+                {availableSeasons.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted-foreground whitespace-nowrap">Metric:</label>
+              <select
+                value={metric}
+                onChange={(e) => setMetric(e.target.value as 'mean' | 'median' | 'trimmed')}
+                className="px-2 py-1 text-sm border rounded bg-background"
+                title="Median is most robust to outlier scores; trimmed mean drops the top + bottom 10% before averaging."
+              >
+                <option value="mean">Mean</option>
+                <option value="median">Median (recommended)</option>
+                <option value="trimmed">Trimmed mean (middle 80%)</option>
+              </select>
+            </div>
+
+            <label className="flex items-center gap-2 text-xs md:text-sm cursor-pointer">
+              <Checkbox
+                checked={twcRosterOnly}
+                onCheckedChange={(c) => setTwcRosterOnly(!!c)}
+                className="h-3.5 w-3.5"
+              />
+              Only TWC roster
+            </label>
+
             {selected.length > 0 && (
               <Button variant="ghost" size="sm" className="ml-auto" onClick={() => setSelected([])}>
                 Clear venues
@@ -279,9 +331,9 @@ export default function CompareVenuesPage() {
               {data.sharedMachines.length} shared machine{data.sharedMachines.length === 1 ? '' : 's'}
             </CardTitle>
             <CardDescription className="text-xs">
-              Each cell shows the venue average, then the top 3 scores on that
-              machine at that venue. Highest venue average per machine is
-              highlighted.
+              Each cell shows the venue {metric === 'mean' ? 'average' : metric === 'median' ? 'median' : 'trimmed mean (middle 80%)'}
+              {twcRosterOnly ? ' — limited to current TWC roster scores' : ''}, then the top 3 scores on that machine at that venue.
+              Highest value per machine is highlighted.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { fetchMNPData } from '@/lib/fetch-mnp-data'
 import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists'
 import { getAllMachineVariations } from '@/lib/machine-mappings'
+import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
 
 export const dynamic = 'force-dynamic'
 // Modest cache — venues + machine lists change rarely; underlying cache
@@ -22,10 +23,22 @@ export const revalidate = 3600
  *     stored season range).
  *
  * Query params:
- *   - venues       (required): comma-separated venue names. Need >= 2.
- *   - seasonStart  (optional, default 20)
- *   - seasonEnd    (optional, default 23)
- *   - topN         (optional, default 3) — how many top scores per cell
+ *   - venues        (required): comma-separated venue names. Need >= 2.
+ *   - seasonStart   (optional, default 20)
+ *   - seasonEnd     (optional, default 23)
+ *   - topN          (optional, default 3) — how many top scores per cell
+ *   - rosterPlayers (optional): comma-separated names; when present,
+ *                   venue averages and top scores are restricted to
+ *                   scores by these players (e.g. TWC's current roster).
+ *   - metric        (optional, default 'mean'): 'mean' | 'median' | 'trimmed'.
+ *                   'trimmed' drops the top + bottom 10% before averaging
+ *                   (so the middle 80% defines the value). Median is
+ *                   recommended for outlier resistance — pinball scores
+ *                   are heavily right-skewed.
+ *
+ * Cache fast path: used when no roster filter and metric=mean. Otherwise
+ * falls back to a live games scan so we have raw scores to filter or
+ * compute median/trimmed-mean over.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -34,6 +47,12 @@ export async function GET(request: NextRequest) {
     const seasonStart = parseInt(searchParams.get('seasonStart') || '20')
     const seasonEnd = parseInt(searchParams.get('seasonEnd') || '23')
     const topN = Math.max(1, Math.min(10, parseInt(searchParams.get('topN') || '3')))
+    const rosterParam = searchParams.get('rosterPlayers')
+    const rosterPlayers = rosterParam
+      ? rosterParam.split(',').map(s => s.trim()).filter(Boolean)
+      : null
+    const metric = (searchParams.get('metric') || 'mean') as 'mean' | 'median' | 'trimmed'
+    const liveMode = !!rosterPlayers || metric !== 'mean'
 
     if (!venuesParam) {
       return NextResponse.json({ error: 'venues param is required (comma-separated)' }, { status: 400 })
@@ -98,63 +117,183 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 4. Pull per-(team, machine, venue) totals to derive venueAvg per cell.
-    //    Summed across teams matches how /api/player-analysis builds its
-    //    venue baseline (so percentages here match the rest of the app).
-    const { data: teamStatsRows } = await supabase
-      .from('cache_team_machine_stats' as any)
-      .select('machine, venue, total_score, game_count')
-      .in('machine', allMachineVars)
-      .in('venue', allVenueVariations)
-      .eq('season_start', seasonStart)
-      .eq('season_end', seasonEnd) as { data: Array<{
-        machine: string; venue: string | null; total_score: number; game_count: number
-      }> | null }
-
-    const venueAvgByMV = new Map<string /* `${canonicalMachine}|${canonicalVenue}` */, { total: number; count: number }>()
-    for (const r of teamStatsRows || []) {
-      if (!r.venue) continue
-      const canonicalMachine = variationToCanonicalMachine.get(r.machine.toLowerCase())
-      const canonicalVenue = variationToCanonicalVenue.get(r.venue)
-      if (!canonicalMachine || !canonicalVenue) continue
-      const key = `${canonicalMachine}|${canonicalVenue}`
-      const existing = venueAvgByMV.get(key) || { total: 0, count: 0 }
-      existing.total += Number(r.total_score)
-      existing.count += Number(r.game_count)
-      venueAvgByMV.set(key, existing)
-    }
-
-    // 5. Pull top-N scores per (machine, venue) — season IS NULL row gives
-    //    the all-time top for the cron's stored season range. cache stores
-    //    rank 1-10, so we just trim to topN here.
-    const { data: topScoreRows } = await supabase
-      .from('cache_machine_top_scores' as any)
-      .select('machine, venue, rank, player_name, team_key, score, match_key, week')
-      .in('machine', allMachineVars)
-      .in('venue', allVenueVariations)
-      .is('season', null)
-      .lte('rank', topN)
-      .order('rank', { ascending: true }) as { data: Array<{
-        machine: string; venue: string; rank: number; player_name: string;
-        team_key: string | null; score: number; match_key: string | null; week: number | null;
-      }> | null }
-
+    // 4. Build per-(machine, venue) value maps. Two paths:
+    //    - Cache fast path (default): sums cache_team_machine_stats and
+    //      reads cache_machine_top_scores rank 1..topN.
+    //    - Live path (roster filter or non-mean metric): pulls raw scores
+    //      from the games table and aggregates in memory. Slower but
+    //      necessary because the cache only stores totals + a top-10 list.
+    // Per-cell value (the chosen metric — mean/median/trimmed) plus the
+    // actual game count. Stored separately so display can show the metric
+    // value AND the true number of underlying games regardless of metric.
+    const valueByMV = new Map<string /* `${canonicalMachine}|${canonicalVenue}` */, { value: number; gameCount: number }>()
     const topScoresByMV = new Map<string, Array<{
       rank: number; player: string; team_key: string | null; score: number; matchKey: string | null
     }>>()
-    for (const r of topScoreRows || []) {
-      const canonicalMachine = variationToCanonicalMachine.get(r.machine.toLowerCase())
-      const canonicalVenue = variationToCanonicalVenue.get(r.venue)
-      if (!canonicalMachine || !canonicalVenue) continue
-      const key = `${canonicalMachine}|${canonicalVenue}`
-      if (!topScoresByMV.has(key)) topScoresByMV.set(key, [])
-      topScoresByMV.get(key)!.push({
-        rank: r.rank,
-        player: r.player_name,
-        team_key: r.team_key,
-        score: Number(r.score),
-        matchKey: r.match_key,
-      })
+    // Only populated in live mode — used when metric != 'mean'.
+    const scoresByMV = new Map<string, number[]>()
+
+    if (!liveMode) {
+      const { data: teamStatsRows } = await supabase
+        .from('cache_team_machine_stats' as any)
+        .select('machine, venue, total_score, game_count')
+        .in('machine', allMachineVars)
+        .in('venue', allVenueVariations)
+        .eq('season_start', seasonStart)
+        .eq('season_end', seasonEnd) as { data: Array<{
+          machine: string; venue: string | null; total_score: number; game_count: number
+        }> | null }
+
+      const cacheTotals = new Map<string, { total: number; count: number }>()
+      for (const r of teamStatsRows || []) {
+        if (!r.venue) continue
+        const canonicalMachine = variationToCanonicalMachine.get(r.machine.toLowerCase())
+        const canonicalVenue = variationToCanonicalVenue.get(r.venue)
+        if (!canonicalMachine || !canonicalVenue) continue
+        const key = `${canonicalMachine}|${canonicalVenue}`
+        const existing = cacheTotals.get(key) || { total: 0, count: 0 }
+        existing.total += Number(r.total_score)
+        existing.count += Number(r.game_count)
+        cacheTotals.set(key, existing)
+      }
+      for (const [key, { total, count }] of Array.from(cacheTotals.entries())) {
+        if (count > 0) {
+          valueByMV.set(key, { value: total / count, gameCount: count })
+        }
+      }
+
+      // Pull all 10 ranks per (machine, venue variation) — when multiple
+      // variations of a venue exist (e.g. "Ice Box" + "Icebox") each gets
+      // its own top-10 with overlapping scores and ranks. We need the full
+      // sets so we can merge, dedupe, and re-rank by score across them.
+      const { data: topScoreRows } = await supabase
+        .from('cache_machine_top_scores' as any)
+        .select('machine, venue, rank, player_name, team_key, score, match_key, week')
+        .in('machine', allMachineVars)
+        .in('venue', allVenueVariations)
+        .is('season', null)
+        .lte('rank', 10) as { data: Array<{
+          machine: string; venue: string; rank: number; player_name: string;
+          team_key: string | null; score: number; match_key: string | null; week: number | null;
+        }> | null }
+
+      // Stage merged candidates per canonical (machine, venue), de-duped on
+      // (player, score, match) so the same record stored under two venue
+      // variations only counts once.
+      const mergedByMV = new Map<string, Map<string, {
+        player: string; team_key: string | null; score: number; matchKey: string | null
+      }>>()
+      for (const r of topScoreRows || []) {
+        const canonicalMachine = variationToCanonicalMachine.get(r.machine.toLowerCase())
+        const canonicalVenue = variationToCanonicalVenue.get(r.venue)
+        if (!canonicalMachine || !canonicalVenue) continue
+        const mvKey = `${canonicalMachine}|${canonicalVenue}`
+        const dedupeKey = `${r.player_name}|${r.score}|${r.match_key ?? ''}`
+        if (!mergedByMV.has(mvKey)) mergedByMV.set(mvKey, new Map())
+        const inner = mergedByMV.get(mvKey)!
+        if (!inner.has(dedupeKey)) {
+          inner.set(dedupeKey, {
+            player: r.player_name,
+            team_key: r.team_key,
+            score: Number(r.score),
+            matchKey: r.match_key,
+          })
+        }
+      }
+      // Sort merged candidates by score desc, take topN, assign clean ranks.
+      for (const [mvKey, inner] of Array.from(mergedByMV.entries())) {
+        const sorted = Array.from(inner.values()).sort((a, b) => b.score - a.score).slice(0, topN)
+        topScoresByMV.set(mvKey, sorted.map((rec, idx) => ({
+          rank: idx + 1,
+          player: rec.player,
+          team_key: rec.team_key,
+          score: rec.score,
+          matchKey: rec.matchKey,
+        })))
+      }
+    } else {
+      // Live path: one (potentially large) games query covering every
+      // selected venue + every shared machine in the season range. Then
+      // aggregate per (machine, venue) in memory. Score-limits filter out
+      // glitch scores before they pollute the metric.
+      const scoreLimits = await getScoreLimits()
+      const rosterSet = rosterPlayers && rosterPlayers.length > 0
+        ? new Set(rosterPlayers)
+        : null
+
+      const games = await fetchAllRecords<any>(() =>
+        supabase
+          .from('games')
+          .select('machine, venue, player_1_name, player_1_score, player_1_team, player_2_name, player_2_score, player_2_team, player_3_name, player_3_score, player_3_team, player_4_name, player_4_score, player_4_team, match_key, week')
+          .in('machine', allMachineVars)
+          .in('venue', allVenueVariations)
+          .gte('season', seasonStart)
+          .lte('season', seasonEnd)
+          .order('id', { ascending: true })
+      )
+
+      // Per-(machine, venue) aggregations. Keep raw scores (for median/
+      // trimmed) AND a sorted-by-score record list (for the topN list).
+      const recordsByMV = new Map<string, Array<{
+        score: number; player: string; team_key: string | null; matchKey: string | null
+      }>>()
+
+      for (const g of games as any[]) {
+        const canonicalMachine = variationToCanonicalMachine.get((g.machine || '').toLowerCase())
+        const canonicalVenue = variationToCanonicalVenue.get(g.venue)
+        if (!canonicalMachine || !canonicalVenue) continue
+        const key = `${canonicalMachine}|${canonicalVenue}`
+        for (let i = 1; i <= 4; i++) {
+          const score = g[`player_${i}_score`]
+          const playerName = g[`player_${i}_name`]
+          if (!score || !playerName) continue
+          if (!isScoreValid(canonicalMachine, score, scoreLimits)) continue
+          if (rosterSet && !rosterSet.has(playerName)) continue
+          if (!scoresByMV.has(key)) scoresByMV.set(key, [])
+          scoresByMV.get(key)!.push(score)
+          if (!recordsByMV.has(key)) recordsByMV.set(key, [])
+          recordsByMV.get(key)!.push({
+            score,
+            player: playerName,
+            team_key: g[`player_${i}_team`] ?? null,
+            matchKey: g.match_key ?? null,
+          })
+        }
+      }
+
+      // Build valueByMV with the chosen metric. gameCount stays the actual
+      // number of underlying scores regardless of metric, so the UI can
+      // truthfully say "(N games)".
+      for (const [key, scores] of Array.from(scoresByMV.entries())) {
+        if (scores.length === 0) continue
+        const sorted = [...scores].sort((a, b) => a - b)
+        const n = sorted.length
+        let value = 0
+        if (metric === 'median') {
+          value = n % 2 === 1 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2
+        } else if (metric === 'trimmed') {
+          const drop = Math.floor(n * 0.1)
+          const middle = sorted.slice(drop, n - drop)
+          if (middle.length === 0) continue
+          value = middle.reduce((s, x) => s + x, 0) / middle.length
+        } else {
+          // mean (live, with roster filter applied to scores)
+          value = sorted.reduce((s, x) => s + x, 0) / n
+        }
+        valueByMV.set(key, { value, gameCount: n })
+      }
+
+      // Top-N scores: sort desc, take topN.
+      for (const [key, recs] of Array.from(recordsByMV.entries())) {
+        const sorted = [...recs].sort((a, b) => b.score - a.score).slice(0, topN)
+        topScoresByMV.set(key, sorted.map((r, idx) => ({
+          rank: idx + 1,
+          player: r.player,
+          team_key: r.team_key,
+          score: r.score,
+          matchKey: r.matchKey,
+        })))
+      }
     }
 
     // 6. Assemble rows. Each shared machine gets a perVenue object keyed by
@@ -167,9 +306,9 @@ export async function GET(request: NextRequest) {
         topScores: Array<{ rank: number; player: string; team_key: string | null; score: number; matchKey: string | null }>
       }> = {}
       for (const venue of venues) {
-        const baseline = venueAvgByMV.get(`${machine}|${venue}`)
-        const venueAvg = baseline && baseline.count > 0 ? baseline.total / baseline.count : 0
-        const gameCount = baseline?.count || 0
+        const cell = valueByMV.get(`${machine}|${venue}`)
+        const venueAvg = cell?.value || 0
+        const gameCount = cell?.gameCount || 0
         const topScores = (topScoresByMV.get(`${machine}|${venue}`) || [])
           .sort((a, b) => a.rank - b.rank)
           .slice(0, topN)
@@ -183,6 +322,8 @@ export async function GET(request: NextRequest) {
       seasonStart,
       seasonEnd,
       topN,
+      metric,
+      rosterFiltered: !!rosterPlayers,
       sharedMachines,
       rows,
     })
