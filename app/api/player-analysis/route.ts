@@ -268,12 +268,61 @@ export async function GET(request: Request) {
         }
         const enriched = await enrichWithOpponent(machinePerformance, venueScoresMap)
 
+        // venuesPlayed/per-machine venues: cache_player_machine_stats stores
+        // both venue-specific rows AND a venue=NULL rollup. Querying again
+        // without a venue filter (excluding the rollup) gives us per-venue
+        // counts so the KPI card and per-row "Venues Played"/"Best Venue"
+        // are accurate. Without this, the KPI stays at 0 because the main
+        // query above filters to a single venue or only the NULL rollup.
+        let totalVenues = 0
+        const perMachineVenues = new Map<string, { venues: Set<string>; bestVenue: string; bestAvg: number }>()
+        try {
+          const { data: venueRows } = await supabase
+            .from('cache_player_machine_stats' as any)
+            .select('machine, venue, total_score, game_count')
+            .eq('player_name', player)
+            .in('machine', allMachineVars)
+            .eq('season_start', seasonStart)
+            .eq('season_end', seasonEnd)
+            .not('venue', 'is', null) as { data: Array<{
+              machine: string; venue: string; total_score: number; game_count: number
+            }> | null }
+
+          const allVenuesSet = new Set<string>()
+          for (const r of venueRows || []) {
+            if (!r.game_count || r.game_count === 0) continue
+            allVenuesSet.add(r.venue)
+            const canon = machineVarToCanon.get(r.machine.toLowerCase()) || r.machine
+            const entry = perMachineVenues.get(canon) || { venues: new Set<string>(), bestVenue: '', bestAvg: 0 }
+            entry.venues.add(r.venue)
+            const avg = Number(r.total_score) / Number(r.game_count)
+            if (avg > entry.bestAvg) {
+              entry.bestAvg = avg
+              entry.bestVenue = r.venue
+            }
+            perMachineVenues.set(canon, entry)
+          }
+          totalVenues = allVenuesSet.size
+        } catch (err) {
+          console.error('[player-analysis] venuesPlayed lookup failed:', err)
+        }
+
+        // Backfill per-row venuesPlayed and bestVenue from the venue rollup.
+        const enrichedWithVenues = enriched.map((row: any) => {
+          const v = perMachineVenues.get(row.machine)
+          return {
+            ...row,
+            venuesPlayed: v?.venues.size || 0,
+            bestVenue: v?.bestVenue || '',
+          }
+        })
+
         return NextResponse.json({
           player,
           totalGames,
           uniqueMachines: machinePerformance.length,
-          venuesPlayed: 0, // Not available from cache
-          machinePerformance: enriched,
+          venuesPlayed: totalVenues,
+          machinePerformance: enrichedWithVenues,
           allVenues
         })
       }
