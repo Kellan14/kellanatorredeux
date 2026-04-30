@@ -494,6 +494,14 @@ export default function StrategyPage() {
   const [heatmapShowAllVenues, setHeatmapShowAllVenues] = useState(false)
   const [playerAnalysis, setPlayerAnalysis] = useState<any>(null)
   const [loadingAnalysis, setLoadingAnalysis] = useState(false)
+  // Opponent's per-machine headline stats (timesPicked, teamAverage, pops)
+  // fetched alongside player-analysis. Used to populate the new
+  // "They Picked" column and the "Their Top 3 Picks" card. Map keyed by
+  // canonical machine name from venues.json so it lines up with player
+  // analysis rows directly.
+  const [analysisOppMachineStats, setAnalysisOppMachineStats] = useState<
+    Map<string, { timesPicked: number; teamAverage: number; pops: number }>
+  >(new Map())
   // Default sort = matchup edge so the top of the table is always "best
   // pick vs this opponent". When no opponent context is loaded yet, edge
   // is 0 across the board and the user sees the existing pctOfVenue order.
@@ -1239,22 +1247,37 @@ export default function StrategyPage() {
       'You %V'.padStart(9) +
       'Opp %V'.padStart(9) +
       'Edge'.padStart(9) +
-      'Played'.padStart(9)
+      'Played'.padStart(9) +
+      'Picks'.padStart(9)
     const sep = '-'.repeat(colHeader.length)
     const tableRows = [...rows]
       .sort((a, b) => (b.edge || 0) - (a.edge || 0))
       .map((m) => {
         const sign = m.edge >= 0 ? '+' : ''
+        const oppPicks = analysisOppMachineStats.get((m.machine || '').toLowerCase())?.timesPicked || 0
         return (
           (m.machine || '').slice(0, 28).padEnd(28) +
           `${m.pctOfVenue.toFixed(1)}%`.padStart(9) +
           `${m.oppPctOfVenue.toFixed(1)}%`.padStart(9) +
           `${sign}${m.edge.toFixed(1)}%`.padStart(9) +
-          String(m.timesPlayed || 0).padStart(9)
+          String(m.timesPlayed || 0).padStart(9) +
+          String(oppPicks).padStart(9)
         )
       })
 
-    return [
+    // Their Top 3 Picks (independent of edge — based purely on opponent
+    // pick frequency at the venue's machines).
+    const venueMachinesList = venues.find(v => v.name === selectedVenue)?.machines || []
+    const theirTopPicks = venueMachinesList
+      .map(m => {
+        const opp = analysisOppMachineStats.get(m.toLowerCase())
+        return opp ? { machine: m, ...opp } : null
+      })
+      .filter((x): x is { machine: string; timesPicked: number; teamAverage: number; pops: number } => !!x && x.timesPicked > 0)
+      .sort((a, b) => b.timesPicked - a.timesPicked)
+      .slice(0, 3)
+
+    const lines: string[] = [
       header,
       '',
       `Top 3 Picks vs ${selectedOpponent}:`,
@@ -1262,11 +1285,15 @@ export default function StrategyPage() {
       '',
       `Top 3 Weaknesses vs ${selectedOpponent}:`,
       ...weak.map(fmt),
-      '',
-      colHeader,
-      sep,
-      ...tableRows,
-    ].join('\n')
+    ]
+    if (theirTopPicks.length > 0) {
+      lines.push('', `${selectedOpponent}'s Top 3 Picks:`)
+      for (const p of theirTopPicks) {
+        lines.push(`  ${p.machine}: ${p.timesPicked} pick${p.timesPicked === 1 ? '' : 's'}  (avg ${Math.round(p.teamAverage).toLocaleString()}${p.pops > 0 ? `, POPS ${p.pops.toFixed(1)}%` : ''})`)
+      }
+    }
+    lines.push('', colHeader, sep, ...tableRows)
+    return lines.join('\n')
   }
 
   const openAnalysisDiscordPreview = () => {
@@ -1545,7 +1572,50 @@ export default function StrategyPage() {
       })
       if (selectedOpponent) params.set('opponentTeam', selectedOpponent)
       if (opponentPlayersList.length > 0) params.set('opponentPlayers', opponentPlayersList.join(','))
-      const response = await fetch(`/api/player-analysis?${params}`)
+
+      // Fire player-analysis and a roster-filtered machine-stats call in
+      // parallel. machine-stats supplies "Times Picked" per machine for the
+      // opponent (already wired with the pick-inversion + roster filter
+      // fixes), which we merge into machinePerformance below.
+      const venueMachinesList = venues.find(v => v.name === selectedVenue)?.machines || []
+      let oppStatsPromise: Promise<Response | null> = Promise.resolve(null)
+      if (selectedOpponent && venueMachinesList.length > 0) {
+        const seasons: number[] = []
+        for (let s = seasonRange[0]; s <= seasonRange[1]; s++) seasons.push(s)
+        const statsParams = new URLSearchParams({
+          seasons: seasons.join(','),
+          venue: selectedVenue,
+          teamName: 'The Wrecking Crew',
+          opponentTeam: selectedOpponent,
+          // Opponent picks are league-wide (matches dashboard / Top Picks).
+          teamVenueSpecific: 'false',
+          machines: venueMachinesList.join(','),
+        })
+        if (opponentPlayersList.length > 0) {
+          statsParams.set('opponentRoster', opponentPlayersList.join(','))
+        }
+        oppStatsPromise = fetch(`/api/machine-stats?${statsParams}`)
+      }
+
+      const [response, oppStatsRes] = await Promise.all([
+        fetch(`/api/player-analysis?${params}`),
+        oppStatsPromise,
+      ])
+
+      // Merge opponent timesPicked / teamAverage / pops into a lookup keyed
+      // by canonical machine name (lowercase, after machineMappings).
+      const oppStatsMap = new Map<string, { timesPicked: number; teamAverage: number; pops: number }>()
+      if (oppStatsRes && oppStatsRes.ok) {
+        const oppData = await oppStatsRes.json()
+        for (const s of (oppData?.stats || [])) {
+          oppStatsMap.set((s.machine || '').toLowerCase(), {
+            timesPicked: s.timesPicked || 0,
+            teamAverage: s.teamAverage || 0,
+            pops: s.pops || 0,
+          })
+        }
+      }
+      setAnalysisOppMachineStats(oppStatsMap)
 
       if (response.ok) {
         const data = await response.json()
@@ -1753,7 +1823,17 @@ export default function StrategyPage() {
 
   const getSortedAnalysis = () => {
     if (!playerAnalysis?.machinePerformance) return []
-    return [...playerAnalysis.machinePerformance].sort((a: any, b: any) => {
+    // Inject oppTimesPicked from the parallel machine-stats fetch so the
+    // "They Picked" column is sortable like the rest. Stats are keyed by
+    // lowercased machine; player-analysis returns canonical casing.
+    const merged = playerAnalysis.machinePerformance.map((row: any) => {
+      const opp = analysisOppMachineStats.get((row.machine || '').toLowerCase())
+      return {
+        ...row,
+        oppTimesPicked: opp?.timesPicked || 0,
+      }
+    })
+    return [...merged].sort((a: any, b: any) => {
       let aVal = a[analysisSortColumn]
       let bVal = b[analysisSortColumn]
 
@@ -4172,6 +4252,15 @@ export default function StrategyPage() {
                                           <SortIcon column="edge" currentColumn={analysisSortColumn} direction={analysisSortDirection} />
                                         </div>
                                       </TableHead>
+                                      <TableHead
+                                        className="cursor-pointer hover:bg-muted/50"
+                                        onClick={() => handleAnalysisSort('oppTimesPicked')}
+                                      >
+                                        <div className="flex items-center">
+                                          They Picked
+                                          <SortIcon column="oppTimesPicked" currentColumn={analysisSortColumn} direction={analysisSortDirection} />
+                                        </div>
+                                      </TableHead>
                                     </>
                                   )}
                                   {!playerVenueSpecific && (
@@ -4231,6 +4320,11 @@ export default function StrategyPage() {
                                               </span>
                                             ) : <span className="text-muted-foreground">—</span>}
                                           </TableCell>
+                                          <TableCell>
+                                            {(machine.oppTimesPicked || 0) > 0
+                                              ? machine.oppTimesPicked
+                                              : <span className="text-muted-foreground">—</span>}
+                                          </TableCell>
                                         </>
                                       )}
                                       {!playerVenueSpecific && <TableCell>{machine.venuesPlayed}</TableCell>}
@@ -4250,7 +4344,7 @@ export default function StrategyPage() {
                         {playerAnalysis.machinePerformance && playerAnalysis.machinePerformance.length > 0 && (
                           <>
                             {selectedOpponent ? (
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                                 {/* Top 3 Picks: machines where this player has the biggest
                                     matchup edge over the opponent's current roster. */}
                                 <div>
@@ -4302,6 +4396,45 @@ export default function StrategyPage() {
                                           </div>
                                         </div>
                                       ))}
+                                  </div>
+                                </div>
+
+                                {/* Their Top 3 Picks: machines the opponent's
+                                    current roster has picked most often. Sourced
+                                    from the parallel /api/machine-stats fetch. */}
+                                <div>
+                                  <h4 className="font-semibold mb-3">Their Top 3 Picks</h4>
+                                  <div className="space-y-2">
+                                    {(() => {
+                                      // Map venue machines (canonical) to their oppStats entries.
+                                      const venueMachinesList = venues.find(v => v.name === selectedVenue)?.machines || []
+                                      const items = venueMachinesList
+                                        .map(m => {
+                                          const opp = analysisOppMachineStats.get(m.toLowerCase())
+                                          return opp ? { machine: m, ...opp } : null
+                                        })
+                                        .filter((x): x is { machine: string; timesPicked: number; teamAverage: number; pops: number } => !!x && x.timesPicked > 0)
+                                        .sort((a, b) => b.timesPicked - a.timesPicked)
+                                        .slice(0, 3)
+
+                                      if (items.length === 0) {
+                                        return <div className="text-sm text-muted-foreground">No picks recorded for this venue's machines.</div>
+                                      }
+                                      return items.map((it, index) => (
+                                        <div key={it.machine} className="p-3 border rounded bg-background">
+                                          <div className="font-medium">
+                                            {index + 1}. {it.machine}
+                                            <span className="ml-2 text-blue-600 font-semibold">
+                                              {it.timesPicked} pick{it.timesPicked === 1 ? '' : 's'}
+                                            </span>
+                                          </div>
+                                          <div className="text-sm text-muted-foreground mt-1">
+                                            {selectedOpponent} avg: {Math.round(it.teamAverage).toLocaleString()}
+                                            {it.pops > 0 && ` · POPS: ${it.pops.toFixed(1)}%`}
+                                          </div>
+                                        </div>
+                                      ))
+                                    })()}
                                   </div>
                                 </div>
                               </div>
