@@ -48,68 +48,105 @@ export async function GET(request: Request) {
     }
 
     /**
-     * For each machine in `rows`, compute the opponent's roster-filtered
-     * average score on that machine (venue-specific or league-wide based on
-     * `allVenues`) and attach `oppAvg`, `oppPctOfVenue`, `edge` fields.
+     * For each machine in `rows`, compute the opponent roster's
+     * per-game-normalized pctOfVenue, plus oppAvg / edge / oppGamesPlayed.
      * No-ops when no opponent context was supplied.
      *
-     * Uses cache_player_machine_stats so it adds <100ms even with a roster
-     * of 10. Falls back gracefully when the cache is empty by returning
-     * zeros (which the UI renders as "—").
+     * Per-game-normalized means each opponent game's score is judged
+     * against the venue average for THAT venue, then those venue-relative
+     * percentages are pooled across the roster — same definition we use
+     * for the player's pctOfVenue, so subtracting them (= edge) is fair
+     * even when player and opponent venue scopes differ.
+     *
+     * `venueByMachineVenueMap` keys are `${machineLower}|${venue}` and
+     * values are { total, count } summed across all teams at that venue
+     * (i.e. enough to derive the venue average for that exact machine).
+     * `machineVarToCanon` maps any machine variation to the canonical
+     * venues.json name used as the row key.
      */
     const enrichWithOpponent = async (
       rows: Array<{ machine: string; pctOfVenue: number; [k: string]: any }>,
-      venueScoresMap: Map<string, { totalScore: number; count: number }>
+      venueByMachineVenueMap: Map<string, { total: number; count: number }>,
+      machineVarToCanon: Map<string, string>
     ) => {
       if (!opponentTeam || opponentPlayers.length === 0 || rows.length === 0) return rows
 
-      // Build the same machine variation set the player-analysis cache uses.
       const allMachineVars = getAllMachineVariations(rows.map(r => r.machine)).map(v => v.toLowerCase())
 
+      // Pull opponent's per-(machine, venue) rows. Always venue-specific
+      // because per-game normalization needs to know which venue each row
+      // came from. The opponentVenueSpecific flag controls scope (which
+      // venues are included) but not the row granularity.
       let oppQuery = supabase
         .from('cache_player_machine_stats' as any)
-        .select('player_name, machine, total_score, game_count, venue')
+        .select('player_name, machine, venue, total_score, game_count')
         .in('player_name', opponentPlayers)
         .in('machine', allMachineVars)
         .eq('season_start', seasonStart)
         .eq('season_end', seasonEnd)
-      // Opponent scope is independent of player scope.
-      if (!opponentVenueSpecific) {
-        oppQuery = oppQuery.is('venue', null)
-      } else if (venue) {
+        .not('venue', 'is', null)
+      if (opponentVenueSpecific && venue) {
         oppQuery = oppQuery.in('venue', getVenueVariations(venue))
       }
       const { data: oppRows } = await oppQuery as { data: Array<{
-        machine: string; total_score: number; game_count: number
+        machine: string; venue: string; total_score: number; game_count: number
       }> | null }
 
-      // Map any machine variation back to its canonical (venues.json) name.
-      const variationToCanonical = new Map<string, string>()
-      for (const m of rows.map(r => r.machine)) {
-        for (const v of getAllMachineVariations([m])) {
-          variationToCanonical.set(v.toLowerCase(), m)
+      // If opponent scope is "all venues" we may need venue averages for
+      // venues not already in venueByMachineVenueMap. Top up the map.
+      const missingVenues = new Set<string>()
+      for (const r of (oppRows || [])) {
+        if (!venueByMachineVenueMap.has(`${r.machine.toLowerCase()}|${r.venue}`)) {
+          missingVenues.add(r.venue)
+        }
+      }
+      if (missingVenues.size > 0) {
+        const { data: extra } = await (supabase
+          .from('cache_team_machine_stats' as any)
+          .select('machine, venue, total_score, game_count')
+          .in('machine', allMachineVars)
+          .in('venue', Array.from(missingVenues))
+          .eq('season_start', seasonStart)
+          .eq('season_end', seasonEnd)) as { data: Array<{
+            machine: string; venue: string | null; total_score: number; game_count: number
+          }> | null }
+        for (const row of extra || []) {
+          if (!row.venue) continue
+          const key = `${row.machine.toLowerCase()}|${row.venue}`
+          const existing = venueByMachineVenueMap.get(key) || { total: 0, count: 0 }
+          existing.total += Number(row.total_score)
+          existing.count += Number(row.game_count)
+          venueByMachineVenueMap.set(key, existing)
         }
       }
 
-      // Aggregate opponent roster's totals per canonical machine.
-      const oppAgg = new Map<string, { total: number; count: number }>()
+      // Aggregate opponent roster per canonical machine: sumPct + games
+      // (for per-game-normalized pctOfVenue) plus totalScore/games (for
+      // raw avg). Skip rows where we lack a venue baseline.
+      const oppAgg = new Map<string, { sumPct: number; games: number; totalScore: number }>()
       for (const r of oppRows || []) {
-        const canon = variationToCanonical.get(r.machine.toLowerCase())
+        const canon = machineVarToCanon.get(r.machine.toLowerCase())
         if (!canon) continue
-        const existing = oppAgg.get(canon) || { total: 0, count: 0 }
-        existing.total += Number(r.total_score)
-        existing.count += Number(r.game_count)
+        const games = Number(r.game_count)
+        if (!games) continue
+        const total = Number(r.total_score)
+        const venueAvgEntry = venueByMachineVenueMap.get(`${r.machine.toLowerCase()}|${r.venue}`)
+        const venueAvg = venueAvgEntry && venueAvgEntry.count > 0 ? venueAvgEntry.total / venueAvgEntry.count : 0
+        const sumPctContribution = venueAvg > 0 ? (total / venueAvg) * 100 : 0
+
+        const existing = oppAgg.get(canon) || { sumPct: 0, games: 0, totalScore: 0 }
+        existing.sumPct += sumPctContribution
+        existing.games += games
+        existing.totalScore += total
         oppAgg.set(canon, existing)
       }
 
       return rows.map(row => {
         const agg = oppAgg.get(row.machine)
-        const oppAvg = agg && agg.count > 0 ? agg.total / agg.count : 0
-        const venueEntry = venueScoresMap.get(row.machine)
-        const venueAvg = venueEntry && venueEntry.count > 0 ? venueEntry.totalScore / venueEntry.count : 0
-        const oppPctOfVenue = venueAvg > 0 && oppAvg > 0 ? (oppAvg / venueAvg) * 100 : 0
+        const oppAvg = agg && agg.games > 0 ? agg.totalScore / agg.games : 0
+        const oppPctOfVenue = agg && agg.games > 0 ? agg.sumPct / agg.games : 0
         const edge = oppPctOfVenue > 0 ? row.pctOfVenue - oppPctOfVenue : 0
-        return { ...row, oppAvg, oppPctOfVenue, edge, oppGamesPlayed: agg?.count || 0 }
+        return { ...row, oppAvg, oppPctOfVenue, edge, oppGamesPlayed: agg?.games || 0 }
       })
     }
 
@@ -191,138 +228,141 @@ export async function GET(request: Request) {
 
     // --- Try cache-first path ---
     {
-      // Get player stats from cache
       const allMachineVars = getAllMachineVariations(machinesAtVenue).map(v => v.toLowerCase())
-      let playerCacheQuery = supabase
+
+      // Pull the player's per-venue rows. Per-game-normalized pctOfVenue
+      // requires per-(machine, venue) totals, not the venue=NULL rollup.
+      // Filtered by venue when scope is venue-specific; otherwise fetch
+      // every venue the player has played at.
+      let playerVenueQuery = supabase
         .from('cache_player_machine_stats' as any)
-        .select('*')
+        .select('machine, venue, total_score, game_count, total_points, possible_points')
         .eq('player_name', player)
         .in('machine', allMachineVars)
         .eq('season_start', seasonStart)
         .eq('season_end', seasonEnd)
-
+        .not('venue', 'is', null)
       if (!allVenues) {
-        playerCacheQuery = playerCacheQuery.in('venue', venueVariations)
-      } else {
-        playerCacheQuery = playerCacheQuery.is('venue', null)
+        playerVenueQuery = playerVenueQuery.in('venue', venueVariations)
+      }
+      const { data: playerVenueRows } = await playerVenueQuery as { data: Array<{
+        machine: string; venue: string; total_score: number; game_count: number;
+        total_points: number | null; possible_points: number | null
+      }> | null }
+
+      // Map any machine variation back to its canonical (venues.json) name.
+      const machineVarToCanon = new Map<string, string>()
+      for (const m of machinesAtVenue) {
+        for (const v of getAllMachineVariations([m])) {
+          machineVarToCanon.set(v.toLowerCase(), m)
+        }
       }
 
-      const { data: playerCache } = await playerCacheQuery as { data: any[] | null }
+      // Build the set of venues we need a per-machine average for. For
+      // venue-specific scope it's just the selected venue's variations;
+      // for all-venues we need the venue average for every venue the
+      // player has data in (so per-game normalization works).
+      const venuesToFetch = new Set<string>()
+      if (!allVenues) {
+        for (const v of venueVariations) venuesToFetch.add(v)
+      } else {
+        for (const r of playerVenueRows || []) venuesToFetch.add(r.venue)
+      }
 
-      // Get venue averages by summing all teams' stats at the venue
-      const { data: venueCache } = await (supabase
-        .from('cache_team_machine_stats' as any)
-        .select('machine, total_score, game_count')
-        .in('machine', allMachineVars)
-        .in('venue', venueVariations)
-        .eq('season_start', seasonStart)
-        .eq('season_end', seasonEnd)) as { data: any[] | null }
+      let venueByMachineVenueMap = new Map<string /* `${machineLower}|${venue}` */, { total: number; count: number }>()
+      if (venuesToFetch.size > 0) {
+        const { data: venueCache } = await (supabase
+          .from('cache_team_machine_stats' as any)
+          .select('machine, venue, total_score, game_count')
+          .in('machine', allMachineVars)
+          .in('venue', Array.from(venuesToFetch))
+          .eq('season_start', seasonStart)
+          .eq('season_end', seasonEnd)) as { data: Array<{
+            machine: string; venue: string | null; total_score: number; game_count: number
+          }> | null }
+        for (const row of venueCache || []) {
+          if (!row.venue) continue
+          const key = `${row.machine.toLowerCase()}|${row.venue}`
+          const existing = venueByMachineVenueMap.get(key) || { total: 0, count: 0 }
+          existing.total += Number(row.total_score)
+          existing.count += Number(row.game_count)
+          venueByMachineVenueMap.set(key, existing)
+        }
+      }
 
-      if (playerCache && playerCache.length > 0) {
-        // Build venue averages from cache
-        const venueAvgMap = new Map<string, { total: number; count: number }>()
-        if (venueCache) {
-          for (const row of venueCache) {
-            const existing = venueAvgMap.get(row.machine) || { total: 0, count: 0 }
-            existing.total += Number(row.total_score)
-            existing.count += Number(row.game_count)
-            venueAvgMap.set(row.machine, existing)
+      if (playerVenueRows && playerVenueRows.length > 0) {
+        // Per-machine accumulators. sumPct is the running sum of every
+        // game's (score / venueAvgForThatVenue) * 100; dividing by games
+        // gives the per-game-normalized pctOfVenue. avgScore stays a raw
+        // mean (sum scores / games) since that field is unrelated.
+        const perMachine = new Map<string, {
+          sumPct: number; games: number; totalScore: number;
+          totalPoints: number; possiblePoints: number;
+          venues: Set<string>; bestVenue: string; bestAvg: number;
+        }>()
+
+        for (const row of playerVenueRows) {
+          const games = Number(row.game_count)
+          if (!games) continue
+          const total = Number(row.total_score)
+          const canon = machineVarToCanon.get(row.machine.toLowerCase()) || row.machine
+          const venueAvgEntry = venueByMachineVenueMap.get(`${row.machine.toLowerCase()}|${row.venue}`)
+          const venueAvg = venueAvgEntry && venueAvgEntry.count > 0 ? venueAvgEntry.total / venueAvgEntry.count : 0
+          // Sum-of-per-game-pcts contribution from this venue collapses to
+          // (total_score / venueAvg * 100) without needing per-row scores.
+          const sumPctContribution = venueAvg > 0 ? (total / venueAvg) * 100 : 0
+          const rowAvg = total / games
+
+          const acc = perMachine.get(canon) || {
+            sumPct: 0, games: 0, totalScore: 0,
+            totalPoints: 0, possiblePoints: 0,
+            venues: new Set<string>(), bestVenue: '', bestAvg: 0,
           }
+          acc.sumPct += sumPctContribution
+          acc.games += games
+          acc.totalScore += total
+          acc.totalPoints += Number(row.total_points || 0)
+          acc.possiblePoints += Number(row.possible_points || 0)
+          acc.venues.add(row.venue)
+          if (rowAvg > acc.bestAvg) {
+            acc.bestAvg = rowAvg
+            acc.bestVenue = row.venue
+          }
+          perMachine.set(canon, acc)
         }
 
-        // Map cache rows to machine name from machinesAtVenue
-        const machineVarToCanon = new Map<string, string>()
-        for (const m of machinesAtVenue) {
-          for (const v of getAllMachineVariations([m])) {
-            machineVarToCanon.set(v.toLowerCase(), m)
-          }
-        }
-
+        const allVenuesSet = new Set<string>()
         let totalGames = 0
-        const machinePerformance = playerCache.map((row: any) => {
-          const canonicalMachine = machineVarToCanon.get(row.machine) || row.machine
-          const avgScore = row.game_count > 0 ? Number(row.total_score) / Number(row.game_count) : 0
-          const venueEntry = venueAvgMap.get(row.machine)
-          const venueAvg = venueEntry && venueEntry.count > 0 ? venueEntry.total / venueEntry.count : 0
-          const pctOfVenue = venueAvg > 0 ? (avgScore / venueAvg) * 100 : 0
-          totalGames += Number(row.game_count)
-
+        const machinePerformance = Array.from(perMachine.entries()).map(([canon, acc]) => {
+          for (const v of Array.from(acc.venues)) allVenuesSet.add(v)
+          totalGames += acc.games
           return {
-            machine: canonicalMachine,
-            avgScore,
-            avgPoints: row.possible_points && row.game_count > 0 ? Number(row.total_points) / Number(row.game_count) : 0,
-            timesPlayed: Number(row.game_count),
+            machine: canon,
+            avgScore: acc.totalScore / acc.games,
+            avgPoints: acc.possiblePoints > 0 ? acc.totalPoints / acc.games : 0,
+            timesPlayed: acc.games,
             bestScore: 0, // Not stored in cache
-            pctOfVenue,
-            venuesPlayed: 0,
-            bestVenue: ''
+            // Per-game-normalized: sum of per-game (score / venueAvg) percentages
+            // divided by total games. Equivalent to the legacy avg/avg ratio
+            // when there is exactly one venue in scope; differs (correctly)
+            // when the player's data spans multiple venues.
+            pctOfVenue: acc.games > 0 ? acc.sumPct / acc.games : 0,
+            venuesPlayed: acc.venues.size,
+            bestVenue: acc.bestVenue,
           }
         }).sort((a: any, b: any) => b.pctOfVenue - a.pctOfVenue)
 
-        // Build a venueScores-equivalent map from the team-level venue cache
-        // so the opponent-edge calc has a venue average to compare against.
-        const venueScoresMap = new Map<string, { totalScore: number; count: number }>()
-        for (const [m, agg] of Array.from(venueAvgMap.entries())) {
-          const canon = machineVarToCanon.get(m) || m
-          venueScoresMap.set(canon, { totalScore: agg.total, count: agg.count })
-        }
-        const enriched = await enrichWithOpponent(machinePerformance, venueScoresMap)
-
-        // venuesPlayed/per-machine venues: cache_player_machine_stats stores
-        // both venue-specific rows AND a venue=NULL rollup. Querying again
-        // without a venue filter (excluding the rollup) gives us per-venue
-        // counts so the KPI card and per-row "Venues Played"/"Best Venue"
-        // are accurate. Without this, the KPI stays at 0 because the main
-        // query above filters to a single venue or only the NULL rollup.
-        let totalVenues = 0
-        const perMachineVenues = new Map<string, { venues: Set<string>; bestVenue: string; bestAvg: number }>()
-        try {
-          const { data: venueRows } = await supabase
-            .from('cache_player_machine_stats' as any)
-            .select('machine, venue, total_score, game_count')
-            .eq('player_name', player)
-            .in('machine', allMachineVars)
-            .eq('season_start', seasonStart)
-            .eq('season_end', seasonEnd)
-            .not('venue', 'is', null) as { data: Array<{
-              machine: string; venue: string; total_score: number; game_count: number
-            }> | null }
-
-          const allVenuesSet = new Set<string>()
-          for (const r of venueRows || []) {
-            if (!r.game_count || r.game_count === 0) continue
-            allVenuesSet.add(r.venue)
-            const canon = machineVarToCanon.get(r.machine.toLowerCase()) || r.machine
-            const entry = perMachineVenues.get(canon) || { venues: new Set<string>(), bestVenue: '', bestAvg: 0 }
-            entry.venues.add(r.venue)
-            const avg = Number(r.total_score) / Number(r.game_count)
-            if (avg > entry.bestAvg) {
-              entry.bestAvg = avg
-              entry.bestVenue = r.venue
-            }
-            perMachineVenues.set(canon, entry)
-          }
-          totalVenues = allVenuesSet.size
-        } catch (err) {
-          console.error('[player-analysis] venuesPlayed lookup failed:', err)
-        }
-
-        // Backfill per-row venuesPlayed and bestVenue from the venue rollup.
-        const enrichedWithVenues = enriched.map((row: any) => {
-          const v = perMachineVenues.get(row.machine)
-          return {
-            ...row,
-            venuesPlayed: v?.venues.size || 0,
-            bestVenue: v?.bestVenue || '',
-          }
-        })
+        // The opponent enrichment compares opponent's pctOfVenue against
+        // the same venue baseline. Pass the per-(machine,venue) map so
+        // enrichWithOpponent can normalize per-game too.
+        const enriched = await enrichWithOpponent(machinePerformance, venueByMachineVenueMap, machineVarToCanon)
 
         return NextResponse.json({
           player,
           totalGames,
           uniqueMachines: machinePerformance.length,
-          venuesPlayed: totalVenues,
-          machinePerformance: enrichedWithVenues,
+          venuesPlayed: allVenuesSet.size,
+          machinePerformance: enriched,
           allVenues
         })
       }
@@ -466,46 +506,76 @@ export async function GET(request: Request) {
       }
     }
 
-    // Step 5: Calculate venue averages from venue games
-    const venueScores = new Map()
+    // Step 5a: Build per-(machine, venue) venue averages. Use the live
+    // venueGamesData for the selected venue (already loaded above) and
+    // top up with cache_team_machine_stats for any other venues the
+    // player has games in (only relevant when scope = all venues).
+    const venueByMachineVenueMap = new Map<string /* `${machineLower}|${venue}` */, { total: number; count: number }>()
     for (const game of venueGamesData || []) {
-      // Only process machines at the venue (after applying overrides)
-      const venueCanonical = machineVariationToCanonical.get(game.machine)
-      if (!venueCanonical) continue
-      game.machine = venueCanonical
-
-      if (!venueScores.has(game.machine)) {
-        venueScores.set(game.machine, { totalScore: 0, count: 0 })
+      const canonical = machineVariationToCanonical.get(game.machine)
+      if (!canonical) continue
+      // venueGamesData is already filtered to selected venue's variations,
+      // so bucket each row under (canonical, selectedVenue).
+      const key = `${canonical.toLowerCase()}|${venue}`
+      const venueData = venueByMachineVenueMap.get(key) || { total: 0, count: 0 }
+      for (const score of [game.player_1_score, game.player_2_score, game.player_3_score, game.player_4_score]) {
+        if (score) {
+          venueData.total += score
+          venueData.count++
+        }
       }
-      const venueData = venueScores.get(game.machine)!
-
-      // Add all player scores to venue average
-      if (game.player_1_score) {
-        venueData.totalScore += game.player_1_score
-        venueData.count++
+      venueByMachineVenueMap.set(key, venueData)
+    }
+    if (allVenues) {
+      const otherVenues = new Set<string>()
+      for (const stats of Array.from(machineStats.values()) as any[]) {
+        for (const v of Array.from(stats.venues) as string[]) {
+          if (v !== venue) otherVenues.add(v)
+        }
       }
-      if (game.player_2_score) {
-        venueData.totalScore += game.player_2_score
-        venueData.count++
-      }
-      if (game.player_3_score) {
-        venueData.totalScore += game.player_3_score
-        venueData.count++
-      }
-      if (game.player_4_score) {
-        venueData.totalScore += game.player_4_score
-        venueData.count++
+      if (otherVenues.size > 0) {
+        const allMachineVars = getAllMachineVariations(machinesAtVenue).map(v => v.toLowerCase())
+        const { data: extraVenueCache } = await (supabase
+          .from('cache_team_machine_stats' as any)
+          .select('machine, venue, total_score, game_count')
+          .in('machine', allMachineVars)
+          .in('venue', Array.from(otherVenues))
+          .eq('season_start', seasonStart)
+          .eq('season_end', seasonEnd)) as { data: Array<{
+            machine: string; venue: string | null; total_score: number; game_count: number
+          }> | null }
+        for (const row of extraVenueCache || []) {
+          if (!row.venue) continue
+          const canonical = machineVariationToCanonical.get(row.machine.toLowerCase()) || row.machine
+          const key = `${canonical.toLowerCase()}|${row.venue}`
+          const existing = venueByMachineVenueMap.get(key) || { total: 0, count: 0 }
+          existing.total += Number(row.total_score)
+          existing.count += Number(row.game_count)
+          venueByMachineVenueMap.set(key, existing)
+        }
       }
     }
 
-    // Calculate venue averages and player percentages
-    const machinePerformance = Array.from(machineStats.values()).map(stats => {
+    // Step 5b: For each machine, compute per-game-normalized pctOfVenue
+    // from the player's per-venue tallies (collected during the games
+    // loop). For each (machine, venue) the player has data, the sum of
+    // per-game (score / venueAvg) percentages collapses to
+    // (sum_score_v / venueAvg_v) * 100 — same as in the cache path.
+    const machinePerformance = Array.from(machineStats.values()).map((stats: any) => {
       const avgScore = stats.totalScore / stats.gamesPlayed
-      const venueData = venueScores.get(stats.machine)
-      const venueAvg = venueData ? venueData.totalScore / venueData.count : 0
-      const pctOfVenue = venueAvg > 0 ? (avgScore / venueAvg) * 100 : 0
 
-      // Find best venue (highest average) for this machine
+      let sumPct = 0
+      let coveredGames = 0
+      for (const [venueName, venueStats] of stats.venueScores.entries()) {
+        const venueAvgEntry = venueByMachineVenueMap.get(`${stats.machine.toLowerCase()}|${venueName}`)
+        const venueAvg = venueAvgEntry && venueAvgEntry.count > 0 ? venueAvgEntry.total / venueAvgEntry.count : 0
+        if (venueAvg > 0) {
+          sumPct += (venueStats.totalScore / venueAvg) * 100
+          coveredGames += venueStats.count
+        }
+      }
+      const pctOfVenue = coveredGames > 0 ? sumPct / coveredGames : 0
+
       let bestVenue = ''
       let bestVenueAvg = 0
       for (const [venueName, venueStats] of stats.venueScores.entries()) {
@@ -528,7 +598,14 @@ export async function GET(request: Request) {
       }
     }).sort((a, b) => b.pctOfVenue - a.pctOfVenue)
 
-    const enriched = await enrichWithOpponent(machinePerformance, venueScores)
+    // machineVarToCanon for the fallback path: any variation → canonical.
+    const fallbackMachineVarToCanon = new Map<string, string>()
+    for (const m of machinesAtVenue) {
+      for (const v of getAllMachineVariations([m])) {
+        fallbackMachineVarToCanon.set(v.toLowerCase(), m)
+      }
+    }
+    const enriched = await enrichWithOpponent(machinePerformance, venueByMachineVenueMap, fallbackMachineVarToCanon)
 
     return NextResponse.json({
       player,

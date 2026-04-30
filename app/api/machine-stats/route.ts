@@ -368,6 +368,45 @@ function calculateMachineStatsServerSide(
     }
   }
 
+  // Precompute per-(machine, venue) averages once so each per-game-normalized
+  // pctOfVenue calc is O(rows). Score limits apply here too — anything over
+  // the limit is clearly a glitch and should be excluded from the venue
+  // baseline as well as the team's own avg.
+  const venueByMachineVenueMap = new Map<string /* `${machine}|${venue}` */, { total: number; count: number }>();
+  for (const d of seasonData) {
+    if (!d.venue) continue;
+    const limit = options.scoreLimits?.[d.machine.toLowerCase()];
+    if (limit !== undefined && d.score > limit) continue;
+    const key = `${d.machine}|${d.venue}`;
+    const existing = venueByMachineVenueMap.get(key) || { total: 0, count: 0 };
+    existing.total += d.score;
+    existing.count += 1;
+    venueByMachineVenueMap.set(key, existing);
+  }
+
+  /**
+   * For a set of player-score rows, compute per-game-normalized pctOfVenue:
+   * each score is judged against the venue average for the venue it was
+   * actually played at, then those venue-relative percentages are averaged.
+   * Falls back to 0 when no row has a usable venue baseline.
+   */
+  const computePctOfVenuePerGame = (rows: ProcessedScore[], machine: string): number => {
+    let sumPct = 0;
+    let games = 0;
+    for (const r of rows) {
+      if (!r.venue) continue;
+      const limit = options.scoreLimits?.[machine.toLowerCase()];
+      if (limit !== undefined && r.score > limit) continue;
+      const entry = venueByMachineVenueMap.get(`${machine}|${r.venue}`);
+      const venueAvg = entry && entry.count > 0 ? entry.total / entry.count : 0;
+      if (venueAvg > 0) {
+        sumPct += (r.score / venueAvg) * 100;
+        games += 1;
+      }
+    }
+    return games > 0 ? sumPct / games : 0;
+  };
+
   const stats: MachineStats[] = [];
 
   machines.forEach(machine => {
@@ -419,9 +458,11 @@ function calculateMachineStatsServerSide(
     const popsPicking = computePops(machineTeamData.filter(d => d.is_pick));
     const popsResponding = computePops(machineTeamData.filter(d => !d.is_pick));
 
-    const percentOfVenueAvg = venueAverage > 0
-      ? (teamAverage / venueAverage) * 100
-      : 0;
+    // Per-game-normalized: each team score is judged against the venue avg
+    // for the venue it was played at; venue-relative pcts are then pooled.
+    // Equivalent to teamAverage/venueAverage when the team's data is all at
+    // one venue; differs (correctly) when scope spans multiple venues.
+    const percentOfVenueAvg = computePctOfVenuePerGame(machineTeamData, machine);
 
     const machineStats: MachineStats = {
       machine,
@@ -469,9 +510,10 @@ function calculateMachineStatsServerSide(
         : 0;
 
       machineStats.twcAverage = twcAverage;
-      machineStats.twcPercentOfVenueAvg = venueAverage > 0
-        ? (twcAverage / venueAverage) * 100
-        : 0;
+      // Per-game-normalized — same definition as above, so subtracting
+      // (twcPercentOfVenueAvg − percentOfVenueAvg) is fair regardless of
+      // each side's venue scope.
+      machineStats.twcPercentOfVenueAvg = computePctOfVenuePerGame(twcData, machine);
 
       // TWC times played
       const twcUniqueGames = new Set(
