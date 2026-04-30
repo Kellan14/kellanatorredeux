@@ -129,6 +129,7 @@ export async function POST(request: NextRequest) {
       oppPlayerList: string[]
       oppPlayerStats: Map<string, Map<string, { vTotal: number; vCount: number; nvTotal: number; nvCount: number }>>
       getBlendedAvg: (player: string, machine: string) => number
+      getOppCellValue: (player: string, machine: string) => number
       allGames: any[]
       venueVariations: string[]
       teamNameMap: Record<string, string>
@@ -236,7 +237,67 @@ export async function POST(request: NextRequest) {
       collectOppStats(venueGames, true)
       collectOppStats(nonVenueGames, false)
 
-      // Compute blended avg for each opponent player on each machine
+      // Per-(opp player, machine, venue) buckets and per-(machine, venue)
+      // baselines, used by the per-game-normalized branch. Same idea as the
+      // machine-advantages perVenueTeamStats / perVenueBaseline maps.
+      const oppPerVenue = new Map<string, Map<string, Map<string, { total: number; count: number }>>>()
+      const venueAvgByMV = new Map<string, Map<string, { total: number; count: number }>>()
+      if (usePerGameNormalized) {
+        for (const game of allGames) {
+          const v = game.venue
+          if (!v) continue
+          for (let i = 1; i <= 4; i++) {
+            const playerName = game[`player_${i}_name`]
+            const teamKey = game[`player_${i}_team`]
+            const score = game[`player_${i}_score`]
+            if (!score) continue
+            if (!isScoreValid(game.machine, score, scoreLimits)) continue
+            // Baselines: every valid score contributes to the venue avg.
+            if (!venueAvgByMV.has(game.machine)) venueAvgByMV.set(game.machine, new Map())
+            const venueMapForMachine = venueAvgByMV.get(game.machine)!
+            const baseEntry = venueMapForMachine.get(v) || { total: 0, count: 0 }
+            baseEntry.total += score
+            baseEntry.count++
+            venueMapForMachine.set(v, baseEntry)
+            // Opponent player buckets.
+            if (!teamKey || !playerName) continue
+            if (!oppPlayerSet.has(playerName)) continue
+            if (teamNameMap[teamKey] !== opponent) continue
+            if (!oppPerVenue.has(playerName)) oppPerVenue.set(playerName, new Map())
+            const machineMap = oppPerVenue.get(playerName)!
+            if (!machineMap.has(game.machine)) machineMap.set(game.machine, new Map())
+            const inner = machineMap.get(game.machine)!
+            const entry = inner.get(v) || { total: 0, count: 0 }
+            entry.total += score
+            entry.count++
+            inner.set(v, entry)
+          }
+        }
+      }
+
+      // Per-game-normalized opponent "score" — mean of (score / venueAvg(M, V))
+      // across the player's games. Returns a ratio centered around 1.0 (so the
+      // Hungarian matrix is consistent with the legacy raw-avg path's units;
+      // the optimizer just needs comparable values within one matrix).
+      const getPgnOppRatio = (player: string, machine: string): number => {
+        const machineMap = oppPerVenue.get(player)
+        if (!machineMap) return 0
+        const venueMap = machineMap.get(machine)
+        if (!venueMap) return 0
+        let sumRatio = 0
+        let games = 0
+        for (const [v, entry] of Array.from(venueMap.entries())) {
+          const baseline = venueAvgByMV.get(machine)?.get(v)
+          if (!baseline || baseline.count === 0) continue
+          const venueAvg = baseline.total / baseline.count
+          if (venueAvg <= 0) continue
+          sumRatio += entry.total / venueAvg
+          games += entry.count
+        }
+        return games > 0 ? sumRatio / games : 0
+      }
+
+      // Legacy blended-avg path. Kept so the toggle can fall back cleanly.
       const getBlendedAvg = (player: string, machine: string): number => {
         const playerMap = oppPlayerStats.get(player)
         if (!playerMap) return 0
@@ -249,6 +310,11 @@ export async function POST(request: NextRequest) {
         if (nvAvg !== null) return nvAvg
         return 0
       }
+
+      // Single accessor switches based on the toggle. Both functions return
+      // values comparable within their own matrix — Hungarian doesn't care
+      // about absolute units, just monotonic ordering.
+      const getOppCellValue = usePerGameNormalized ? getPgnOppRatio : getBlendedAvg
 
       // Nash Equilibrium via Iterative Best Response
       // TWC picks first, opponent responds, TWC re-responds, until convergence.
@@ -278,7 +344,7 @@ export async function POST(request: NextRequest) {
           const row: number[] = []
           for (let c = 0; c < d; c++) {
             if (r < oppPlayerList.length && c < mSlots.length) {
-              row.push(getBlendedAvg(oppPlayerList[r], mSlots[c].machine))
+              row.push(getOppCellValue(oppPlayerList[r], mSlots[c].machine))
             } else {
               row.push(-1e9)
             }
@@ -292,7 +358,7 @@ export async function POST(request: NextRequest) {
           const col = result.assignments[r]
           if (col < 0 || col >= mSlots.length) continue
           const { machine } = mSlots[col]
-          const avg = getBlendedAvg(oppPlayerList[r], machine)
+          const avg = getOppCellValue(oppPlayerList[r], machine)
           if (avg <= 0) continue
           const list = oppAvgMap.get(machine) || []
           list.push(avg)
@@ -301,29 +367,39 @@ export async function POST(request: NextRequest) {
         return oppAvgMap
       }
 
-      // Helper: compute per-player-per-machine edge bonuses from opponent assignments
-      // Each TWC player's blended avg is compared against the specific opponent assigned to that machine
+      // Helper: compute per-player-per-machine edge bonuses from opponent assignments.
+      // Each TWC player's venue-adjusted ratio is compared against the specific
+      // opponent assigned to that machine.
+      //
+      // Per-game-normalized branch: getOppCellValue already returns a ratio
+      // (mean of per-game (score / venueAvg)), directly comparable to the TWC
+      // player's venue_adjusted_avg from calculatePlayerMachineStats — both
+      // are per-game-normalized around 1.0. No further division needed.
+      //
+      // Legacy branch: getOppCellValue returns a raw avg, which is divided by
+      // the (single-venue) venueAvg to get the opp's ratio.
       const computeEdgeBonuses = (oppAvgMap: Map<string, number[]>): Map<string, number> => {
         const bonuses = new Map<string, number>()
         for (const machine of allMachinesForStats) {
-          const venueEntry = venueAvgPerMachine.get(machine)
-          const venueAvg = venueEntry && venueEntry.count > 0 ? venueEntry.total / venueEntry.count : 0
-          if (venueAvg <= 0) continue
-
           const oppAvgs = oppAvgMap.get(machine)
           if (!oppAvgs || oppAvgs.length === 0) continue
           const oppAvg = oppAvgs.reduce((a, b) => a + b, 0) / oppAvgs.length
           if (oppAvg <= 0) continue
 
-          // Convert opponent avg to a venue-adjusted ratio
-          const oppRatio = oppAvg / venueAvg
+          let oppRatio: number
+          if (usePerGameNormalized) {
+            oppRatio = oppAvg
+          } else {
+            const venueEntry = venueAvgPerMachine.get(machine)
+            const venueAvg = venueEntry && venueEntry.count > 0 ? venueEntry.total / venueEntry.count : 0
+            if (venueAvg <= 0) continue
+            oppRatio = oppAvg / venueAvg
+          }
 
           for (const player of allPlayers) {
             const twcRatio = statsMap.get(player)?.get(machine)?.venue_adjusted_avg || 0
             if (twcRatio <= 0) continue
 
-            // Compare TWC player's ratio vs opponent's ratio
-            // Positive = TWC player scores higher relative to venue avg than opponent
             const edge = Math.max(-0.5, Math.min(0.5, (twcRatio - oppRatio) / Math.max(twcRatio, oppRatio)))
             bonuses.set(`${player}|${machine}`, ow * edge)
           }
@@ -396,7 +472,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Save data for post-optimization opponent assignment display
-      oppDataForDisplay = { oppPlayerList, oppPlayerStats, getBlendedAvg, allGames, venueVariations, teamNameMap, venueAvgPerMachine }
+      oppDataForDisplay = { oppPlayerList, oppPlayerStats, getBlendedAvg, getOppCellValue, allGames, venueVariations, teamNameMap, venueAvgPerMachine }
     }
 
     // Pre-fetch pair stats for doubles
@@ -528,7 +604,9 @@ export async function POST(request: NextRequest) {
     // After TWC optimization, compute assumed opponents via Hungarian for display
     const computeAssumedOpponents = (assignedMachines: string[]) => {
       if (!oppDataForDisplay) return null
-      const { oppPlayerList, getBlendedAvg, allGames, venueVariations, teamNameMap, venueAvgPerMachine } = oppDataForDisplay
+      // getOppCellValue drives the Hungarian (per-game-normalized when the
+      // toggle is on); getBlendedAvg stays for the displayed raw avg score.
+      const { oppPlayerList, getBlendedAvg, getOppCellValue, allGames, venueVariations, teamNameMap, venueAvgPerMachine } = oppDataForDisplay
 
       // Build opponent cost matrix for the machines that TWC is actually playing
       const playersPerMachine = format === '4x2' ? 2 : 1
@@ -547,7 +625,7 @@ export async function POST(request: NextRequest) {
         const row: number[] = []
         for (let c = 0; c < dim; c++) {
           if (r < oppPlayerList.length && c < machineSlots.length) {
-            row.push(getBlendedAvg(oppPlayerList[r], machineSlots[c].machine))
+            row.push(getOppCellValue(oppPlayerList[r], machineSlots[c].machine))
           } else {
             row.push(-1e9)
           }
@@ -557,7 +635,7 @@ export async function POST(request: NextRequest) {
 
       const oppResult = hungarianAlgorithm(oppCostMatrix, true)
 
-      // DEBUG: Log opponent assignment
+      // DEBUG: Log opponent assignment (raw avg for human readability)
       console.log('\n--- Assumed Opponent Assignments ---')
       for (let r = 0; r < oppPlayerList.length; r++) {
         const col = oppResult.assignments[r]
