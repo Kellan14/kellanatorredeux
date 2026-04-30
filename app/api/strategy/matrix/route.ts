@@ -19,7 +19,13 @@ export async function GET(request: NextRequest) {
     const seasonStart = parseInt(searchParams.get('seasonStart') || '20')
     const seasonEnd = parseInt(searchParams.get('seasonEnd') || '22')
     const venue = searchParams.get('venue') || undefined
-    const venueWeight = parseFloat(searchParams.get('venueWeight') || '1')
+    // When usePerGameNormalized is true (the strategy page's default), the
+    // venueWeight blend is bypassed — each score is judged against its own
+    // venue's avg, which is what venueWeight=1 produces when scope is set.
+    const usePerGameNormalized = searchParams.get('usePerGameNormalized') !== 'false'
+    const venueWeight = usePerGameNormalized
+      ? 1
+      : parseFloat(searchParams.get('venueWeight') || '1')
     const userInputWeight = parseFloat(searchParams.get('userInputWeight') || '0')
     const confidenceBoost = parseFloat(searchParams.get('confidenceBoost') || '0')
     const scoreWeightsParam = searchParams.get('scoreWeights')

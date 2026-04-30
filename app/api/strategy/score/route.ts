@@ -20,11 +20,17 @@ export async function POST(request: NextRequest) {
       seasonStart = 20,
       seasonEnd = 22,
       venue,
-      venueWeight = 0.7,
+      venueWeight: rawVenueWeight = 0.7,
+      // When true (strategy page's default), the venueWeight blend is
+      // bypassed by forcing venueWeight=1 — venue stats are used as-is
+      // when venue is set, falling back to all-venues otherwise. Avoids
+      // the venue/non-venue avg blend that the slider previously drove.
+      usePerGameNormalized = true,
       userInputWeight = 0,
       confidenceBoost = 0,
       scoreWeights
     } = body
+    const venueWeight = usePerGameNormalized ? 1 : rawVenueWeight
 
     if (!assignments || !Array.isArray(assignments)) {
       return NextResponse.json({ error: 'Missing assignments array' }, { status: 400 })

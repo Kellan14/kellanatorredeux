@@ -37,7 +37,13 @@ export async function POST(request: NextRequest) {
       seasonStart = 20,
       seasonEnd = 22,
       venue,
-      venueWeight,
+      venueWeight: rawVenueWeight,
+      // When true (strategy page's default), the venueWeight blend is
+      // bypassed — venueWeight is forced to 1 so prefetchStats /
+      // getBlendedAvg use venue-only data when venue is set, falling back
+      // to non-venue when it isn't. Approximates per-game-normalized at
+      // this layer without rebuilding lib/strategy internals.
+      usePerGameNormalized = true,
       exclusions = {},
       mustPlay = [],
       userInputWeight = 0,
@@ -106,6 +112,7 @@ export async function POST(request: NextRequest) {
     // Pre-fetch stats for ALL players (including forced ones for merging back)
     const allPlayersForStats = [...allPlayers, ...Array.from(forcedPlayerSet)]
     const allMachinesForStats = [...selectedMachines, ...Array.from(forcedMachineSet)]
+    const venueWeight = usePerGameNormalized ? 1 : rawVenueWeight
     const { statsMap, userInputs } = await optimizer.prefetchStats(
       allPlayersForStats, allMachinesForStats, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost
     )
