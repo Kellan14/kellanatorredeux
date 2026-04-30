@@ -43,6 +43,7 @@ export function MainNav() {
     { href: '/machines' as const, label: 'Machines' },
     { href: '/head-to-head' as const, label: 'Head to Head' },
     { href: '/player-profile' as const, label: 'Player Profile' },
+    { href: '/compare-venues' as const, label: 'Compare Venues' },
     ...(user ? [
       { href: '/strategy' as const, label: 'Strategy' },
     ] : []),
