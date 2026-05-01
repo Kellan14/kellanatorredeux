@@ -70,20 +70,42 @@ export async function GET(request: Request) {
         // Sort by score desc and assign clean ranks 1..N. Tie handling:
         // identical scores share a rank (the next rank skips appropriately).
         deduped.sort((a, b) => Number(b.score) - Number(a.score))
-        const topScores = deduped.slice(0, 10).map((row: any, idx: number, arr: any[]) => {
-          // Tie-aware rank
+        const top10 = deduped.slice(0, 10)
+
+        // Backfill actual per-score season for all-time bucket rows. The
+        // cache row's `season` column is the bucket label (null = all-time)
+        // — NOT the season the score was played in. To avoid showing "All-
+        // time" where we should show the real season, look up each score's
+        // match in the matches table and use its season. Single query for
+        // all 10 records, runs only when at least one row has null season.
+        const matchKeys = Array.from(
+          new Set(top10.filter(r => r.season == null && r.match_key).map(r => r.match_key))
+        ) as string[]
+        const matchToSeason = new Map<string, number>()
+        if (matchKeys.length > 0) {
+          const { data: matchRows } = await supabase
+            .from('matches')
+            .select('match_key, season')
+            .in('match_key', matchKeys) as { data: Array<{ match_key: string; season: number | null }> | null }
+          for (const m of matchRows || []) {
+            if (m.season != null) matchToSeason.set(m.match_key, m.season)
+          }
+        }
+
+        const topScores = top10.map((row: any, idx: number, arr: any[]) => {
           let rank = 1
           for (let i = 0; i < idx; i++) {
             if (Number(arr[i].score) > Number(row.score)) rank = i + 2
           }
+          // Prefer the cache's season when present (this-season buckets),
+          // otherwise the looked-up actual season, otherwise null.
+          const actualSeason = row.season ?? (row.match_key ? matchToSeason.get(row.match_key) ?? null : null)
           return {
             player: row.player_name,
             playerKey: row.player_key || `name:${row.player_name}`,
             score: Number(row.score),
             venue: row.venue || '',
-            // Preserve null so the UI can render "All-time" instead of
-            // a misleading "Season 0".
-            season: row.season ?? null,
+            season: actualSeason,
             week: row.week || 0,
             match: row.match_key || '',
             round: row.round_number || 0,

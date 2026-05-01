@@ -2115,10 +2115,13 @@ function HomePageContent() {
                     (entry.player.startsWith(playerName) && entry.player.toLowerCase().includes('(sub)'))
                   const isCurrentPlayer = isExactMatch || isSubMatch
                   // Tie-aware: same rank renders for tied scores; use index as
-                  // React key so they don't collide. Season may legitimately
-                  // be null (all-time rollup row from the cache); render
-                  // "All-time" instead of "Season 0".
-                  const seasonLabel = entry.season ? `Season ${entry.season}` : 'All-time'
+                  // React key so they don't collide. The API backfills each
+                  // score's actual season (looking up the match when the
+                  // cache row was an all-time-bucket row), so the only time
+                  // we shouldn't render a season is if the lookup truly
+                  // couldn't find one — show "Unknown season" rather than
+                  // hide it.
+                  const seasonLabel = entry.season ? `Season ${entry.season}` : 'Unknown season'
                   return (
                     <div
                       key={`${idx}-${entry.player}-${entry.score}`}
