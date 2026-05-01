@@ -241,10 +241,12 @@ export async function GET(request: NextRequest) {
       }
 
       // Build valueByMV with the chosen metric. gameCount stays the actual
-      // number of underlying scores regardless of metric. Skip when cache
-      // already populated valueByMV (mean fast path) — we'd just overwrite
-      // with the same value at the cost of double work.
-      if (!usedCache) for (const [key, scores] of Array.from(scoresByMV.entries())) {
+      // number of underlying scores regardless of metric. Per-cell fallback:
+      // only fill cells the cache fast path didn't already populate, so a
+      // partial cache hit (cache has some machines but not others) still
+      // gets the rest from live data instead of leaving them blank.
+      for (const [key, scores] of Array.from(scoresByMV.entries())) {
+        if (valueByMV.has(key)) continue
         if (scores.length === 0) continue
         const sorted = [...scores].sort((a, b) => a - b)
         const n = sorted.length
