@@ -53,7 +53,21 @@ export async function GET(request: Request) {
       )
     }
 
-    const currentSeason = 22
+    // Read the actual current (max) season from data instead of hardcoding.
+    // Hardcoded 22 was leaving season 23+ data out of the "all-time" and
+    // "this season" computations.
+    let currentSeason = 22
+    try {
+      const { data: maxSeasonRow } = await supabase
+        .from('matches')
+        .select('season')
+        .order('season', { ascending: false })
+        .limit(1)
+        .single<{ season: number }>()
+      if (maxSeasonRow?.season) currentSeason = maxSeasonRow.season
+    } catch {
+      // Stick with the fallback — better than crashing.
+    }
 
     // First, find the player's key by looking for any game they've played
     const { data: playerGames } = await supabase
@@ -88,8 +102,17 @@ export async function GET(request: Request) {
       return NextResponse.json({ achievements: [], count: 0 })
     }
 
-    // --- Try cache-first path ---
-    {
+    // --- Cache path disabled ---
+    // cache_machine_top_scores' "all-time" rows (season=null) are clobbered
+    // every nightly cron run and rebuilt from CURRENT-SEASON-only games
+    // (the cron defaults to seasons=[CURRENT_SEASON] unless ?full=true).
+    // So a "League-wide all-time" achievement read from cache would actually
+    // mean "this season only" and wrongly claim e.g. League-wide all-time
+    // top score on Stern Trek. The live fallback path below scans every
+    // season honestly, so we bypass the cache entirely until the cron
+    // is fixed to keep the all-time rollup intact across incremental runs.
+    const _cacheDisabled: any = false
+    if (_cacheDisabled) {
       const { data: cachedRows } = await supabase
         .from('cache_machine_top_scores' as any)
         .select('*')
@@ -267,7 +290,7 @@ export async function GET(request: Request) {
           .from('games')
           .select('machine, venue, season, player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score')
           .gte('season', 2)
-          .lte('season', 22)
+          .lte('season', currentSeason)
           .order('id', { ascending: true })
       )
     } catch (allTimeError) {
