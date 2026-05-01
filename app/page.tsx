@@ -2107,16 +2107,21 @@ function HomePageContent() {
               </DialogHeader>
 
               <div className="space-y-3">
-                {achievementTop10.map((entry) => {
+                {achievementTop10.map((entry, idx) => {
                   // Check if this score belongs to the current player
                   // Match both exact name and "(sub)" variants (e.g., "Kellan Kirkland" and "Kellan Kirkland (sub)")
                   const isExactMatch = entry.player === playerName
                   const isSubMatch = entry.player === `${playerName} (sub)` ||
                     (entry.player.startsWith(playerName) && entry.player.toLowerCase().includes('(sub)'))
                   const isCurrentPlayer = isExactMatch || isSubMatch
+                  // Tie-aware: same rank renders for tied scores; use index as
+                  // React key so they don't collide. Season may legitimately
+                  // be null (all-time rollup row from the cache); render
+                  // "All-time" instead of "Season 0".
+                  const seasonLabel = entry.season ? `Season ${entry.season}` : 'All-time'
                   return (
                     <div
-                      key={entry.rank}
+                      key={`${idx}-${entry.player}-${entry.score}`}
                       className={`flex items-center justify-between p-3 border rounded-lg ${
                         isCurrentPlayer ? 'bg-neon-blue/10 border-neon-blue' : ''
                       }`}
@@ -2140,7 +2145,7 @@ function HomePageContent() {
                             )}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {entry.venue} • Season {entry.season}
+                            {entry.venue ? `${entry.venue} • ` : ''}{seasonLabel}
                           </div>
                         </div>
                       </div>

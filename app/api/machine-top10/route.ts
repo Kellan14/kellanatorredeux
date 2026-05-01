@@ -49,20 +49,47 @@ export async function GET(request: Request) {
         cacheQuery = cacheQuery.is('venue', null) // null = league-wide
       }
 
-      const { data: cachedScores } = await (cacheQuery.order('rank', { ascending: true }).limit(10)) as { data: any[] | null }
+      // No SQL .limit() here — venue-specific queries hit multiple venue
+      // variations (e.g. "Ice Box" + "Icebox"), each storing its own top-10
+      // with overlapping records. We need the full set so we can dedupe
+      // and re-rank by score across them. Cached top-10 per variation is
+      // tiny so pulling them all is cheap.
+      const { data: cachedScores } = await cacheQuery as { data: any[] | null }
 
       if (cachedScores && cachedScores.length > 0) {
-        const topScores = cachedScores.map((row: any) => ({
-          player: row.player_name,
-          playerKey: row.player_key || `name:${row.player_name}`,
-          score: Number(row.score),
-          venue: row.venue || '',
-          season: row.season || 0,
-          week: row.week || 0,
-          match: row.match_key || '',
-          round: row.round_number || 0,
-          rank: row.rank
-        }))
+        // Dedupe on (player, score, match, round) so the same physical
+        // score stored under two venue variations only counts once.
+        const seen = new Set<string>()
+        const deduped: any[] = []
+        for (const row of cachedScores) {
+          const key = `${row.player_name}|${row.score}|${row.match_key ?? ''}|${row.round_number ?? ''}`
+          if (seen.has(key)) continue
+          seen.add(key)
+          deduped.push(row)
+        }
+        // Sort by score desc and assign clean ranks 1..N. Tie handling:
+        // identical scores share a rank (the next rank skips appropriately).
+        deduped.sort((a, b) => Number(b.score) - Number(a.score))
+        const topScores = deduped.slice(0, 10).map((row: any, idx: number, arr: any[]) => {
+          // Tie-aware rank
+          let rank = 1
+          for (let i = 0; i < idx; i++) {
+            if (Number(arr[i].score) > Number(row.score)) rank = i + 2
+          }
+          return {
+            player: row.player_name,
+            playerKey: row.player_key || `name:${row.player_name}`,
+            score: Number(row.score),
+            venue: row.venue || '',
+            // Preserve null so the UI can render "All-time" instead of
+            // a misleading "Season 0".
+            season: row.season ?? null,
+            week: row.week || 0,
+            match: row.match_key || '',
+            round: row.round_number || 0,
+            rank,
+          }
+        })
 
         return NextResponse.json({
           machine: machineKey,
@@ -151,7 +178,7 @@ export async function GET(request: Request) {
 
     // Extract all scores from games
     // Include playerKey to identify same player with different name variants (e.g., "Name" vs "Name (sub)")
-    const scores: Array<{ player: string; playerKey: string; score: number; venue: string; season: number; week: number; match: string; round: number }> = []
+    const scores: Array<{ player: string; playerKey: string; score: number; venue: string; season: number | null; week: number; match: string; round: number }> = []
 
     for (const game of games) {
       // Player 1
@@ -161,7 +188,7 @@ export async function GET(request: Request) {
           playerKey: game.player_1_key || `name:${game.player_1_name}`,
           score: game.player_1_score,
           venue: game.venue || '',
-          season: game.season || 0,
+          season: game.season ?? null,
           week: game.week || 0,
           match: game.match_key || '',
           round: game.round_number || 0
@@ -174,7 +201,7 @@ export async function GET(request: Request) {
           playerKey: game.player_2_key || `name:${game.player_2_name}`,
           score: game.player_2_score,
           venue: game.venue || '',
-          season: game.season || 0,
+          season: game.season ?? null,
           week: game.week || 0,
           match: game.match_key || '',
           round: game.round_number || 0
@@ -187,7 +214,7 @@ export async function GET(request: Request) {
           playerKey: game.player_3_key || `name:${game.player_3_name}`,
           score: game.player_3_score,
           venue: game.venue || '',
-          season: game.season || 0,
+          season: game.season ?? null,
           week: game.week || 0,
           match: game.match_key || '',
           round: game.round_number || 0
@@ -200,7 +227,7 @@ export async function GET(request: Request) {
           playerKey: game.player_4_key || `name:${game.player_4_name}`,
           score: game.player_4_score,
           venue: game.venue || '',
-          season: game.season || 0,
+          season: game.season ?? null,
           week: game.week || 0,
           match: game.match_key || '',
           round: game.round_number || 0
@@ -213,7 +240,7 @@ export async function GET(request: Request) {
 
     // Assign ranks handling ties correctly
     // playerKey is used to identify same player with different name variants (e.g., "Name" vs "Name (sub)")
-    const rankedScores: Array<{ player: string; playerKey: string; score: number; venue: string; season: number; week: number; match: string; round: number; rank: number }> = []
+    const rankedScores: Array<{ player: string; playerKey: string; score: number; venue: string; season: number | null; week: number; match: string; round: number; rank: number }> = []
     let currentRank = 1
 
     for (let i = 0; i < sortedScores.length; i++) {
