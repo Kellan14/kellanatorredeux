@@ -22,15 +22,33 @@ export async function GET(request: Request) {
 
     // Determine season filter from context
     const isThisSeason = context.includes('this season')
-    const currentSeason = 22
+    // Read currentSeason from data so the route doesn't drift past 22.
+    let currentSeason = 22
+    try {
+      const { data: maxSeasonRow } = await supabase
+        .from('matches')
+        .select('season')
+        .order('season', { ascending: false })
+        .limit(1)
+        .single<{ season: number }>()
+      if (maxSeasonRow?.season) currentSeason = maxSeasonRow.season
+    } catch { /* keep fallback */ }
 
-    // --- Try cache-first path ---
+    // --- Cache path disabled ---
+    // cache_machine_top_scores' season=null rows ("all-time") are clobbered
+    // every nightly cron and rebuilt from current-season-only games (the
+    // cron defaults to seasons=[CURRENT_SEASON]). So a "League-wide all-time"
+    // top 10 read from cache is actually "this season top 10" — which causes
+    // the achievement card and this dialog to disagree (the card now scans
+    // live, while the cached top 10 is wrong). Bypassing the cache until
+    // the cron is fixed; live fallback below scans every season honestly.
     const machineVariations = getMachineVariations(machineKey)
     const lowerVariations = machineVariations.map((v: string) => v.toLowerCase())
     const isVenueSpecific = venue && !context.includes('League-wide')
     const venueVariationsForCache = isVenueSpecific ? getVenueVariations(venue) : []
+    const _machineTop10CacheDisabled: any = false
 
-    {
+    if (_machineTop10CacheDisabled) {
       // Build cache query
       let cacheQuery = supabase
         .from('cache_machine_top_scores' as any)
@@ -166,8 +184,8 @@ export async function GET(request: Request) {
         if (isThisSeason) {
           query = query.eq('season', currentSeason)
         } else {
-          // All time: all historical seasons (2-22)
-          query = query.gte('season', 2).lte('season', 22)
+          // All time: every season we have data for
+          query = query.gte('season', 2).lte('season', currentSeason)
         }
 
         // Filter by venue if context is venue-specific (not league-wide)

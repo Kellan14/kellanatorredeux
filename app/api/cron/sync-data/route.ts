@@ -683,6 +683,93 @@ export async function GET(request: Request) {
         cacheStats.playerMachine = playerMachineRows.length
       }
 
+      // ---- Rebuild top-scores from FULL game history ----
+      // The aggregation above was populated from gamesBatch, which only
+      // contains the current cron's `seasons` (default = [CURRENT_SEASON]).
+      // That meant the season=null bucket ("all-time") got filled with
+      // current-season-only data and falsely claimed people had all-time
+      // top scores. Rebuild topScoresAgg from every game in the table so
+      // every (machine, venue, season) and (machine, venue, all-time)
+      // bucket is honest. Cost: one big paginated games scan per nightly
+      // cron — acceptable for the correctness gain.
+      let fullRebuildSucceeded = false
+      try {
+        const fullAgg = new Map<string, Array<{
+          player_name: string, player_key: string | null, team_key: string | null,
+          score: number, match_key: string, week: number, round_number: number
+        }>>()
+        // Inline pagination: fetchAllRecords lives in lib/supabase but the
+        // cron uses its own service-role client, so just paginate by id.
+        const PAGE_SIZE = 1000
+        const allHistoryGames: any[] = []
+        let lastId = 0
+        while (true) {
+          const { data: page, error } = await supabase
+            .from('games')
+            .select('id, machine, venue, season, player_1_name, player_1_key, player_1_team, player_1_score, player_2_name, player_2_key, player_2_team, player_2_score, player_3_name, player_3_key, player_3_team, player_3_score, player_4_name, player_4_key, player_4_team, player_4_score, match_key, week, round_number')
+            .gt('id', lastId)
+            .order('id', { ascending: true })
+            .limit(PAGE_SIZE)
+          if (error) throw error
+          if (!page || page.length === 0) break
+          for (const row of page) allHistoryGames.push(row)
+          lastId = page[page.length - 1].id
+          if (page.length < PAGE_SIZE) break
+        }
+        for (const game of allHistoryGames) {
+          const rawMachine = (game.machine || '').toLowerCase()
+          if (!rawMachine) continue
+          const machine = (machineMappings[rawMachine] || rawMachine).toLowerCase()
+          const venue = game.venue || null
+          for (let i = 1; i <= 4; i++) {
+            const playerKey = game[`player_${i}_key`]
+            const playerName = stdName(game[`player_${i}_name`])
+            const teamKey = game[`player_${i}_team`]
+            const score = game[`player_${i}_score`]
+            if (!playerName || score == null || score <= 0) continue
+            const machineLimit = scoreLimitsMap[machine]
+            if (machineLimit && score > machineLimit) continue
+            const scoreEntry = {
+              player_name: playerName, player_key: playerKey, team_key: teamKey,
+              score, match_key: game.match_key, week: game.week, round_number: game.round_number
+            }
+            // Same 4 buckets as before: per-season + all-time, per-venue + all-venues
+            for (const v of [venue, null]) {
+              for (const s of [game.season, null]) {
+                const tsKey = `${machine}|${v || '__ALL__'}|${s || '__ALL__'}`
+                if (!fullAgg.has(tsKey)) fullAgg.set(tsKey, [])
+                const arr = fullAgg.get(tsKey)!
+                arr.push(scoreEntry)
+                if (arr.length > 20) {
+                  arr.sort((a, b) => b.score - a.score)
+                  arr.length = 10
+                }
+              }
+            }
+          }
+        }
+        // Promote the full-history aggregation only on success; on failure
+        // we keep the per-seasons agg the original loop already produced
+        // (no worse than before).
+        topScoresAgg.clear()
+        for (const [k, v] of Array.from(fullAgg.entries())) topScoresAgg.set(k, v)
+        fullRebuildSucceeded = true
+      } catch (err) {
+        console.error('[cron/sync-data] Full-history top-scores rebuild failed; falling back to seasons-only data:', err)
+      }
+
+      // When the rebuild succeeded we have the authoritative top 10 for
+      // every (machine, venue, season) bucket — drop any stale rows so
+      // orphans (e.g. an old rank=9 from a removed score) don't linger.
+      // Skip on rebuild failure so we don't blow away usable cache.
+      if (fullRebuildSucceeded) {
+        try {
+          await supabase.from('cache_machine_top_scores').delete().neq('machine', '__never_match__')
+        } catch (err) {
+          console.error('[cron/sync-data] Could not clear cache_machine_top_scores; relying on upsert:', err)
+        }
+      }
+
       // ---- Insert cache_machine_top_scores ----
       const topScoreRows: any[] = []
       for (const [key, scores] of Array.from(topScoresAgg.entries())) {
