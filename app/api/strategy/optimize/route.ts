@@ -664,9 +664,23 @@ export async function POST(request: NextRequest) {
             if (!isScoreValid(game.machine, score, scoreLimits)) continue
             if (teamNameMap[tk] !== opponent) continue
             const isVenueGame = venueVariations.includes(game.venue)
-            const position = game[`player_${i}_position`]
-            if (isVenueGame) { vTotal += score; vCount++; if (position === 1) vWins++ }
-            allTotal += score; allCount++; if (position === 1) allWins++
+            // Win = player's team scored more total points than the other team(s) in this game.
+            // Works across formats: singles (each player is their own team) and doubles (2v2 teams).
+            const teamPoints = new Map<string, number>()
+            for (let j = 1; j <= 4; j++) {
+              const jt = game[`player_${j}_team`]
+              const jp = game[`player_${j}_points`]
+              if (!jt || typeof jp !== 'number') continue
+              teamPoints.set(jt, (teamPoints.get(jt) || 0) + jp)
+            }
+            const myTeamPts = teamPoints.get(tk) ?? -Infinity
+            let won = teamPoints.size >= 2
+            for (const [otherTk, pts] of Array.from(teamPoints.entries())) {
+              if (otherTk === tk) continue
+              if (pts >= myTeamPts) { won = false; break }
+            }
+            if (isVenueGame) { vTotal += score; vCount++; if (won) vWins++ }
+            allTotal += score; allCount++; if (won) allWins++
           }
         }
 
