@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getAllMachineVariations, machineMappings } from '@/lib/machine-mappings'
+import { getTeamRoster } from '@/lib/team-roster'
 
 export const dynamic = 'force-dynamic';
 
@@ -511,59 +512,17 @@ export async function GET(request: Request) {
     .filter(a => a.twcPctOfVenue > 0 || a.opponentPctOfVenue > 0) // exclude machines with zero data for both
     .sort((a, b) => b.compositeScore - a.compositeScore)
 
-    // Get TWC players from player_match_participation table
-    // Get season 22 players (current roster)
-    const { data: season22Data } = await supabase
-      .from('player_match_participation')
-      .select('player_name, is_sub')
-      .eq('season', 22)
-      .eq('team', twcTeamKey) as { data: { player_name: string; is_sub: boolean }[] | null }
-
-    const season22Players = new Set<string>()
-    const season22Subs = new Set<string>()
-
-    for (const row of (season22Data || [])) {
-      const name = (row.player_name || '').trim()
-      if (!name) continue
-      if (row.is_sub) {
-        season22Subs.add(name)
-      } else {
-        season22Players.add(name)
-      }
-    }
-
-    // Roster takes priority — remove from subs if they're on the roster
-    Array.from(season22Players).forEach(player => season22Subs.delete(player))
-
-    const rosterPlayers = Array.from(season22Players).sort()
-
-    // Start with actual season 22 subs (players marked as is_sub = true)
-    const subPlayers = new Set<string>(season22Subs)
-
-    // Also add players from seasons 20-21 who didn't play in season 22
-    const { data: oldSeasonsData } = await supabase
-      .from('player_match_participation')
-      .select('player_name')
-      .in('season', [20, 21])
-      .eq('team', twcTeamKey) as { data: { player_name: string }[] | null }
-
-    for (const row of (oldSeasonsData || [])) {
-      const name = (row.player_name || '').trim()
-      if (!name) continue
-      // Only add if not in current roster and not already in subs
-      if (!season22Players.has(name) && !subPlayers.has(name)) {
-        subPlayers.add(name)
-      }
-    }
-
-    const subPlayersList = Array.from(subPlayers).sort()
-    const allTwcPlayers = [...rosterPlayers, ...subPlayersList]
+    // Get TWC roster + subs from player_match_participation (no hard-coded seasons).
+    const twcRoster = await getTeamRoster(twcTeamKey)
+    const allTwcPlayers = [...twcRoster.rosterPlayers, ...twcRoster.subPlayers]
 
     return NextResponse.json({
       advantages,
       players: allTwcPlayers,
-      rosterPlayers: rosterPlayers,
-      subPlayers: subPlayersList,
+      rosterPlayers: twcRoster.rosterPlayers,
+      subPlayers: twcRoster.subPlayers,
+      subPlayerLastSeen: twcRoster.subPlayerLastSeen,
+      currentSeason: twcRoster.currentSeason,
       venue,
       opponent,
       teamName

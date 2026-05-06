@@ -16,6 +16,8 @@ interface PlayerAvailabilityProps {
   onAddSub?: (playerName: string) => void
   onRemoveSub?: (playerName: string) => void
   addedSubs?: string[]
+  /** For each sub player, the most recent (season, week) they appeared for the team. */
+  subPlayerLastSeen?: Record<string, { season: number; week: number }>
 }
 
 function getDefaultAvailability(rosterPlayers: string[], subPlayers: string[]): Record<string, boolean> {
@@ -161,6 +163,7 @@ export function PlayerAvailability({
   onAddSub,
   onRemoveSub,
   addedSubs = [],
+  subPlayerLastSeen,
 }: PlayerAvailabilityProps) {
   const [showSubs, setShowSubs] = useState(false)
   const [initialized, setInitialized] = useState(false)
@@ -280,7 +283,11 @@ export function PlayerAvailability({
                 htmlFor={`${storageKey}-player-${player}`}
                 className="text-xs md:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground"
               >
-                {player} (sub)
+                {player} (sub
+                {subPlayerLastSeen?.[player]
+                  ? ` s${subPlayerLastSeen[player].season}w${subPlayerLastSeen[player].week}`
+                  : ''}
+                )
               </label>
               {isAdded && onRemoveSub && (
                 <button

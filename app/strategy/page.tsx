@@ -208,6 +208,7 @@ export default function StrategyPage() {
   const [allPlayers, setAllPlayers] = useState<string[]>([])
   const [rosterPlayers, setRosterPlayers] = useState<string[]>([])
   const [subPlayers, setSubPlayers] = useState<string[]>([])
+  const [subPlayerLastSeen, setSubPlayerLastSeen] = useState<Record<string, { season: number; week: number }>>({})
   const [twcAddedSubs, setTwcAddedSubs] = useState<string[]>(() => {
     if (typeof window === 'undefined') return []
     try {
@@ -220,6 +221,7 @@ export default function StrategyPage() {
   const [opponentAvailablePlayers, setOpponentAvailablePlayers] = useState<Record<string, boolean>>({})
   const [opponentRosterPlayers, setOpponentRosterPlayers] = useState<string[]>([])
   const [opponentSubPlayers, setOpponentSubPlayers] = useState<string[]>([])
+  const [opponentSubPlayerLastSeen, setOpponentSubPlayerLastSeen] = useState<Record<string, { season: number; week: number }>>({})
   const [opponentAddedSubs, setOpponentAddedSubs] = useState<string[]>(() => {
     if (typeof window === 'undefined') return []
     try {
@@ -597,6 +599,7 @@ export default function StrategyPage() {
           const subs = [...(data.subPlayers || []), ...opponentAddedSubs.filter((s: string) => !roster.includes(s) && !(data.subPlayers || []).includes(s))]
           setOpponentRosterPlayers(roster)
           setOpponentSubPlayers(subs)
+          setOpponentSubPlayerLastSeen(data.subPlayerLastSeen || {})
           // Merge with existing availability state
           setOpponentAvailablePlayers(prev => {
             const next: Record<string, boolean> = {}
@@ -734,6 +737,7 @@ export default function StrategyPage() {
         const baseSubs = data.subPlayers || []
         const allSubs = [...baseSubs, ...twcAddedSubs.filter((s: string) => !(data.rosterPlayers || []).includes(s) && !baseSubs.includes(s))]
         setSubPlayers(allSubs)
+        setSubPlayerLastSeen(data.subPlayerLastSeen || {})
 
         // Merge new roster with existing availability state so persisted values
         // are not overwritten when the venue/opponent changes but the roster is the same.
@@ -2052,6 +2056,7 @@ export default function StrategyPage() {
                 onAddSub={handleAddTwcSub}
                 onRemoveSub={handleRemoveTwcSub}
                 addedSubs={twcAddedSubs}
+                subPlayerLastSeen={subPlayerLastSeen}
               />
 
               <PlayerAvailability
@@ -2064,6 +2069,7 @@ export default function StrategyPage() {
                 onAddSub={handleAddOpponentSub}
                 onRemoveSub={handleRemoveOpponentSub}
                 addedSubs={opponentAddedSubs}
+                subPlayerLastSeen={opponentSubPlayerLastSeen}
               />
 
               {/* Machine Advantage Table */}
