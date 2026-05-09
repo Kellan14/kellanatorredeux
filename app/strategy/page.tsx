@@ -775,11 +775,15 @@ export default function StrategyPage() {
       if (response.ok) {
         const data = await response.json()
         setMachineAdvantages(data.advantages || [])
-        setAllPlayers(data.players || [])
         setRosterPlayers(data.rosterPlayers || [])
         const baseSubs = data.subPlayers || []
         const allSubs = [...baseSubs, ...twcAddedSubs.filter((s: string) => !(data.rosterPlayers || []).includes(s) && !baseSubs.includes(s))]
         setSubPlayers(allSubs)
+        // Merge user-added subs into the full player list too — drives the
+        // "Select TWC player" dropdown in the analysis tab.
+        const baseAllPlayers = data.players || []
+        const mergedAllPlayers = [...baseAllPlayers, ...twcAddedSubs.filter((s: string) => !baseAllPlayers.includes(s))]
+        setAllPlayers(mergedAllPlayers)
         setSubPlayerLastSeen(data.subPlayerLastSeen || {})
 
         // Merge new roster with existing availability state so persisted values
