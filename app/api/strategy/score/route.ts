@@ -28,7 +28,9 @@ export async function POST(request: NextRequest) {
       usePerGameNormalized = true,
       userInputWeight = 0,
       confidenceBoost = 0,
-      scoreWeights
+      scoreWeights,
+      avgMethod = 'mean',
+      trimPct = 0.1,
     } = body
     const venueWeight = usePerGameNormalized ? 1 : rawVenueWeight
 
@@ -84,8 +86,8 @@ export async function POST(request: NextRequest) {
     if (venue) {
       const vw = Math.max(0, Math.min(1, venueWeight))
       const [venueStats, allStats] = await Promise.all([
-        calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, venue, userInputs, userInputWeight),
-        calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight)
+        calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, venue, userInputs, userInputWeight, avgMethod, trimPct),
+        calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight, avgMethod, trimPct)
       ])
 
       statsMap = new Map()
@@ -128,7 +130,7 @@ export async function POST(request: NextRequest) {
         }
       }
     } else {
-      statsMap = await calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight)
+      statsMap = await calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight, avgMethod, trimPct)
     }
 
     // Score each assignment

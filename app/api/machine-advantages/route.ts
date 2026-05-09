@@ -3,6 +3,7 @@ import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getAllMachineVariations, machineMappings } from '@/lib/machine-mappings'
 import { getTeamRoster } from '@/lib/team-roster'
+import { aggregateAvg, type AvgMethod } from '@/lib/strategy/stats-calculator'
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +27,17 @@ export async function GET(request: Request) {
     const usePerGameNormalized = searchParams.get('usePerGameNormalized') !== 'false'
     const opponentPlayersParam = searchParams.get('opponentPlayers')
     const opponentPlayersList = opponentPlayersParam ? opponentPlayersParam.split(',').filter(Boolean) : []
+
+    // Aggregation method for team-machine averages and venue baselines.
+    // 'mean' (default) keeps the existing fast cache path. 'median'/'trimmed'
+    // forces cache-bypass since cache rows are sums and can't reconstruct
+    // per-game distributions. The per-game-normalized branch (PGN below) is
+    // sum-based and remains mean-only — switching it would require keeping
+    // per-(machine, venue) score arrays, which is a separate refactor.
+    const avgMethodParam = searchParams.get('avgMethod')
+    const avgMethod: AvgMethod =
+      avgMethodParam === 'median' || avgMethodParam === 'trimmed' ? avgMethodParam : 'mean'
+    const trimPct = parseFloat(searchParams.get('trimPct') || '0.1')
 
     if (!venue || !opponent) {
       return NextResponse.json(
@@ -70,6 +82,10 @@ export async function GET(request: Request) {
     // --- Try cache-first path (when no opponentPlayers filter) ---
     let venueStats: Map<string, { twcTotal: number; twcCount: number; oppTotal: number; oppCount: number }> = new Map()
     let nonVenueStats: Map<string, { twcTotal: number; twcCount: number; oppTotal: number; oppCount: number }> = new Map()
+    // Per-game score arrays, populated only on the non-cache path when
+    // avgMethod is non-default. Used by blendAvg for median/trimmed.
+    const venueScoresMap: Map<string, { twcScores: number[]; oppScores: number[] }> = new Map()
+    const nonVenueScoresMap: Map<string, { twcScores: number[]; oppScores: number[] }> = new Map()
     let venueGames: any[] = [] // still needed for venue baseline + top players
     let gamesData: any[] = []
     let usedCache = false
@@ -98,7 +114,11 @@ export async function GET(request: Request) {
       inner.set(venue, existing)
     }
 
-    if (opponentPlayersList.length === 0 && twcTeamKey && opponentTeamKey) {
+    // Cache rows store sums only — they can't yield medians/trimmed means.
+    // Skip the cache read for non-mean methods so the non-cache path runs and
+    // we can keep per-game arrays for proper aggregation.
+    const canUseCache = avgMethod === 'mean'
+    if (canUseCache && opponentPlayersList.length === 0 && twcTeamKey && opponentTeamKey) {
       // Try reading from cache_team_machine_stats
       const { data: cacheData } = await supabase
         .from('cache_team_machine_stats' as any)
@@ -224,23 +244,35 @@ export async function GET(request: Request) {
 
       type TeamMachineStatsMap = Map<string, { twcTotal: number; twcCount: number; oppTotal: number; oppCount: number }>
 
-      const buildTeamStats = (games: any[]): TeamMachineStatsMap => {
+      type TeamMachineScoresMap = Map<string, { twcScores: number[]; oppScores: number[] }>
+      const buildTeamStats = (games: any[], scoresOut?: TeamMachineScoresMap): TeamMachineStatsMap => {
         const stats: TeamMachineStatsMap = new Map()
         for (const game of games) {
           if (!stats.has(game.machine)) {
             stats.set(game.machine, { twcTotal: 0, twcCount: 0, oppTotal: 0, oppCount: 0 })
           }
           const ms = stats.get(game.machine)!
+          let scores: { twcScores: number[]; oppScores: number[] } | undefined
+          if (scoresOut) {
+            if (!scoresOut.has(game.machine)) {
+              scoresOut.set(game.machine, { twcScores: [], oppScores: [] })
+            }
+            scores = scoresOut.get(game.machine)!
+          }
           for (let i = 1; i <= 4; i++) {
             const teamKey = game[`player_${i}_team`]
             const score = game[`player_${i}_score`]
             const playerName = game[`player_${i}_name`]
             const teamDisplayName = teamNameMap[teamKey]
             if (!score || !teamDisplayName) continue
-            if (teamDisplayName === teamName) { ms.twcTotal += score; ms.twcCount++ }
+            if (teamDisplayName === teamName) {
+              ms.twcTotal += score; ms.twcCount++
+              if (scores) scores.twcScores.push(score)
+            }
             else if (teamDisplayName === opponent) {
               if (opponentPlayersList.length === 0 || opponentPlayersList.includes(playerName)) {
                 ms.oppTotal += score; ms.oppCount++
+                if (scores) scores.oppScores.push(score)
               }
             }
           }
@@ -251,8 +283,9 @@ export async function GET(request: Request) {
       const allGamesNormalized = gamesData.filter((g: any) => machineVariationToCanonical.has(g.machine))
       const nonVenueGames = allGamesNormalized.filter((g: any) => !venueVariations.includes(g.venue))
 
-      venueStats = buildTeamStats(venueGames)
-      nonVenueStats = buildTeamStats(nonVenueGames)
+      const collectScores = avgMethod !== 'mean'
+      venueStats = buildTeamStats(venueGames, collectScores ? venueScoresMap : undefined)
+      nonVenueStats = buildTeamStats(nonVenueGames, collectScores ? nonVenueScoresMap : undefined)
 
       // Per-(machine, venue) bucketing for the per-game-normalized branch.
       if (usePerGameNormalized) {
@@ -280,14 +313,22 @@ export async function GET(request: Request) {
       }
     }
 
-    // Blend function for a team's average on a machine
+    // Blend function for a team's average on a machine. When per-game score
+    // arrays are available (non-cache path with avgMethod != mean), aggregate
+    // them via the chosen method; otherwise fall back to total/count.
     const blendAvg = (
       venueTotal: number, venueCount: number,
       nonVenueTotal: number, nonVenueCount: number,
-      isVenueSpecific: boolean, weight: number
+      isVenueSpecific: boolean, weight: number,
+      venueScores?: number[], nonVenueScores?: number[]
     ): { avg: number; count: number; source: string } => {
-      const vAvg = venueCount > 0 ? venueTotal / venueCount : null
-      const nvAvg = nonVenueCount > 0 ? nonVenueTotal / nonVenueCount : null
+      const useArrays = avgMethod !== 'mean' && (venueScores || nonVenueScores)
+      const vAvg = useArrays
+        ? (venueScores && venueScores.length > 0 ? aggregateAvg(venueScores, avgMethod, trimPct) : null)
+        : (venueCount > 0 ? venueTotal / venueCount : null)
+      const nvAvg = useArrays
+        ? (nonVenueScores && nonVenueScores.length > 0 ? aggregateAvg(nonVenueScores, avgMethod, trimPct) : null)
+        : (nonVenueCount > 0 ? nonVenueTotal / nonVenueCount : null)
 
       // If venue-specific is checked, only use venue data
       if (isVenueSpecific) {
@@ -377,8 +418,10 @@ export async function GET(request: Request) {
       const vs = venueStats.get(machine) || { twcTotal: 0, twcCount: 0, oppTotal: 0, oppCount: 0 }
       const nvs = nonVenueStats.get(machine) || { twcTotal: 0, twcCount: 0, oppTotal: 0, oppCount: 0 }
 
-      const twc = blendAvg(vs.twcTotal, vs.twcCount, nvs.twcTotal, nvs.twcCount, twcVenueSpecific, vw)
-      const opp = blendAvg(vs.oppTotal, vs.oppCount, nvs.oppTotal, nvs.oppCount, teamVenueSpecific, vw)
+      const vScores = venueScoresMap.get(machine)
+      const nvScores = nonVenueScoresMap.get(machine)
+      const twc = blendAvg(vs.twcTotal, vs.twcCount, nvs.twcTotal, nvs.twcCount, twcVenueSpecific, vw, vScores?.twcScores, nvScores?.twcScores)
+      const opp = blendAvg(vs.oppTotal, vs.oppCount, nvs.oppTotal, nvs.oppCount, teamVenueSpecific, vw, vScores?.oppScores, nvScores?.oppScores)
 
       const twcAvg = twc.avg
       const oppAvg = opp.avg
@@ -399,7 +442,7 @@ export async function GET(request: Request) {
             if (score) venueScores.push(score)
           }
         }
-        venueAvg = venueScores.length > 0 ? venueScores.reduce((a, b) => a + b, 0) / venueScores.length : 0
+        venueAvg = aggregateAvg(venueScores, avgMethod, trimPct)
       }
 
       // % of venue: if no venue baseline, use raw averages comparison instead

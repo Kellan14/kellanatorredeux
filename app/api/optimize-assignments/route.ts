@@ -135,7 +135,7 @@ function computePlayerAdvantage(
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { venue, opponent, seasonStart = 20, seasonEnd = 22, format, machines, availablePlayers, venueWeight = 0.7, exclusions = {}, mustPlay = [], opponentPlayers, opponentWeight = 0, userInputWeight = 0, confidenceBoost = 0, scoreWeights } = body
+    const { venue, opponent, seasonStart = 20, seasonEnd = 22, format, machines, availablePlayers, venueWeight = 0.7, exclusions = {}, mustPlay = [], opponentPlayers, opponentWeight = 0, userInputWeight = 0, confidenceBoost = 0, scoreWeights, avgMethod = 'mean', trimPct = 0.1 } = body
 
     if (!venue || !opponent || !machines || !availablePlayers || availablePlayers.length === 0) {
       return NextResponse.json(
@@ -288,8 +288,8 @@ export async function POST(request: Request) {
 
     // Calculate stats using the shared stats calculator (includes win_rate, recent_form, venue_adjusted_avg, etc.)
     const [venuePlayerStats, allPlayerStats] = await Promise.all([
-      calculatePlayerMachineStats(availablePlayers, machines as string[], seasonStart, seasonEnd, venue, userInputMap, uiw),
-      calculatePlayerMachineStats(availablePlayers, machines as string[], seasonStart, seasonEnd, undefined, userInputMap, uiw)
+      calculatePlayerMachineStats(availablePlayers, machines as string[], seasonStart, seasonEnd, venue, userInputMap, uiw, avgMethod, trimPct),
+      calculatePlayerMachineStats(availablePlayers, machines as string[], seasonStart, seasonEnd, undefined, userInputMap, uiw, avgMethod, trimPct)
     ])
 
     // Blend venue-specific and all-venue stats (same logic as optimizer.ts getBlendedStats)

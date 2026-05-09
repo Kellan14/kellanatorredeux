@@ -26,6 +26,33 @@ export interface UserInputData {
   userConfidence: number | null
 }
 
+export type AvgMethod = 'mean' | 'median' | 'trimmed'
+
+/**
+ * Aggregate a list of values using the requested method.
+ * - 'mean': arithmetic mean (default behavior).
+ * - 'median': middle value, robust to outliers on either tail. Best general-
+ *   purpose choice when occasional tank-balls or anomaly games skew the data.
+ * - 'trimmed': drop the top and bottom `trimPct` (default 10%) before averaging.
+ *   A middle ground — keeps most data but discounts extremes.
+ */
+export function aggregateAvg(values: number[], method: AvgMethod = 'mean', trimPct = 0.1): number {
+  if (values.length === 0) return 0
+  if (method === 'mean' || values.length < 3) {
+    return values.reduce((a, b) => a + b, 0) / values.length
+  }
+  const sorted = [...values].sort((a, b) => a - b)
+  if (method === 'median') {
+    const mid = Math.floor(sorted.length / 2)
+    return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid]
+  }
+  // trimmed
+  const trim = Math.floor(sorted.length * trimPct)
+  const kept = trim > 0 ? sorted.slice(trim, sorted.length - trim) : sorted
+  if (kept.length === 0) return sorted.reduce((a, b) => a + b, 0) / sorted.length
+  return kept.reduce((a, b) => a + b, 0) / kept.length
+}
+
 export async function calculatePlayerMachineStats(
   playerNames: string[],
   machines: string[],
@@ -33,7 +60,9 @@ export async function calculatePlayerMachineStats(
   seasonEnd: number = 22,
   venue?: string,
   userInputs?: Map<string, Map<string, UserInputData>>,
-  userInputWeight: number = 0
+  userInputWeight: number = 0,
+  avgMethod: AvgMethod = 'mean',
+  trimPct: number = 0.1
 ): Promise<Map<string, Map<string, PlayerMachineStats>>> {
   // Build a lookup: any machine name variation → original input machine name
   // This ensures DB values like "DP" map back to the input key "DP" even when
@@ -293,9 +322,7 @@ export async function calculatePlayerMachineStats(
 
     // Calculate LEAGUE-ONLY average (without user data)
     const leagueScoreValues = games.map(g => g.score)
-    const leagueAvgScore = leagueScoreValues.length > 0
-      ? leagueScoreValues.reduce((sum, score) => sum + score, 0) / leagueScoreValues.length
-      : 0
+    const leagueAvgScore = aggregateAvg(leagueScoreValues, avgMethod, trimPct)
 
     // High score includes both league and user scores
     const allScoresForHigh = [
@@ -332,7 +359,7 @@ export async function calculatePlayerMachineStats(
       }
     }
     if (leagueRatios.length > 0) {
-      leagueVenueAdjustedAvg = leagueRatios.reduce((sum, r) => sum + r, 0) / leagueRatios.length
+      leagueVenueAdjustedAvg = aggregateAvg(leagueRatios, avgMethod, trimPct)
     }
 
     // Read user confidence (independent of userInputWeight)

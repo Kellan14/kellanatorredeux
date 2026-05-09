@@ -30,6 +30,10 @@ export async function GET(request: NextRequest) {
     const confidenceBoost = parseFloat(searchParams.get('confidenceBoost') || '0')
     const scoreWeightsParam = searchParams.get('scoreWeights')
     const scoreWeights = scoreWeightsParam ? JSON.parse(scoreWeightsParam) : undefined
+    const avgMethodParam = searchParams.get('avgMethod')
+    const avgMethod: 'mean' | 'median' | 'trimmed' =
+      avgMethodParam === 'median' || avgMethodParam === 'trimmed' ? avgMethodParam : 'mean'
+    const trimPct = parseFloat(searchParams.get('trimPct') || '0.1')
 
     if (!playerNamesParam || !machinesParam) {
       return NextResponse.json(
@@ -93,8 +97,8 @@ export async function GET(request: NextRequest) {
     if (venue && venueWeight < 1) {
       const vw = Math.max(0, Math.min(1, venueWeight))
       const [venueStats, allStats] = await Promise.all([
-        calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, venue, userInputs, userInputWeight),
-        calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight)
+        calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, venue, userInputs, userInputWeight, avgMethod, trimPct),
+        calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight, avgMethod, trimPct)
       ])
 
       statsMap = new Map()
@@ -144,7 +148,9 @@ export async function GET(request: NextRequest) {
         seasonEnd,
         venue,
         userInputs,
-        userInputWeight
+        userInputWeight,
+        avgMethod,
+        trimPct
       )
     }
 

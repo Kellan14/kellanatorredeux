@@ -343,6 +343,28 @@ export default function StrategyPage() {
     } catch { return true }
   })
 
+  // Averaging method for player-machine stats. 'mean' is the original behavior;
+  // 'median' is robust to tank/outlier games; 'trimmed' drops the top and bottom
+  // `trimPct` of each player's per-game scores before averaging.
+  const [avgMethod, setAvgMethod] = useState<'mean' | 'median' | 'trimmed'>(() => {
+    if (typeof window === 'undefined') return 'mean'
+    try {
+      const saved = localStorage.getItem('strategySliderSettings')
+      if (!saved) return 'mean'
+      const parsed = JSON.parse(saved) as { avgMethod?: 'mean' | 'median' | 'trimmed' }
+      return parsed.avgMethod === 'median' || parsed.avgMethod === 'trimmed' ? parsed.avgMethod : 'mean'
+    } catch { return 'mean' }
+  })
+  const [trimPct, setTrimPct] = useState<number>(() => {
+    if (typeof window === 'undefined') return 10
+    try {
+      const saved = localStorage.getItem('strategySliderSettings')
+      if (!saved) return 10
+      const parsed = JSON.parse(saved) as { trimPct?: number }
+      return typeof parsed.trimPct === 'number' ? parsed.trimPct : 10
+    } catch { return 10 }
+  })
+
   // Derived: Venue Avg Weight is the remainder
   const venueAvgWeight = 100 - winRateWeight - recentFormWeight - dataConfidenceWeight
 
@@ -357,8 +379,8 @@ export default function StrategyPage() {
   // Persist slider settings to localStorage (incl. the per-game-normalized toggle).
   useEffect(() => {
     if (typeof window === 'undefined') return
-    localStorage.setItem('strategySliderSettings', JSON.stringify({ ...currentWeights, usePerGameNormalized }))
-  }, [venueWeight, userInputWeight, confidenceBoost, opponentWeight, winRateWeight, recentFormWeight, dataConfidenceWeight, usePerGameNormalized])
+    localStorage.setItem('strategySliderSettings', JSON.stringify({ ...currentWeights, usePerGameNormalized, avgMethod, trimPct }))
+  }, [venueWeight, userInputWeight, confidenceBoost, opponentWeight, winRateWeight, recentFormWeight, dataConfidenceWeight, usePerGameNormalized, avgMethod, trimPct])
 
   // Proportional adjustment when a score factor slider changes
   const handleScoreWeightChange = (
@@ -489,6 +511,8 @@ export default function StrategyPage() {
   const [showAssumedOpponent, setShowAssumedOpponent] = useState<Record<string, boolean>>({})
   const [assumedOppVenueOnly, setAssumedOppVenueOnly] = useState<Record<string, boolean>>({})
   const [showVenueAvgInfo, setShowVenueAvgInfo] = useState(false)
+  const [showAvgMethodInfo, setShowAvgMethodInfo] = useState(false)
+  const [showPgnInfo, setShowPgnInfo] = useState(false)
   const [showAdvantageTable, setShowAdvantageTable] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('showAdvantageTable')
@@ -584,7 +608,7 @@ export default function StrategyPage() {
     if (selectedVenue && selectedOpponent) {
       loadMachineAdvantages()
     }
-  }, [selectedVenue, selectedOpponent, seasonRange, teamVenueSpecific, twcVenueSpecific]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedVenue, selectedOpponent, seasonRange, teamVenueSpecific, twcVenueSpecific, avgMethod, trimPct]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load opponent roster when opponent changes
   useEffect(() => {
@@ -725,6 +749,8 @@ export default function StrategyPage() {
         `&twcVenueSpecific=${twcVenueSpecific}` +
         `&venueWeight=${venueWeight / 100}` +
         `&usePerGameNormalized=${usePerGameNormalized}` +
+        `&avgMethod=${avgMethod}` +
+        `&trimPct=${trimPct / 100}` +
         `&machines=${encodeURIComponent((venues.find(v => v.name === selectedVenue)?.machines || []).join(','))}` +
         (opponentPlayersList.length > 0 ? `&opponentPlayers=${encodeURIComponent(opponentPlayersList.join(','))}` : '')
       )
@@ -824,6 +850,8 @@ export default function StrategyPage() {
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
           usePerGameNormalized,
+          avgMethod,
+          trimPct: trimPct / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -879,6 +907,8 @@ export default function StrategyPage() {
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
           usePerGameNormalized,
+          avgMethod,
+          trimPct: trimPct / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -934,6 +964,8 @@ export default function StrategyPage() {
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
           usePerGameNormalized,
+          avgMethod,
+          trimPct: trimPct / 100,
           opponentWeight: opponentWeight / 100,
           exclusions: singlesAssignExclusions,
           mustPlay: Array.from(satOutPlayers),
@@ -977,6 +1009,8 @@ export default function StrategyPage() {
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
           usePerGameNormalized,
+          avgMethod,
+          trimPct: trimPct / 100,
           opponentWeight: opponentWeight / 100,
           exclusions: doublesAssignExclusions,
           mustPlay: Array.from(satOutPlayers),
@@ -1027,6 +1061,8 @@ export default function StrategyPage() {
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
           usePerGameNormalized,
+          avgMethod,
+          trimPct: trimPct / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -1054,6 +1090,8 @@ export default function StrategyPage() {
           twcVenueSpecific,
           venueWeight: venueWeight / 100,
           usePerGameNormalized,
+          avgMethod,
+          trimPct: trimPct / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -1077,6 +1115,8 @@ export default function StrategyPage() {
           venue: selectedVenue,
           venueWeight: venueWeight / 100,
           usePerGameNormalized,
+          avgMethod,
+          trimPct: trimPct / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -1102,6 +1142,8 @@ export default function StrategyPage() {
           venue: selectedVenue,
           venueWeight: venueWeight / 100,
           usePerGameNormalized,
+          avgMethod,
+          trimPct: trimPct / 100,
           userInputWeight: userInputWeight / 100,
           confidenceBoost: confidenceBoost / 100,
           opponentWeight: opponentWeight / 100,
@@ -1712,6 +1754,7 @@ export default function StrategyPage() {
       const venueWeightParam = heatmapShowAllVenues ? '' : `&venueWeight=${venueWeight / 100}`
       const userInputWeightParam = userInputWeight > 0 ? `&userInputWeight=${userInputWeight / 100}` : ''
       const pgnParam = `&usePerGameNormalized=${usePerGameNormalized}`
+      const avgMethodParam = `&avgMethod=${avgMethod}&trimPct=${trimPct / 100}`
 
       const response = await fetch(
         `/api/strategy/matrix?` +
@@ -1722,6 +1765,7 @@ export default function StrategyPage() {
         venueParam +
         venueWeightParam +
         pgnParam +
+        avgMethodParam +
         userInputWeightParam
       )
 
@@ -2305,8 +2349,88 @@ export default function StrategyPage() {
                             className="h-3.5 w-3.5"
                           />
                           Per-game normalized (recommended) — judges each score against the venue it was played at
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); setShowPgnInfo(v => !v) }}
+                            className="text-muted-foreground hover:text-foreground"
+                            aria-label="More info about Per-game normalized"
+                          >
+                            <Info className="h-3 w-3" />
+                          </button>
                         </label>
                       </div>
+                      {showPgnInfo && (
+                        <div className="ml-24 md:ml-48 mt-1 p-2 bg-muted/50 border border-border rounded text-[10px] text-muted-foreground space-y-1">
+                          <p>When ON, each score is divided by the average for the venue it was played at, and those ratios are averaged. This adjusts for venue-specific machine difficulty (a 5M on a hard venue counts more than 5M on an easy one).</p>
+                          <p>When OFF, the &ldquo;Venue Weight&rdquo; slider blends venue-specific avg vs all-venues avg.</p>
+                          <p><strong>Caveat with non-mean Avg Method:</strong> the per-venue baselines used here are sum-based, so when PGN is ON, opponent and venue baselines stay on arithmetic mean. Player projections still respect the chosen Avg Method.</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Averaging method: mean / median / trimmed */}
+                    <div className="space-y-0">
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 md:w-48 text-[10px] md:text-xs truncate shrink-0 flex items-center gap-1">
+                          Avg Method
+                          <button
+                            type="button"
+                            onClick={() => setShowAvgMethodInfo(v => !v)}
+                            className="text-muted-foreground hover:text-foreground"
+                            aria-label="More info about averaging method"
+                          >
+                            <Info className="h-3 w-3" />
+                          </button>
+                        </div>
+                        <div className="flex-1 min-w-0 inline-flex rounded border border-border overflow-hidden">
+                          {(['mean', 'median', 'trimmed'] as const).map(m => (
+                            <button
+                              key={m}
+                              type="button"
+                              onClick={() => setAvgMethod(m)}
+                              className={`flex-1 px-2 py-1 text-[10px] md:text-xs capitalize transition-colors ${
+                                avgMethod === m
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-background text-muted-foreground hover:bg-muted'
+                              }`}
+                            >
+                              {m === 'trimmed' ? 'Trimmed Mean' : m}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-24 md:w-48 text-[10px] md:text-xs truncate shrink-0" />
+                        <span className="text-[10px] text-muted-foreground">
+                          {avgMethod === 'mean' && 'Arithmetic mean — sensitive to tank/outlier games.'}
+                          {avgMethod === 'median' && 'Median — robust to occasional bad balls or short-plunges.'}
+                          {avgMethod === 'trimmed' && 'Drops the top and bottom of each player\'s scores before averaging.'}
+                        </span>
+                      </div>
+                      {showAvgMethodInfo && (
+                        <div className="ml-24 md:ml-48 mt-1 p-2 bg-muted/50 border border-border rounded text-[10px] text-muted-foreground space-y-1">
+                          <p><strong>Why it matters:</strong> a player who&rsquo;s last to play and tanks their final ball after the game is decided pulls their mean down — but the score isn&rsquo;t a fair read of skill. Median ignores that game; trimmed mean discards the worst (and best) tail.</p>
+                          <p><strong>Where it applies:</strong> player projections everywhere (singles &amp; doubles picks, assignments, Hungarian, head-to-head matrix), the machine-advantage table&rsquo;s TWC/opponent/venue averages.</p>
+                          <p><strong>Where it doesn&rsquo;t:</strong> the per-game-normalized opponent/venue baselines (when PGN is ON) stay on mean — those use sum-based accumulators that don&rsquo;t support medians.</p>
+                          <p><strong>Performance:</strong> non-mean methods bypass the cache for the advantage table (1–3s slower per refresh).</p>
+                          <p><strong>Win rate, recent form, high score, and user-entered averages</strong> are unaffected by this toggle — they&rsquo;re counts, single values, or maxes.</p>
+                        </div>
+                      )}
+                      {avgMethod === 'trimmed' && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-24 md:w-48 text-[10px] md:text-xs truncate shrink-0">Trim % (each tail)</div>
+                          <input
+                            type="range"
+                            min={5}
+                            max={30}
+                            step={1}
+                            value={trimPct}
+                            onChange={(e) => setTrimPct(parseInt(e.target.value))}
+                            className="flex-1 min-w-0 accent-primary h-2"
+                          />
+                          <div className="w-10 md:w-12 text-xs text-right shrink-0">{trimPct}%</div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -3238,8 +3362,88 @@ export default function StrategyPage() {
                             className="h-3.5 w-3.5"
                           />
                           Per-game normalized (recommended) — judges each score against the venue it was played at
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); setShowPgnInfo(v => !v) }}
+                            className="text-muted-foreground hover:text-foreground"
+                            aria-label="More info about Per-game normalized"
+                          >
+                            <Info className="h-3 w-3" />
+                          </button>
                         </label>
                       </div>
+                      {showPgnInfo && (
+                        <div className="ml-24 md:ml-48 mt-1 p-2 bg-muted/50 border border-border rounded text-[10px] text-muted-foreground space-y-1">
+                          <p>When ON, each score is divided by the average for the venue it was played at, and those ratios are averaged. This adjusts for venue-specific machine difficulty (a 5M on a hard venue counts more than 5M on an easy one).</p>
+                          <p>When OFF, the &ldquo;Venue Weight&rdquo; slider blends venue-specific avg vs all-venues avg.</p>
+                          <p><strong>Caveat with non-mean Avg Method:</strong> the per-venue baselines used here are sum-based, so when PGN is ON, opponent and venue baselines stay on arithmetic mean. Player projections still respect the chosen Avg Method.</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Averaging method: mean / median / trimmed */}
+                    <div className="space-y-0">
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 md:w-48 text-[10px] md:text-xs truncate shrink-0 flex items-center gap-1">
+                          Avg Method
+                          <button
+                            type="button"
+                            onClick={() => setShowAvgMethodInfo(v => !v)}
+                            className="text-muted-foreground hover:text-foreground"
+                            aria-label="More info about averaging method"
+                          >
+                            <Info className="h-3 w-3" />
+                          </button>
+                        </div>
+                        <div className="flex-1 min-w-0 inline-flex rounded border border-border overflow-hidden">
+                          {(['mean', 'median', 'trimmed'] as const).map(m => (
+                            <button
+                              key={m}
+                              type="button"
+                              onClick={() => setAvgMethod(m)}
+                              className={`flex-1 px-2 py-1 text-[10px] md:text-xs capitalize transition-colors ${
+                                avgMethod === m
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-background text-muted-foreground hover:bg-muted'
+                              }`}
+                            >
+                              {m === 'trimmed' ? 'Trimmed Mean' : m}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-24 md:w-48 text-[10px] md:text-xs truncate shrink-0" />
+                        <span className="text-[10px] text-muted-foreground">
+                          {avgMethod === 'mean' && 'Arithmetic mean — sensitive to tank/outlier games.'}
+                          {avgMethod === 'median' && 'Median — robust to occasional bad balls or short-plunges.'}
+                          {avgMethod === 'trimmed' && 'Drops the top and bottom of each player\'s scores before averaging.'}
+                        </span>
+                      </div>
+                      {showAvgMethodInfo && (
+                        <div className="ml-24 md:ml-48 mt-1 p-2 bg-muted/50 border border-border rounded text-[10px] text-muted-foreground space-y-1">
+                          <p><strong>Why it matters:</strong> a player who&rsquo;s last to play and tanks their final ball after the game is decided pulls their mean down — but the score isn&rsquo;t a fair read of skill. Median ignores that game; trimmed mean discards the worst (and best) tail.</p>
+                          <p><strong>Where it applies:</strong> player projections everywhere (singles &amp; doubles picks, assignments, Hungarian, head-to-head matrix), the machine-advantage table&rsquo;s TWC/opponent/venue averages.</p>
+                          <p><strong>Where it doesn&rsquo;t:</strong> the per-game-normalized opponent/venue baselines (when PGN is ON) stay on mean — those use sum-based accumulators that don&rsquo;t support medians.</p>
+                          <p><strong>Performance:</strong> non-mean methods bypass the cache for the advantage table (1–3s slower per refresh).</p>
+                          <p><strong>Win rate, recent form, high score, and user-entered averages</strong> are unaffected by this toggle — they&rsquo;re counts, single values, or maxes.</p>
+                        </div>
+                      )}
+                      {avgMethod === 'trimmed' && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-24 md:w-48 text-[10px] md:text-xs truncate shrink-0">Trim % (each tail)</div>
+                          <input
+                            type="range"
+                            min={5}
+                            max={30}
+                            step={1}
+                            value={trimPct}
+                            onChange={(e) => setTrimPct(parseInt(e.target.value))}
+                            className="flex-1 min-w-0 accent-primary h-2"
+                          />
+                          <div className="w-10 md:w-12 text-xs text-right shrink-0">{trimPct}%</div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2">

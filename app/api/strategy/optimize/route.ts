@@ -55,6 +55,8 @@ export async function POST(request: NextRequest) {
       opponent,
       useNashEquilibrium = true,
       assignAll = false,  // When true, greedily assign remaining players after normal optimization
+      avgMethod = 'mean',
+      trimPct = 0.1,
     } = body
 
     if (!format || !playerNames || !machines) {
@@ -114,7 +116,7 @@ export async function POST(request: NextRequest) {
     const allMachinesForStats = [...selectedMachines, ...Array.from(forcedMachineSet)]
     const venueWeight = usePerGameNormalized ? 1 : rawVenueWeight
     const { statsMap, userInputs } = await optimizer.prefetchStats(
-      allPlayersForStats, allMachinesForStats, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost
+      allPlayersForStats, allMachinesForStats, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost, avgMethod, trimPct
     )
 
     // Fetch score limits for filtering impossible scores

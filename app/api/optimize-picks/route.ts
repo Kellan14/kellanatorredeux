@@ -202,7 +202,9 @@ export async function POST(request: Request) {
       exclusions = {},
       mustPlay = [],
       machines: machinesParam,
-      opponentPlayers
+      opponentPlayers,
+      avgMethod = 'mean',
+      trimPct = 0.1,
     } = body
 
     if (!venue || !opponent || !availablePlayers || availablePlayers.length === 0) {
@@ -273,7 +275,9 @@ export async function POST(request: Request) {
         seasonEnd,
         venue,
         userInputMap,
-        uiw
+        uiw,
+        avgMethod,
+        trimPct
       ),
       calculatePlayerMachineStats(
         availablePlayers,
@@ -282,7 +286,9 @@ export async function POST(request: Request) {
         seasonEnd,
         undefined, // all venues
         userInputMap,
-        uiw
+        uiw,
+        avgMethod,
+        trimPct
       )
     ])
 

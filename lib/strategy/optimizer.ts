@@ -8,7 +8,7 @@ import {
   calculatePairSynergy,
   type ScoreWeights
 } from './calculator'
-import { calculatePlayerMachineStats, calculatePairStats, type UserInputData } from './stats-calculator'
+import { calculatePlayerMachineStats, calculatePairStats, type UserInputData, type AvgMethod } from './stats-calculator'
 import { getAllMachineVariations, getCanonicalMachineKey } from '../machine-mappings'
 import { createClient } from '@supabase/supabase-js'
 import type {
@@ -79,7 +79,9 @@ async function getBlendedStats(
   venue?: string,
   venueWeight: number = 0.7,
   userInputWeight: number = 0,
-  confidenceBoost: number = 0
+  confidenceBoost: number = 0,
+  avgMethod: AvgMethod = 'mean',
+  trimPct: number = 0.1
 ): Promise<{ statsMap: Map<string, Map<string, PlayerMachineStats>>; userInputs?: Map<string, Map<string, UserInputData>> }> {
   // Fetch user inputs if user input weight or confidence boost is active
   const userInputs = (userInputWeight > 0 || confidenceBoost > 0)
@@ -87,14 +89,14 @@ async function getBlendedStats(
     : undefined
 
   if (!venue) {
-    const statsMap = await calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight)
+    const statsMap = await calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight, avgMethod, trimPct)
     return { statsMap, userInputs }
   }
 
   // Fetch venue-specific and all-venue stats in parallel
   const [venueStats, allStats] = await Promise.all([
-    calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, venue, userInputs, userInputWeight),
-    calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight)
+    calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, venue, userInputs, userInputWeight, avgMethod, trimPct),
+    calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight, avgMethod, trimPct)
   ])
 
   // Blend the two stat sets
@@ -169,9 +171,11 @@ export class LineupOptimizer {
     venue?: string,
     venueWeight?: number,
     userInputWeight: number = 0,
-    confidenceBoost: number = 0
+    confidenceBoost: number = 0,
+    avgMethod: AvgMethod = 'mean',
+    trimPct: number = 0.1
   ) {
-    return getBlendedStats(playerNames, machines, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost)
+    return getBlendedStats(playerNames, machines, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost, avgMethod, trimPct)
   }
 
   /**
