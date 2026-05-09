@@ -1346,10 +1346,10 @@ export default function StrategyPage() {
         'Played'.padStart(9) +
         'Picks'.padStart(9)
     const sep = '-'.repeat(colHeader.length)
+    // Even when the Edge column is hidden, edge still drives table ordering
+    // — best matchups stay at the top.
     const tableRows = [...rows]
-      .sort((a, b) =>
-        includeEdge ? (b.edge || 0) - (a.edge || 0) : (b.pctOfVenue || 0) - (a.pctOfVenue || 0)
-      )
+      .sort((a, b) => (b.edge || 0) - (a.edge || 0))
       .map((m) => {
         const oppPicks = analysisOppMachineStats.get((m.machine || '').toLowerCase())?.timesPicked || 0
         if (includeEdge) {
@@ -1386,22 +1386,20 @@ export default function StrategyPage() {
 
     const lines: string[] = [header, '']
 
-    if (includeEdge) {
-      const picks = [...rows].sort((a, b) => (b.edge || 0) - (a.edge || 0)).slice(0, 3)
-      const weak = [...rows].sort((a, b) => (a.edge || 0) - (b.edge || 0)).slice(0, 3)
-      const fmt = (m: any) => {
+    // Picks/weaknesses are still ordered by edge (that's what makes them
+    // "best" or "worst" matchups), but when includeEdge is false the edge
+    // value itself is hidden in each line — just shows the % of venue avgs.
+    const picks = [...rows].sort((a, b) => (b.edge || 0) - (a.edge || 0)).slice(0, 3)
+    const weak = [...rows].sort((a, b) => (a.edge || 0) - (b.edge || 0)).slice(0, 3)
+    const fmt = (m: any) => {
+      if (includeEdge) {
         const sign = m.edge >= 0 ? '+' : ''
         return `  ${m.machine}: ${sign}${m.edge.toFixed(1)}%  (you ${m.pctOfVenue.toFixed(1)}% V.Avg, opp ${m.oppPctOfVenue.toFixed(1)}% V.Avg)`
       }
-      lines.push(`Top 3 Picks vs ${selectedOpponent}:`, ...picks.map(fmt))
-      lines.push('', `Top 3 Weaknesses vs ${selectedOpponent}:`, ...weak.map(fmt))
-    } else {
-      // Edge-free framing: rank by the player's own % of venue avg.
-      const top = [...rows].sort((a, b) => (b.pctOfVenue || 0) - (a.pctOfVenue || 0)).slice(0, 3)
-      const fmtNoEdge = (m: any) =>
-        `  ${m.machine}: ${m.pctOfVenue.toFixed(1)}% V.Avg  (opp ${m.oppPctOfVenue.toFixed(1)}% V.Avg)`
-      lines.push(`${selectedAnalysisPlayer}'s Top 3 Machines:`, ...top.map(fmtNoEdge))
+      return `  ${m.machine}: you ${m.pctOfVenue.toFixed(1)}% V.Avg, opp ${m.oppPctOfVenue.toFixed(1)}% V.Avg`
     }
+    lines.push(`Top 3 Picks vs ${selectedOpponent}:`, ...picks.map(fmt))
+    lines.push('', `Top 3 Weaknesses vs ${selectedOpponent}:`, ...weak.map(fmt))
 
     if (theirTopPicks.length > 0) {
       lines.push('', `${selectedOpponent}'s Top 3 Picks:`)
