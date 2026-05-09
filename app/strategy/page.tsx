@@ -4974,6 +4974,9 @@ export default function StrategyPage() {
                     opponentWeight={opponentWeight / 100}
                     useNashEquilibrium={useNashEquilibrium}
                     searchMachineSubsets={searchMachineSubsets}
+                    usePerGameNormalized={usePerGameNormalized}
+                    avgMethod={avgMethod}
+                    trimPct={trimPct / 100}
                     onOptimize={(result: OptimizationResult) => {
                       console.log('Optimization result:', result)
                       if (optimizationFormat === '7x7') {

@@ -40,6 +40,9 @@ interface MachinePickerProps {
   opponentWeight?: number
   useNashEquilibrium?: boolean
   searchMachineSubsets?: boolean
+  usePerGameNormalized?: boolean
+  avgMethod?: 'mean' | 'median' | 'trimmed'
+  trimPct?: number
 }
 
 interface DragItem {
@@ -393,7 +396,10 @@ export function MachinePicker({
   opponentPlayers,
   opponentWeight = 0,
   useNashEquilibrium = true,
-  searchMachineSubsets = false
+  searchMachineSubsets = false,
+  usePerGameNormalized = true,
+  avgMethod = 'mean',
+  trimPct = 0.1
 }: MachinePickerProps) {
   const [assignments, setAssignments] = useState<Map<string, string[]>>(new Map())
   const [isOptimizing, setIsOptimizing] = useState(false)
@@ -535,7 +541,10 @@ export function MachinePicker({
           opponentPlayers,
           opponentWeight,
           useNashEquilibrium,
-          searchMachineSubsets
+          searchMachineSubsets,
+          usePerGameNormalized,
+          avgMethod,
+          trimPct
         })
       })
 
@@ -604,7 +613,10 @@ export function MachinePicker({
           opponentPlayers,
           opponentWeight,
           useNashEquilibrium,
-          searchMachineSubsets
+          searchMachineSubsets,
+          usePerGameNormalized,
+          avgMethod,
+          trimPct
         })
       })
 
@@ -670,7 +682,10 @@ export function MachinePicker({
           opponentPlayers,
           opponentWeight,
           useNashEquilibrium,
-          searchMachineSubsets
+          searchMachineSubsets,
+          usePerGameNormalized,
+          avgMethod,
+          trimPct
         })
       })
 
