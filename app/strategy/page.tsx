@@ -2541,7 +2541,7 @@ export default function StrategyPage() {
                               <p>When the venue has more candidate machines than the round requires (7 for singles, 4 for doubles), enumerate every possible subset and pick the one whose Nash value is best for TWC. This is true minimax over machine choice — the original Nash only does minimax over player-to-machine assignments for a fixed machine set.</p>
                               <p><strong>When it activates:</strong> only when picking machines is actually a choice (more candidates than the round needs). Otherwise it&rsquo;s a no-op. Capped at 250 subsets — beyond that the search is skipped and the cheap heuristic runs.</p>
                               <p><strong>Cost:</strong> roughly proportional to subset count. 8→8 subsets (instant), 10→120, 12→792 subsets — each runs the full Nash inner loop. Doubles is much smaller (4-of-N is small for typical N).</p>
-                              <p><strong>Only meaningful for rounds TWC picks the machines</strong> — rounds 2 (home picks if TWC is home) and 3/1 (away picks if TWC is away). On counter rounds the opponent chooses, so the toggle has no effect.</p>
+                              <p><strong>Only meaningful for rounds TWC picks the machines</strong> — if TWC is home, that&rsquo;s rounds 2 (singles) and 4 (doubles); if TWC is away, rounds 1 (doubles) and 3 (singles). On the other two rounds the opponent picks the machines, so the toggle has no effect.</p>
                             </div>
                           )}
                         </>
@@ -3601,7 +3601,7 @@ export default function StrategyPage() {
                               <p>When the venue has more candidate machines than the round requires (7 for singles, 4 for doubles), enumerate every possible subset and pick the one whose Nash value is best for TWC. This is true minimax over machine choice — the original Nash only does minimax over player-to-machine assignments for a fixed machine set.</p>
                               <p><strong>When it activates:</strong> only when picking machines is actually a choice (more candidates than the round needs). Otherwise it&rsquo;s a no-op. Capped at 250 subsets — beyond that the search is skipped and the cheap heuristic runs.</p>
                               <p><strong>Cost:</strong> roughly proportional to subset count. 8→8 subsets (instant), 10→120, 12→792 subsets — each runs the full Nash inner loop. Doubles is much smaller (4-of-N is small for typical N).</p>
-                              <p><strong>Only meaningful for rounds TWC picks the machines</strong> — rounds 2 (home picks if TWC is home) and 3/1 (away picks if TWC is away). On counter rounds the opponent chooses, so the toggle has no effect.</p>
+                              <p><strong>Only meaningful for rounds TWC picks the machines</strong> — if TWC is home, that&rsquo;s rounds 2 (singles) and 4 (doubles); if TWC is away, rounds 1 (doubles) and 3 (singles). On the other two rounds the opponent picks the machines, so the toggle has no effect.</p>
                             </div>
                           )}
                         </>
