@@ -1311,7 +1311,13 @@ export default function StrategyPage() {
   // tab (for the selected player against the selected opponent's roster).
   // Mirrors the layout of the Top 3 Picks / Top 3 Weaknesses blocks plus
   // a compact per-machine table.
-  const buildAnalysisReportText = (): string => {
+  // includeEdge=false drops every edge-derived line: the "Top 3 Picks vs
+  // opponent" / "Top 3 Weaknesses" sections (both ranked by edge) and the
+  // Edge column in the table. Replaces them with absolute player strength
+  // (top 3 by pctOfVenue) and sorts the table by pctOfVenue. Useful when
+  // the matchup edge is mostly negative and the report just looks like a
+  // wall of red — strips out the comparative framing.
+  const buildAnalysisReportText = (includeEdge: boolean = true): string => {
     if (!playerAnalysis || !selectedAnalysisPlayer || !selectedOpponent) return ''
     const rows: any[] = (playerAnalysis.machinePerformance || []).filter((m: any) => (m.oppGamesPlayed || 0) > 0)
     if (rows.length === 0) return ''
@@ -1327,32 +1333,40 @@ export default function StrategyPage() {
       : `${selectedAnalysisPlayer} @ ${playerScope}; ${selectedOpponent} @ ${oppScope}`
     const header = `${selectedAnalysisPlayer} vs ${selectedOpponent} — ${venueScope} (${seasonsLabel})`
 
-    const picks = [...rows].sort((a, b) => (b.edge || 0) - (a.edge || 0)).slice(0, 3)
-    const weak = [...rows].sort((a, b) => (a.edge || 0) - (b.edge || 0)).slice(0, 3)
-
-    const fmt = (m: any) => {
-      const sign = m.edge >= 0 ? '+' : ''
-      return `  ${m.machine}: ${sign}${m.edge.toFixed(1)}%  (you ${m.pctOfVenue.toFixed(1)}% V.Avg, opp ${m.oppPctOfVenue.toFixed(1)}% V.Avg)`
-    }
-
-    const colHeader =
-      'Machine'.padEnd(28) +
-      'You %V'.padStart(9) +
-      'Opp %V'.padStart(9) +
-      'Edge'.padStart(9) +
-      'Played'.padStart(9) +
-      'Picks'.padStart(9)
+    const colHeader = includeEdge
+      ? 'Machine'.padEnd(28) +
+        'You %V'.padStart(9) +
+        'Opp %V'.padStart(9) +
+        'Edge'.padStart(9) +
+        'Played'.padStart(9) +
+        'Picks'.padStart(9)
+      : 'Machine'.padEnd(28) +
+        'You %V'.padStart(9) +
+        'Opp %V'.padStart(9) +
+        'Played'.padStart(9) +
+        'Picks'.padStart(9)
     const sep = '-'.repeat(colHeader.length)
     const tableRows = [...rows]
-      .sort((a, b) => (b.edge || 0) - (a.edge || 0))
+      .sort((a, b) =>
+        includeEdge ? (b.edge || 0) - (a.edge || 0) : (b.pctOfVenue || 0) - (a.pctOfVenue || 0)
+      )
       .map((m) => {
-        const sign = m.edge >= 0 ? '+' : ''
         const oppPicks = analysisOppMachineStats.get((m.machine || '').toLowerCase())?.timesPicked || 0
+        if (includeEdge) {
+          const sign = m.edge >= 0 ? '+' : ''
+          return (
+            (m.machine || '').slice(0, 28).padEnd(28) +
+            `${m.pctOfVenue.toFixed(1)}%`.padStart(9) +
+            `${m.oppPctOfVenue.toFixed(1)}%`.padStart(9) +
+            `${sign}${m.edge.toFixed(1)}%`.padStart(9) +
+            String(m.timesPlayed || 0).padStart(9) +
+            String(oppPicks).padStart(9)
+          )
+        }
         return (
           (m.machine || '').slice(0, 28).padEnd(28) +
           `${m.pctOfVenue.toFixed(1)}%`.padStart(9) +
           `${m.oppPctOfVenue.toFixed(1)}%`.padStart(9) +
-          `${sign}${m.edge.toFixed(1)}%`.padStart(9) +
           String(m.timesPlayed || 0).padStart(9) +
           String(oppPicks).padStart(9)
         )
@@ -1370,15 +1384,25 @@ export default function StrategyPage() {
       .sort((a, b) => b.timesPicked - a.timesPicked)
       .slice(0, 3)
 
-    const lines: string[] = [
-      header,
-      '',
-      `Top 3 Picks vs ${selectedOpponent}:`,
-      ...picks.map(fmt),
-      '',
-      `Top 3 Weaknesses vs ${selectedOpponent}:`,
-      ...weak.map(fmt),
-    ]
+    const lines: string[] = [header, '']
+
+    if (includeEdge) {
+      const picks = [...rows].sort((a, b) => (b.edge || 0) - (a.edge || 0)).slice(0, 3)
+      const weak = [...rows].sort((a, b) => (a.edge || 0) - (b.edge || 0)).slice(0, 3)
+      const fmt = (m: any) => {
+        const sign = m.edge >= 0 ? '+' : ''
+        return `  ${m.machine}: ${sign}${m.edge.toFixed(1)}%  (you ${m.pctOfVenue.toFixed(1)}% V.Avg, opp ${m.oppPctOfVenue.toFixed(1)}% V.Avg)`
+      }
+      lines.push(`Top 3 Picks vs ${selectedOpponent}:`, ...picks.map(fmt))
+      lines.push('', `Top 3 Weaknesses vs ${selectedOpponent}:`, ...weak.map(fmt))
+    } else {
+      // Edge-free framing: rank by the player's own % of venue avg.
+      const top = [...rows].sort((a, b) => (b.pctOfVenue || 0) - (a.pctOfVenue || 0)).slice(0, 3)
+      const fmtNoEdge = (m: any) =>
+        `  ${m.machine}: ${m.pctOfVenue.toFixed(1)}% V.Avg  (opp ${m.oppPctOfVenue.toFixed(1)}% V.Avg)`
+      lines.push(`${selectedAnalysisPlayer}'s Top 3 Machines:`, ...top.map(fmtNoEdge))
+    }
+
     if (theirTopPicks.length > 0) {
       lines.push('', `${selectedOpponent}'s Top 3 Picks:`)
       for (const p of theirTopPicks) {
@@ -1389,8 +1413,8 @@ export default function StrategyPage() {
     return lines.join('\n')
   }
 
-  const openAnalysisDiscordPreview = () => {
-    const text = buildAnalysisReportText()
+  const openAnalysisDiscordPreview = (includeEdge: boolean = true) => {
+    const text = buildAnalysisReportText(includeEdge)
     if (!text) {
       setAnalysisDiscordError('No matchup data to send (need both a player and opponent with overlap)')
       setAnalysisDiscordOpen(true)
@@ -4840,13 +4864,23 @@ export default function StrategyPage() {
                               </>
                             )}
 
-                            {/* Send-to-Discord button — only meaningful when there's an
-                                opponent to compare against. */}
+                            {/* Send-to-Discord buttons — only meaningful when there's an
+                                opponent to compare against. The "without edge" variant
+                                strips the comparative columns/sections, useful when the
+                                edge is mostly negative and the report just looks bad. */}
                             {selectedOpponent && (
-                              <div className="flex justify-end mt-4">
+                              <div className="flex justify-end gap-2 mt-4">
                                 <Button
                                   variant="outline"
-                                  onClick={openAnalysisDiscordPreview}
+                                  onClick={() => openAnalysisDiscordPreview(false)}
+                                  disabled={!selectedAnalysisPlayer}
+                                >
+                                  <Send className="h-4 w-4 mr-2" />
+                                  Send without Edge
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  onClick={() => openAnalysisDiscordPreview(true)}
                                   disabled={!selectedAnalysisPlayer}
                                 >
                                   <Send className="h-4 w-4 mr-2" />
