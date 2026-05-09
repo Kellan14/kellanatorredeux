@@ -365,6 +365,21 @@ export default function StrategyPage() {
     } catch { return 10 }
   })
 
+  // Outer-loop machine-subset minimax: when ON and the venue has more
+  // candidate machines than the round requires (7 singles / 4 doubles),
+  // enumerate machine subsets and pick the one whose Nash equilibrium
+  // value is best for TWC. Off by default — search adds DB-free compute
+  // but is bounded by SUBSET_SEARCH_LIMIT in the backend.
+  const [searchMachineSubsets, setSearchMachineSubsets] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false
+    try {
+      const saved = localStorage.getItem('strategySliderSettings')
+      if (!saved) return false
+      const parsed = JSON.parse(saved) as { searchMachineSubsets?: boolean }
+      return parsed.searchMachineSubsets === true
+    } catch { return false }
+  })
+
   // Derived: Venue Avg Weight is the remainder
   const venueAvgWeight = 100 - winRateWeight - recentFormWeight - dataConfidenceWeight
 
@@ -379,8 +394,8 @@ export default function StrategyPage() {
   // Persist slider settings to localStorage (incl. the per-game-normalized toggle).
   useEffect(() => {
     if (typeof window === 'undefined') return
-    localStorage.setItem('strategySliderSettings', JSON.stringify({ ...currentWeights, usePerGameNormalized, avgMethod, trimPct }))
-  }, [venueWeight, userInputWeight, confidenceBoost, opponentWeight, winRateWeight, recentFormWeight, dataConfidenceWeight, usePerGameNormalized, avgMethod, trimPct])
+    localStorage.setItem('strategySliderSettings', JSON.stringify({ ...currentWeights, usePerGameNormalized, avgMethod, trimPct, searchMachineSubsets }))
+  }, [venueWeight, userInputWeight, confidenceBoost, opponentWeight, winRateWeight, recentFormWeight, dataConfidenceWeight, usePerGameNormalized, avgMethod, trimPct, searchMachineSubsets])
 
   // Proportional adjustment when a score factor slider changes
   const handleScoreWeightChange = (
@@ -513,6 +528,8 @@ export default function StrategyPage() {
   const [showVenueAvgInfo, setShowVenueAvgInfo] = useState(false)
   const [showAvgMethodInfo, setShowAvgMethodInfo] = useState(false)
   const [showPgnInfo, setShowPgnInfo] = useState(false)
+  const [showSubsetSearchInfo, setShowSubsetSearchInfo] = useState(false)
+  const [showNashInfo, setShowNashInfo] = useState(false)
   const [showAdvantageTable, setShowAdvantageTable] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('showAdvantageTable')
@@ -1126,6 +1143,8 @@ export default function StrategyPage() {
           opponent: selectedOpponent,
           opponentPlayers: getSelectedOpponentPlayers(),
           assignAll: true,
+          useNashEquilibrium,
+          searchMachineSubsets,
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
 
@@ -1153,6 +1172,8 @@ export default function StrategyPage() {
           opponent: selectedOpponent,
           opponentPlayers: getSelectedOpponentPlayers(),
           assignAll: true,
+          useNashEquilibrium,
+          searchMachineSubsets,
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
     ])
@@ -2464,15 +2485,62 @@ export default function StrategyPage() {
                         <div className="w-10 md:w-12 text-xs text-right shrink-0">{opponentWeight}%</div>
                       </div>
                       {opponentWeight > 0 && (
-                        <label className="flex items-center gap-1.5 mt-1 ml-24 md:ml-48 text-[10px] text-muted-foreground cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={useNashEquilibrium}
-                            onChange={() => setUseNashEquilibrium(!useNashEquilibrium)}
-                            className="h-3 w-3 accent-primary"
-                          />
-                          Nash Equilibrium (Hungarian iterates until stable)
-                        </label>
+                        <>
+                          <div className="ml-24 md:ml-48 mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                            <label className="flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={useNashEquilibrium}
+                                onChange={() => setUseNashEquilibrium(!useNashEquilibrium)}
+                                className="h-3 w-3 accent-primary"
+                              />
+                              Nash Equilibrium (fictitious play, cycle-aware)
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setShowNashInfo(v => !v)}
+                              className="text-muted-foreground hover:text-foreground"
+                              aria-label="More info about Nash equilibrium"
+                            >
+                              <Info className="h-3 w-3" />
+                            </button>
+                          </div>
+                          {showNashInfo && (
+                            <div className="ml-24 md:ml-48 mt-1 p-2 bg-muted/50 border border-border rounded text-[10px] text-muted-foreground space-y-1">
+                              <p>Iterates until TWC&rsquo;s lineup and the opponent&rsquo;s best counter stop changing. Each iteration, opponent best-responds to TWC&rsquo;s latest; TWC best-responds to the <em>time-averaged</em> opponent strategy across all iterations (fictitious play).</p>
+                              <p><strong>Why time-averaged:</strong> when no pure equilibrium exists (rock-paper-scissors structure between lineup options), best-respond-to-latest cycles forever. Fictitious play converges to the value of the game in zero-sum games even in those cases.</p>
+                              <p><strong>Cycle detection:</strong> if the bonuses repeat a recent state, we exit early and report the time-averaged equilibrium estimate. The recommendation is the lineup that&rsquo;s least exploitable against the opponent&rsquo;s mixed best response.</p>
+                              <p><strong>Off:</strong> single-pass double Hungarian — TWC picks for strength, opponent counters once, no further iteration.</p>
+                            </div>
+                          )}
+                          <div className="ml-24 md:ml-48 mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                            <label className="flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={searchMachineSubsets}
+                                onChange={() => setSearchMachineSubsets(!searchMachineSubsets)}
+                                className="h-3 w-3 accent-primary"
+                              />
+                              Search machine subsets (minimax over machine choice)
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setShowSubsetSearchInfo(v => !v)}
+                              className="text-muted-foreground hover:text-foreground"
+                              aria-label="More info about machine subset search"
+                            >
+                              <Info className="h-3 w-3" />
+                            </button>
+                          </div>
+                          {showSubsetSearchInfo && (
+                            <div className="ml-24 md:ml-48 mt-1 p-2 bg-muted/50 border border-border rounded text-[10px] text-muted-foreground space-y-1">
+                              <p>When the venue has more candidate machines than the round requires (7 for singles, 4 for doubles), enumerate every possible subset and pick the one whose Nash value is best for TWC. This is true minimax over machine choice — the original Nash only does minimax over player-to-machine assignments for a fixed machine set.</p>
+                              <p><strong>When it activates:</strong> only when picking machines is actually a choice (more candidates than the round needs). Otherwise it&rsquo;s a no-op. Capped at 250 subsets — beyond that the search is skipped and the cheap heuristic runs.</p>
+                              <p><strong>Cost:</strong> roughly proportional to subset count. 8→8 subsets (instant), 10→120, 12→792 subsets — each runs the full Nash inner loop. Doubles is much smaller (4-of-N is small for typical N).</p>
+                              <p><strong>Only meaningful for rounds TWC picks the machines</strong> — rounds 2 (home picks if TWC is home) and 3/1 (away picks if TWC is away). On counter rounds the opponent chooses, so the toggle has no effect.</p>
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
@@ -3477,15 +3545,62 @@ export default function StrategyPage() {
                         <div className="w-10 md:w-12 text-xs text-right shrink-0">{opponentWeight}%</div>
                       </div>
                       {opponentWeight > 0 && (
-                        <label className="flex items-center gap-1.5 mt-1 ml-24 md:ml-48 text-[10px] text-muted-foreground cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={useNashEquilibrium}
-                            onChange={() => setUseNashEquilibrium(!useNashEquilibrium)}
-                            className="h-3 w-3 accent-primary"
-                          />
-                          Nash Equilibrium (Hungarian iterates until stable)
-                        </label>
+                        <>
+                          <div className="ml-24 md:ml-48 mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                            <label className="flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={useNashEquilibrium}
+                                onChange={() => setUseNashEquilibrium(!useNashEquilibrium)}
+                                className="h-3 w-3 accent-primary"
+                              />
+                              Nash Equilibrium (fictitious play, cycle-aware)
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setShowNashInfo(v => !v)}
+                              className="text-muted-foreground hover:text-foreground"
+                              aria-label="More info about Nash equilibrium"
+                            >
+                              <Info className="h-3 w-3" />
+                            </button>
+                          </div>
+                          {showNashInfo && (
+                            <div className="ml-24 md:ml-48 mt-1 p-2 bg-muted/50 border border-border rounded text-[10px] text-muted-foreground space-y-1">
+                              <p>Iterates until TWC&rsquo;s lineup and the opponent&rsquo;s best counter stop changing. Each iteration, opponent best-responds to TWC&rsquo;s latest; TWC best-responds to the <em>time-averaged</em> opponent strategy across all iterations (fictitious play).</p>
+                              <p><strong>Why time-averaged:</strong> when no pure equilibrium exists (rock-paper-scissors structure between lineup options), best-respond-to-latest cycles forever. Fictitious play converges to the value of the game in zero-sum games even in those cases.</p>
+                              <p><strong>Cycle detection:</strong> if the bonuses repeat a recent state, we exit early and report the time-averaged equilibrium estimate. The recommendation is the lineup that&rsquo;s least exploitable against the opponent&rsquo;s mixed best response.</p>
+                              <p><strong>Off:</strong> single-pass double Hungarian — TWC picks for strength, opponent counters once, no further iteration.</p>
+                            </div>
+                          )}
+                          <div className="ml-24 md:ml-48 mt-1 flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                            <label className="flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={searchMachineSubsets}
+                                onChange={() => setSearchMachineSubsets(!searchMachineSubsets)}
+                                className="h-3 w-3 accent-primary"
+                              />
+                              Search machine subsets (minimax over machine choice)
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setShowSubsetSearchInfo(v => !v)}
+                              className="text-muted-foreground hover:text-foreground"
+                              aria-label="More info about machine subset search"
+                            >
+                              <Info className="h-3 w-3" />
+                            </button>
+                          </div>
+                          {showSubsetSearchInfo && (
+                            <div className="ml-24 md:ml-48 mt-1 p-2 bg-muted/50 border border-border rounded text-[10px] text-muted-foreground space-y-1">
+                              <p>When the venue has more candidate machines than the round requires (7 for singles, 4 for doubles), enumerate every possible subset and pick the one whose Nash value is best for TWC. This is true minimax over machine choice — the original Nash only does minimax over player-to-machine assignments for a fixed machine set.</p>
+                              <p><strong>When it activates:</strong> only when picking machines is actually a choice (more candidates than the round needs). Otherwise it&rsquo;s a no-op. Capped at 250 subsets — beyond that the search is skipped and the cheap heuristic runs.</p>
+                              <p><strong>Cost:</strong> roughly proportional to subset count. 8→8 subsets (instant), 10→120, 12→792 subsets — each runs the full Nash inner loop. Doubles is much smaller (4-of-N is small for typical N).</p>
+                              <p><strong>Only meaningful for rounds TWC picks the machines</strong> — rounds 2 (home picks if TWC is home) and 3/1 (away picks if TWC is away). On counter rounds the opponent chooses, so the toggle has no effect.</p>
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
@@ -4858,6 +4973,7 @@ export default function StrategyPage() {
                     opponentPlayers={getSelectedOpponentPlayers()}
                     opponentWeight={opponentWeight / 100}
                     useNashEquilibrium={useNashEquilibrium}
+                    searchMachineSubsets={searchMachineSubsets}
                     onOptimize={(result: OptimizationResult) => {
                       console.log('Optimization result:', result)
                       if (optimizationFormat === '7x7') {

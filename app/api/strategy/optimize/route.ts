@@ -57,6 +57,13 @@ export async function POST(request: NextRequest) {
       assignAll = false,  // When true, greedily assign remaining players after normal optimization
       avgMethod = 'mean',
       trimPct = 0.1,
+      // When true (and the venue has more candidate machines than the round
+      // requires), enumerate machine subsets and pick the one whose Nash
+      // equilibrium value is best for TWC. Without this, TWC's machine
+      // choice is greedy (its own Hungarian on pure strength); with this,
+      // it's a true minimax over machine selection. Caps subset search
+      // at SUBSET_SEARCH_LIMIT — beyond that, falls back to non-search.
+      searchMachineSubsets = false,
     } = body
 
     if (!format || !playerNames || !machines) {
@@ -409,68 +416,176 @@ export async function POST(request: NextRequest) {
         return bonuses
       }
 
-      // Iteration 1: TWC picks first (pure strength, no opponent weight)
-      // We don't actually run the optimizer here — we just need TWC's chosen machines.
-      // Use the TWC cost matrix to find initial assignment via Hungarian.
-      const { matrix: twcInitMatrix, realRows: twcRows, realCols: twcCols } = buildCostMatrix(
-        allPlayers, selectedMachines, statsMap, confidenceBoost, scoreWeights
-      )
-      const twcInitResult = hungarianAlgorithm(twcInitMatrix, true)
-      let twcMachines: string[] = []
-      for (let i = 0; i < twcRows; i++) {
-        const mIdx = twcInitResult.assignments[i]
-        if (mIdx >= 0 && mIdx < twcCols) {
-          twcMachines.push(selectedMachines[mIdx])
+      // Run Nash equilibrium for a fixed (or pivoting) TWC machine choice.
+      //
+      // Uses fictitious play (Robinson 1951) — each iteration the opponent
+      // best-responds to TWC's latest, but the bonuses TWC sees are
+      // computed from the time-averaged opponent strategy across all
+      // iterations. In zero-sum games this provably converges to the
+      // game's value, even when no pure NE exists (rock-paper-scissors).
+      //
+      // Detects cycles via a sliding window of recent bonus keys: if the
+      // current key matches any of the last 4, we're in a cycle and
+      // exit. The returned bonuses are still the most-recent time-average,
+      // which is the FP equilibrium estimate.
+      //
+      // allowMachinePivot=true lets TWC's Hungarian re-pick which machines
+      // to play each iteration as bonuses shift (the original behavior,
+      // a cheap heuristic for machine selection). When false, TWC commits
+      // to the input subset — used by the outer machine-subset search.
+      type NashResult = {
+        bonuses: Map<string, number>
+        twcMachines: string[]
+        twcScore: number
+        cycle: boolean
+        iterations: number
+      }
+      const runNashFor = (twcMachinesIn: string[], allowMachinePivot: boolean): NashResult => {
+        let twcMachines = [...twcMachinesIn]
+        const cumOppAvg = new Map<string, number>()
+        const cumOppCount = new Map<string, number>()
+        const recentKeys: string[] = []
+        const bonuses = new Map<string, number>()
+        let cycle = false
+        const maxIter = useNashEquilibrium ? 30 : 1
+        let iter = 0
+
+        for (iter = 0; iter < maxIter; iter++) {
+          const oppAvgMap = runOpponentHungarian(twcMachines.length > 0 ? twcMachines : selectedMachines)
+
+          // Accumulate opp avgs across iterations for fictitious play.
+          for (const [machine, avgs] of Array.from(oppAvgMap.entries())) {
+            if (avgs.length === 0) continue
+            const m = avgs.reduce((a, b) => a + b, 0) / avgs.length
+            cumOppAvg.set(machine, (cumOppAvg.get(machine) || 0) + m)
+            cumOppCount.set(machine, (cumOppCount.get(machine) || 0) + 1)
+          }
+          const tavgOppMap = new Map<string, number[]>()
+          for (const [machine, sum] of Array.from(cumOppAvg.entries())) {
+            const cnt = cumOppCount.get(machine) || 1
+            tavgOppMap.set(machine, [sum / cnt])
+          }
+          const newBonuses = computeEdgeBonuses(tavgOppMap)
+
+          const key = Array.from(newBonuses.entries())
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([m, v]) => `${m}:${v.toFixed(4)}`)
+            .join('|')
+
+          if (recentKeys.length > 0 && recentKeys.includes(key)) {
+            // Either converged (key === last) or cycling (key matches an earlier one).
+            if (recentKeys[recentKeys.length - 1] !== key) cycle = true
+            bonuses.clear()
+            for (const [m, v] of Array.from(newBonuses.entries())) bonuses.set(m, v)
+            iter++
+            break
+          }
+          recentKeys.push(key)
+          if (recentKeys.length > 4) recentKeys.shift()
+
+          bonuses.clear()
+          for (const [m, v] of Array.from(newBonuses.entries())) bonuses.set(m, v)
+
+          if (allowMachinePivot) {
+            const { matrix: twcMatrix, realRows: rr, realCols: rc } = buildCostMatrix(
+              allPlayers, selectedMachines, statsMap, confidenceBoost, scoreWeights
+            )
+            for (let i = 0; i < rr; i++) {
+              for (let j = 0; j < rc; j++) {
+                const b = bonuses.get(`${allPlayers[i]}|${selectedMachines[j]}`)
+                if (b == null) continue
+                twcMatrix[i][j] *= (1 + b)
+              }
+            }
+            const r = hungarianAlgorithm(twcMatrix, true)
+            twcMachines = []
+            for (let i = 0; i < rr; i++) {
+              const mIdx = r.assignments[i]
+              if (mIdx >= 0 && mIdx < rc) twcMachines.push(selectedMachines[mIdx])
+            }
+          }
         }
+
+        // Final TWC score under bonuses: re-run Hungarian on twcMachines and
+        // sum the chosen costs. Used both for ranking subsets and reporting.
+        let twcScore = 0
+        if (twcMachines.length > 0) {
+          const { matrix, realRows, realCols } = buildCostMatrix(
+            allPlayers, twcMachines, statsMap, confidenceBoost, scoreWeights
+          )
+          for (let i = 0; i < realRows; i++) {
+            for (let j = 0; j < realCols; j++) {
+              const b = bonuses.get(`${allPlayers[i]}|${twcMachines[j]}`)
+              if (b == null) continue
+              matrix[i][j] *= (1 + b)
+            }
+          }
+          const r = hungarianAlgorithm(matrix, true)
+          for (let i = 0; i < realRows; i++) {
+            const j = r.assignments[i]
+            if (j >= 0 && j < realCols) twcScore += matrix[i][j]
+          }
+        }
+
+        return { bonuses, twcMachines, twcScore, cycle, iterations: iter }
       }
 
-      // Iterate: opponent responds to TWC's machines, TWC re-responds with edge bonuses
-      // With Nash off: single iteration (double Hungarian — TWC picks first, opponent responds once)
-      // With Nash on: iterate until convergence (Nash equilibrium)
-      const MAX_ITERATIONS = useNashEquilibrium ? 10 : 1
-      let prevBonusKey = ''
-      for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
-        // Opponent responds: assign best opponent players to TWC's chosen machines
-        const oppAvgMap = runOpponentHungarian(twcMachines.length > 0 ? twcMachines : selectedMachines)
-
-        // Compute edge bonuses from opponent response
-        const newBonuses = computeEdgeBonuses(oppAvgMap)
-
-        // Check convergence: have the bonuses stabilized?
-        const bonusKey = Array.from(newBonuses.entries())
-          .sort((a, b) => a[0].localeCompare(b[0]))
-          .map(([m, v]) => `${m}:${v.toFixed(6)}`)
-          .join('|')
-
-        if (bonusKey === prevBonusKey) break // Nash equilibrium reached
-        prevBonusKey = bonusKey
-
-        // Update edge bonuses for next TWC response
-        machineEdgeBonuses.clear()
-        for (const [m, v] of Array.from(newBonuses.entries())) {
-          machineEdgeBonuses.set(m, v)
+      // Decide whether to enumerate machine subsets or use the original
+      // greedy-machine-pick + Nash flow.
+      const SUBSET_SEARCH_LIMIT = 250
+      const binom = (n: number, k: number): number => {
+        if (k < 0 || k > n) return 0
+        let v = 1
+        for (let i = 0; i < k; i++) v = (v * (n - i)) / (i + 1)
+        return Math.round(v)
+      }
+      const enumerateSubsets = (arr: string[], k: number): string[][] => {
+        const out: string[][] = []
+        const buf: string[] = []
+        const rec = (start: number, need: number) => {
+          if (need === 0) { out.push([...buf]); return }
+          for (let i = start; i <= arr.length - need; i++) {
+            buf.push(arr[i])
+            rec(i + 1, need - 1)
+            buf.pop()
+          }
         }
+        rec(0, k)
+        return out
+      }
 
-        // TWC re-responds: re-run Hungarian with updated edge bonuses
-        const { matrix: twcMatrix, realRows: rr, realCols: rc } = buildCostMatrix(
+      const wantSubsetSearch = searchMachineSubsets &&
+        selectedMachines.length > requiredMachines &&
+        binom(selectedMachines.length, requiredMachines) <= SUBSET_SEARCH_LIMIT
+
+      let nashResult: NashResult
+      if (wantSubsetSearch) {
+        const subsets = enumerateSubsets(selectedMachines, requiredMachines)
+        let best: NashResult | null = null
+        for (const subset of subsets) {
+          const r = runNashFor(subset, false)
+          if (!best || r.twcScore > best.twcScore) best = r
+        }
+        nashResult = best ?? runNashFor(selectedMachines, true)
+      } else {
+        // Original behavior: TWC picks machines greedily via initial Hungarian
+        // on pure strength, then Nash iteration may pivot machines as bonuses shift.
+        const { matrix: twcInitMatrix, realRows: twcRows, realCols: twcCols } = buildCostMatrix(
           allPlayers, selectedMachines, statsMap, confidenceBoost, scoreWeights
         )
-        // Apply per-player-per-machine edge bonuses to cost matrix
-        for (let i = 0; i < rr; i++) {
-          for (let j = 0; j < rc; j++) {
-            const bonus = machineEdgeBonuses.get(`${allPlayers[i]}|${selectedMachines[j]}`)
-            if (bonus == null) continue
-            twcMatrix[i][j] *= (1 + bonus)
-          }
+        const twcInitResult = hungarianAlgorithm(twcInitMatrix, true)
+        const initialMachines: string[] = []
+        for (let i = 0; i < twcRows; i++) {
+          const mIdx = twcInitResult.assignments[i]
+          if (mIdx >= 0 && mIdx < twcCols) initialMachines.push(selectedMachines[mIdx])
         }
-        const twcResult = hungarianAlgorithm(twcMatrix, true)
-        twcMachines = []
-        for (let i = 0; i < rr; i++) {
-          const mIdx = twcResult.assignments[i]
-          if (mIdx >= 0 && mIdx < rc) {
-            twcMachines.push(selectedMachines[mIdx])
-          }
-        }
+        nashResult = runNashFor(initialMachines, true)
+      }
+
+      // Apply Nash result to the per-machine edge bonuses used downstream.
+      machineEdgeBonuses.clear()
+      for (const [k, v] of Array.from(nashResult.bonuses.entries())) {
+        machineEdgeBonuses.set(k, v)
       }
 
       // Save data for post-optimization opponent assignment display

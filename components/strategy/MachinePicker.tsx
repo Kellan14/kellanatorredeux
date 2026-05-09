@@ -39,6 +39,7 @@ interface MachinePickerProps {
   opponentPlayers?: string[]
   opponentWeight?: number
   useNashEquilibrium?: boolean
+  searchMachineSubsets?: boolean
 }
 
 interface DragItem {
@@ -391,7 +392,8 @@ export function MachinePicker({
   opponent,
   opponentPlayers,
   opponentWeight = 0,
-  useNashEquilibrium = true
+  useNashEquilibrium = true,
+  searchMachineSubsets = false
 }: MachinePickerProps) {
   const [assignments, setAssignments] = useState<Map<string, string[]>>(new Map())
   const [isOptimizing, setIsOptimizing] = useState(false)
@@ -532,7 +534,8 @@ export function MachinePicker({
           opponent,
           opponentPlayers,
           opponentWeight,
-          useNashEquilibrium
+          useNashEquilibrium,
+          searchMachineSubsets
         })
       })
 
@@ -600,7 +603,8 @@ export function MachinePicker({
           opponent,
           opponentPlayers,
           opponentWeight,
-          useNashEquilibrium
+          useNashEquilibrium,
+          searchMachineSubsets
         })
       })
 
@@ -665,7 +669,8 @@ export function MachinePicker({
           opponent,
           opponentPlayers,
           opponentWeight,
-          useNashEquilibrium
+          useNashEquilibrium,
+          searchMachineSubsets
         })
       })
 
