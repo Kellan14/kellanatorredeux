@@ -1338,13 +1338,13 @@ export default function StrategyPage() {
         'You %V'.padStart(9) +
         'Opp %V'.padStart(9) +
         'Edge'.padStart(9) +
-        'Played'.padStart(9) +
-        'Picks'.padStart(9)
+        'You Plays'.padStart(9) +
+        'Opp Picks'.padStart(9)
       : 'Machine'.padEnd(28) +
         'You %V'.padStart(9) +
         'Opp %V'.padStart(9) +
-        'Played'.padStart(9) +
-        'Picks'.padStart(9)
+        'You Plays'.padStart(9) +
+        'Opp Picks'.padStart(9)
     const sep = '-'.repeat(colHeader.length)
     // Even when the Edge column is hidden, edge still drives table ordering
     // — best matchups stay at the top.
