@@ -505,4 +505,176 @@ export class LineupOptimizer {
       suggestions
     }
   }
+
+  /**
+   * Optimize 4x2 doubles via pair-partition enumeration + Hungarian.
+   *
+   * The greedy `optimize4x2WithStats` picks the best (pair, machine) one
+   * round at a time and locks it in — globally suboptimal. This version
+   * enumerates every way to partition the player pool into N pairs (plus
+   * a bench, if any), builds a pair × machine cost matrix for each
+   * partition, Hungarian-solves it, and returns the partition + assignment
+   * with the highest total score. Also accepts per-(player, machine) edge
+   * bonuses from the Nash equilibrium loop — both players in a pair get
+   * their bonuses averaged into the cell.
+   *
+   * Returns null when the partition count exceeds `partitionCap`, signaling
+   * the caller to fall back to the greedy. For typical doubles lineups
+   * (8–12 players, 4 machines) the count is well under 10K, sub-second.
+   */
+  optimize4x2Hungarian(
+    playerNames: string[],
+    machines: string[],
+    statsMap: Map<string, Map<string, PlayerMachineStats>>,
+    userInputs: Map<string, Map<string, UserInputData>> | undefined,
+    pairStatsMap: Map<string, { winRate: number; gamesPlayed: number }>,
+    exclusions: Record<string, string[]> = {},
+    confidenceBoost: number = 0,
+    scoreWeights?: ScoreWeights,
+    edgeBonuses?: Map<string, number>,
+    partitionCap: number = 50000
+  ): OptimizationResult | null {
+    const k = Math.min(machines.length, Math.floor(playerNames.length / 2))
+    if (k === 0) {
+      return { format: '4x2', assignments: [], total_score: 0, win_probability: 0, benched: [...playerNames], suggestions: [] }
+    }
+
+    // Count partitions before enumerating so we can fall back early.
+    const binom = (n: number, r: number): number => {
+      if (r < 0 || r > n) return 0
+      let v = 1
+      for (let i = 0; i < r; i++) v = (v * (n - i)) / (i + 1)
+      return Math.round(v)
+    }
+    const pairingsOf2k = (kk: number): number => {
+      // (2k)! / (2^k · k!)
+      let v = 1
+      for (let i = 1; i <= kk; i++) v *= (2 * i - 1)
+      return v
+    }
+    const totalPartitions = binom(playerNames.length, 2 * k) * pairingsOf2k(k)
+    if (totalPartitions > partitionCap) return null
+
+    const scoreCombo = (p1: string, p2: string, m: string): number => {
+      const machExcl = exclusions[m] || []
+      if (machExcl.includes(p1) || machExcl.includes(p2)) return -1e9
+      const s1 = statsMap.get(p1)?.get(m) || null
+      const s2 = statsMap.get(p2)?.get(m) || null
+      const perf1 = calculatePerformanceScore(s1, confidenceBoost, scoreWeights)
+      const perf2 = calculatePerformanceScore(s2, confidenceBoost, scoreWeights)
+      const pairKey = [p1, p2].sort().join('|') + '|' + m
+      const pairStats = pairStatsMap.get(pairKey)
+      const synergy = calculatePairSynergy(s1, s2, pairStats?.winRate, confidenceBoost, scoreWeights)
+      let score = perf1 + perf2 + synergy
+      if (edgeBonuses && edgeBonuses.size > 0) {
+        const b1 = edgeBonuses.get(`${p1}|${m}`) ?? 0
+        const b2 = edgeBonuses.get(`${p2}|${m}`) ?? 0
+        score *= 1 + (b1 + b2) / 2
+      }
+      return score
+    }
+
+    // Returns each partition of `arr` into exactly `kk` unordered pairs +
+    // (arr.length - 2·kk) benched. Canonical ordering: the smallest-index
+    // unbenched player is paired with every possible partner in turn (no
+    // duplicate (A,B) vs (B,A)).
+    type Partition = { pairs: [string, string][]; bench: string[] }
+    const partitions = (arr: string[], kk: number): Partition[] => {
+      if (kk === 0) return [{ pairs: [], bench: [...arr] }]
+      if (arr.length < 2 * kk) return []
+      const out: Partition[] = []
+      const first = arr[0]
+      const rest = arr.slice(1)
+      for (let i = 0; i < rest.length; i++) {
+        const partner = rest[i]
+        const remaining = [...rest.slice(0, i), ...rest.slice(i + 1)]
+        for (const sub of partitions(remaining, kk - 1)) {
+          out.push({ pairs: [[first, partner] as [string, string], ...sub.pairs], bench: sub.bench })
+        }
+      }
+      if (rest.length >= 2 * kk) {
+        for (const sub of partitions(rest, kk)) {
+          out.push({ pairs: sub.pairs, bench: [first, ...sub.bench] })
+        }
+      }
+      return out
+    }
+
+    type Best = { pairs: [string, string][]; machineFor: number[]; bench: string[]; score: number }
+    let best: Best | null = null
+
+    for (const { pairs, bench } of partitions(playerNames, k)) {
+      const dim = Math.max(k, machines.length)
+      const matrix: number[][] = Array.from({ length: dim }, () => Array(dim).fill(-1e9))
+      let anyValid = false
+      for (let i = 0; i < k; i++) {
+        for (let j = 0; j < machines.length; j++) {
+          const v = scoreCombo(pairs[i][0], pairs[i][1], machines[j])
+          matrix[i][j] = v
+          if (v > -1e8) anyValid = true
+        }
+      }
+      if (!anyValid) continue
+
+      const { assignments: ha } = hungarianAlgorithm(matrix, true)
+      let total = 0
+      const machineFor: number[] = new Array(k).fill(-1)
+      let valid = true
+      for (let i = 0; i < k; i++) {
+        const j = ha[i]
+        if (j < 0 || j >= machines.length) { valid = false; break }
+        const cell = matrix[i][j]
+        if (cell <= -1e8) { valid = false; break }
+        machineFor[i] = j
+        total += cell
+      }
+      if (!valid) continue
+      if (!best || total > best.score) best = { pairs, machineFor, bench, score: total }
+    }
+
+    if (!best) {
+      return { format: '4x2', assignments: [], total_score: 0, win_probability: 0, benched: [...playerNames], suggestions: [] }
+    }
+
+    const assignments: PairAssignment[] = best.pairs.map(([p1, p2], i) => {
+      const m = machines[best!.machineFor[i]]
+      const s1 = statsMap.get(p1)?.get(m) || null
+      const s2 = statsMap.get(p2)?.get(m) || null
+      const perf1 = calculatePerformanceScore(s1, confidenceBoost, scoreWeights)
+      const perf2 = calculatePerformanceScore(s2, confidenceBoost, scoreWeights)
+      const pairKey = [p1, p2].sort().join('|') + '|' + m
+      const pairStats = pairStatsMap.get(pairKey)
+      const synergy = calculatePairSynergy(s1, s2, pairStats?.winRate, confidenceBoost, scoreWeights)
+      const ui1 = userInputs?.get(p1)?.get(m)
+      const ui2 = userInputs?.get(p2)?.get(m)
+      return {
+        player1_id: p1,
+        player2_id: p2,
+        machine_id: m,
+        expected_score: perf1 + perf2 + synergy,
+        synergy_bonus: synergy,
+        player1_venue_adjusted_avg: s1?.venue_adjusted_avg,
+        player2_venue_adjusted_avg: s2?.venue_adjusted_avg,
+        player1_user_average: ui1?.userAverage ?? null,
+        player2_user_average: ui2?.userAverage ?? null,
+        player1_user_confidence: ui1?.userConfidence ?? null,
+        player2_user_confidence: ui2?.userConfidence ?? null,
+        pair_win_rate: pairStats?.winRate,
+        pair_games_played: pairStats?.gamesPlayed,
+      }
+    })
+
+    const totalScore = assignments.reduce((s, a) => s + a.expected_score, 0)
+    const avgScore = assignments.length > 0 ? totalScore / assignments.length : 0
+    const winProbability = 1 / (1 + Math.exp(-10 * (avgScore / 2 - 0.5)))
+
+    return {
+      format: '4x2',
+      assignments,
+      total_score: totalScore,
+      win_probability: winProbability,
+      benched: best.bench,
+      suggestions: [],
+    }
+  }
 }

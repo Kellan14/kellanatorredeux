@@ -160,6 +160,16 @@ export async function POST(request: NextRequest) {
       venueAvgPerMachine: Map<string, { total: number; count: number }>
     } | null = null
 
+    // Pre-fetch pair stats for doubles BEFORE the Nash loop so the doubles
+    // Hungarian inside runNashFor can use them. (For singles this is a no-op.)
+    let pairStatsMap = new Map<string, { winRate: number; gamesPlayed: number }>()
+    if (format === '4x2') {
+      const pairStatsData = await calculatePairStats(allPlayersForStats, allMachinesForStats, seasonStart, seasonEnd)
+      for (const [key, stats] of Array.from(pairStatsData.entries())) {
+        pairStatsMap.set(key, stats)
+      }
+    }
+
     if (ow > 0 && venue && opponent) {
       const venueVariations = getVenueVariations(venue)
       const machineVariationToCanonical = new Map<string, string>()
@@ -502,43 +512,65 @@ export async function POST(request: NextRequest) {
           for (const [m, v] of Array.from(newBonuses.entries())) bonuses.set(m, v)
 
           if (allowMachinePivot) {
-            const { matrix: twcMatrix, realRows: rr, realCols: rc } = buildCostMatrix(
-              allPlayers, selectedMachines, statsMap, confidenceBoost, scoreWeights
-            )
-            for (let i = 0; i < rr; i++) {
-              for (let j = 0; j < rc; j++) {
-                const b = bonuses.get(`${allPlayers[i]}|${selectedMachines[j]}`)
-                if (b == null) continue
-                twcMatrix[i][j] *= (1 + b)
+            if (format === '4x2') {
+              // Doubles: pair-partition Hungarian picks both the machine
+              // subset AND the pair-to-machine assignment under current bonuses.
+              const r = optimizer.optimize4x2Hungarian(
+                allPlayers, selectedMachines, statsMap, userInputs, pairStatsMap,
+                exclusions, confidenceBoost, scoreWeights, bonuses
+              )
+              if (r && r.assignments.length > 0) {
+                twcMachines = r.assignments.map((a: any) => a.machine_id)
               }
-            }
-            const r = hungarianAlgorithm(twcMatrix, true)
-            twcMachines = []
-            for (let i = 0; i < rr; i++) {
-              const mIdx = r.assignments[i]
-              if (mIdx >= 0 && mIdx < rc) twcMachines.push(selectedMachines[mIdx])
+            } else {
+              const { matrix: twcMatrix, realRows: rr, realCols: rc } = buildCostMatrix(
+                allPlayers, selectedMachines, statsMap, confidenceBoost, scoreWeights
+              )
+              for (let i = 0; i < rr; i++) {
+                for (let j = 0; j < rc; j++) {
+                  const b = bonuses.get(`${allPlayers[i]}|${selectedMachines[j]}`)
+                  if (b == null) continue
+                  twcMatrix[i][j] *= (1 + b)
+                }
+              }
+              const r = hungarianAlgorithm(twcMatrix, true)
+              twcMachines = []
+              for (let i = 0; i < rr; i++) {
+                const mIdx = r.assignments[i]
+                if (mIdx >= 0 && mIdx < rc) twcMachines.push(selectedMachines[mIdx])
+              }
             }
           }
         }
 
-        // Final TWC score under bonuses: re-run Hungarian on twcMachines and
-        // sum the chosen costs. Used both for ranking subsets and reporting.
+        // Final TWC score under bonuses. Uses the same Hungarian that produces
+        // the actual assignment (pair-aware for doubles, player-aware for
+        // singles) so the score is comparable to what the final runOptimize
+        // call will produce.
         let twcScore = 0
         if (twcMachines.length > 0) {
-          const { matrix, realRows, realCols } = buildCostMatrix(
-            allPlayers, twcMachines, statsMap, confidenceBoost, scoreWeights
-          )
-          for (let i = 0; i < realRows; i++) {
-            for (let j = 0; j < realCols; j++) {
-              const b = bonuses.get(`${allPlayers[i]}|${twcMachines[j]}`)
-              if (b == null) continue
-              matrix[i][j] *= (1 + b)
+          if (format === '4x2') {
+            const r = optimizer.optimize4x2Hungarian(
+              allPlayers, twcMachines, statsMap, userInputs, pairStatsMap,
+              exclusions, confidenceBoost, scoreWeights, bonuses
+            )
+            twcScore = r?.total_score ?? 0
+          } else {
+            const { matrix, realRows, realCols } = buildCostMatrix(
+              allPlayers, twcMachines, statsMap, confidenceBoost, scoreWeights
+            )
+            for (let i = 0; i < realRows; i++) {
+              for (let j = 0; j < realCols; j++) {
+                const b = bonuses.get(`${allPlayers[i]}|${twcMachines[j]}`)
+                if (b == null) continue
+                matrix[i][j] *= (1 + b)
+              }
             }
-          }
-          const r = hungarianAlgorithm(matrix, true)
-          for (let i = 0; i < realRows; i++) {
-            const j = r.assignments[i]
-            if (j >= 0 && j < realCols) twcScore += matrix[i][j]
+            const r = hungarianAlgorithm(matrix, true)
+            for (let i = 0; i < realRows; i++) {
+              const j = r.assignments[i]
+              if (j >= 0 && j < realCols) twcScore += matrix[i][j]
+            }
           }
         }
 
@@ -583,16 +615,27 @@ export async function POST(request: NextRequest) {
         }
         nashResult = best ?? runNashFor(selectedMachines, true)
       } else {
-        // Original behavior: TWC picks machines greedily via initial Hungarian
-        // on pure strength, then Nash iteration may pivot machines as bonuses shift.
-        const { matrix: twcInitMatrix, realRows: twcRows, realCols: twcCols } = buildCostMatrix(
-          allPlayers, selectedMachines, statsMap, confidenceBoost, scoreWeights
-        )
-        const twcInitResult = hungarianAlgorithm(twcInitMatrix, true)
-        const initialMachines: string[] = []
-        for (let i = 0; i < twcRows; i++) {
-          const mIdx = twcInitResult.assignments[i]
-          if (mIdx >= 0 && mIdx < twcCols) initialMachines.push(selectedMachines[mIdx])
+        // Original behavior: TWC picks machines via initial pure-strength
+        // Hungarian (player-aware for singles, pair-aware for doubles), then
+        // Nash iteration pivots machines as bonuses shift.
+        let initialMachines: string[] = []
+        if (format === '4x2') {
+          const r = optimizer.optimize4x2Hungarian(
+            allPlayers, selectedMachines, statsMap, userInputs, pairStatsMap,
+            exclusions, confidenceBoost, scoreWeights
+          )
+          if (r && r.assignments.length > 0) {
+            initialMachines = r.assignments.map((a: any) => a.machine_id)
+          }
+        } else {
+          const { matrix: twcInitMatrix, realRows: twcRows, realCols: twcCols } = buildCostMatrix(
+            allPlayers, selectedMachines, statsMap, confidenceBoost, scoreWeights
+          )
+          const twcInitResult = hungarianAlgorithm(twcInitMatrix, true)
+          for (let i = 0; i < twcRows; i++) {
+            const mIdx = twcInitResult.assignments[i]
+            if (mIdx >= 0 && mIdx < twcCols) initialMachines.push(selectedMachines[mIdx])
+          }
         }
         nashResult = runNashFor(initialMachines, true)
       }
@@ -607,21 +650,20 @@ export async function POST(request: NextRequest) {
       oppDataForDisplay = { oppPlayerList, oppPlayerStats, getBlendedAvg, getOppCellValue, allGames, venueVariations, teamNameMap, venueAvgPerMachine }
     }
 
-    // Pre-fetch pair stats for doubles
-    let pairStatsMap = new Map<string, { winRate: number; gamesPlayed: number }>()
-    if (format === '4x2') {
-      const pairStatsData = await calculatePairStats(allPlayersForStats, allMachinesForStats, seasonStart, seasonEnd)
-      for (const [key, stats] of Array.from(pairStatsData.entries())) {
-        pairStatsMap.set(key, stats)
-      }
-    }
-
     const runOptimize = (players: string[]) => {
       if (format === '7x7') {
         return optimizer.optimize7x7WithStats(players, selectedMachines, statsMap, userInputs, exclusions, confidenceBoost, scoreWeights, machineEdgeBonuses.size > 0 ? machineEdgeBonuses : undefined)
-      } else {
-        return optimizer.optimize4x2WithStats(players, selectedMachines, statsMap, userInputs, pairStatsMap, exclusions, confidenceBoost, scoreWeights)
       }
+      // Doubles: try the partition-enumerating Hungarian first (globally optimal
+      // pair-to-machine assignment, respects per-(player, machine) edge bonuses
+      // from the Nash loop). Falls back to greedy if the partition count exceeds
+      // the cap (only happens with very large lineups).
+      const bonuses = machineEdgeBonuses.size > 0 ? machineEdgeBonuses : undefined
+      const hungarianResult = optimizer.optimize4x2Hungarian(
+        players, selectedMachines, statsMap, userInputs, pairStatsMap, exclusions, confidenceBoost, scoreWeights, bonuses
+      )
+      if (hungarianResult !== null) return hungarianResult
+      return optimizer.optimize4x2WithStats(players, selectedMachines, statsMap, userInputs, pairStatsMap, exclusions, confidenceBoost, scoreWeights)
     }
 
     // Adjust required counts for forced assignments
