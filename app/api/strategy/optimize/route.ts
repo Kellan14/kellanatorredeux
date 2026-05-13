@@ -101,21 +101,36 @@ export async function POST(request: NextRequest) {
     // Handle forced assignments - these players/machines are locked
     const forcedPlayerSet = new Set<string>()
     const forcedMachineSet = new Set<string>()
-    const forcedAssignmentMap = new Map<string, string>() // machine -> player
+    // machine -> list of forced players (length 1 for singles; up to 2 for doubles)
+    const forcedAssignmentMap = new Map<string, string[]>()
 
     for (const fa of forcedAssignments as { player: string; machine: string }[]) {
       forcedPlayerSet.add(fa.player)
       forcedMachineSet.add(fa.machine)
-      forcedAssignmentMap.set(fa.machine, fa.player)
+      const list = forcedAssignmentMap.get(fa.machine) || []
+      if (!list.includes(fa.player)) list.push(fa.player)
+      forcedAssignmentMap.set(fa.machine, list)
+    }
+
+    // For doubles, a machine with TWO forced players is a fully-locked pair —
+    // remove it from the optimizer pool entirely. With one forced player the
+    // machine stays so the optimizer can pick a partner (later swapped by
+    // mergeForced).
+    const fullyLockedDoublesMachines = new Set<string>()
+    if (format === '4x2') {
+      for (const [m, players] of Array.from(forcedAssignmentMap.entries())) {
+        if (players.length >= 2) fullyLockedDoublesMachines.add(m)
+      }
     }
 
     // Filter out forced players from optimization pool
-    // For singles: also filter out forced machines
-    // For doubles: keep forced machines (optimizer will fill 2nd slot, we replace pair with forced+partner)
+    // For singles: also filter out forced machines (one player per machine).
+    // For doubles: remove machines that have a full forced pair; keep
+    // half-locked machines so the optimizer fills the partner slot.
     const allPlayers = (playerNames as string[]).filter(p => !forcedPlayerSet.has(p))
     const selectedMachines = format === '7x7'
       ? (machines as string[]).filter(m => !forcedMachineSet.has(m))
-      : (machines as string[])  // For doubles, keep all machines
+      : (machines as string[]).filter(m => !fullyLockedDoublesMachines.has(m))
     const optimizer = new LineupOptimizer()
 
     // Pre-fetch stats for ALL players (including forced ones for merging back)
@@ -620,8 +635,10 @@ export async function POST(request: NextRequest) {
     // Helper to merge forced assignments back into result
     const mergeForced = (result: any) => {
       if (format === '7x7') {
-        // For singles: add forced assignments directly
-        for (const [machine, player] of Array.from(forcedAssignmentMap.entries())) {
+        // For singles: add forced assignments directly (one player per machine).
+        for (const [machine, players] of Array.from(forcedAssignmentMap.entries())) {
+          const player = players[0]
+          if (!player) continue
           const playerStats = statsMap.get(player)?.get(machine)
           const userInput = userInputs?.get(player)?.get(machine)
           result.assignments.push({
@@ -636,8 +653,41 @@ export async function POST(request: NextRequest) {
           })
         }
       } else {
-        // For doubles: replace optimized pairs on forced machines with forced player + partner
-        for (const [forcedMachine, forcedPlayer] of Array.from(forcedAssignmentMap.entries())) {
+        // For doubles: two cases per forced machine.
+        //  - 2 forced players: locked pair, add directly (machine was excluded from
+        //    the optimizer pool so there's no existing assignment to merge with).
+        //  - 1 forced player: optimizer assigned a pair to this machine; swap one
+        //    of those out for the forced player and bench the displaced one.
+        for (const [forcedMachine, forcedPlayers] of Array.from(forcedAssignmentMap.entries())) {
+          if (forcedPlayers.length >= 2) {
+            const [a, b] = forcedPlayers
+            const aStats = statsMap.get(a)?.get(forcedMachine)
+            const bStats = statsMap.get(b)?.get(forcedMachine)
+            const aUI = userInputs?.get(a)?.get(forcedMachine)
+            const bUI = userInputs?.get(b)?.get(forcedMachine)
+            const pairKey = [a, b].sort().join('|') + '|' + forcedMachine
+            const pairStats = pairStatsMap.get(pairKey)
+            result.assignments.push({
+              player1_id: a,
+              player2_id: b,
+              machine_id: forcedMachine,
+              expected_score: (aStats?.venue_adjusted_avg || 1) + (bStats?.venue_adjusted_avg || 1),
+              confidence: ((aStats?.confidence_score || 0) + (bStats?.confidence_score || 0)) / 2,
+              player1_venue_adjusted_avg: aStats?.venue_adjusted_avg,
+              player2_venue_adjusted_avg: bStats?.venue_adjusted_avg,
+              player1_user_average: aUI?.userAverage,
+              player2_user_average: bUI?.userAverage,
+              player1_user_confidence: aUI?.userConfidence,
+              player2_user_confidence: bUI?.userConfidence,
+              pair_win_rate: pairStats?.winRate,
+              pair_games_played: pairStats?.gamesPlayed,
+              forced: true,
+              forced_player: `${a} & ${b}`
+            })
+            continue
+          }
+          const forcedPlayer = forcedPlayers[0]
+          if (!forcedPlayer) continue
           // Find the existing assignment for this machine
           const existingIdx = result.assignments.findIndex((a: any) => a.machine_id === forcedMachine)
 

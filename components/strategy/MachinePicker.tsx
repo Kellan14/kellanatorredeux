@@ -510,9 +510,22 @@ export function MachinePicker({
     setForcedAssignments([])
   }
 
-  // Force a player onto a machine and re-optimize
+  // Force a player onto a machine and re-optimize.
+  // Singles: at most 1 forced player per machine. Doubles: at most 2.
+  // A player can only be forced on one machine at a time, so any existing
+  // entry for the same player is dropped. When the cap is hit, the oldest
+  // entry for that machine is replaced (FIFO).
   const handleForce = async (machine: string, player: string) => {
-    const newForced = [...forcedAssignments.filter(fa => fa.machine !== machine && fa.player !== player), { player, machine }]
+    const maxPerMachine = format === '4x2' ? 2 : 1
+    // Drop any existing force on this player (one machine per player).
+    let filtered = forcedAssignments.filter(fa => fa.player !== player)
+    // If we'd exceed the per-machine cap, drop the oldest entry on this machine.
+    while (filtered.filter(fa => fa.machine === machine).length >= maxPerMachine) {
+      const idx = filtered.findIndex(fa => fa.machine === machine)
+      if (idx < 0) break
+      filtered.splice(idx, 1)
+    }
+    const newForced = [...filtered, { player, machine }]
     setForcedAssignments(newForced)
 
     // Re-optimize with the new forced assignment
