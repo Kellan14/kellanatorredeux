@@ -532,14 +532,13 @@ export class LineupOptimizer {
     confidenceBoost: number = 0,
     scoreWeights?: ScoreWeights,
     edgeBonuses?: Map<string, number>,
-    partitionCap: number = 50000
+    partitionCap: number = 50000,
+    // Half-locked forced assignments: the player must be on the machine, but
+    // their partner is chosen from the rest of the player pool. The function
+    // enumerates every partner choice × every partition of the remaining
+    // players over the remaining machines, picks the globally-best total.
+    fixedSeeds: Array<{ player: string; machine: string }> = []
   ): OptimizationResult | null {
-    const k = Math.min(machines.length, Math.floor(playerNames.length / 2))
-    if (k === 0) {
-      return { format: '4x2', assignments: [], total_score: 0, win_probability: 0, benched: [...playerNames], suggestions: [] }
-    }
-
-    // Count partitions before enumerating so we can fall back early.
     const binom = (n: number, r: number): number => {
       if (r < 0 || r > n) return 0
       let v = 1
@@ -547,13 +546,36 @@ export class LineupOptimizer {
       return Math.round(v)
     }
     const pairingsOf2k = (kk: number): number => {
-      // (2k)! / (2^k · k!)
+      // (2k)! / (2^k · k!) — number of ways to partition 2k items into k unordered pairs.
       let v = 1
       for (let i = 1; i <= kk; i++) v *= (2 * i - 1)
       return v
     }
-    const totalPartitions = binom(playerNames.length, 2 * k) * pairingsOf2k(k)
-    if (totalPartitions > partitionCap) return null
+    const permutations = (n: number, r: number): number => {
+      if (r < 0 || r > n) return 0
+      let v = 1
+      for (let i = 0; i < r; i++) v *= (n - i)
+      return v
+    }
+
+    const seedPlayers = fixedSeeds.map(s => s.player)
+    const seedMachines = fixedSeeds.map(s => s.machine)
+    const seedPlayerSet = new Set(seedPlayers)
+    const seedMachineSet = new Set(seedMachines)
+    const openPlayers = playerNames.filter(p => !seedPlayerSet.has(p))
+    const openMachines = machines.filter(m => !seedMachineSet.has(m))
+    const s = fixedSeeds.length
+    const innerK = Math.min(openMachines.length, Math.floor((openPlayers.length - s) / 2))
+
+    // Total work: pick s partners (ordered, one per seed) × inner partitions.
+    const totalEvals = permutations(openPlayers.length, s) *
+      binom(openPlayers.length - s, 2 * innerK) * pairingsOf2k(innerK)
+    if (totalEvals > partitionCap) return null
+
+    // Nothing to assign (no seeds, no inner pairs possible).
+    if (s === 0 && innerK === 0) {
+      return { format: '4x2', assignments: [], total_score: 0, win_probability: 0, benched: [...playerNames], suggestions: [] }
+    }
 
     const scoreCombo = (p1: string, p2: string, m: string): number => {
       const machExcl = exclusions[m] || []
@@ -576,8 +598,7 @@ export class LineupOptimizer {
 
     // Returns each partition of `arr` into exactly `kk` unordered pairs +
     // (arr.length - 2·kk) benched. Canonical ordering: the smallest-index
-    // unbenched player is paired with every possible partner in turn (no
-    // duplicate (A,B) vs (B,A)).
+    // unbenched player is paired with every possible partner in turn.
     type Partition = { pairs: [string, string][]; bench: string[] }
     const partitions = (arr: string[], kk: number): Partition[] => {
       if (kk === 0) return [{ pairs: [], bench: [...arr] }]
@@ -600,44 +621,105 @@ export class LineupOptimizer {
       return out
     }
 
-    type Best = { pairs: [string, string][]; machineFor: number[]; bench: string[]; score: number }
-    let best: Best | null = null
-
-    for (const { pairs, bench } of partitions(playerNames, k)) {
-      const dim = Math.max(k, machines.length)
-      const matrix: number[][] = Array.from({ length: dim }, () => Array(dim).fill(-1e9))
-      let anyValid = false
-      for (let i = 0; i < k; i++) {
-        for (let j = 0; j < machines.length; j++) {
-          const v = scoreCombo(pairs[i][0], pairs[i][1], machines[j])
-          matrix[i][j] = v
-          if (v > -1e8) anyValid = true
+    // Enumerate ordered choices of `count` partners from `pool` — one per seed
+    // slot in order. P(|pool|, count) permutations.
+    const partnerPerms = (pool: string[], count: number): string[][] => {
+      if (count === 0) return [[]]
+      const out: string[][] = []
+      for (let i = 0; i < pool.length; i++) {
+        const p = pool[i]
+        const rest = [...pool.slice(0, i), ...pool.slice(i + 1)]
+        for (const sub of partnerPerms(rest, count - 1)) {
+          out.push([p, ...sub])
         }
       }
-      if (!anyValid) continue
+      return out
+    }
 
-      const { assignments: ha } = hungarianAlgorithm(matrix, true)
-      let total = 0
-      const machineFor: number[] = new Array(k).fill(-1)
-      let valid = true
-      for (let i = 0; i < k; i++) {
-        const j = ha[i]
-        if (j < 0 || j >= machines.length) { valid = false; break }
-        const cell = matrix[i][j]
-        if (cell <= -1e8) { valid = false; break }
-        machineFor[i] = j
-        total += cell
+    type SeedPair = { p1: string; p2: string; m: string; score: number }
+    type Best = {
+      seedPairs: SeedPair[]
+      innerPairs: [string, string][]
+      innerMachineFor: number[]
+      bench: string[]
+      score: number
+    }
+    let best: Best | null = null
+
+    const partnerSelections = s > 0 ? partnerPerms(openPlayers, s) : [[]]
+
+    for (const perm of partnerSelections) {
+      // Score the seed pairs (forced player + chosen partner on forced machine).
+      const seedPairs: SeedPair[] = []
+      let seedScore = 0
+      let validSeeds = true
+      for (let i = 0; i < s; i++) {
+        const seedPlayer = fixedSeeds[i].player
+        const seedMachine = fixedSeeds[i].machine
+        const partner = perm[i]
+        const sc = scoreCombo(seedPlayer, partner, seedMachine)
+        if (sc <= -1e8) { validSeeds = false; break }
+        seedPairs.push({ p1: seedPlayer, p2: partner, m: seedMachine, score: sc })
+        seedScore += sc
       }
-      if (!valid) continue
-      if (!best || total > best.score) best = { pairs, machineFor, bench, score: total }
+      if (!validSeeds) continue
+
+      const remainingPlayers = openPlayers.filter(p => !perm.includes(p))
+
+      // No inner pairs to assign (all open players are seed partners).
+      if (innerK === 0) {
+        const total = seedScore
+        if (!best || total > best.score) {
+          best = {
+            seedPairs,
+            innerPairs: [],
+            innerMachineFor: [],
+            bench: [...openMachines.length > 0 ? remainingPlayers : remainingPlayers],
+            score: total
+          }
+        }
+        continue
+      }
+
+      for (const { pairs, bench } of partitions(remainingPlayers, innerK)) {
+        const dim = Math.max(innerK, openMachines.length)
+        const matrix: number[][] = Array.from({ length: dim }, () => Array(dim).fill(-1e9))
+        let anyValid = false
+        for (let i = 0; i < innerK; i++) {
+          for (let j = 0; j < openMachines.length; j++) {
+            const v = scoreCombo(pairs[i][0], pairs[i][1], openMachines[j])
+            matrix[i][j] = v
+            if (v > -1e8) anyValid = true
+          }
+        }
+        if (!anyValid) continue
+
+        const { assignments: ha } = hungarianAlgorithm(matrix, true)
+        let innerScore = 0
+        const machineFor: number[] = new Array(innerK).fill(-1)
+        let valid = true
+        for (let i = 0; i < innerK; i++) {
+          const j = ha[i]
+          if (j < 0 || j >= openMachines.length) { valid = false; break }
+          const cell = matrix[i][j]
+          if (cell <= -1e8) { valid = false; break }
+          machineFor[i] = j
+          innerScore += cell
+        }
+        if (!valid) continue
+
+        const total = seedScore + innerScore
+        if (!best || total > best.score) {
+          best = { seedPairs, innerPairs: pairs, innerMachineFor: machineFor, bench, score: total }
+        }
+      }
     }
 
     if (!best) {
       return { format: '4x2', assignments: [], total_score: 0, win_probability: 0, benched: [...playerNames], suggestions: [] }
     }
 
-    const assignments: PairAssignment[] = best.pairs.map(([p1, p2], i) => {
-      const m = machines[best!.machineFor[i]]
+    const buildPair = (p1: string, p2: string, m: string, forced: boolean): PairAssignment => {
       const s1 = statsMap.get(p1)?.get(m) || null
       const s2 = statsMap.get(p2)?.get(m) || null
       const perf1 = calculatePerformanceScore(s1, confidenceBoost, scoreWeights)
@@ -647,7 +729,7 @@ export class LineupOptimizer {
       const synergy = calculatePairSynergy(s1, s2, pairStats?.winRate, confidenceBoost, scoreWeights)
       const ui1 = userInputs?.get(p1)?.get(m)
       const ui2 = userInputs?.get(p2)?.get(m)
-      return {
+      const a: any = {
         player1_id: p1,
         player2_id: p2,
         machine_id: m,
@@ -662,7 +744,20 @@ export class LineupOptimizer {
         pair_win_rate: pairStats?.winRate,
         pair_games_played: pairStats?.gamesPlayed,
       }
-    })
+      if (forced) {
+        a.forced = true
+        a.forced_player = p1
+      }
+      return a
+    }
+
+    const assignments: PairAssignment[] = []
+    for (const sp of best.seedPairs) assignments.push(buildPair(sp.p1, sp.p2, sp.m, true))
+    for (let i = 0; i < best.innerPairs.length; i++) {
+      const [p1, p2] = best.innerPairs[i]
+      const m = openMachines[best.innerMachineFor[i]]
+      assignments.push(buildPair(p1, p2, m, false))
+    }
 
     const totalScore = assignments.reduce((s, a) => s + a.expected_score, 0)
     const avgScore = assignments.length > 0 ? totalScore / assignments.length : 0

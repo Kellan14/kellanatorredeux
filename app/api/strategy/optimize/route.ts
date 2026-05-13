@@ -112,22 +112,36 @@ export async function POST(request: NextRequest) {
       forcedAssignmentMap.set(fa.machine, list)
     }
 
-    // For doubles, a machine with TWO forced players is a fully-locked pair —
-    // remove it from the optimizer pool entirely. With one forced player the
-    // machine stays so the optimizer can pick a partner (later swapped by
-    // mergeForced).
+    // Classify doubles forced machines:
+    //  - fully-locked: 2 forced players on the same machine (a complete pair) —
+    //    removed from the optimizer pool entirely, added back by mergeForced.
+    //  - half-locked: 1 forced player on the machine — passed to the doubles
+    //    Hungarian as a fixedSeed, which picks the best partner from the
+    //    remaining open players. The forced player stays in `allPlayers` and
+    //    the machine stays in `selectedMachines` so they participate in the
+    //    optimizer's globally-optimal search.
     const fullyLockedDoublesMachines = new Set<string>()
+    const fullyLockedDoublesPlayers = new Set<string>()
+    const halfLockedDoublesSeeds: Array<{ player: string; machine: string }> = []
     if (format === '4x2') {
       for (const [m, players] of Array.from(forcedAssignmentMap.entries())) {
-        if (players.length >= 2) fullyLockedDoublesMachines.add(m)
+        if (players.length >= 2) {
+          fullyLockedDoublesMachines.add(m)
+          for (const p of players) fullyLockedDoublesPlayers.add(p)
+        } else if (players.length === 1) {
+          halfLockedDoublesSeeds.push({ player: players[0], machine: m })
+        }
       }
     }
 
-    // Filter out forced players from optimization pool
-    // For singles: also filter out forced machines (one player per machine).
-    // For doubles: remove machines that have a full forced pair; keep
-    // half-locked machines so the optimizer fills the partner slot.
-    const allPlayers = (playerNames as string[]).filter(p => !forcedPlayerSet.has(p))
+    // Filter out forced players from the optimization pool.
+    // Singles: forced players AND machines are stripped — added by mergeForced.
+    // Doubles: only fully-locked-pair players/machines are stripped.
+    //   Half-locked seeds stay in the pool and are passed to the Hungarian as
+    //   constraints, so the partner search happens inside the optimizer.
+    const allPlayers = format === '7x7'
+      ? (playerNames as string[]).filter(p => !forcedPlayerSet.has(p))
+      : (playerNames as string[]).filter(p => !fullyLockedDoublesPlayers.has(p))
     const selectedMachines = format === '7x7'
       ? (machines as string[]).filter(m => !forcedMachineSet.has(m))
       : (machines as string[]).filter(m => !fullyLockedDoublesMachines.has(m))
@@ -517,7 +531,7 @@ export async function POST(request: NextRequest) {
               // subset AND the pair-to-machine assignment under current bonuses.
               const r = optimizer.optimize4x2Hungarian(
                 allPlayers, selectedMachines, statsMap, userInputs, pairStatsMap,
-                exclusions, confidenceBoost, scoreWeights, bonuses
+                exclusions, confidenceBoost, scoreWeights, bonuses, undefined, halfLockedDoublesSeeds
               )
               if (r && r.assignments.length > 0) {
                 twcMachines = r.assignments.map((a: any) => a.machine_id)
@@ -550,9 +564,13 @@ export async function POST(request: NextRequest) {
         let twcScore = 0
         if (twcMachines.length > 0) {
           if (format === '4x2') {
+            // For the final score we may be evaluating a subset of machines
+            // (during machine-subset search). Only pass seeds whose machine is
+            // in the current twcMachines list — others don't apply here.
+            const seedsForSubset = halfLockedDoublesSeeds.filter(s => twcMachines.includes(s.machine))
             const r = optimizer.optimize4x2Hungarian(
               allPlayers, twcMachines, statsMap, userInputs, pairStatsMap,
-              exclusions, confidenceBoost, scoreWeights, bonuses
+              exclusions, confidenceBoost, scoreWeights, bonuses, undefined, seedsForSubset
             )
             twcScore = r?.total_score ?? 0
           } else {
@@ -622,7 +640,7 @@ export async function POST(request: NextRequest) {
         if (format === '4x2') {
           const r = optimizer.optimize4x2Hungarian(
             allPlayers, selectedMachines, statsMap, userInputs, pairStatsMap,
-            exclusions, confidenceBoost, scoreWeights
+            exclusions, confidenceBoost, scoreWeights, undefined, undefined, halfLockedDoublesSeeds
           )
           if (r && r.assignments.length > 0) {
             initialMachines = r.assignments.map((a: any) => a.machine_id)
@@ -660,7 +678,7 @@ export async function POST(request: NextRequest) {
       // the cap (only happens with very large lineups).
       const bonuses = machineEdgeBonuses.size > 0 ? machineEdgeBonuses : undefined
       const hungarianResult = optimizer.optimize4x2Hungarian(
-        players, selectedMachines, statsMap, userInputs, pairStatsMap, exclusions, confidenceBoost, scoreWeights, bonuses
+        players, selectedMachines, statsMap, userInputs, pairStatsMap, exclusions, confidenceBoost, scoreWeights, bonuses, undefined, halfLockedDoublesSeeds
       )
       if (hungarianResult !== null) return hungarianResult
       return optimizer.optimize4x2WithStats(players, selectedMachines, statsMap, userInputs, pairStatsMap, exclusions, confidenceBoost, scoreWeights)
@@ -695,116 +713,38 @@ export async function POST(request: NextRequest) {
           })
         }
       } else {
-        // For doubles: two cases per forced machine.
-        //  - 2 forced players: locked pair, add directly (machine was excluded from
-        //    the optimizer pool so there's no existing assignment to merge with).
-        //  - 1 forced player: optimizer assigned a pair to this machine; swap one
-        //    of those out for the forced player and bench the displaced one.
+        // For doubles: only fully-locked pairs (2 forced players on a machine)
+        // need merging here — the machine was excluded from the optimizer pool
+        // so no existing assignment exists. Half-locked seeds (1 forced player)
+        // are handled inside optimize4x2Hungarian via fixedSeeds, which picks
+        // the globally-best partner. Those already appear in result.assignments
+        // with `forced: true` set.
         for (const [forcedMachine, forcedPlayers] of Array.from(forcedAssignmentMap.entries())) {
-          if (forcedPlayers.length >= 2) {
-            const [a, b] = forcedPlayers
-            const aStats = statsMap.get(a)?.get(forcedMachine)
-            const bStats = statsMap.get(b)?.get(forcedMachine)
-            const aUI = userInputs?.get(a)?.get(forcedMachine)
-            const bUI = userInputs?.get(b)?.get(forcedMachine)
-            const pairKey = [a, b].sort().join('|') + '|' + forcedMachine
-            const pairStats = pairStatsMap.get(pairKey)
-            result.assignments.push({
-              player1_id: a,
-              player2_id: b,
-              machine_id: forcedMachine,
-              expected_score: (aStats?.venue_adjusted_avg || 1) + (bStats?.venue_adjusted_avg || 1),
-              confidence: ((aStats?.confidence_score || 0) + (bStats?.confidence_score || 0)) / 2,
-              player1_venue_adjusted_avg: aStats?.venue_adjusted_avg,
-              player2_venue_adjusted_avg: bStats?.venue_adjusted_avg,
-              player1_user_average: aUI?.userAverage,
-              player2_user_average: bUI?.userAverage,
-              player1_user_confidence: aUI?.userConfidence,
-              player2_user_confidence: bUI?.userConfidence,
-              pair_win_rate: pairStats?.winRate,
-              pair_games_played: pairStats?.gamesPlayed,
-              forced: true,
-              forced_player: `${a} & ${b}`
-            })
-            continue
-          }
-          const forcedPlayer = forcedPlayers[0]
-          if (!forcedPlayer) continue
-          // Find the existing assignment for this machine
-          const existingIdx = result.assignments.findIndex((a: any) => a.machine_id === forcedMachine)
-
-          if (existingIdx >= 0) {
-            const existing = result.assignments[existingIdx]
-            // Keep one of the optimized players as partner (prefer the better one)
-            const p1 = existing.player1_id
-            const p2 = existing.player2_id
-
-            // Get stats for both potential partners with the forced player
-            const p1Stats = statsMap.get(p1)?.get(forcedMachine)
-            const p2Stats = statsMap.get(p2)?.get(forcedMachine)
-            const forcedStats = statsMap.get(forcedPlayer)?.get(forcedMachine)
-            const forcedUserInput = userInputs?.get(forcedPlayer)?.get(forcedMachine)
-
-            // Check pair synergy
-            const pairKey1 = [forcedPlayer, p1].sort().join('|') + '|' + forcedMachine
-            const pairKey2 = [forcedPlayer, p2].sort().join('|') + '|' + forcedMachine
-            const pair1Stats = pairStatsMap.get(pairKey1)
-            const pair2Stats = pairStatsMap.get(pairKey2)
-
-            // Calculate combined scores for each potential pairing
-            const score1 = (forcedStats?.venue_adjusted_avg || 1) + (p1Stats?.venue_adjusted_avg || 1) + (pair1Stats?.winRate || 0.5)
-            const score2 = (forcedStats?.venue_adjusted_avg || 1) + (p2Stats?.venue_adjusted_avg || 1) + (pair2Stats?.winRate || 0.5)
-
-            // Pick the better partner
-            const partner = score1 >= score2 ? p1 : p2
-            const partnerStats = score1 >= score2 ? p1Stats : p2Stats
-            const partnerUserInput = userInputs?.get(partner)?.get(forcedMachine)
-            const pairStats = score1 >= score2 ? pair1Stats : pair2Stats
-
-            // Replace the assignment
-            result.assignments[existingIdx] = {
-              player1_id: forcedPlayer,
-              player2_id: partner,
-              machine_id: forcedMachine,
-              expected_score: (forcedStats?.venue_adjusted_avg || 1) + (partnerStats?.venue_adjusted_avg || 1),
-              confidence: ((forcedStats?.confidence_score || 0) + (partnerStats?.confidence_score || 0)) / 2,
-              player1_venue_adjusted_avg: forcedStats?.venue_adjusted_avg,
-              player2_venue_adjusted_avg: partnerStats?.venue_adjusted_avg,
-              player1_user_average: forcedUserInput?.userAverage,
-              player2_user_average: partnerUserInput?.userAverage,
-              player1_user_confidence: forcedUserInput?.userConfidence,
-              player2_user_confidence: partnerUserInput?.userConfidence,
-              pair_win_rate: pairStats?.winRate,
-              pair_games_played: pairStats?.gamesPlayed,
-              forced: true,
-              forced_player: forcedPlayer
-            }
-
-            // The displaced partner (the one we didn't keep) needs to be reallocated
-            // For now, they go to benched - the optimizer can be re-run if needed
-            const displaced = score1 >= score2 ? p2 : p1
-            if (!result.benched) result.benched = []
-            if (!result.benched.includes(displaced)) {
-              result.benched.push(displaced)
-            }
-          } else {
-            // No existing assignment for this machine - shouldn't happen normally
-            // but handle it by creating a partial assignment
-            const forcedStats = statsMap.get(forcedPlayer)?.get(forcedMachine)
-            const forcedUserInput = userInputs?.get(forcedPlayer)?.get(forcedMachine)
-            result.assignments.push({
-              player1_id: forcedPlayer,
-              player2_id: null,
-              machine_id: forcedMachine,
-              expected_score: forcedStats?.venue_adjusted_avg || 1,
-              confidence: forcedStats?.confidence_score || 0,
-              player1_venue_adjusted_avg: forcedStats?.venue_adjusted_avg,
-              player1_user_average: forcedUserInput?.userAverage,
-              player1_user_confidence: forcedUserInput?.userConfidence,
-              forced: true,
-              forced_player: forcedPlayer
-            })
-          }
+          if (forcedPlayers.length < 2) continue
+          const [a, b] = forcedPlayers
+          const aStats = statsMap.get(a)?.get(forcedMachine)
+          const bStats = statsMap.get(b)?.get(forcedMachine)
+          const aUI = userInputs?.get(a)?.get(forcedMachine)
+          const bUI = userInputs?.get(b)?.get(forcedMachine)
+          const pairKey = [a, b].sort().join('|') + '|' + forcedMachine
+          const pairStats = pairStatsMap.get(pairKey)
+          result.assignments.push({
+            player1_id: a,
+            player2_id: b,
+            machine_id: forcedMachine,
+            expected_score: (aStats?.venue_adjusted_avg || 1) + (bStats?.venue_adjusted_avg || 1),
+            confidence: ((aStats?.confidence_score || 0) + (bStats?.confidence_score || 0)) / 2,
+            player1_venue_adjusted_avg: aStats?.venue_adjusted_avg,
+            player2_venue_adjusted_avg: bStats?.venue_adjusted_avg,
+            player1_user_average: aUI?.userAverage,
+            player2_user_average: bUI?.userAverage,
+            player1_user_confidence: aUI?.userConfidence,
+            player2_user_confidence: bUI?.userConfidence,
+            pair_win_rate: pairStats?.winRate,
+            pair_games_played: pairStats?.gamesPlayed,
+            forced: true,
+            forced_player: `${a} & ${b}`
+          })
         }
       }
       return result
