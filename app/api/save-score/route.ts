@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getCanonicalMachineKey } from '@/lib/machine-mappings'
+import { requireUser } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic';
 
@@ -9,12 +10,18 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 export async function POST(request: Request) {
   try {
+    // Must be logged in; the score is attributed to the authenticated user,
+    // never a user id supplied in the request body.
+    const auth = await requireUser(request)
+    if (!auth.ok) return auth.response
+    const userId = auth.user.id
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     const body = await request.json()
-    const { machine, score, venue, playerName, userId } = body
+    const { machine, score, venue, playerName } = body
 
-    if (!machine || !score || !venue || !playerName || !userId) {
+    if (!machine || !score || !venue || !playerName) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }

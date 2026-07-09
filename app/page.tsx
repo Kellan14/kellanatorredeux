@@ -16,6 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { createSupabaseClient } from '@/lib/supabase'
+import { authFetch } from '@/lib/auth-fetch'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import {
   Dialog,
@@ -442,7 +443,7 @@ function HomePageContent() {
     setTopPicksDiscordSending(true)
     setTopPicksDiscordError('')
     try {
-      const res = await fetch('/api/discord-webhook', {
+      const res = await authFetch('/api/discord-webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reportText: topPicksPreviewText }),
@@ -543,7 +544,7 @@ function HomePageContent() {
         lines.push(`All players: ${currentSet.allPlayers.join(', ')}`)
       }
       const reportText = lines.join('\n')
-      const res = await fetch('/api/discord-webhook', {
+      const res = await authFetch('/api/discord-webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reportText }),

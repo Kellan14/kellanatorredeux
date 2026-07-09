@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { escapeOrValue } from '@/lib/pg-filter'
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +23,7 @@ export async function GET(request: Request) {
     const { data: teamData } = await supabase
       .from('teams')
       .select('team_key, team_name')
-      .or(`team_key.eq.${team},team_name.ilike.${team}`)
+      .or(`team_key.eq.${escapeOrValue(team)},team_name.ilike.${escapeOrValue(team)}`)
       .single<{ team_key: string; team_name: string }>()
 
     // Use the team_key if found, otherwise use the original team parameter

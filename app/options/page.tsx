@@ -25,6 +25,7 @@ import { MachineMappingManager } from '@/components/machine-mapping-manager'
 import { PlayerMappingManager } from '@/components/player-mapping-manager'
 import { PlayerCombobox } from '@/components/ui/player-combobox'
 import { createSupabaseClient } from '@/lib/supabase'
+import { authFetch } from '@/lib/auth-fetch'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 interface Venue {
@@ -111,11 +112,10 @@ export default function OptionsPage() {
 
     setLinkingAccount(true)
     try {
-      const response = await fetch('/api/associate-player', {
+      const response = await authFetch('/api/associate-player', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id,
           playerName: selectedPlayerToLink
         })
       })
@@ -193,7 +193,7 @@ export default function OptionsPage() {
 
     // Save to database
     try {
-      const response = await fetch('/api/score-limits', {
+      const response = await authFetch('/api/score-limits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ limits: newLimits })
@@ -238,7 +238,7 @@ export default function OptionsPage() {
 
   const removeActiveVenue = async (venueName: string) => {
     try {
-      await fetch('/api/active-venues', {
+      await authFetch('/api/active-venues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ venue_name: venueName, action: 'remove' })
@@ -253,12 +253,12 @@ export default function OptionsPage() {
     try {
       // If this venue was previously removed, delete the override to restore it
       // If it's a new addition, add an 'add' override
-      await fetch('/api/active-venues', {
+      await authFetch('/api/active-venues', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ venue_name: venueName })
       })
-      await fetch('/api/active-venues', {
+      await authFetch('/api/active-venues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ venue_name: venueName, action: 'add' })

@@ -1,14 +1,19 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { requireAdmin } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-// POST - Update player names in the database based on mappings
+// POST - Update player names in the database based on mappings (admin only —
+// this rewrites names across games/player_stats/participation for the whole DB)
 export async function POST(request: Request) {
   try {
+    const auth = await requireAdmin(request)
+    if (!auth.ok) return auth.response
+
     const { mappings } = await request.json()
 
     if (!mappings || typeof mappings !== 'object') {

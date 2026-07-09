@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { requireAdmin } from '@/lib/auth'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 // Use service role key for server-side uploads (bypasses RLS)
@@ -7,6 +8,9 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 export async function POST(request: Request) {
   try {
+    const auth = await requireAdmin(request)
+    if (!auth.ok) return auth.response
+
     if (!supabaseKey) {
       return NextResponse.json({ error: 'Server not configured for uploads' }, { status: 500 })
     }
@@ -18,6 +22,15 @@ export async function POST(request: Request) {
 
     if (!machineKey || !imageType || !imageData) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    // Sanitize machineKey — it becomes part of the storage path, so reject
+    // anything outside a safe slug charset to prevent path traversal.
+    if (!/^[a-z0-9_-]+$/i.test(machineKey)) {
+      return NextResponse.json({ error: 'Invalid machineKey' }, { status: 400 })
+    }
+    if (imageType !== 'thumbnail' && imageType !== 'full') {
+      return NextResponse.json({ error: 'Invalid imageType' }, { status: 400 })
     }
 
     // Convert base64 data URL to buffer

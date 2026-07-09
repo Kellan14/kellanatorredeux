@@ -3,6 +3,7 @@ import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName } from '@/lib/venue-mappings'
 import { getScoreLimits } from '@/lib/score-limits'
+import { orEqAcrossColumns } from '@/lib/pg-filter'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0 // No caching - always fetch fresh data
@@ -73,7 +74,7 @@ export async function GET(request: Request) {
     const { data: playerGames } = await supabase
       .from('games')
       .select('player_1_key, player_1_name, player_2_key, player_2_name, player_3_key, player_3_name, player_4_key, player_4_name')
-      .or(`player_1_name.eq.${playerName},player_2_name.eq.${playerName},player_3_name.eq.${playerName},player_4_name.eq.${playerName}`)
+      .or(orEqAcrossColumns(['player_1_name', 'player_2_name', 'player_3_name', 'player_4_name'], playerName))
       .limit(1)
       .returns<Array<{
         player_1_key: string | null

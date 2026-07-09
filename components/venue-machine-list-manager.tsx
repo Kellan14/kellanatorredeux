@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { X, Plus, Save, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { authFetch } from '@/lib/auth-fetch'
 import {
   Select,
   SelectContent,
@@ -120,7 +121,7 @@ export function VenueMachineListManager({
   const handleSave = async () => {
     setSaving(true)
     try {
-      const response = await fetch('/api/venue-machine-lists', {
+      const response = await authFetch('/api/venue-machine-lists', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

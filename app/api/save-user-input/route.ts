@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getCanonicalMachineKey, getMachineVariations } from '@/lib/machine-mappings'
+import { requireUser } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,14 +10,19 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 export async function POST(request: Request) {
   try {
+    // Shared strategy inputs — require login; attribute to the session user.
+    const auth = await requireUser(request)
+    if (!auth.ok) return auth.response
+    const userId = auth.user.id
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     const body = await request.json()
-    const { machine, venue, playerName, userId, userAverage, userConfidence, clear } = body
+    const { machine, venue, playerName, userAverage, userConfidence, clear } = body
 
-    if (!machine || !venue || !playerName || !userId) {
+    if (!machine || !venue || !playerName) {
       return NextResponse.json(
-        { error: 'Missing required fields: machine, venue, playerName, userId' },
+        { error: 'Missing required fields: machine, venue, playerName' },
         { status: 400 }
       )
     }

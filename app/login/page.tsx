@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createSupabaseClient } from '@/lib/supabase'
+import { authFetch } from '@/lib/auth-fetch'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -50,11 +51,10 @@ export default function LoginPage() {
 
             if (verifyData.exists) {
               // Associate the player
-              await fetch('/api/associate-player', {
+              await authFetch('/api/associate-player', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  userId: data.user.id,
                   playerName: verifyData.playerName
                 })
               })

@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { X, Plus, Save, Loader2, Pencil, Trash2, Users, Database } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
+import { authFetch } from '@/lib/auth-fetch'
 
 interface PlayerMappingManagerProps {
   open: boolean
@@ -76,7 +77,7 @@ export function PlayerMappingManager({
   // Save a single mapping to Supabase
   const saveMapping = async (alias: string, canonical_name: string) => {
     try {
-      await fetch('/api/player-name-mappings', {
+      await authFetch('/api/player-name-mappings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ alias, canonical_name }),
@@ -89,7 +90,7 @@ export function PlayerMappingManager({
   // Delete a single mapping from Supabase
   const deleteMappingFromDb = async (alias: string) => {
     try {
-      await fetch('/api/player-name-mappings', {
+      await authFetch('/api/player-name-mappings', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ alias }),
@@ -263,7 +264,7 @@ export function PlayerMappingManager({
     setConfirmDialogOpen(false)
 
     try {
-      const response = await fetch('/api/update-player-names', {
+      const response = await authFetch('/api/update-player-names', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mappings: pendingUpdate }),

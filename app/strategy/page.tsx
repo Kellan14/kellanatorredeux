@@ -62,6 +62,7 @@ import { MachinePicker } from '@/components/strategy/MachinePicker'
 import { TwcPlayerAvailability } from '@/components/twc-player-availability'
 import { PlayerAvailability } from '@/components/player-availability'
 import type { PlayerMachineStats, OptimizationResult } from '@/types/strategy'
+import { authFetch } from '@/lib/auth-fetch'
 
 interface Team {
   key: string
@@ -1338,7 +1339,7 @@ export default function StrategyPage() {
     setAnalysisDiscordSending(true)
     setAnalysisDiscordError('')
     try {
-      const res = await fetch('/api/discord-webhook', {
+      const res = await authFetch('/api/discord-webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reportText: analysisDiscordText }),
@@ -1375,7 +1376,7 @@ export default function StrategyPage() {
     setDiscordError('')
     setDiscordSent(false)
     try {
-      const res = await fetch('/api/discord-webhook', {
+      const res = await authFetch('/api/discord-webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reportText }),

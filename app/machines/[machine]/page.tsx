@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { createSupabaseClient } from '@/lib/supabase'
+import { authFetch } from '@/lib/auth-fetch'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 import { ArrowLeft, Trophy, TrendingUp, Star, Trash2 } from 'lucide-react'
 import Link from 'next/link'
@@ -106,7 +107,7 @@ export default function MachinePage() {
 
     if (user) {
       // Get player name from UID mapping
-      const mappingResponse = await fetch(`/api/player-mapping?uid=${user.id}`)
+      const mappingResponse = await authFetch(`/api/player-mapping?uid=${user.id}`)
       if (mappingResponse.ok) {
         const mappingData = await mappingResponse.json()
         setPlayerName(mappingData.name || '')
@@ -227,14 +228,13 @@ export default function MachinePage() {
 
     setSavingAvg(true)
     try {
-      const response = await fetch('/api/save-user-input', {
+      const response = await authFetch('/api/save-user-input', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           machine,
           venue: selectedVenue,
           playerName,
-          userId: user.id,
           userAverage: null,
         }),
       })
@@ -254,14 +254,13 @@ export default function MachinePage() {
 
     setSavingConfidence(true)
     try {
-      const response = await fetch('/api/save-user-input', {
+      const response = await authFetch('/api/save-user-input', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           machine,
           venue: selectedVenue,
           playerName,
-          userId: user.id,
           userConfidence: null,
         }),
       })
@@ -281,14 +280,13 @@ export default function MachinePage() {
     setSavingAvg(true)
     try {
       const rawAverage = Math.round(parseFloat(userAvgValue) * multipliers[userAvgMultiplier])
-      const response = await fetch('/api/save-user-input', {
+      const response = await authFetch('/api/save-user-input', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           machine,
           venue: selectedVenue,
           playerName,
-          userId: user.id,
           userAverage: rawAverage,
         }),
       })
@@ -309,14 +307,13 @@ export default function MachinePage() {
 
     setSavingConfidence(true)
     try {
-      const response = await fetch('/api/save-user-input', {
+      const response = await authFetch('/api/save-user-input', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           machine,
           venue: selectedVenue,
           playerName,
-          userId: user.id,
           userConfidence: value,
         }),
       })
@@ -341,7 +338,7 @@ export default function MachinePage() {
 
     setSaving(true)
     try {
-      const response = await fetch('/api/save-score', {
+      const response = await authFetch('/api/save-score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -351,7 +348,6 @@ export default function MachinePage() {
           score: parseInt(score),
           venue: selectedVenue,
           playerName,
-          userId: user.id,
         }),
       })
 
@@ -388,7 +384,7 @@ export default function MachinePage() {
     }
 
     try {
-      const response = await fetch(`/api/user-machine-scores?id=${scoreId}&userId=${user.id}`, {
+      const response = await authFetch(`/api/user-machine-scores?id=${scoreId}`, {
         method: 'DELETE',
       })
 

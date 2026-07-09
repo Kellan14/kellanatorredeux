@@ -1,15 +1,22 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { requireUser } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
-    const { userId, playerName } = await request.json()
+    // A user may only associate their own profile — the id comes from the
+    // authenticated session, not the request body.
+    const auth = await requireUser(request)
+    if (!auth.ok) return auth.response
+    const userId = auth.user.id
 
-    if (!userId || !playerName) {
+    const { playerName } = await request.json()
+
+    if (!playerName) {
       return NextResponse.json(
-        { error: 'userId and playerName are required' },
+        { error: 'playerName is required' },
         { status: 400 }
       )
     }

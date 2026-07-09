@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getMachineVariations } from '@/lib/machine-mappings'
+import { requireUser } from '@/lib/auth'
 import fs from 'fs'
 import path from 'path'
 
@@ -137,13 +138,17 @@ export async function GET(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    // Ownership is derived from the authenticated session, not a query param.
+    const auth = await requireUser(request)
+    if (!auth.ok) return auth.response
+    const userId = auth.user.id
+
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
-    const userId = searchParams.get('userId')
 
-    if (!id || !userId) {
+    if (!id) {
       return NextResponse.json(
-        { error: 'ID and userId parameters are required' },
+        { error: 'ID parameter is required' },
         { status: 400 }
       )
     }

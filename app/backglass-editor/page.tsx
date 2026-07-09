@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Upload, Download, Image as ImageIcon, RefreshCw, Check, X } from 'lucide-react'
 import Link from 'next/link'
 import { getMachineThumbnailPath } from '@/lib/machine-images'
+import { authFetch } from '@/lib/auth-fetch'
 
 interface Machine {
   key: string
@@ -291,7 +292,7 @@ export default function BackglassEditorPage() {
       const compressedData = await compressImage(imageData, maxWidth, quality)
 
       // Upload via server API
-      const response = await fetch('/api/upload-backglass', {
+      const response = await authFetch('/api/upload-backglass', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -343,7 +344,7 @@ export default function BackglassEditorPage() {
       const compressedFull = await compressImage(newImage, 800, 0.85)
 
       // Upload full size
-      const fullResponse = await fetch('/api/upload-backglass', {
+      const fullResponse = await authFetch('/api/upload-backglass', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -359,7 +360,7 @@ export default function BackglassEditorPage() {
       }
 
       // Upload thumbnail (already small)
-      const thumbResponse = await fetch('/api/upload-backglass', {
+      const thumbResponse = await authFetch('/api/upload-backglass', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

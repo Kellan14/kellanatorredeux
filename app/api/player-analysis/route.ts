@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getAllMachineVariations } from '@/lib/machine-mappings'
+import { orEqAcrossColumns } from '@/lib/pg-filter'
 
 export const dynamic = 'force-dynamic';
 
@@ -154,7 +155,7 @@ export async function GET(request: Request) {
     const { data: sampleGames } = await supabase
       .from('games')
       .select('player_1_key, player_1_name, player_2_key, player_2_name, player_3_key, player_3_name, player_4_key, player_4_name')
-      .or(`player_1_name.eq.${player},player_2_name.eq.${player},player_3_name.eq.${player},player_4_name.eq.${player}`)
+      .or(orEqAcrossColumns(['player_1_name', 'player_2_name', 'player_3_name', 'player_4_name'], player))
       .limit(1)
       .returns<Array<{
         player_1_key: string | null

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName, venuesMatch } from '@/lib/venue-mappings'
+import { orEqAcrossColumns } from '@/lib/pg-filter'
 
 export const dynamic = 'force-dynamic'
 
@@ -57,7 +58,7 @@ export async function GET(request: NextRequest) {
         .select('season, week, venue, machine, match_key, round_number, player_1_key, player_1_name, player_1_points, player_2_key, player_2_name, player_2_points, player_3_key, player_3_name, player_3_points, player_4_key, player_4_name, player_4_points')
         .gte('season', seasonStart)
         .lte('season', seasonEnd)
-        .or(`player_1_name.eq.${playerName},player_2_name.eq.${playerName},player_3_name.eq.${playerName},player_4_name.eq.${playerName}`)
+        .or(orEqAcrossColumns(['player_1_name', 'player_2_name', 'player_3_name', 'player_4_name'], playerName))
         .order('season', { ascending: false })
         .order('week', { ascending: false })
     )

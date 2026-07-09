@@ -34,6 +34,7 @@ import { VenueMachineListManager } from '@/components/venue-machine-list-manager
 import { MachineMappingManager } from '@/components/machine-mapping-manager'
 import { TwcPlayerAvailability } from '@/components/twc-player-availability'
 import { PlayerAvailability } from '@/components/player-availability'
+import { authFetch } from '@/lib/auth-fetch'
 
 interface Team {
   key: string
@@ -232,7 +233,7 @@ export default function StatsPage() {
   const saveScoreLimits = async (newLimits: Record<string, number>) => {
     setScoreLimits(newLimits)
     try {
-      await fetch('/api/score-limits', {
+      await authFetch('/api/score-limits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ limits: newLimits })
