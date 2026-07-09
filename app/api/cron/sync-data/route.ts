@@ -122,14 +122,10 @@ export async function GET(request: Request) {
 
   try {
     // Clear existing data for the seasons being imported
-    if (fullImport) {
-      await supabase.from('games').delete().in('season', seasons)
-      await supabase.from('player_match_participation').delete().in('season', seasons)
-    } else {
-      // For incremental, only clear current season
-      await supabase.from('games').delete().eq('season', currentSeason)
-      await supabase.from('player_match_participation').delete().eq('season', currentSeason)
-    }
+    // NOTE: the delete of existing games/participation is deferred until AFTER
+    // all match data has been fetched and built (just before insert), so the
+    // site keeps serving the previous data during the slow GitHub fetch and a
+    // mid-run fetch failure doesn't wipe the current season. See below.
 
     for (const season of seasons) {
       // Use GitHub API to list actual match files (much faster than brute-forcing)
@@ -392,6 +388,20 @@ export async function GET(request: Request) {
       const matchId = matchKeyToId.get(game.match_key)
       if (matchId) {
         game.match_id = matchId
+      }
+    }
+
+    // Clear existing data for the seasons being imported — deferred to here so
+    // the previous data stays live during the fetch. Only delete when we
+    // actually have new games to insert, so a failed fetch never empties the
+    // table. The delete+insert window is a few seconds.
+    if (gamesBatch.length > 0) {
+      if (fullImport) {
+        await supabase.from('games').delete().in('season', seasons)
+        await supabase.from('player_match_participation').delete().in('season', seasons)
+      } else {
+        await supabase.from('games').delete().eq('season', currentSeason)
+        await supabase.from('player_match_participation').delete().eq('season', currentSeason)
       }
     }
 
