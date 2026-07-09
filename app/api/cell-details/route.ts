@@ -99,19 +99,23 @@ export async function GET(request: NextRequest) {
         })
         .join(',')
 
-      let query = supabase
-        .from('games')
-        .select('*')
-        .gte('season', seasonStart)
-        .lte('season', seasonEnd)
-        .or(machineFilter)
-        .order('id', { ascending: true }) // Required for consistent pagination
+      // fetchAllRecords needs a FRESH query builder per page, so build it
+      // inside the closure (a supabase query builder mutates when awaited and
+      // can't be safely re-ranged).
+      gamesData = await fetchAllRecords(() => {
+        let query = supabase
+          .from('games')
+          .select('*')
+          .gte('season', seasonStart)
+          .lte('season', seasonEnd)
+          .or(machineFilter)
+          .order('id', { ascending: true }) // Required for consistent pagination
 
-      if (useVenueFilter) {
-        query = query.in('venue', venueVariations)
-      }
-
-      gamesData = await fetchAllRecords(() => query)
+        if (useVenueFilter) {
+          query = query.in('venue', venueVariations)
+        }
+        return query
+      })
     } catch (error) {
       console.error('[cell-details] Database error:', error)
       return NextResponse.json(
@@ -214,20 +218,23 @@ export async function GET(request: NextRequest) {
         // Filter by score limit
         if (scoreLimit && score > scoreLimit) continue;
 
-        // Find opponent score in same round
-        let opponent = '';
+        // Find opponent(s) in the same game. Singles has one; doubles has two
+        // — collect both so the drilldown isn't misleading. opponentScore is
+        // the opposing side's combined score (matches how MNP doubles is won).
+        const oppNames: string[] = [];
         let opponentScore = 0;
         for (let j = 1; j <= 4; j++) {
           if (j !== i) {
             const oppTeamKey = game[`player_${j}_team`];
             const oppTeamName = teamNameMap[oppTeamKey] || oppTeamKey;
-            if (oppTeamName !== teamName) {
-              opponent = game[`player_${j}_name`] || '';
-              opponentScore = game[`player_${j}_score`] || 0;
-              break;
+            const oppName = game[`player_${j}_name`];
+            if (oppName && oppTeamName !== teamName) {
+              oppNames.push(oppName);
+              opponentScore += game[`player_${j}_score`] || 0;
             }
           }
         }
+        const opponent = oppNames.join(' & ');
 
         details.push({
           season: game.season || 0,

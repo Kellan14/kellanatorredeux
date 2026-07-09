@@ -145,6 +145,7 @@ export interface ProcessedScore {
   week: number;
   match: string;
   round: number;
+  game?: number; // game number within the round — distinguishes a machine used twice in one singles round
   venue: string;
   machine: string;
   player_name: string;
@@ -185,13 +186,18 @@ export interface MachineStats {
  *
  * MNP awards 5 team points per doubles game (rounds 1 & 4) and 3 per singles
  * game (rounds 2 & 3). Each game appears as 1 row per participating teammate
- * (1 row in singles, 2 in doubles), so we group rows by (match, round) to
- * recover team-level points and the correct round-based denominator.
+ * (1 row in singles, 2 in doubles), so we group rows by (match, round, game)
+ * to recover team-level points and the correct round-based denominator.
+ *
+ * The game number matters because MNP rules let the same machine be used
+ * twice in one singles round at small venues — those are two separate games
+ * (denominator 3 each), and grouping only by (match, round) would wrongly
+ * merge them into one and inflate POPS.
  *
  * Rows with rounds outside 1–4 (e.g. manual scores with round 0) are ignored.
  */
 export function computePops(
-  rows: Array<{ match: string; round: number; points: number }>
+  rows: Array<{ match: string; round: number; game?: number; points: number }>
 ): number {
   if (rows.length === 0) return 0;
   const games = new Map<string, { round: number; teamPoints: number }>();
@@ -199,7 +205,7 @@ export function computePops(
     // Supabase returns DECIMAL columns as strings; coerce so += doesn't concat.
     const points = Number(r.points) || 0;
     const round = Number(r.round);
-    const key = `${r.match}-${round}`;
+    const key = `${r.match}-${round}-${r.game ?? 0}`;
     const existing = games.get(key);
     if (existing) {
       existing.teamPoints += points;
@@ -280,6 +286,7 @@ export function processMNPMatchData(matches: MNPMatch[]): ProcessedScore[] {
             week: week,
             match: match.name,
             round: round.n,
+            game: game.n,
             venue: venueName,
             machine: game.machine.toLowerCase(),
             player_name: playerName,
@@ -421,14 +428,14 @@ export async function calculateMachineStats(
     
     // Calculate times played and picked
     const uniqueGames = new Set(
-      machineTeamData.map(d => `${d.match}-${d.round}`)
+      machineTeamData.map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
     );
     const timesPlayed = uniqueGames.size;
     
     const pickedGames = new Set(
       machineTeamData
         .filter(d => d.is_pick)
-        .map(d => `${d.match}-${d.round}`)
+        .map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
     );
     const timesPicked = pickedGames.size;
     
@@ -481,7 +488,7 @@ export async function calculateMachineStats(
       
       // TWC times played
       const twcUniqueGames = new Set(
-        twcData.map(d => `${d.match}-${d.round}`)
+        twcData.map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
       );
       machineStats.twcTimesPlayed = twcUniqueGames.size;
       
@@ -489,7 +496,7 @@ export async function calculateMachineStats(
       const twcPickedGames = new Set(
         twcData
           .filter(d => d.is_pick)
-          .map(d => `${d.match}-${d.round}`)
+          .map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
       );
       machineStats.twcTimesPicked = twcPickedGames.size;
       

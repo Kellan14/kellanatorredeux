@@ -104,6 +104,7 @@ export async function GET(request: NextRequest) {
           week: game.week,
           match: game.match_key,
           round: game.round_number,
+          game: game.game_number,
           venue: standardizeVenueName(game.venue) || '',
           machine: (game.machine || '').toLowerCase(),
           player_name: playerName || 'Unknown',

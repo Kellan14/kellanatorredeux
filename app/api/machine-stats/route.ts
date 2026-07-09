@@ -165,6 +165,7 @@ export async function GET(request: NextRequest) {
           week: game.week,
           match: game.match_key,
           round: game.round_number,
+          game: game.game_number,
           venue: standardizeVenueName(game.venue) || '',
           machine: normalizedMachine,
           player_name: playerName || 'Unknown',
@@ -441,14 +442,14 @@ function calculateMachineStatsServerSide(
 
     // Calculate times played and picked
     const uniqueGames = new Set(
-      machineTeamData.map(d => `${d.match}-${d.round}`)
+      machineTeamData.map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
     );
     const timesPlayed = uniqueGames.size;
 
     const pickedGames = new Set(
       machineTeamData
         .filter(d => d.is_pick)
-        .map(d => `${d.match}-${d.round}`)
+        .map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
     );
     const timesPicked = pickedGames.size;
 
@@ -517,7 +518,7 @@ function calculateMachineStatsServerSide(
 
       // TWC times played
       const twcUniqueGames = new Set(
-        twcData.map(d => `${d.match}-${d.round}`)
+        twcData.map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
       );
       machineStats.twcTimesPlayed = twcUniqueGames.size;
 
@@ -525,7 +526,7 @@ function calculateMachineStatsServerSide(
       const twcPickedGames = new Set(
         twcData
           .filter(d => d.is_pick)
-          .map(d => `${d.match}-${d.round}`)
+          .map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
       );
       machineStats.twcTimesPicked = twcPickedGames.size;
 

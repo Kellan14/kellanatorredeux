@@ -13,7 +13,8 @@ export const maxDuration = 300 // 5 minutes (requires Pro plan for >60s)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-const CURRENT_SEASON = 23
+// Floor for season detection — no need to probe below this.
+const MIN_SEASON = 20
 
 // Use GitHub API to list actual match files (much faster than brute-forcing team combinations)
 async function listMatchFiles(season: number): Promise<string[]> {
@@ -32,6 +33,35 @@ async function listMatchFiles(season: number): Promise<string[]> {
   } catch {
     return []
   }
+}
+
+/**
+ * Detect the current (latest) season instead of hardcoding it, so the sync
+ * keeps working when a new season starts. Probe the GitHub archive for the
+ * highest season-N/matches folder that has match files; fall back to the max
+ * season already in the DB, then a floor of MIN_SEASON.
+ */
+async function detectCurrentSeason(supabase: any): Promise<number> {
+  // DB max as a starting point / fallback.
+  let dbMax = MIN_SEASON
+  try {
+    const { data } = await supabase
+      .from('matches')
+      .select('season')
+      .order('season', { ascending: false })
+      .limit(1)
+      .single()
+    if (data?.season) dbMax = data.season as number
+  } catch { /* ignore */ }
+
+  // Probe upward from dbMax for newer seasons that have data.
+  let current = dbMax
+  for (let s = dbMax + 1; s <= dbMax + 5; s++) {
+    const files = await listMatchFiles(s)
+    if (files.length > 0) current = s
+    else break
+  }
+  return Math.max(current, MIN_SEASON)
 }
 
 async function fetchMatchData(url: string) {
@@ -71,9 +101,15 @@ export async function GET(request: Request) {
   const supabase = createClient(supabaseUrl, supabaseKey)
   const { searchParams } = new URL(request.url)
   const fullImport = searchParams.get('full') === 'true'
-  const seasons = fullImport ? [20, 21, 22, 23] : [CURRENT_SEASON]
 
-  console.log(`[cron/sync-data] Starting import for seasons: ${seasons.join(', ')}`)
+  // Detect the current season instead of hardcoding, so this keeps working
+  // when a new season starts.
+  const currentSeason = await detectCurrentSeason(supabase)
+  const seasons = fullImport
+    ? Array.from({ length: currentSeason - MIN_SEASON + 1 }, (_, i) => MIN_SEASON + i)
+    : [currentSeason]
+
+  console.log(`[cron/sync-data] Detected current season ${currentSeason}; importing: ${seasons.join(', ')}`)
 
   const matchesBatch: any[] = []
   const gamesBatch: any[] = []
@@ -91,8 +127,8 @@ export async function GET(request: Request) {
       await supabase.from('player_match_participation').delete().in('season', seasons)
     } else {
       // For incremental, only clear current season
-      await supabase.from('games').delete().eq('season', CURRENT_SEASON)
-      await supabase.from('player_match_participation').delete().eq('season', CURRENT_SEASON)
+      await supabase.from('games').delete().eq('season', currentSeason)
+      await supabase.from('player_match_participation').delete().eq('season', currentSeason)
     }
 
     for (const season of seasons) {
@@ -176,10 +212,19 @@ export async function GET(request: Request) {
                 team: matchData.home.key,
                 matches_played: 0,
                 total_points: 0,
-                last_match_week: 0
+                last_match_week: 0,
+                latest_ipr: null,
+                latest_ipr_week: -1
               })
             }
             const stats = playerStatsMap.get(statsKey)
+            // Track the IPR from the player's most recent match (the real IPR
+            // comes from the lineup, not from points).
+            const homeIpr = player.IPR ?? player.ipr
+            if (homeIpr != null && week >= stats.latest_ipr_week) {
+              stats.latest_ipr = homeIpr
+              stats.latest_ipr_week = week
+            }
             if (!player.sub) {
               stats.matches_played++
               stats.last_match_week = Math.max(stats.last_match_week, week)
@@ -213,10 +258,17 @@ export async function GET(request: Request) {
                 team: matchData.away.key,
                 matches_played: 0,
                 total_points: 0,
-                last_match_week: 0
+                last_match_week: 0,
+                latest_ipr: null,
+                latest_ipr_week: -1
               })
             }
             const stats = playerStatsMap.get(statsKey)
+            const awayIpr = player.IPR ?? player.ipr
+            if (awayIpr != null && week >= stats.latest_ipr_week) {
+              stats.latest_ipr = awayIpr
+              stats.latest_ipr_week = week
+            }
             if (!player.sub) {
               stats.matches_played++
               stats.last_match_week = Math.max(stats.last_match_week, week)
@@ -255,25 +307,25 @@ export async function GET(request: Request) {
                 machine: game.machine,
                 player_1_key: game.player_1 || null,
                 player_1_name: game.player_1 ? playerMap.get(game.player_1) : null,
-                player_1_score: game.score_1 || null,
+                player_1_score: game.score_1 ?? null,
                 player_1_points: game.points_1 !== undefined ? game.points_1 : null,
                 player_1_team: player1Team,
                 player_1_is_pick: pickingTeam !== null && player1Team === pickingTeam,
                 player_2_key: game.player_2 || null,
                 player_2_name: game.player_2 ? playerMap.get(game.player_2) : null,
-                player_2_score: game.score_2 || null,
+                player_2_score: game.score_2 ?? null,
                 player_2_points: game.points_2 !== undefined ? game.points_2 : null,
                 player_2_team: player2Team,
                 player_2_is_pick: pickingTeam !== null && player2Team === pickingTeam,
                 player_3_key: game.player_3 || null,
                 player_3_name: game.player_3 ? playerMap.get(game.player_3) : null,
-                player_3_score: game.score_3 || null,
+                player_3_score: game.score_3 ?? null,
                 player_3_points: game.points_3 !== undefined ? game.points_3 : null,
                 player_3_team: player3Team,
                 player_3_is_pick: pickingTeam !== null && player3Team === pickingTeam,
                 player_4_key: game.player_4 || null,
                 player_4_name: game.player_4 ? playerMap.get(game.player_4) : null,
-                player_4_score: game.score_4 || null,
+                player_4_score: game.score_4 ?? null,
                 player_4_points: game.points_4 !== undefined ? game.points_4 : null,
                 player_4_team: player4Team,
                 player_4_is_pick: pickingTeam !== null && player4Team === pickingTeam,
@@ -391,15 +443,15 @@ export async function GET(request: Request) {
     if (playerStatsMap.size > 0) {
       const statsBatch = []
       for (const [, stats] of Array.from(playerStatsMap.entries())) {
-        const ipr = stats.matches_played > 0
-          ? Math.round((stats.total_points / stats.matches_played) * 100) / 100
-          : 0
+        // Real IPR comes from the lineup (see latest_ipr tracked above), NOT
+        // points-per-match. Writing points-per-match here was mislabeling the
+        // column; store the player's most recent actual IPR instead.
         statsBatch.push({
           player_name: stats.player_name,
           player_key: stats.player_key,
           season: stats.season,
           team: stats.team,
-          ipr,
+          ipr: stats.latest_ipr,
           matches_played: stats.matches_played,
           last_match_week: stats.last_match_week
         })

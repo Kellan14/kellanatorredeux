@@ -370,21 +370,9 @@ export async function GET(request: Request) {
     }
 
     // --- Fallback: full games scan ---
-    // Step 2: Get player's games (venue-specific or all venues)
-    let playerQuery = supabase
-      .from('games')
-      .select('machine, venue, player_1_key, player_1_score, player_1_points, player_2_key, player_2_score, player_2_points, player_3_key, player_3_score, player_3_points, player_4_key, player_4_score, player_4_points')
-      .gte('season', seasonStart)
-      .lte('season', seasonEnd)
-      .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
-
-    if (!allVenues) {
-      playerQuery = playerQuery.in('venue', venueVariations)
-    }
-
-    // IMPORTANT: Must use .order('id') for consistent pagination
-    playerQuery = playerQuery.order('id', { ascending: true })
-
+    // Step 2: Get player's games (venue-specific or all venues).
+    // Build a fresh query builder per page inside the closure — fetchAllRecords
+    // re-ranges it for each page and a reused builder can't be re-ranged.
     let playerGamesData
     try {
       playerGamesData = await fetchAllRecords<{
@@ -402,7 +390,20 @@ export async function GET(request: Request) {
         player_4_key: string | null
         player_4_score: number | null
         player_4_points: number | null
-      }>(() => playerQuery)
+      }>(() => {
+        let playerQuery = supabase
+          .from('games')
+          .select('machine, venue, player_1_key, player_1_score, player_1_points, player_2_key, player_2_score, player_2_points, player_3_key, player_3_score, player_3_points, player_4_key, player_4_score, player_4_points')
+          .gte('season', seasonStart)
+          .lte('season', seasonEnd)
+          .or(orEqAcrossColumns(['player_1_key', 'player_2_key', 'player_3_key', 'player_4_key'], playerKey))
+
+        if (!allVenues) {
+          playerQuery = playerQuery.in('venue', venueVariations)
+        }
+        // IMPORTANT: Must use .order('id') for consistent pagination
+        return playerQuery.order('id', { ascending: true })
+      })
     } catch (error) {
       console.error('Error fetching player games:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
