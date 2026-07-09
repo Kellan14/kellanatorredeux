@@ -2,24 +2,13 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getMachineVariations } from '@/lib/machine-mappings'
+import { getScoreLimits } from '@/lib/score-limits'
 import { requireUser } from '@/lib/auth'
-import fs from 'fs'
-import path from 'path'
 
 export const dynamic = 'force-dynamic';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-
-// Load score limits
-const scoreLimitsPath = path.join(process.cwd(), 'score_limits.json')
-let scoreLimits: Record<string, number> = {}
-try {
-  const scoreLimitsData = fs.readFileSync(scoreLimitsPath, 'utf-8')
-  scoreLimits = JSON.parse(scoreLimitsData)
-} catch (error) {
-  console.error('Failed to load score limits:', error)
-}
 
 export async function GET(request: Request) {
   try {
@@ -33,6 +22,10 @@ export async function GET(request: Request) {
         { status: 400 }
       )
     }
+
+    // Read score limits from the DB (single source of truth) rather than the
+    // stale local score_limits.json that the rest of the app no longer uses.
+    const scoreLimits = await getScoreLimits()
 
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 

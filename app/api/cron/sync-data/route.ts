@@ -3,9 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName } from '@/lib/venue-mappings'
 
-// Vercel Cron job to sync MNP data from GitHub
-// Runs every Tuesday at 2am UTC
-// Schedule: 0 2 * * 2
+// Vercel Cron job to sync MNP data from GitHub.
+// Runs daily at 2am UTC (see vercel.json: "0 2 * * *").
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300 // 5 minutes (requires Pro plan for >60s)

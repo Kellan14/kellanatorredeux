@@ -415,6 +415,8 @@ export type Database = {
           machine: string
           score: number
           venue: string | null
+          season: number | null
+          include_in_calculations: boolean | null
           played_at: string
           created_at: string
         }
@@ -425,6 +427,8 @@ export type Database = {
           machine: string
           score: number
           venue?: string | null
+          season?: number | null
+          include_in_calculations?: boolean | null
           played_at?: string
           created_at?: string
         }
@@ -435,6 +439,8 @@ export type Database = {
           machine?: string
           score?: number
           venue?: string | null
+          season?: number | null
+          include_in_calculations?: boolean | null
           played_at?: string
           created_at?: string
         }

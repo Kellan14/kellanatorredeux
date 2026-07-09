@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { type MachineStats, type ProcessedScore, computePops } from '@/lib/tournament-data';
 import { standardizeVenueName, venuesMatch } from '@/lib/venue-mappings';
 import { machineMappings } from '@/lib/machine-mappings';
+import { gamesToProcessedScores, buildTeamNameMap } from '@/lib/game-scores';
 import { cache, TTL } from '@/lib/cache';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -117,68 +118,10 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Build a map of team_key -> team_name from teams table
-    const teamKeys = new Set<string>();
-    gamesData.forEach((game: any) => {
-      for (let i = 1; i <= 4; i++) {
-        const team = game[`player_${i}_team`];
-        if (team) teamKeys.add(team);
-      }
-      if (game.home_team) teamKeys.add(game.home_team);
-      if (game.away_team) teamKeys.add(game.away_team);
-    });
-
-    const { data: teamsData } = await supabase
-      .from('teams')
-      .select('team_key, team_name')
-      .in('team_key', Array.from(teamKeys));
-
-    const teamNameMap: Record<string, string> = {};
-    (teamsData || []).forEach((team: any) => {
-      teamNameMap[team.team_key] = team.team_name;
-    });
-
-    // Transform games data to ProcessedScore format (in-memory, not returned to client)
-    const processedScores: ProcessedScore[] = [];
-
-    gamesData.forEach((game: any) => {
-      for (let i = 1; i <= 4; i++) {
-        const playerKey = game[`player_${i}_key`];
-        const playerName = game[`player_${i}_name`];
-        const score = game[`player_${i}_score`];
-        const points = game[`player_${i}_points`];
-        const teamKey = game[`player_${i}_team`];
-
-        if (!playerKey || score === null || score === undefined) continue;
-
-        // Per MNP rules: away team picks rounds 1 (doubles) and 3 (singles);
-        // home team picks rounds 2 (singles) and 4 (doubles).
-        const isHomeTeam = teamKey === game.home_team;
-        const isPick = game.round_number % 2 === 1 ? !isHomeTeam : isHomeTeam;
-
-        // Normalize machine name using mappings
-        const rawMachine = (game.machine || '').toLowerCase();
-        const mappedMachine = machineMappings[rawMachine];
-        const normalizedMachine = mappedMachine ? mappedMachine.toLowerCase() : rawMachine;
-
-        processedScores.push({
-          season: game.season || 0,
-          week: game.week,
-          match: game.match_key,
-          round: game.round_number,
-          game: game.game_number,
-          venue: standardizeVenueName(game.venue) || '',
-          machine: normalizedMachine,
-          player_name: playerName || 'Unknown',
-          team: teamKey || '',
-          team_name: teamNameMap[teamKey] || teamKey || '',
-          score: score,
-          points: points || 0,
-          is_pick: isPick,
-          is_roster_player: true
-        });
-      }
-    });
+    // Build team_key -> team_name map, then flatten games to ProcessedScore
+    // rows via the shared transform (mapMachine resolves machine aliases).
+    const teamNameMap = await buildTeamNameMap(supabase, gamesData);
+    const processedScores: ProcessedScore[] = gamesToProcessedScores(gamesData, teamNameMap, { mapMachine: true });
 
     console.log('[machine-stats] Processed scores from league games:', processedScores.length);
 
