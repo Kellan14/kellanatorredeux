@@ -103,8 +103,8 @@ export async function GET(request: Request) {
         .from('cache_team_machine_stats' as any)
         .select('*')
         .in('team_key', [twcTeamKey, opponentTeamKey])
-        .eq('season_start', seasonStart)
-        .eq('season_end', seasonEnd) as { data: any[] | null }
+        .gte('season_start', seasonStart)
+        .lte('season_end', seasonEnd) as { data: any[] | null }
 
       if (cacheData && cacheData.length > 0) {
         usedCache = true
@@ -184,8 +184,8 @@ export async function GET(request: Request) {
           .select('machine, venue, total_score, game_count')
           .in('machine', allMachineKeys)
           .in('venue', Array.from(venuesWeNeed))
-          .eq('season_start', seasonStart)
-          .eq('season_end', seasonEnd) as { data: any[] | null }
+          .gte('season_start', seasonStart)
+          .lte('season_end', seasonEnd) as { data: any[] | null }
         for (const r of baselineRows || []) {
           if (!r.venue) continue
           const canonical = machineVariationToCanonical.get(r.machine)
@@ -315,8 +315,8 @@ export async function GET(request: Request) {
         .from('cache_team_machine_stats' as any)
         .select('machine, total_score, game_count, venue')
         .in('machine', allMachineKeys)
-        .eq('season_start', seasonStart)
-        .eq('season_end', seasonEnd)
+        .gte('season_start', seasonStart)
+        .lte('season_end', seasonEnd)
         .not('venue', 'is', null) as { data: any[] | null }
 
       if (allVenueRows) {
@@ -335,14 +335,14 @@ export async function GET(request: Request) {
         ? supabase.from('cache_player_machine_stats' as any).select('player_name, machine, avg_score, game_count, venue')
             .in('machine', allMachineKeys)
             .eq('team_key', twcTeamKey)
-            .eq('season_start', seasonStart)
-            .eq('season_end', seasonEnd)
+            .gte('season_start', seasonStart)
+            .lte('season_end', seasonEnd)
             .in('venue', venueVariations)
         : supabase.from('cache_player_machine_stats' as any).select('player_name, machine, avg_score, game_count, venue')
             .in('machine', allMachineKeys)
             .eq('team_key', twcTeamKey)
-            .eq('season_start', seasonStart)
-            .eq('season_end', seasonEnd)
+            .gte('season_start', seasonStart)
+            .lte('season_end', seasonEnd)
             .is('venue', null)
 
       const { data: playerRows } = await venueFilterQuery as { data: any[] | null }

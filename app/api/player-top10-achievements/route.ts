@@ -103,17 +103,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ achievements: [], count: 0 })
     }
 
-    // --- Cache path disabled ---
-    // cache_machine_top_scores' "all-time" rows (season=null) are clobbered
-    // every nightly cron run and rebuilt from CURRENT-SEASON-only games
-    // (the cron defaults to seasons=[CURRENT_SEASON] unless ?full=true).
-    // So a "League-wide all-time" achievement read from cache would actually
-    // mean "this season only" and wrongly claim e.g. League-wide all-time
-    // top score on Stern Trek. The live fallback path below scans every
-    // season honestly, so we bypass the cache entirely until the cron
-    // is fixed to keep the all-time rollup intact across incremental runs.
-    const _cacheDisabled: any = false
-    if (_cacheDisabled) {
+    // --- Cache-first path ---
+    // cache_machine_top_scores is rebuilt honestly every night from the full
+    // game history, with venue names standardized so there's one bucket per
+    // venue. Reading the player's own rows gives their rank directly in each
+    // (machine, venue, season) bucket. Machine/venue labels are standardized
+    // the same way as the live path so the two agree. Falls through to the
+    // live scan when the cache has no rows for this player yet.
+    // Only the season==currentSeason bucket represents "this season".
+    {
       const { data: cachedRows } = await supabase
         .from('cache_machine_top_scores' as any)
         .select('*')
@@ -124,7 +122,13 @@ export async function GET(request: Request) {
 
         for (const row of cachedRows) {
           const isVenueSpecific = row.venue !== null
+          // A per-season bucket only counts as a "this season" achievement
+          // when it is the current season; older per-season buckets are not
+          // surfaced (the all-time bucket already covers historical bests).
           const isSeason = row.season !== null
+          if (isSeason && row.season !== currentSeason) continue
+
+          const venueLabel = standardizeVenueName(row.venue) || row.venue
 
           let category: 'league-all' | 'venue-all' | 'league-season' | 'venue-season'
           let context: string
@@ -133,17 +137,17 @@ export async function GET(request: Request) {
           if (!isVenueSpecific && !isSeason) {
             category = 'league-all'; context = 'League-wide - all time'; priority = 1
           } else if (isVenueSpecific && !isSeason) {
-            category = 'venue-all'; context = `${row.venue} - all time`; priority = 2
+            category = 'venue-all'; context = `${venueLabel} - all time`; priority = 2
           } else if (!isVenueSpecific && isSeason) {
             category = 'league-season'; context = 'League-wide - this season'; priority = 3
           } else {
-            category = 'venue-season'; context = `${row.venue} - this season`; priority = 4
+            category = 'venue-season'; context = `${venueLabel} - this season`; priority = 4
           }
 
           achievements.push({
-            machine: row.machine.charAt(0).toUpperCase() + row.machine.slice(1),
+            machine: standardizeMachineName(row.machine),
             context,
-            venue: row.venue || undefined,
+            venue: venueLabel || undefined,
             rank: row.rank,
             score: Number(row.score),
             isVenueSpecific,

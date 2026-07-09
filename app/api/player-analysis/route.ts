@@ -83,8 +83,8 @@ export async function GET(request: Request) {
         .select('player_name, machine, venue, total_score, game_count')
         .in('player_name', opponentPlayers)
         .in('machine', allMachineVars)
-        .eq('season_start', seasonStart)
-        .eq('season_end', seasonEnd)
+        .gte('season_start', seasonStart)
+        .lte('season_end', seasonEnd)
         .not('venue', 'is', null)
       if (opponentVenueSpecific && venue) {
         oppQuery = oppQuery.in('venue', getVenueVariations(venue))
@@ -107,8 +107,8 @@ export async function GET(request: Request) {
           .select('machine, venue, total_score, game_count')
           .in('machine', allMachineVars)
           .in('venue', Array.from(missingVenues))
-          .eq('season_start', seasonStart)
-          .eq('season_end', seasonEnd)) as { data: Array<{
+          .gte('season_start', seasonStart)
+          .lte('season_end', seasonEnd)) as { data: Array<{
             machine: string; venue: string | null; total_score: number; game_count: number
           }> | null }
         for (const row of extra || []) {
@@ -240,8 +240,8 @@ export async function GET(request: Request) {
         .select('machine, venue, total_score, game_count, total_points, possible_points')
         .eq('player_name', player)
         .in('machine', allMachineVars)
-        .eq('season_start', seasonStart)
-        .eq('season_end', seasonEnd)
+        .gte('season_start', seasonStart)
+        .lte('season_end', seasonEnd)
         .not('venue', 'is', null)
       if (!allVenues) {
         playerVenueQuery = playerVenueQuery.in('venue', venueVariations)
@@ -277,8 +277,8 @@ export async function GET(request: Request) {
           .select('machine, venue, total_score, game_count')
           .in('machine', allMachineVars)
           .in('venue', Array.from(venuesToFetch))
-          .eq('season_start', seasonStart)
-          .eq('season_end', seasonEnd)) as { data: Array<{
+          .gte('season_start', seasonStart)
+          .lte('season_end', seasonEnd)) as { data: Array<{
             machine: string; venue: string | null; total_score: number; game_count: number
           }> | null }
         for (const row of venueCache || []) {
@@ -541,8 +541,8 @@ export async function GET(request: Request) {
           .select('machine, venue, total_score, game_count')
           .in('machine', allMachineVars)
           .in('venue', Array.from(otherVenues))
-          .eq('season_start', seasonStart)
-          .eq('season_end', seasonEnd)) as { data: Array<{
+          .gte('season_start', seasonStart)
+          .lte('season_end', seasonEnd)) as { data: Array<{
             machine: string; venue: string | null; total_score: number; game_count: number
           }> | null }
         for (const row of extraVenueCache || []) {

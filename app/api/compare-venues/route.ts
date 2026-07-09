@@ -140,8 +140,8 @@ export async function GET(request: NextRequest) {
         .select('machine, venue, total_score, game_count')
         .in('machine', allMachineVars)
         .in('venue', allVenueVariations)
-        .eq('season_start', seasonStart)
-        .eq('season_end', seasonEnd) as { data: Array<{
+        .gte('season_start', seasonStart)
+        .lte('season_end', seasonEnd) as { data: Array<{
           machine: string; venue: string | null; total_score: number; game_count: number
         }> | null }
 
