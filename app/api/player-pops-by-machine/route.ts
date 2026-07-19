@@ -17,16 +17,12 @@ interface GameRecord {
   match_key: string
   round_number: number
   player_1_key: string | null
-  player_1_name: string | null
   player_1_points: number | null
   player_2_key: string | null
-  player_2_name: string | null
   player_2_points: number | null
   player_3_key: string | null
-  player_3_name: string | null
   player_3_points: number | null
   player_4_key: string | null
-  player_4_name: string | null
   player_4_points: number | null
 }
 
@@ -51,14 +47,35 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Fetch all games where this player participated
+    // Resolve the player's key so we match by key (handles "(sub)" name variants
+    // and any name-spelling differences), consistent with player-machine-stats.
+    const { data: playerData } = await supabase
+      .from('player_stats')
+      .select('player_key')
+      .eq('player_name', playerName)
+      .limit(1)
+      .single<{ player_key: string | null }>()
+
+    if (!playerData?.player_key) {
+      return NextResponse.json({
+        machines: [],
+        player: playerName,
+        seasonStart,
+        seasonEnd,
+        venue: venueFilter
+      })
+    }
+
+    const playerKey = playerData.player_key
+
+    // Fetch all games where this player participated (matched by key)
     const gamesData = await fetchAllRecords<GameRecord>(
       () => supabase
         .from('games')
-        .select('season, week, venue, machine, match_key, round_number, player_1_key, player_1_name, player_1_points, player_2_key, player_2_name, player_2_points, player_3_key, player_3_name, player_3_points, player_4_key, player_4_name, player_4_points')
+        .select('season, week, venue, machine, match_key, round_number, player_1_key, player_1_points, player_2_key, player_2_points, player_3_key, player_3_points, player_4_key, player_4_points')
         .gte('season', seasonStart)
         .lte('season', seasonEnd)
-        .or(orEqAcrossColumns(['player_1_name', 'player_2_name', 'player_3_name', 'player_4_name'], playerName))
+        .or(orEqAcrossColumns(['player_1_key', 'player_2_key', 'player_3_key', 'player_4_key'], playerKey))
         .order('season', { ascending: false })
         .order('week', { ascending: false })
     )
@@ -89,8 +106,8 @@ export async function GET(request: NextRequest) {
       // Find which player position this player is in
       let playerPoints: number | null = null
       for (let i = 1; i <= 4; i++) {
-        const name = game[`player_${i}_name` as keyof GameRecord]
-        if (name === playerName) {
+        const key = game[`player_${i}_key` as keyof GameRecord]
+        if (key === playerKey) {
           playerPoints = game[`player_${i}_points` as keyof GameRecord] as number | null
           break
         }

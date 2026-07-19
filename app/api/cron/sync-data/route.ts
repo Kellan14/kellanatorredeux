@@ -483,14 +483,21 @@ export async function GET(request: Request) {
 
       if (mappings && mappings.length > 0) {
         for (const mapping of mappings) {
+          // A "(sub)" alias marks a per-game substitute appearance and lives
+          // only in the games name columns — never rewrite it there or we lose
+          // which games were sub appearances. Aggregate tables still merge.
+          const isSubAlias = /\(sub\)\s*$/i.test(mapping.alias)
+
           // Update games table for all player columns
-          for (let i = 1; i <= 4; i++) {
-            const { data } = await supabase
-              .from('games')
-              .update({ [`player_${i}_name`]: mapping.canonical_name })
-              .eq(`player_${i}_name`, mapping.alias)
-              .select('id')
-            if (data?.length) standardizationsApplied += data.length
+          if (!isSubAlias) {
+            for (let i = 1; i <= 4; i++) {
+              const { data } = await supabase
+                .from('games')
+                .update({ [`player_${i}_name`]: mapping.canonical_name })
+                .eq(`player_${i}_name`, mapping.alias)
+                .select('id')
+              if (data?.length) standardizationsApplied += data.length
+            }
           }
 
           // Update player_match_participation table
@@ -534,7 +541,12 @@ export async function GET(request: Request) {
       }
       const stdName = (name: string | null) => {
         if (!name) return name
-        return nameStdMap.get(name) || name
+        const mapped = nameStdMap.get(name) || name
+        // Collapse "Name (sub)" → "Name" so a player's substitute games don't
+        // aggregate into a separate cache bucket from their regular games. The
+        // raw games row keeps its "(sub)" marker; only this aggregate display
+        // name is canonicalized.
+        return mapped.replace(/\s*\(sub\)\s*$/i, '').trim()
       }
 
       // Fetch score limits for top-scores filtering
