@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { requireUser } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,6 +39,10 @@ function splitForDiscord(text: string): string[] {
 
 export async function POST(request: Request) {
   try {
+    // Require login so the webhook can't be spammed anonymously.
+    const auth = await requireUser(request)
+    if (!auth.ok) return auth.response
+
     const { reportText } = await request.json()
 
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL

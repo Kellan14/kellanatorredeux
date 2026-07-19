@@ -16,6 +16,7 @@ export function MainNav() {
 
   if (pathname === '/strategy/heatmap') return null
   const [user, setUser] = useState<SupabaseUser | null>(null)
+  const [nameIssueCount, setNameIssueCount] = useState(0)
   const supabase = createSupabaseClient()
 
   useEffect(() => {
@@ -31,6 +32,14 @@ export function MainNav() {
 
     return () => subscription.unsubscribe()
   }, [supabase.auth])
+
+  // Cheap cached read of the player-name-issue count → red "!" on Options.
+  useEffect(() => {
+    fetch('/api/player-name-issues')
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => { if (data) setNameIssueCount(data.actionableCount || 0) })
+      .catch(() => {})
+  }, [])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -60,11 +69,19 @@ export function MainNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`transition-colors hover:text-foreground/80 ${
+                className={`relative transition-colors hover:text-foreground/80 ${
                   pathname === item.href ? 'text-foreground' : 'text-foreground/60'
                 }`}
               >
                 {item.label}
+                {item.href === '/options' && nameIssueCount > 0 && (
+                  <span
+                    className="absolute -top-2 -right-3 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white"
+                    title={`${nameIssueCount} player-name issue${nameIssueCount !== 1 ? 's' : ''} to review`}
+                  >
+                    !
+                  </span>
+                )}
               </Link>
             ))}
           </div>
@@ -121,11 +138,16 @@ export function MainNav() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
-                className={`transition-colors hover:text-foreground/80 ${
+                className={`flex items-center gap-2 transition-colors hover:text-foreground/80 ${
                   pathname === item.href ? 'text-foreground' : 'text-foreground/60'
                 }`}
               >
                 {item.label}
+                {item.href === '/options' && nameIssueCount > 0 && (
+                  <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
+                    !
+                  </span>
+                )}
               </Link>
             ))}
             

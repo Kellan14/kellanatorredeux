@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { requireAdmin } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,9 +38,12 @@ export async function GET() {
   }
 }
 
-// POST - Save score limits
+// POST - Save score limits (admin only)
 export async function POST(request: Request) {
   try {
+    const auth = await requireAdmin(request)
+    if (!auth.ok) return auth.response
+
     const body = await request.json()
     const { limits } = body as { limits: Record<string, number> }
 

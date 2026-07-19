@@ -1,14 +1,19 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { requireAdmin } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-// POST - Update player names in the database based on mappings
+// POST - Update player names in the database based on mappings (admin only —
+// this rewrites names across games/player_stats/participation for the whole DB)
 export async function POST(request: Request) {
   try {
+    const auth = await requireAdmin(request)
+    if (!auth.ok) return auth.response
+
     const { mappings } = await request.json()
 
     if (!mappings || typeof mappings !== 'object') {
@@ -26,6 +31,12 @@ export async function POST(request: Request) {
     for (const [alias, canonical] of Object.entries(mappings)) {
       if (typeof canonical !== 'string') continue
 
+      // A "(sub)" alias is a per-game substitute marker that lives ONLY in the
+      // games name columns. Rewriting it there would erase which games were sub
+      // appearances, so we standardize the aggregate tables but leave games
+      // untouched for sub aliases.
+      const isSubAlias = /\(sub\)\s*$/i.test(alias)
+
       let mappingTotal = 0
 
       // Update player_match_participation table
@@ -42,41 +53,43 @@ export async function POST(request: Request) {
         mappingTotal += pmpData?.length || 0
       }
 
-      // Update games table - player_1_name
-      const { data: g1Data } = await supabase
-        .from('games')
-        // @ts-ignore - Supabase typing issue with update
-        .update({ player_1_name: canonical })
-        .eq('player_1_name', alias)
-        .select('id')
-      mappingTotal += g1Data?.length || 0
+      if (!isSubAlias) {
+        // Update games table - player_1_name
+        const { data: g1Data } = await supabase
+          .from('games')
+          // @ts-ignore - Supabase typing issue with update
+          .update({ player_1_name: canonical })
+          .eq('player_1_name', alias)
+          .select('id')
+        mappingTotal += g1Data?.length || 0
 
-      // Update games table - player_2_name
-      const { data: g2Data } = await supabase
-        .from('games')
-        // @ts-ignore - Supabase typing issue with update
-        .update({ player_2_name: canonical })
-        .eq('player_2_name', alias)
-        .select('id')
-      mappingTotal += g2Data?.length || 0
+        // Update games table - player_2_name
+        const { data: g2Data } = await supabase
+          .from('games')
+          // @ts-ignore - Supabase typing issue with update
+          .update({ player_2_name: canonical })
+          .eq('player_2_name', alias)
+          .select('id')
+        mappingTotal += g2Data?.length || 0
 
-      // Update games table - player_3_name
-      const { data: g3Data } = await supabase
-        .from('games')
-        // @ts-ignore - Supabase typing issue with update
-        .update({ player_3_name: canonical })
-        .eq('player_3_name', alias)
-        .select('id')
-      mappingTotal += g3Data?.length || 0
+        // Update games table - player_3_name
+        const { data: g3Data } = await supabase
+          .from('games')
+          // @ts-ignore - Supabase typing issue with update
+          .update({ player_3_name: canonical })
+          .eq('player_3_name', alias)
+          .select('id')
+        mappingTotal += g3Data?.length || 0
 
-      // Update games table - player_4_name
-      const { data: g4Data } = await supabase
-        .from('games')
-        // @ts-ignore - Supabase typing issue with update
-        .update({ player_4_name: canonical })
-        .eq('player_4_name', alias)
-        .select('id')
-      mappingTotal += g4Data?.length || 0
+        // Update games table - player_4_name
+        const { data: g4Data } = await supabase
+          .from('games')
+          // @ts-ignore - Supabase typing issue with update
+          .update({ player_4_name: canonical })
+          .eq('player_4_name', alias)
+          .select('id')
+        mappingTotal += g4Data?.length || 0
+      }
 
       // Update player_stats table
       const { data: psData } = await supabase

@@ -127,8 +127,8 @@ export async function GET(request: NextRequest) {
         .select('player_name, machine')
         .eq('team_key', opponentTeamKey)
         .is('venue', null)  // all-venues = played anywhere
-        .eq('season_start', seasonStart)
-        .eq('season_end', seasonEnd)
+        .gte('season_start', seasonStart)
+        .lte('season_end', seasonEnd)
         .in('machine', machineSearchKeys) as { data: any[] | null };
 
       if (cacheData && cacheData.length > 0) {

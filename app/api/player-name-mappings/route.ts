@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { requireAdmin } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,9 +27,12 @@ export async function GET() {
   }
 }
 
-// POST - Add or update a mapping
+// POST - Add or update a mapping (admin only)
 export async function POST(request: Request) {
   try {
+    const auth = await requireAdmin(request)
+    if (!auth.ok) return auth.response
+
     const { alias, canonical_name } = await request.json()
 
     if (!alias || !canonical_name) {
@@ -56,9 +60,12 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE - Remove a mapping by alias
+// DELETE - Remove a mapping by alias (admin only)
 export async function DELETE(request: Request) {
   try {
+    const auth = await requireAdmin(request)
+    if (!auth.ok) return auth.response
+
     const { alias } = await request.json()
 
     if (!alias) {

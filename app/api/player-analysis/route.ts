@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getAllMachineVariations } from '@/lib/machine-mappings'
+import { orEqAcrossColumns } from '@/lib/pg-filter'
 
 export const dynamic = 'force-dynamic';
 
@@ -82,8 +83,8 @@ export async function GET(request: Request) {
         .select('player_name, machine, venue, total_score, game_count')
         .in('player_name', opponentPlayers)
         .in('machine', allMachineVars)
-        .eq('season_start', seasonStart)
-        .eq('season_end', seasonEnd)
+        .gte('season_start', seasonStart)
+        .lte('season_end', seasonEnd)
         .not('venue', 'is', null)
       if (opponentVenueSpecific && venue) {
         oppQuery = oppQuery.in('venue', getVenueVariations(venue))
@@ -106,8 +107,8 @@ export async function GET(request: Request) {
           .select('machine, venue, total_score, game_count')
           .in('machine', allMachineVars)
           .in('venue', Array.from(missingVenues))
-          .eq('season_start', seasonStart)
-          .eq('season_end', seasonEnd)) as { data: Array<{
+          .gte('season_start', seasonStart)
+          .lte('season_end', seasonEnd)) as { data: Array<{
             machine: string; venue: string | null; total_score: number; game_count: number
           }> | null }
         for (const row of extra || []) {
@@ -154,7 +155,7 @@ export async function GET(request: Request) {
     const { data: sampleGames } = await supabase
       .from('games')
       .select('player_1_key, player_1_name, player_2_key, player_2_name, player_3_key, player_3_name, player_4_key, player_4_name')
-      .or(`player_1_name.eq.${player},player_2_name.eq.${player},player_3_name.eq.${player},player_4_name.eq.${player}`)
+      .or(orEqAcrossColumns(['player_1_name', 'player_2_name', 'player_3_name', 'player_4_name'], player))
       .limit(1)
       .returns<Array<{
         player_1_key: string | null
@@ -239,8 +240,8 @@ export async function GET(request: Request) {
         .select('machine, venue, total_score, game_count, total_points, possible_points')
         .eq('player_name', player)
         .in('machine', allMachineVars)
-        .eq('season_start', seasonStart)
-        .eq('season_end', seasonEnd)
+        .gte('season_start', seasonStart)
+        .lte('season_end', seasonEnd)
         .not('venue', 'is', null)
       if (!allVenues) {
         playerVenueQuery = playerVenueQuery.in('venue', venueVariations)
@@ -276,8 +277,8 @@ export async function GET(request: Request) {
           .select('machine, venue, total_score, game_count')
           .in('machine', allMachineVars)
           .in('venue', Array.from(venuesToFetch))
-          .eq('season_start', seasonStart)
-          .eq('season_end', seasonEnd)) as { data: Array<{
+          .gte('season_start', seasonStart)
+          .lte('season_end', seasonEnd)) as { data: Array<{
             machine: string; venue: string | null; total_score: number; game_count: number
           }> | null }
         for (const row of venueCache || []) {
@@ -369,21 +370,9 @@ export async function GET(request: Request) {
     }
 
     // --- Fallback: full games scan ---
-    // Step 2: Get player's games (venue-specific or all venues)
-    let playerQuery = supabase
-      .from('games')
-      .select('machine, venue, player_1_key, player_1_score, player_1_points, player_2_key, player_2_score, player_2_points, player_3_key, player_3_score, player_3_points, player_4_key, player_4_score, player_4_points')
-      .gte('season', seasonStart)
-      .lte('season', seasonEnd)
-      .or(`player_1_key.eq.${playerKey},player_2_key.eq.${playerKey},player_3_key.eq.${playerKey},player_4_key.eq.${playerKey}`)
-
-    if (!allVenues) {
-      playerQuery = playerQuery.in('venue', venueVariations)
-    }
-
-    // IMPORTANT: Must use .order('id') for consistent pagination
-    playerQuery = playerQuery.order('id', { ascending: true })
-
+    // Step 2: Get player's games (venue-specific or all venues).
+    // Build a fresh query builder per page inside the closure — fetchAllRecords
+    // re-ranges it for each page and a reused builder can't be re-ranged.
     let playerGamesData
     try {
       playerGamesData = await fetchAllRecords<{
@@ -401,7 +390,20 @@ export async function GET(request: Request) {
         player_4_key: string | null
         player_4_score: number | null
         player_4_points: number | null
-      }>(() => playerQuery)
+      }>(() => {
+        let playerQuery = supabase
+          .from('games')
+          .select('machine, venue, player_1_key, player_1_score, player_1_points, player_2_key, player_2_score, player_2_points, player_3_key, player_3_score, player_3_points, player_4_key, player_4_score, player_4_points')
+          .gte('season', seasonStart)
+          .lte('season', seasonEnd)
+          .or(orEqAcrossColumns(['player_1_key', 'player_2_key', 'player_3_key', 'player_4_key'], playerKey))
+
+        if (!allVenues) {
+          playerQuery = playerQuery.in('venue', venueVariations)
+        }
+        // IMPORTANT: Must use .order('id') for consistent pagination
+        return playerQuery.order('id', { ascending: true })
+      })
     } catch (error) {
       console.error('Error fetching player games:', error)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
@@ -540,8 +542,8 @@ export async function GET(request: Request) {
           .select('machine, venue, total_score, game_count')
           .in('machine', allMachineVars)
           .in('venue', Array.from(otherVenues))
-          .eq('season_start', seasonStart)
-          .eq('season_end', seasonEnd)) as { data: Array<{
+          .gte('season_start', seasonStart)
+          .lte('season_end', seasonEnd)) as { data: Array<{
             machine: string; venue: string | null; total_score: number; game_count: number
           }> | null }
         for (const row of extraVenueCache || []) {

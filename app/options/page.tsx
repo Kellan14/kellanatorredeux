@@ -23,8 +23,10 @@ import { Loader2 } from 'lucide-react'
 import { VenueMachineListManager } from '@/components/venue-machine-list-manager'
 import { MachineMappingManager } from '@/components/machine-mapping-manager'
 import { PlayerMappingManager } from '@/components/player-mapping-manager'
+import { SubLinkManager } from '@/components/sub-link-manager'
 import { PlayerCombobox } from '@/components/ui/player-combobox'
 import { createSupabaseClient } from '@/lib/supabase'
+import { authFetch } from '@/lib/auth-fetch'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 interface Venue {
@@ -44,8 +46,12 @@ export default function OptionsPage() {
   const [venueListManagerOpen, setVenueListManagerOpen] = useState(false)
   const [machineMappingOpen, setMachineMappingOpen] = useState(false)
   const [playerMappingOpen, setPlayerMappingOpen] = useState(false)
+  const [subLinkOpen, setSubLinkOpen] = useState(false)
   const [activeVenuesOpen, setActiveVenuesOpen] = useState(false)
   const [linkAccountOpen, setLinkAccountOpen] = useState(false)
+
+  // Count of actionable player-name issues (drives the red "!" badge).
+  const [nameIssueCount, setNameIssueCount] = useState(0)
 
   // Link account state
   const supabase = createSupabaseClient()
@@ -73,7 +79,21 @@ export default function OptionsPage() {
     loadScoreLimits()
     loadMachines()
     loadUserAndPlayers()
+    loadNameIssueCount()
   }, [])
+
+  // Cached count of actionable name issues (cheap read; no rescan).
+  const loadNameIssueCount = async () => {
+    try {
+      const res = await fetch('/api/player-name-issues')
+      if (res.ok) {
+        const data = await res.json()
+        setNameIssueCount(data.actionableCount || 0)
+      }
+    } catch {
+      /* non-fatal */
+    }
+  }
 
   const loadUserAndPlayers = async () => {
     // Load current user
@@ -111,11 +131,10 @@ export default function OptionsPage() {
 
     setLinkingAccount(true)
     try {
-      const response = await fetch('/api/associate-player', {
+      const response = await authFetch('/api/associate-player', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id,
           playerName: selectedPlayerToLink
         })
       })
@@ -193,7 +212,7 @@ export default function OptionsPage() {
 
     // Save to database
     try {
-      const response = await fetch('/api/score-limits', {
+      const response = await authFetch('/api/score-limits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ limits: newLimits })
@@ -238,7 +257,7 @@ export default function OptionsPage() {
 
   const removeActiveVenue = async (venueName: string) => {
     try {
-      await fetch('/api/active-venues', {
+      await authFetch('/api/active-venues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ venue_name: venueName, action: 'remove' })
@@ -253,12 +272,12 @@ export default function OptionsPage() {
     try {
       // If this venue was previously removed, delete the override to restore it
       // If it's a new addition, add an 'add' override
-      await fetch('/api/active-venues', {
+      await authFetch('/api/active-venues', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ venue_name: venueName })
       })
-      await fetch('/api/active-venues', {
+      await authFetch('/api/active-venues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ venue_name: venueName, action: 'add' })
@@ -324,11 +343,28 @@ export default function OptionsPage() {
 
             <Button
               variant="outline"
-              className="h-24 flex flex-col items-center justify-center gap-2"
+              className="h-24 flex flex-col items-center justify-center gap-2 relative"
               onClick={() => setPlayerMappingOpen(true)}
             >
+              {nameIssueCount > 0 && (
+                <span
+                  className="absolute top-2 right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white"
+                  title={`${nameIssueCount} name issue${nameIssueCount !== 1 ? 's' : ''} to review`}
+                >
+                  !
+                </span>
+              )}
               <span className="text-lg font-medium">Standardize Player Names</span>
               <span className="text-xs text-muted-foreground">Combine player name variations</span>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-24 flex flex-col items-center justify-center gap-2"
+              onClick={() => setSubLinkOpen(true)}
+            >
+              <span className="text-lg font-medium">Sub Player Links</span>
+              <span className="text-xs text-muted-foreground">Link legacy sub appearances to real players</span>
             </Button>
 
             <Button
@@ -532,7 +568,16 @@ export default function OptionsPage() {
       {/* Player Mapping Manager Dialog */}
       <PlayerMappingManager
         open={playerMappingOpen}
-        onOpenChange={setPlayerMappingOpen}
+        onOpenChange={(o) => {
+          setPlayerMappingOpen(o)
+          if (!o) loadNameIssueCount() // refresh badge after any fixes
+        }}
+      />
+
+      {/* Sub Player Links Dialog */}
+      <SubLinkManager
+        open={subLinkOpen}
+        onOpenChange={setSubLinkOpen}
       />
 
       {/* Active Venues Dialog */}

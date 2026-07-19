@@ -5,6 +5,7 @@ import { fetchMNPText } from '@/lib/fetch-mnp-text'
 import { fetchMNPData } from '@/lib/fetch-mnp-data'
 import { createClient } from '@supabase/supabase-js'
 import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists'
+import { requireAdmin } from '@/lib/auth'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -91,6 +92,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const auth = await requireAdmin(request)
+    if (!auth.ok) return auth.response
+
     const body = await request.json()
     const { venue_name, action } = body
 
@@ -127,6 +131,9 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    const auth = await requireAdmin(request)
+    if (!auth.ok) return auth.response
+
     const body = await request.json()
     const { venue_name } = body
 

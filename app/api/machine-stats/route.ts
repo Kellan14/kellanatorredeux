@@ -4,14 +4,17 @@ import { createClient } from '@supabase/supabase-js';
 import { type MachineStats, type ProcessedScore, computePops } from '@/lib/tournament-data';
 import { standardizeVenueName, venuesMatch } from '@/lib/venue-mappings';
 import { machineMappings } from '@/lib/machine-mappings';
+import { gamesToProcessedScores, buildTeamNameMap } from '@/lib/game-scores';
+import { cache, TTL } from '@/lib/cache';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
+// This route reads request query params, so it is inherently dynamic — a
+// `revalidate` segment value would be a no-op here. Repeated computation is
+// instead avoided with an explicit in-memory cache (see below), keyed on the
+// query string; league data only changes once a day (the sync-data cron).
 export const dynamic = 'force-dynamic';
-
-// Cache for 1 hour since match data updates weekly
-export const revalidate = 3600;
 
 /**
  * Server-side machine statistics calculator
@@ -48,23 +51,22 @@ export async function GET(request: NextRequest) {
   const opponentRosterParam = searchParams.get('opponentRoster');
   const machinesParam = searchParams.get('machines'); // optional comma-separated machine names from venues.json
 
-  console.log('[machine-stats] Request params:', {
-    seasons: seasonsParam,
-    venue,
-    teamName,
-    opponentTeam,
-    teamVenueSpecific,
-    twcVenueSpecific,
-    scoreLimits: scoreLimitsParam,
-    includeManualScores
-  });
-
   // Validate required parameters
   if (!seasonsParam || !venue || !teamName) {
     return NextResponse.json(
       { error: 'Missing required parameters: seasons, venue, and teamName are required' },
       { status: 400 }
     );
+  }
+
+  // In-memory cache keyed on the exact query. Skip when manual scores are
+  // included, since those are user-mutable and should show up immediately.
+  const cacheKey = `machine-stats:${searchParams.toString()}`;
+  if (!includeManualScores) {
+    const cached = cache.get<any>(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
   }
 
   try {
@@ -116,67 +118,10 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Build a map of team_key -> team_name from teams table
-    const teamKeys = new Set<string>();
-    gamesData.forEach((game: any) => {
-      for (let i = 1; i <= 4; i++) {
-        const team = game[`player_${i}_team`];
-        if (team) teamKeys.add(team);
-      }
-      if (game.home_team) teamKeys.add(game.home_team);
-      if (game.away_team) teamKeys.add(game.away_team);
-    });
-
-    const { data: teamsData } = await supabase
-      .from('teams')
-      .select('team_key, team_name')
-      .in('team_key', Array.from(teamKeys));
-
-    const teamNameMap: Record<string, string> = {};
-    (teamsData || []).forEach((team: any) => {
-      teamNameMap[team.team_key] = team.team_name;
-    });
-
-    // Transform games data to ProcessedScore format (in-memory, not returned to client)
-    const processedScores: ProcessedScore[] = [];
-
-    gamesData.forEach((game: any) => {
-      for (let i = 1; i <= 4; i++) {
-        const playerKey = game[`player_${i}_key`];
-        const playerName = game[`player_${i}_name`];
-        const score = game[`player_${i}_score`];
-        const points = game[`player_${i}_points`];
-        const teamKey = game[`player_${i}_team`];
-
-        if (!playerKey || score === null || score === undefined) continue;
-
-        // Per MNP rules: away team picks rounds 1 (doubles) and 3 (singles);
-        // home team picks rounds 2 (singles) and 4 (doubles).
-        const isHomeTeam = teamKey === game.home_team;
-        const isPick = game.round_number % 2 === 1 ? !isHomeTeam : isHomeTeam;
-
-        // Normalize machine name using mappings
-        const rawMachine = (game.machine || '').toLowerCase();
-        const mappedMachine = machineMappings[rawMachine];
-        const normalizedMachine = mappedMachine ? mappedMachine.toLowerCase() : rawMachine;
-
-        processedScores.push({
-          season: game.season || 0,
-          week: game.week,
-          match: game.match_key,
-          round: game.round_number,
-          venue: standardizeVenueName(game.venue) || '',
-          machine: normalizedMachine,
-          player_name: playerName || 'Unknown',
-          team: teamKey || '',
-          team_name: teamNameMap[teamKey] || teamKey || '',
-          score: score,
-          points: points || 0,
-          is_pick: isPick,
-          is_roster_player: true
-        });
-      }
-    });
+    // Build team_key -> team_name map, then flatten games to ProcessedScore
+    // rows via the shared transform (mapMachine resolves machine aliases).
+    const teamNameMap = await buildTeamNameMap(supabase, gamesData);
+    const processedScores: ProcessedScore[] = gamesToProcessedScores(gamesData, teamNameMap, { mapMachine: true });
 
     console.log('[machine-stats] Processed scores from league games:', processedScores.length);
 
@@ -208,8 +153,6 @@ export async function GET(request: NextRequest) {
             const mappedMachine = machineMappings[inputMachine];
             const machineLower = mappedMachine ? mappedMachine.toLowerCase() : inputMachine;
             const venueName = standardizeVenueName(ms.venue) || ms.venue || '';
-
-            console.log(`[machine-stats] Manual score: machine="${machineLower}", venue="${venueName}", score=${ms.score}, player=${ms.player_name}`);
 
             processedScores.push({
               season: maxSeason, // Use max season from selected range so it's included in stats
@@ -272,26 +215,16 @@ export async function GET(request: NextRequest) {
       }
     );
 
-    console.log('[machine-stats] Calculated stats for', stats.length, 'machines');
-
-    // DEBUG: Add diagnostic info to response
-    const uniqueTeams = new Set(processedScores.map(s => s.team_name));
-    const twcScores = processedScores.filter(s => s.team_name.toLowerCase() === teamName.toLowerCase());
-    const twcMachines = new Set(twcScores.map(s => s.machine));
-
-    return NextResponse.json({
+    const payload = {
       stats,
       count: stats.length,
       processedScoresCount: processedScores.length,
       gamesCount: gamesData.length,
-      debug: {
-        teamNameSearching: teamName,
-        uniqueTeamsInData: Array.from(uniqueTeams),
-        twcScoresFound: twcScores.length,
-        twcMachines: Array.from(twcMachines).sort(),
-        sampleTwcScore: twcScores[0] || null
-      }
-    });
+    };
+    if (!includeManualScores) {
+      cache.set(cacheKey, payload, TTL.ONE_HOUR);
+    }
+    return NextResponse.json(payload);
   } catch (error) {
     console.error('[machine-stats] Error calculating machine stats:', error);
     return NextResponse.json(
@@ -441,14 +374,14 @@ function calculateMachineStatsServerSide(
 
     // Calculate times played and picked
     const uniqueGames = new Set(
-      machineTeamData.map(d => `${d.match}-${d.round}`)
+      machineTeamData.map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
     );
     const timesPlayed = uniqueGames.size;
 
     const pickedGames = new Set(
       machineTeamData
         .filter(d => d.is_pick)
-        .map(d => `${d.match}-${d.round}`)
+        .map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
     );
     const timesPicked = pickedGames.size;
 
@@ -481,13 +414,6 @@ function calculateMachineStatsServerSide(
     if (options.includeTWCStats) {
       const useTwcVenueSpecific = options.twcVenueSpecific !== undefined ? options.twcVenueSpecific : false;
 
-      // DEBUG: Log what we're searching for
-      const sourceData = useTwcVenueSpecific ? venueData : seasonData;
-      const uniqueTeamsInData = new Set(sourceData.map(d => d.team_name));
-      console.log(`[TWC DEBUG] Machine: ${machine}, Looking for team: "${teamName}", Venue-specific: ${useTwcVenueSpecific}`);
-      console.log(`[TWC DEBUG] Available teams in ${useTwcVenueSpecific ? 'venue' : 'season'} data:`, Array.from(uniqueTeamsInData));
-      console.log(`[TWC DEBUG] Source data count:`, sourceData.length, `Machine matches:`, sourceData.filter(d => d.machine === machine).length);
-
       const twcPlayerFilter = options.twcPlayers
         ? (d: ProcessedScore) => options.twcPlayers!.includes(d.player_name)
         : () => true;
@@ -499,8 +425,6 @@ function calculateMachineStatsServerSide(
         : seasonData.filter(d =>
             d.team_name.toLowerCase() === teamName.toLowerCase() && d.machine === machine && twcPlayerFilter(d)
           );
-
-      console.log(`[TWC DEBUG] TWC data found:`, twcData.length, `scores`);
 
       // Filter TWC scores by limit
       const allTwcScores = twcData.map(d => d.score);
@@ -517,7 +441,7 @@ function calculateMachineStatsServerSide(
 
       // TWC times played
       const twcUniqueGames = new Set(
-        twcData.map(d => `${d.match}-${d.round}`)
+        twcData.map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
       );
       machineStats.twcTimesPlayed = twcUniqueGames.size;
 
@@ -525,7 +449,7 @@ function calculateMachineStatsServerSide(
       const twcPickedGames = new Set(
         twcData
           .filter(d => d.is_pick)
-          .map(d => `${d.match}-${d.round}`)
+          .map(d => `${d.match}-${d.round}-${d.game ?? 0}`)
       );
       machineStats.twcTimesPicked = twcPickedGames.size;
 

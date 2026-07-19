@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName } from '@/lib/venue-mappings'
+import { orEqAcrossColumnsMulti } from '@/lib/pg-filter'
+
+const PLAYER_NAME_COLUMNS = ['player_1_name', 'player_2_name', 'player_3_name', 'player_4_name']
 
 // Helper to standardize machine names using mappings
 function standardizeMachineName(machineName: string): string {
@@ -105,7 +108,7 @@ export async function GET(request: Request) {
         .from('games')
         .select('*')
         .gte('season', 2)
-        .or(`player_1_name.eq.${player1},player_2_name.eq.${player1},player_3_name.eq.${player1},player_4_name.eq.${player1},player_1_name.eq.${player1Sub},player_2_name.eq.${player1Sub},player_3_name.eq.${player1Sub},player_4_name.eq.${player1Sub}`)
+        .or(orEqAcrossColumnsMulti(PLAYER_NAME_COLUMNS, [player1, player1Sub]))
         .order('id', { ascending: true })
     )
 
@@ -180,7 +183,7 @@ export async function GET(request: Request) {
           .from('games')
           .select('*')
           .gte('season', 2)
-          .or(`player_1_name.eq.${player2},player_2_name.eq.${player2},player_3_name.eq.${player2},player_4_name.eq.${player2},player_1_name.eq.${player2Sub},player_2_name.eq.${player2Sub},player_3_name.eq.${player2Sub},player_4_name.eq.${player2Sub}`)
+          .or(orEqAcrossColumnsMulti(PLAYER_NAME_COLUMNS, [player2, player2Sub]))
           .order('id', { ascending: true })
       )
 
@@ -405,7 +408,7 @@ export async function GET(request: Request) {
         .from('games')
         .select('machine, player_1_name, player_2_name, player_3_name, player_4_name')
         .gte('season', 2)
-        .or(`player_1_name.eq.${player2},player_2_name.eq.${player2},player_3_name.eq.${player2},player_4_name.eq.${player2},player_1_name.eq.${player2Sub},player_2_name.eq.${player2Sub},player_3_name.eq.${player2Sub},player_4_name.eq.${player2Sub}`)
+        .or(orEqAcrossColumnsMulti(PLAYER_NAME_COLUMNS, [player2, player2Sub]))
         .order('id', { ascending: true })
     )
 

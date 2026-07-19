@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { requireUser } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
+    // A user may only look up their own profile mapping.
+    const auth = await requireUser(request)
+    if (!auth.ok) return auth.response
+
     const { searchParams } = new URL(request.url)
     const uid = searchParams.get('uid')
 
@@ -12,6 +17,13 @@ export async function GET(request: Request) {
       return NextResponse.json(
         { error: 'UID is required' },
         { status: 400 }
+      )
+    }
+
+    if (uid !== auth.user.id) {
+      return NextResponse.json(
+        { error: 'You can only look up your own player mapping' },
+        { status: 403 }
       )
     }
 

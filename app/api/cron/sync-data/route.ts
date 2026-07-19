@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { machineMappings } from '@/lib/machine-mappings'
+import { standardizeVenueName } from '@/lib/venue-mappings'
 
-// Vercel Cron job to sync MNP data from GitHub
-// Runs every Tuesday at 2am UTC
-// Schedule: 0 2 * * 2
+// Vercel Cron job to sync MNP data from GitHub.
+// Runs daily at 2am UTC (see vercel.json: "0 2 * * *").
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300 // 5 minutes (requires Pro plan for >60s)
@@ -12,7 +12,8 @@ export const maxDuration = 300 // 5 minutes (requires Pro plan for >60s)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-const CURRENT_SEASON = 23
+// Floor for season detection — no need to probe below this.
+const MIN_SEASON = 20
 
 // Use GitHub API to list actual match files (much faster than brute-forcing team combinations)
 async function listMatchFiles(season: number): Promise<string[]> {
@@ -31,6 +32,35 @@ async function listMatchFiles(season: number): Promise<string[]> {
   } catch {
     return []
   }
+}
+
+/**
+ * Detect the current (latest) season instead of hardcoding it, so the sync
+ * keeps working when a new season starts. Probe the GitHub archive for the
+ * highest season-N/matches folder that has match files; fall back to the max
+ * season already in the DB, then a floor of MIN_SEASON.
+ */
+async function detectCurrentSeason(supabase: any): Promise<number> {
+  // DB max as a starting point / fallback.
+  let dbMax = MIN_SEASON
+  try {
+    const { data } = await supabase
+      .from('matches')
+      .select('season')
+      .order('season', { ascending: false })
+      .limit(1)
+      .single()
+    if (data?.season) dbMax = data.season as number
+  } catch { /* ignore */ }
+
+  // Probe upward from dbMax for newer seasons that have data.
+  let current = dbMax
+  for (let s = dbMax + 1; s <= dbMax + 5; s++) {
+    const files = await listMatchFiles(s)
+    if (files.length > 0) current = s
+    else break
+  }
+  return Math.max(current, MIN_SEASON)
 }
 
 async function fetchMatchData(url: string) {
@@ -70,9 +100,15 @@ export async function GET(request: Request) {
   const supabase = createClient(supabaseUrl, supabaseKey)
   const { searchParams } = new URL(request.url)
   const fullImport = searchParams.get('full') === 'true'
-  const seasons = fullImport ? [20, 21, 22, 23] : [CURRENT_SEASON]
 
-  console.log(`[cron/sync-data] Starting import for seasons: ${seasons.join(', ')}`)
+  // Detect the current season instead of hardcoding, so this keeps working
+  // when a new season starts.
+  const currentSeason = await detectCurrentSeason(supabase)
+  const seasons = fullImport
+    ? Array.from({ length: currentSeason - MIN_SEASON + 1 }, (_, i) => MIN_SEASON + i)
+    : [currentSeason]
+
+  console.log(`[cron/sync-data] Detected current season ${currentSeason}; importing: ${seasons.join(', ')}`)
 
   const matchesBatch: any[] = []
   const gamesBatch: any[] = []
@@ -85,14 +121,10 @@ export async function GET(request: Request) {
 
   try {
     // Clear existing data for the seasons being imported
-    if (fullImport) {
-      await supabase.from('games').delete().in('season', seasons)
-      await supabase.from('player_match_participation').delete().in('season', seasons)
-    } else {
-      // For incremental, only clear current season
-      await supabase.from('games').delete().eq('season', CURRENT_SEASON)
-      await supabase.from('player_match_participation').delete().eq('season', CURRENT_SEASON)
-    }
+    // NOTE: the delete of existing games/participation is deferred until AFTER
+    // all match data has been fetched and built (just before insert), so the
+    // site keeps serving the previous data during the slow GitHub fetch and a
+    // mid-run fetch failure doesn't wipe the current season. See below.
 
     for (const season of seasons) {
       // Use GitHub API to list actual match files (much faster than brute-forcing)
@@ -175,10 +207,19 @@ export async function GET(request: Request) {
                 team: matchData.home.key,
                 matches_played: 0,
                 total_points: 0,
-                last_match_week: 0
+                last_match_week: 0,
+                latest_ipr: null,
+                latest_ipr_week: -1
               })
             }
             const stats = playerStatsMap.get(statsKey)
+            // Track the IPR from the player's most recent match (the real IPR
+            // comes from the lineup, not from points).
+            const homeIpr = player.IPR ?? player.ipr
+            if (homeIpr != null && week >= stats.latest_ipr_week) {
+              stats.latest_ipr = homeIpr
+              stats.latest_ipr_week = week
+            }
             if (!player.sub) {
               stats.matches_played++
               stats.last_match_week = Math.max(stats.last_match_week, week)
@@ -212,10 +253,17 @@ export async function GET(request: Request) {
                 team: matchData.away.key,
                 matches_played: 0,
                 total_points: 0,
-                last_match_week: 0
+                last_match_week: 0,
+                latest_ipr: null,
+                latest_ipr_week: -1
               })
             }
             const stats = playerStatsMap.get(statsKey)
+            const awayIpr = player.IPR ?? player.ipr
+            if (awayIpr != null && week >= stats.latest_ipr_week) {
+              stats.latest_ipr = awayIpr
+              stats.latest_ipr_week = week
+            }
             if (!player.sub) {
               stats.matches_played++
               stats.last_match_week = Math.max(stats.last_match_week, week)
@@ -254,25 +302,25 @@ export async function GET(request: Request) {
                 machine: game.machine,
                 player_1_key: game.player_1 || null,
                 player_1_name: game.player_1 ? playerMap.get(game.player_1) : null,
-                player_1_score: game.score_1 || null,
+                player_1_score: game.score_1 ?? null,
                 player_1_points: game.points_1 !== undefined ? game.points_1 : null,
                 player_1_team: player1Team,
                 player_1_is_pick: pickingTeam !== null && player1Team === pickingTeam,
                 player_2_key: game.player_2 || null,
                 player_2_name: game.player_2 ? playerMap.get(game.player_2) : null,
-                player_2_score: game.score_2 || null,
+                player_2_score: game.score_2 ?? null,
                 player_2_points: game.points_2 !== undefined ? game.points_2 : null,
                 player_2_team: player2Team,
                 player_2_is_pick: pickingTeam !== null && player2Team === pickingTeam,
                 player_3_key: game.player_3 || null,
                 player_3_name: game.player_3 ? playerMap.get(game.player_3) : null,
-                player_3_score: game.score_3 || null,
+                player_3_score: game.score_3 ?? null,
                 player_3_points: game.points_3 !== undefined ? game.points_3 : null,
                 player_3_team: player3Team,
                 player_3_is_pick: pickingTeam !== null && player3Team === pickingTeam,
                 player_4_key: game.player_4 || null,
                 player_4_name: game.player_4 ? playerMap.get(game.player_4) : null,
-                player_4_score: game.score_4 || null,
+                player_4_score: game.score_4 ?? null,
                 player_4_points: game.points_4 !== undefined ? game.points_4 : null,
                 player_4_team: player4Team,
                 player_4_is_pick: pickingTeam !== null && player4Team === pickingTeam,
@@ -342,6 +390,20 @@ export async function GET(request: Request) {
       }
     }
 
+    // Clear existing data for the seasons being imported — deferred to here so
+    // the previous data stays live during the fetch. Only delete when we
+    // actually have new games to insert, so a failed fetch never empties the
+    // table. The delete+insert window is a few seconds.
+    if (gamesBatch.length > 0) {
+      if (fullImport) {
+        await supabase.from('games').delete().in('season', seasons)
+        await supabase.from('player_match_participation').delete().in('season', seasons)
+      } else {
+        await supabase.from('games').delete().eq('season', currentSeason)
+        await supabase.from('player_match_participation').delete().eq('season', currentSeason)
+      }
+    }
+
     // Insert games in batches
     if (gamesBatch.length > 0) {
       const insertBatchSize = 500
@@ -390,15 +452,15 @@ export async function GET(request: Request) {
     if (playerStatsMap.size > 0) {
       const statsBatch = []
       for (const [, stats] of Array.from(playerStatsMap.entries())) {
-        const ipr = stats.matches_played > 0
-          ? Math.round((stats.total_points / stats.matches_played) * 100) / 100
-          : 0
+        // Real IPR comes from the lineup (see latest_ipr tracked above), NOT
+        // points-per-match. Writing points-per-match here was mislabeling the
+        // column; store the player's most recent actual IPR instead.
         statsBatch.push({
           player_name: stats.player_name,
           player_key: stats.player_key,
           season: stats.season,
           team: stats.team,
-          ipr,
+          ipr: stats.latest_ipr,
           matches_played: stats.matches_played,
           last_match_week: stats.last_match_week
         })
@@ -421,14 +483,21 @@ export async function GET(request: Request) {
 
       if (mappings && mappings.length > 0) {
         for (const mapping of mappings) {
+          // A "(sub)" alias marks a per-game substitute appearance and lives
+          // only in the games name columns — never rewrite it there or we lose
+          // which games were sub appearances. Aggregate tables still merge.
+          const isSubAlias = /\(sub\)\s*$/i.test(mapping.alias)
+
           // Update games table for all player columns
-          for (let i = 1; i <= 4; i++) {
-            const { data } = await supabase
-              .from('games')
-              .update({ [`player_${i}_name`]: mapping.canonical_name })
-              .eq(`player_${i}_name`, mapping.alias)
-              .select('id')
-            if (data?.length) standardizationsApplied += data.length
+          if (!isSubAlias) {
+            for (let i = 1; i <= 4; i++) {
+              const { data } = await supabase
+                .from('games')
+                .update({ [`player_${i}_name`]: mapping.canonical_name })
+                .eq(`player_${i}_name`, mapping.alias)
+                .select('id')
+              if (data?.length) standardizationsApplied += data.length
+            }
           }
 
           // Update player_match_participation table
@@ -472,7 +541,12 @@ export async function GET(request: Request) {
       }
       const stdName = (name: string | null) => {
         if (!name) return name
-        return nameStdMap.get(name) || name
+        const mapped = nameStdMap.get(name) || name
+        // Collapse "Name (sub)" → "Name" so a player's substitute games don't
+        // aggregate into a separate cache bucket from their regular games. The
+        // raw games row keeps its "(sub)" marker; only this aggregate display
+        // name is canonicalized.
+        return mapped.replace(/\s*\(sub\)\s*$/i, '').trim()
       }
 
       // Fetch score limits for top-scores filtering
@@ -486,30 +560,48 @@ export async function GET(request: Request) {
         }
       } catch { /* no score_limits table yet - that's fine */ }
 
-      // Determine season range for cache keys
-      const minSeason = Math.min(...seasons)
-      const maxSeason = Math.max(...seasons)
+      // ---- Full game-history scan ----
+      // All cache tables are rebuilt from a single scan of every game in the
+      // table, so they are self-healing every night and never depend on
+      // whether this run was incremental ([CURRENT_SEASON]) or a full import.
+      // This is what fixes the old "all-time = this-season" bug and the
+      // aggregate-cache key mismatch: aggregate rows are written PER SEASON
+      // (season_start == season_end == season) and readers sum across the
+      // seasons in their requested range.
+      let allHistoryGames: any[] = []
+      {
+        const PAGE_SIZE = 1000
+        let lastId = 0
+        while (true) {
+          const { data: page, error } = await supabase
+            .from('games')
+            .select('id, machine, venue, season, match_key, week, round_number, player_1_name, player_1_key, player_1_team, player_1_score, player_1_points, player_1_is_pick, player_2_name, player_2_key, player_2_team, player_2_score, player_2_points, player_2_is_pick, player_3_name, player_3_key, player_3_team, player_3_score, player_3_points, player_3_is_pick, player_4_name, player_4_key, player_4_team, player_4_score, player_4_points, player_4_is_pick')
+            .gt('id', lastId)
+            .order('id', { ascending: true })
+            .limit(PAGE_SIZE)
+          if (error) throw error
+          if (!page || page.length === 0) break
+          for (const row of page) allHistoryGames.push(row)
+          lastId = page[page.length - 1].id
+          if (page.length < PAGE_SIZE) break
+        }
+      }
 
-      // Clear existing cache data for these seasons
-      await supabase.from('cache_team_machine_stats').delete().gte('season_start', minSeason).lte('season_end', maxSeason)
-      await supabase.from('cache_player_machine_stats').delete().gte('season_start', minSeason).lte('season_end', maxSeason)
-      await supabase.from('cache_machine_top_scores').delete().in('season', [...seasons, null as any])
+      // ---- Accumulate aggregates per season from full history ----
 
-      // ---- Accumulate aggregates from in-memory gamesBatch ----
-
-      // Team-machine stats: key = "teamKey|machine|venue" (venue can be __ALL__)
+      // Team-machine stats: key = "teamKey|machine|venue|season"
       const teamMachineAgg = new Map<string, {
-        team_key: string, machine: string, venue: string | null,
+        team_key: string, machine: string, venue: string | null, season: number,
         totalScore: number, gameCount: number,
         pickCount: number, pickTotalPoints: number,
         respCount: number, respTotalPoints: number,
         totalPoints: number, possiblePoints: number
       }>()
 
-      // Player-machine stats: key = "playerName|machine|venue"
+      // Player-machine stats: key = "playerName|machine|venue|season"
       const playerMachineAgg = new Map<string, {
         player_name: string, player_key: string | null, team_key: string | null,
-        machine: string, venue: string | null,
+        machine: string, venue: string | null, season: number,
         totalScore: number, gameCount: number,
         totalPoints: number, possiblePoints: number
       }>()
@@ -520,12 +612,20 @@ export async function GET(request: Request) {
         score: number, match_key: string, week: number, round_number: number
       }>>()
 
-      for (const game of gamesBatch) {
+      for (const game of allHistoryGames) {
         const rawMachine = (game.machine || '').toLowerCase()
         if (!rawMachine) continue
         // Standardize machine name so aliases (e.g., "king kong" and "kong") use one key
         const machine = (machineMappings[rawMachine] || rawMachine).toLowerCase()
-        const venue = game.venue || null
+        // Standardize venue so name variations ("Ice Box" vs "Icebox") collapse
+        // into ONE cache bucket. Readers query by getVenueVariations(), which
+        // includes the canonical, so this stays matchable while removing the
+        // duplicate-bucket problem that made the top-10 dialog and achievement
+        // card disagree at venues with variant names.
+        const venue = standardizeVenueName(game.venue) || null
+        const season = game.season
+        if (season == null) continue
+        const machineLimit = scoreLimitsMap[machine]
         const playerCount = (game.player_1_key ? 1 : 0) + (game.player_2_key ? 1 : 0) +
           (game.player_3_key ? 1 : 0) + (game.player_4_key ? 1 : 0)
         const possiblePts = playerCount === 4 ? 2.5 : 3
@@ -540,12 +640,16 @@ export async function GET(request: Request) {
 
           if (!playerKey || !playerName || !teamKey) continue
 
-          // --- Team-machine aggregation (venue-specific + all-venues) ---
+          // A score over the machine limit is a glitch: exclude it from score
+          // averages (matches the live paths) but still count its points.
+          const scoreCounts = score != null && !(machineLimit && score > machineLimit)
+
+          // --- Team-machine aggregation (venue-specific + all-venues), per season ---
           for (const v of [venue, null]) {
-            const tmKey = `${teamKey}|${machine}|${v || '__ALL__'}`
+            const tmKey = `${teamKey}|${machine}|${v || '__ALL__'}|${season}`
             if (!teamMachineAgg.has(tmKey)) {
               teamMachineAgg.set(tmKey, {
-                team_key: teamKey, machine, venue: v,
+                team_key: teamKey, machine, venue: v, season,
                 totalScore: 0, gameCount: 0,
                 pickCount: 0, pickTotalPoints: 0,
                 respCount: 0, respTotalPoints: 0,
@@ -553,7 +657,7 @@ export async function GET(request: Request) {
               })
             }
             const tm = teamMachineAgg.get(tmKey)!
-            if (score != null) {
+            if (scoreCounts) {
               tm.totalScore += score
               tm.gameCount++
             }
@@ -568,19 +672,19 @@ export async function GET(request: Request) {
             }
           }
 
-          // --- Player-machine aggregation (venue-specific + all-venues) ---
+          // --- Player-machine aggregation (venue-specific + all-venues), per season ---
           for (const v of [venue, null]) {
-            const pmKey = `${playerName}|${machine}|${v || '__ALL__'}`
+            const pmKey = `${playerName}|${machine}|${v || '__ALL__'}|${season}`
             if (!playerMachineAgg.has(pmKey)) {
               playerMachineAgg.set(pmKey, {
                 player_name: playerName, player_key: playerKey, team_key: teamKey,
-                machine, venue: v,
+                machine, venue: v, season,
                 totalScore: 0, gameCount: 0,
                 totalPoints: 0, possiblePoints: 0
               })
             }
             const pm = playerMachineAgg.get(pmKey)!
-            if (score != null) {
+            if (scoreCounts) {
               pm.totalScore += score
               pm.gameCount++
             }
@@ -589,19 +693,14 @@ export async function GET(request: Request) {
           }
 
           // --- Top scores aggregation (per machine × venue × season, plus all-venues and all-time) ---
-          if (score != null && score > 0) {
-            // Check score limit
-            const machineLimit = scoreLimitsMap[machine]
-            if (machineLimit && score > machineLimit) continue
-
+          if (score != null && score > 0 && !(machineLimit && score > machineLimit)) {
             const scoreEntry = {
               player_name: playerName, player_key: playerKey, team_key: teamKey,
               score, match_key: game.match_key, week: game.week, round_number: game.round_number
             }
-
             // 4 contexts: venue+season, venue+allTime, allVenues+season, allVenues+allTime
             for (const v of [venue, null]) {
-              for (const s of [game.season, null]) {
+              for (const s of [season, null]) {
                 const tsKey = `${machine}|${v || '__ALL__'}|${s || '__ALL__'}`
                 if (!topScoresAgg.has(tsKey)) {
                   topScoresAgg.set(tsKey, [])
@@ -619,19 +718,28 @@ export async function GET(request: Request) {
         }
       }
 
-      // ---- Insert cache_team_machine_stats ----
+      // Full-history scan succeeded, so we can safely clear every cache table
+      // and repopulate from scratch (delete-all is self-healing here because
+      // the scan covers all seasons). This also purges any legacy multi-season
+      // rows written by older cron versions, avoiding double-counting when
+      // readers sum per-season rows across a range.
+      await supabase.from('cache_team_machine_stats').delete().neq('machine', '__never_match__')
+      await supabase.from('cache_player_machine_stats').delete().neq('machine', '__never_match__')
+      await supabase.from('cache_machine_top_scores').delete().neq('machine', '__never_match__')
+
+      // ---- Insert cache_team_machine_stats (one row per season) ----
       const teamMachineRows: any[] = []
       for (const [, agg] of Array.from(teamMachineAgg.entries())) {
-        if (agg.gameCount === 0) continue
+        if (agg.gameCount === 0 && agg.possiblePoints === 0) continue
         teamMachineRows.push({
           team_key: agg.team_key,
           machine: agg.machine,
           venue: agg.venue,
-          season_start: minSeason,
-          season_end: maxSeason,
+          season_start: agg.season,
+          season_end: agg.season,
           total_score: agg.totalScore,
           game_count: agg.gameCount,
-          avg_score: Math.round(agg.totalScore / agg.gameCount),
+          avg_score: agg.gameCount > 0 ? Math.round(agg.totalScore / agg.gameCount) : 0,
           pick_count: agg.pickCount,
           pick_total_points: agg.pickTotalPoints,
           resp_count: agg.respCount,
@@ -652,21 +760,21 @@ export async function GET(request: Request) {
         cacheStats.teamMachine = teamMachineRows.length
       }
 
-      // ---- Insert cache_player_machine_stats ----
+      // ---- Insert cache_player_machine_stats (one row per season) ----
       const playerMachineRows: any[] = []
       for (const [, agg] of Array.from(playerMachineAgg.entries())) {
-        if (agg.gameCount === 0) continue
+        if (agg.gameCount === 0 && agg.possiblePoints === 0) continue
         playerMachineRows.push({
           player_name: agg.player_name,
           player_key: agg.player_key,
           team_key: agg.team_key,
           machine: agg.machine,
           venue: agg.venue,
-          season_start: minSeason,
-          season_end: maxSeason,
+          season_start: agg.season,
+          season_end: agg.season,
           total_score: agg.totalScore,
           game_count: agg.gameCount,
-          avg_score: Math.round(agg.totalScore / agg.gameCount),
+          avg_score: agg.gameCount > 0 ? Math.round(agg.totalScore / agg.gameCount) : 0,
           total_points: agg.totalPoints,
           possible_points: agg.possiblePoints
         })
@@ -681,93 +789,6 @@ export async function GET(request: Request) {
           if (error) console.error('[cron/sync-data] Error inserting cache_player_machine_stats:', error.message)
         }
         cacheStats.playerMachine = playerMachineRows.length
-      }
-
-      // ---- Rebuild top-scores from FULL game history ----
-      // The aggregation above was populated from gamesBatch, which only
-      // contains the current cron's `seasons` (default = [CURRENT_SEASON]).
-      // That meant the season=null bucket ("all-time") got filled with
-      // current-season-only data and falsely claimed people had all-time
-      // top scores. Rebuild topScoresAgg from every game in the table so
-      // every (machine, venue, season) and (machine, venue, all-time)
-      // bucket is honest. Cost: one big paginated games scan per nightly
-      // cron — acceptable for the correctness gain.
-      let fullRebuildSucceeded = false
-      try {
-        const fullAgg = new Map<string, Array<{
-          player_name: string, player_key: string | null, team_key: string | null,
-          score: number, match_key: string, week: number, round_number: number
-        }>>()
-        // Inline pagination: fetchAllRecords lives in lib/supabase but the
-        // cron uses its own service-role client, so just paginate by id.
-        const PAGE_SIZE = 1000
-        const allHistoryGames: any[] = []
-        let lastId = 0
-        while (true) {
-          const { data: page, error } = await supabase
-            .from('games')
-            .select('id, machine, venue, season, player_1_name, player_1_key, player_1_team, player_1_score, player_2_name, player_2_key, player_2_team, player_2_score, player_3_name, player_3_key, player_3_team, player_3_score, player_4_name, player_4_key, player_4_team, player_4_score, match_key, week, round_number')
-            .gt('id', lastId)
-            .order('id', { ascending: true })
-            .limit(PAGE_SIZE)
-          if (error) throw error
-          if (!page || page.length === 0) break
-          for (const row of page) allHistoryGames.push(row)
-          lastId = page[page.length - 1].id
-          if (page.length < PAGE_SIZE) break
-        }
-        for (const game of allHistoryGames) {
-          const rawMachine = (game.machine || '').toLowerCase()
-          if (!rawMachine) continue
-          const machine = (machineMappings[rawMachine] || rawMachine).toLowerCase()
-          const venue = game.venue || null
-          for (let i = 1; i <= 4; i++) {
-            const playerKey = game[`player_${i}_key`]
-            const playerName = stdName(game[`player_${i}_name`])
-            const teamKey = game[`player_${i}_team`]
-            const score = game[`player_${i}_score`]
-            if (!playerName || score == null || score <= 0) continue
-            const machineLimit = scoreLimitsMap[machine]
-            if (machineLimit && score > machineLimit) continue
-            const scoreEntry = {
-              player_name: playerName, player_key: playerKey, team_key: teamKey,
-              score, match_key: game.match_key, week: game.week, round_number: game.round_number
-            }
-            // Same 4 buckets as before: per-season + all-time, per-venue + all-venues
-            for (const v of [venue, null]) {
-              for (const s of [game.season, null]) {
-                const tsKey = `${machine}|${v || '__ALL__'}|${s || '__ALL__'}`
-                if (!fullAgg.has(tsKey)) fullAgg.set(tsKey, [])
-                const arr = fullAgg.get(tsKey)!
-                arr.push(scoreEntry)
-                if (arr.length > 20) {
-                  arr.sort((a, b) => b.score - a.score)
-                  arr.length = 10
-                }
-              }
-            }
-          }
-        }
-        // Promote the full-history aggregation only on success; on failure
-        // we keep the per-seasons agg the original loop already produced
-        // (no worse than before).
-        topScoresAgg.clear()
-        for (const [k, v] of Array.from(fullAgg.entries())) topScoresAgg.set(k, v)
-        fullRebuildSucceeded = true
-      } catch (err) {
-        console.error('[cron/sync-data] Full-history top-scores rebuild failed; falling back to seasons-only data:', err)
-      }
-
-      // When the rebuild succeeded we have the authoritative top 10 for
-      // every (machine, venue, season) bucket — drop any stale rows so
-      // orphans (e.g. an old rank=9 from a removed score) don't linger.
-      // Skip on rebuild failure so we don't blow away usable cache.
-      if (fullRebuildSucceeded) {
-        try {
-          await supabase.from('cache_machine_top_scores').delete().neq('machine', '__never_match__')
-        } catch (err) {
-          console.error('[cron/sync-data] Could not clear cache_machine_top_scores; relying on upsert:', err)
-        }
       }
 
       // ---- Insert cache_machine_top_scores ----

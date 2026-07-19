@@ -3,6 +3,7 @@ import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getMachineVariations, machineMappings } from '@/lib/machine-mappings'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getScoreLimits } from '@/lib/score-limits'
+import { rankTopScores } from '@/lib/top-scores'
 
 export const dynamic = 'force-dynamic';
 
@@ -34,21 +35,18 @@ export async function GET(request: Request) {
       if (maxSeasonRow?.season) currentSeason = maxSeasonRow.season
     } catch { /* keep fallback */ }
 
-    // --- Cache path disabled ---
-    // cache_machine_top_scores' season=null rows ("all-time") are clobbered
-    // every nightly cron and rebuilt from current-season-only games (the
-    // cron defaults to seasons=[CURRENT_SEASON]). So a "League-wide all-time"
-    // top 10 read from cache is actually "this season top 10" — which causes
-    // the achievement card and this dialog to disagree (the card now scans
-    // live, while the cached top 10 is wrong). Bypassing the cache until
-    // the cron is fixed; live fallback below scans every season honestly.
+    // --- Cache-first path ---
+    // cache_machine_top_scores is now rebuilt honestly every night from the
+    // full game history (per (machine, venue, season) plus all-venues and
+    // all-time buckets), so the dialog and the achievement card read the same
+    // source and can't drift apart. Falls through to the live scan below when
+    // the cache has no rows for this bucket.
     const machineVariations = getMachineVariations(machineKey)
     const lowerVariations = machineVariations.map((v: string) => v.toLowerCase())
     const isVenueSpecific = venue && !context.includes('League-wide')
     const venueVariationsForCache = isVenueSpecific ? getVenueVariations(venue) : []
-    const _machineTop10CacheDisabled: any = false
 
-    if (_machineTop10CacheDisabled) {
+    {
       // Build cache query
       let cacheQuery = supabase
         .from('cache_machine_top_scores' as any)
@@ -75,30 +73,17 @@ export async function GET(request: Request) {
       const { data: cachedScores } = await cacheQuery as { data: any[] | null }
 
       if (cachedScores && cachedScores.length > 0) {
-        // Dedupe on (player, score, match, round) so the same physical
-        // score stored under two venue variations only counts once.
-        const seen = new Set<string>()
-        const deduped: any[] = []
-        for (const row of cachedScores) {
-          const key = `${row.player_name}|${row.score}|${row.match_key ?? ''}|${row.round_number ?? ''}`
-          if (seen.has(key)) continue
-          seen.add(key)
-          deduped.push(row)
-        }
-        // Sort by score desc and assign clean ranks 1..N. Tie handling:
-        // identical scores share a rank (the next rank skips appropriately).
-        deduped.sort((a, b) => Number(b.score) - Number(a.score))
-        const top10 = deduped.slice(0, 10)
+        const ranked = rankTopScores(cachedScores)
 
         // Backfill actual per-score season for all-time bucket rows. The
         // cache row's `season` column is the bucket label (null = all-time)
         // — NOT the season the score was played in. To avoid showing "All-
         // time" where we should show the real season, look up each score's
         // match in the matches table and use its season. Single query for
-        // all 10 records, runs only when at least one row has null season.
+        // all records, runs only when at least one row has null season.
         const matchKeys = Array.from(
-          new Set(top10.filter(r => r.season == null && r.match_key).map(r => r.match_key))
-        ) as string[]
+          new Set(ranked.filter(r => r.season == null && r.match).map(r => r.match))
+        )
         const matchToSeason = new Map<string, number>()
         if (matchKeys.length > 0) {
           const { data: matchRows } = await supabase
@@ -110,26 +95,10 @@ export async function GET(request: Request) {
           }
         }
 
-        const topScores = top10.map((row: any, idx: number, arr: any[]) => {
-          let rank = 1
-          for (let i = 0; i < idx; i++) {
-            if (Number(arr[i].score) > Number(row.score)) rank = i + 2
-          }
-          // Prefer the cache's season when present (this-season buckets),
-          // otherwise the looked-up actual season, otherwise null.
-          const actualSeason = row.season ?? (row.match_key ? matchToSeason.get(row.match_key) ?? null : null)
-          return {
-            player: row.player_name,
-            playerKey: row.player_key || `name:${row.player_name}`,
-            score: Number(row.score),
-            venue: row.venue || '',
-            season: actualSeason,
-            week: row.week || 0,
-            match: row.match_key || '',
-            round: row.round_number || 0,
-            rank,
-          }
-        })
+        const topScores = ranked.map(row => ({
+          ...row,
+          season: row.season ?? (row.match ? matchToSeason.get(row.match) ?? null : null),
+        }))
 
         return NextResponse.json({
           machine: machineKey,
@@ -275,28 +244,17 @@ export async function GET(request: Request) {
       }
     }
 
-    // Sort by score descending
-    const sortedScores = scores.sort((a, b) => b.score - a.score)
-
-    // Assign ranks handling ties correctly
-    // playerKey is used to identify same player with different name variants (e.g., "Name" vs "Name (sub)")
-    const rankedScores: Array<{ player: string; playerKey: string; score: number; venue: string; season: number | null; week: number; match: string; round: number; rank: number }> = []
-    let currentRank = 1
-
-    for (let i = 0; i < sortedScores.length; i++) {
-      // If this score is different from the previous score, update the rank
-      if (i > 0 && sortedScores[i].score < sortedScores[i - 1].score) {
-        currentRank = i + 1
-      }
-
-      rankedScores.push({
-        ...sortedScores[i],
-        rank: currentRank
-      })
-    }
-
-    // Take top 10 after ranking
-    const topScores = rankedScores.slice(0, 10)
+    // Rank via the shared helper so the live fallback matches the cache path.
+    const topScores = rankTopScores(scores.map(s => ({
+      player_name: s.player,
+      player_key: s.playerKey,
+      score: s.score,
+      venue: s.venue,
+      season: s.season,
+      week: s.week,
+      match_key: s.match,
+      round_number: s.round,
+    })))
 
     return NextResponse.json({
       machine: machineKey,

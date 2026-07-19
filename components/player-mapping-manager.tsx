@@ -17,10 +17,21 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { X, Plus, Save, Loader2, Pencil, Trash2, Users, Database } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
+import { authFetch } from '@/lib/auth-fetch'
 
 interface PlayerMappingManagerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+}
+
+// Mirrors lib/player-name-issues.ts NameIssue (kept local to avoid pulling
+// server-side scan code into the client bundle).
+interface NameIssue {
+  normalized_name: string
+  variants: string[]
+  suggested_canonical: string
+  issue_type: 'case' | 'split_key'
+  player_key: string | null
 }
 
 export function PlayerMappingManager({
@@ -40,6 +51,8 @@ export function PlayerMappingManager({
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [pendingUpdate, setPendingUpdate] = useState<Record<string, string> | null>(null)
   const [updateDescription, setUpdateDescription] = useState('')
+  const [issues, setIssues] = useState<NameIssue[]>([])
+  const [loadingIssues, setLoadingIssues] = useState(false)
 
   // Load mappings from localStorage and players from API when dialog opens
   useEffect(() => {
@@ -71,12 +84,31 @@ export function PlayerMappingManager({
     } finally {
       setLoading(false)
     }
+
+    // Run a fresh scan for name inconsistencies (case/spelling + split-key).
+    loadIssues()
+  }
+
+  // Fetch the current name issues. refresh=true recomputes server-side.
+  const loadIssues = async () => {
+    setLoadingIssues(true)
+    try {
+      const res = await fetch('/api/player-name-issues?refresh=true')
+      if (res.ok) {
+        const data = await res.json()
+        setIssues(data.issues || [])
+      }
+    } catch (error) {
+      console.error('Error scanning name issues:', error)
+    } finally {
+      setLoadingIssues(false)
+    }
   }
 
   // Save a single mapping to Supabase
   const saveMapping = async (alias: string, canonical_name: string) => {
     try {
-      await fetch('/api/player-name-mappings', {
+      await authFetch('/api/player-name-mappings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ alias, canonical_name }),
@@ -89,7 +121,7 @@ export function PlayerMappingManager({
   // Delete a single mapping from Supabase
   const deleteMappingFromDb = async (alias: string) => {
     try {
-      await fetch('/api/player-name-mappings', {
+      await authFetch('/api/player-name-mappings', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ alias }),
@@ -192,60 +224,34 @@ export function PlayerMappingManager({
     groupedMappings[canonical].push(alias)
   })
 
-  // Find case duplicates (names that only differ in capitalization)
-  const findCaseDuplicates = () => {
-    const groups: Record<string, string[]> = {}
-    for (const p of allPlayers) {
-      const key = p.toLowerCase()
-      if (!groups[key]) groups[key] = []
-      groups[key].push(p)
-    }
-    return Object.values(groups).filter(g => g.length > 1)
-  }
+  // Issues come from the server scan (/api/player-name-issues), which is
+  // mapping-aware — groups already reconciled by a mapping are excluded, so the
+  // old "found N / already fixed" contradiction can't happen.
+  const caseIssues = issues.filter(i => i.issue_type === 'case')
+  const splitKeyIssues = issues.filter(i => i.issue_type === 'split_key')
 
-  const caseDuplicates = findCaseDuplicates()
-
-  // Pick the best canonical name (prefer Title Case)
-  const pickCanonical = (names: string[]): string => {
-    // Prefer the one that looks most like Title Case
-    // Count uppercase letters at word starts
-    const scores = names.map(name => {
-      const words = name.split(/\s+/)
-      let score = 0
-      for (const word of words) {
-        if (word[0] && word[0] === word[0].toUpperCase()) score++
-        // Penalize ALL CAPS
-        if (word === word.toUpperCase() && word.length > 1) score -= 2
-      }
-      return { name, score }
-    })
-    scores.sort((a, b) => b.score - a.score)
-    return scores[0].name
-  }
-
+  // Fix All: write a non-destructive mapping (variant → canonical) for every
+  // auto-fixable 'case' issue, then rescan so the list + badge clear instantly.
   const handleAutoFixCapitalization = async () => {
     const newMappings = { ...mappings }
     let addedCount = 0
 
-    for (const group of caseDuplicates) {
-      const canonical = pickCanonical(group)
-      for (const name of group) {
-        if (name !== canonical && !newMappings[name]) {
-          newMappings[name] = canonical
+    for (const issue of caseIssues) {
+      const canonical = issue.suggested_canonical
+      for (const variant of issue.variants) {
+        if (variant !== canonical && newMappings[variant] !== canonical) {
+          newMappings[variant] = canonical
           addedCount++
         }
       }
     }
 
-    if (addedCount === 0) {
-      alert('No new mappings to add. All capitalization variants are already mapped.')
-      return
-    }
+    if (addedCount === 0) return
 
     setSaving(true)
     await saveMappings(newMappings)
+    await loadIssues() // rescan → resolved groups drop out
     setSaving(false)
-    alert(`Added ${addedCount} mappings for capitalization variants.`)
   }
 
   // Request confirmation before updating database
@@ -263,7 +269,7 @@ export function PlayerMappingManager({
     setConfirmDialogOpen(false)
 
     try {
-      const response = await fetch('/api/update-player-names', {
+      const response = await authFetch('/api/update-player-names', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mappings: pendingUpdate }),
@@ -328,21 +334,82 @@ export function PlayerMappingManager({
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Auto-fix Capitalization Section */}
-            {caseDuplicates.length > 0 && (
-              <div className="border rounded-lg p-4 bg-yellow-500/10">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium">Auto-fix Capitalization</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Found {caseDuplicates.length} groups of names that only differ in capitalization.
-                    </p>
-                  </div>
-                  <Button onClick={handleAutoFixCapitalization} variant="outline">
-                    Fix All ({caseDuplicates.reduce((sum, g) => sum + g.length - 1, 0)} mappings)
-                  </Button>
-                </div>
+            {/* Name-issue scan results */}
+            {loadingIssues ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground border rounded-lg p-4">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Scanning for name inconsistencies…
               </div>
+            ) : (
+              <>
+                {caseIssues.length > 0 && (
+                  <div className="border rounded-lg p-4 bg-yellow-500/10 space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div>
+                        <h3 className="font-medium">Auto-fixable name variants</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Found {caseIssues.length} player{caseIssues.length !== 1 ? 's' : ''} recorded under more than one
+                          spelling (capitalization, extra spaces, or typos). Fix All maps each variant to the
+                          suggested canonical name — this is non-destructive and clears instantly.
+                        </p>
+                      </div>
+                      <Button onClick={handleAutoFixCapitalization} variant="outline" disabled={saving}>
+                        {saving ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Fixing…
+                          </>
+                        ) : (
+                          `Fix All (${caseIssues.length})`
+                        )}
+                      </Button>
+                    </div>
+                    <ScrollArea className="max-h-[160px]">
+                      <div className="space-y-1 pr-2">
+                        {caseIssues.map((issue) => (
+                          <div key={issue.normalized_name} className="text-sm flex flex-wrap items-center gap-1">
+                            <span className="font-mono text-muted-foreground">
+                              {issue.variants.filter(v => v !== issue.suggested_canonical).map(v => `"${v}"`).join(', ')}
+                            </span>
+                            <span className="text-muted-foreground">→</span>
+                            <span className="font-medium">{issue.suggested_canonical}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                )}
+
+                {splitKeyIssues.length > 0 && (
+                  <div className="border rounded-lg p-4 bg-orange-500/10 space-y-2">
+                    <div>
+                      <h3 className="font-medium">Needs review: same name, different player keys</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {splitKeyIssues.length} name{splitKeyIssues.length !== 1 ? 's' : ''} appear under more than one
+                        player key — usually the same person assigned a new key in an older season, but occasionally two
+                        different people. These are <strong>not</strong> auto-fixed; use the combine tool below if they
+                        are the same person.
+                      </p>
+                    </div>
+                    <ScrollArea className="max-h-[120px]">
+                      <div className="space-y-1 pr-2">
+                        {splitKeyIssues.map((issue) => (
+                          <div key={issue.normalized_name} className="text-sm">
+                            <span className="font-medium">{issue.suggested_canonical}</span>
+                            <span className="text-muted-foreground"> — appears under multiple keys</span>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                )}
+
+                {caseIssues.length === 0 && splitKeyIssues.length === 0 && (
+                  <div className="border rounded-lg p-4 bg-green-500/10 text-sm">
+                    No name inconsistencies found. Everything is standardized. ✓
+                  </div>
+                )}
+              </>
             )}
 
             {/* Add New Mapping Section */}
