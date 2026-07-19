@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName } from '@/lib/venue-mappings'
+import { applyKeyMapping } from '@/lib/apply-key-mappings'
+import { applySubLinks } from '@/lib/apply-sub-links'
 
 // Vercel Cron job to sync MNP data from GitHub.
 // Runs daily at 2am UTC (see vercel.json: "0 2 * * *").
@@ -520,6 +522,30 @@ export async function GET(request: Request) {
       }
     } catch (error) {
       console.error('[cron/sync-data] Error applying name standardizations:', error)
+    }
+
+    // Apply player-key merges (split_key fixes) so they stick across re-imports.
+    console.log('[cron/sync-data] Applying key merges...')
+    try {
+      const { data: keyMaps } = await supabase
+        .from('player_key_mappings')
+        .select('from_key, to_key')
+      let keyMergesApplied = 0
+      for (const km of keyMaps || []) {
+        keyMergesApplied += await applyKeyMapping(supabase, km.from_key, km.to_key)
+      }
+      if (keyMaps?.length) console.log(`[cron/sync-data] Applied ${keyMergesApplied} key-merge row updates`)
+    } catch (error) {
+      console.error('[cron/sync-data] Error applying key merges:', error)
+    }
+
+    // Re-apply sub-links (legacy slug key → real player key) so a re-import
+    // doesn't silently de-link substitute games from the real player.
+    try {
+      const subHealed = await applySubLinks(supabase)
+      if (subHealed) console.log(`[cron/sync-data] Re-applied ${subHealed} sub-link row updates`)
+    } catch (error) {
+      console.error('[cron/sync-data] Error applying sub-links:', error)
     }
 
     // ===== PRE-COMPUTE CACHE TABLES =====

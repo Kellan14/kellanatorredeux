@@ -15,6 +15,14 @@
     {
       "path": "/api/cron/scan-player-names",
       "schedule": "0 4 * * 1"
+    },
+    {
+      "path": "/api/integrity-check?scope=full",
+      "schedule": "0 15 * * 0"
+    },
+    {
+      "path": "/api/integrity-check?scope=current",
+      "schedule": "0 15 * * 2"
     }
   ]
 }

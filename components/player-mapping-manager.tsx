@@ -32,6 +32,15 @@ interface NameIssue {
   suggested_canonical: string
   issue_type: 'case' | 'split_key'
   player_key: string | null
+  keys?: { player_key: string; count: number }[]
+  canonical_key?: string | null
+}
+
+interface KeyMapping {
+  id: number
+  from_key: string
+  to_key: string
+  display_name: string | null
 }
 
 export function PlayerMappingManager({
@@ -53,6 +62,8 @@ export function PlayerMappingManager({
   const [updateDescription, setUpdateDescription] = useState('')
   const [issues, setIssues] = useState<NameIssue[]>([])
   const [loadingIssues, setLoadingIssues] = useState(false)
+  const [keyMappings, setKeyMappings] = useState<KeyMapping[]>([])
+  const [mergingKeys, setMergingKeys] = useState(false)
 
   // Load mappings from localStorage and players from API when dialog opens
   useEffect(() => {
@@ -87,6 +98,7 @@ export function PlayerMappingManager({
 
     // Run a fresh scan for name inconsistencies (case/spelling + split-key).
     loadIssues()
+    loadKeyMappings()
   }
 
   // Fetch the current name issues. refresh=true recomputes server-side.
@@ -102,6 +114,79 @@ export function PlayerMappingManager({
       console.error('Error scanning name issues:', error)
     } finally {
       setLoadingIssues(false)
+    }
+  }
+
+  // Load applied key merges (split_key fixes).
+  const loadKeyMappings = async () => {
+    try {
+      const res = await fetch('/api/player-key-mappings')
+      if (res.ok) {
+        const data = await res.json()
+        setKeyMappings(data.mappings || [])
+      }
+    } catch (error) {
+      console.error('Error loading key mappings:', error)
+    }
+  }
+
+  // Build the from_key -> to_key merges for one split_key issue.
+  const mergesForIssue = (issue: NameIssue) => {
+    const canonical = issue.canonical_key || issue.keys?.[0]?.player_key
+    if (!canonical || !issue.keys) return []
+    return issue.keys
+      .filter((k) => k.player_key !== canonical)
+      .map((k) => ({ from_key: k.player_key, to_key: canonical, display_name: issue.suggested_canonical }))
+  }
+
+  // Apply key merges for all split_key issues (or a single one), then rescan.
+  const applyKeyMerges = async (merges: { from_key: string; to_key: string; display_name: string }[]) => {
+    if (merges.length === 0) return
+    setMergingKeys(true)
+    try {
+      // Record the merges (non-destructive) …
+      for (const m of merges) {
+        await authFetch('/api/player-key-mappings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(m),
+        })
+      }
+      // … then apply them to the database now.
+      await authFetch('/api/update-player-keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mappings: merges.map((m) => ({ from_key: m.from_key, to_key: m.to_key })) }),
+      })
+      await Promise.all([loadIssues(), loadKeyMappings()])
+    } catch (error) {
+      console.error('Error applying key merges:', error)
+      alert('Failed to apply key merges. Check console.')
+    } finally {
+      setMergingKeys(false)
+    }
+  }
+
+  // A split_key group whose keys all share ONE spelling already reads as a
+  // single player by name ("already merged"); only differing-spelling groups
+  // are offered for a key merge.
+  const isAlreadyMergedByName = (issue: NameIssue) => (issue.variants?.length ?? 1) === 1
+
+  const handleMergeAllKeys = () => {
+    const mergeable = splitKeyIssues.filter((i) => !isAlreadyMergedByName(i))
+    applyKeyMerges(mergeable.flatMap(mergesForIssue))
+  }
+
+  const handleDeleteKeyMerge = async (from_key: string) => {
+    try {
+      await authFetch('/api/player-key-mappings', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from_key }),
+      })
+      await loadKeyMappings()
+    } catch (error) {
+      console.error('Error deleting key merge:', error)
     }
   }
 
@@ -293,7 +378,9 @@ export function PlayerMappingManager({
     }
   }
 
-  // Update all mappings in the database
+  // Apply all mappings to the raw DB rows immediately. Not required for
+  // correctness — the nightly sync-data cron re-applies every mapping — this is
+  // just an "apply now" shortcut instead of waiting for the next sync.
   const handleUpdateDatabaseAll = () => {
     if (Object.keys(mappings).length === 0) {
       alert('No mappings to apply. Add some mappings first.')
@@ -301,19 +388,7 @@ export function PlayerMappingManager({
     }
     requestDatabaseUpdate(
       mappings,
-      `This will update ALL ${Object.keys(mappings).length} player name mappings in the database.`
-    )
-  }
-
-  // Update a single canonical group in the database
-  const handleUpdateDatabaseGroup = (canonical: string, aliases: string[]) => {
-    const groupMappings: Record<string, string> = {}
-    for (const alias of aliases) {
-      groupMappings[alias] = canonical
-    }
-    requestDatabaseUpdate(
-      groupMappings,
-      `This will rename ${aliases.length} player name(s) to "${canonical}" in the database.`
+      `This applies all ${Object.keys(mappings).length} player name mappings to the database now. They also apply automatically on the nightly sync.`
     )
   }
 
@@ -381,24 +456,67 @@ export function PlayerMappingManager({
                 )}
 
                 {splitKeyIssues.length > 0 && (
-                  <div className="border rounded-lg p-4 bg-orange-500/10 space-y-2">
-                    <div>
-                      <h3 className="font-medium">Needs review: same name, different player keys</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {splitKeyIssues.length} name{splitKeyIssues.length !== 1 ? 's' : ''} appear under more than one
-                        player key — usually the same person assigned a new key in an older season, but occasionally two
-                        different people. These are <strong>not</strong> auto-fixed; use the combine tool below if they
-                        are the same person.
-                      </p>
-                    </div>
-                    <ScrollArea className="max-h-[120px]">
-                      <div className="space-y-1 pr-2">
-                        {splitKeyIssues.map((issue) => (
-                          <div key={issue.normalized_name} className="text-sm">
-                            <span className="font-medium">{issue.suggested_canonical}</span>
-                            <span className="text-muted-foreground"> — appears under multiple keys</span>
+                  <div className="border rounded-lg p-4 bg-orange-500/10 space-y-3">
+                    {(() => {
+                      const mergeableCount = splitKeyIssues.filter((i) => !isAlreadyMergedByName(i)).length
+                      return (
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <h3 className="font-medium">Same name, different player keys</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {splitKeyIssues.length} name{splitKeyIssues.length !== 1 ? 's' : ''} appear under more than
+                              one player key. Ones already spelled identically read as a single player (“already merged”);
+                              the {mergeableCount} with differing spellings can be merged under the most-used key. Each
+                              merge is listed below and can be removed.
+                            </p>
                           </div>
-                        ))}
+                          <Button onClick={handleMergeAllKeys} variant="outline" disabled={mergingKeys || mergeableCount === 0}>
+                            {mergingKeys ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Merging…
+                              </>
+                            ) : (
+                              `Merge All (${mergeableCount})`
+                            )}
+                          </Button>
+                        </div>
+                      )
+                    })()}
+                    <ScrollArea className="max-h-[180px]">
+                      <div className="space-y-1 pr-2">
+                        {splitKeyIssues
+                          .slice()
+                          .sort((a, b) => Number(isAlreadyMergedByName(a)) - Number(isAlreadyMergedByName(b)))
+                          .map((issue) => {
+                            const alreadyMerged = isAlreadyMergedByName(issue)
+                            return (
+                              <div key={issue.normalized_name} className="text-sm flex items-center justify-between gap-2">
+                                <span>
+                                  <span className="font-medium">{issue.suggested_canonical}</span>
+                                  <span className="text-muted-foreground">
+                                    {' '}— {issue.keys?.length ?? 2} keys
+                                    {issue.keys ? ` (${issue.keys.map((k) => k.count).join(' / ')} rows)` : ''}
+                                  </span>
+                                </span>
+                                {alreadyMerged ? (
+                                  <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground whitespace-nowrap">
+                                    already merged
+                                  </span>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 text-xs"
+                                    disabled={mergingKeys}
+                                    onClick={() => applyKeyMerges(mergesForIssue(issue))}
+                                  >
+                                    Merge
+                                  </Button>
+                                )}
+                              </div>
+                            )
+                          })}
                       </div>
                     </ScrollArea>
                   </div>
@@ -509,7 +627,12 @@ export function PlayerMappingManager({
             {/* Current Mappings Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-2">
-                <h3 className="font-medium">Current Player Mappings</h3>
+                <div>
+                  <h3 className="font-medium">Current Player Mappings</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Mappings apply automatically on the nightly sync. Use “Apply now” only to update the database immediately.
+                  </p>
+                </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={loadData} disabled={loading}>
                     Reload
@@ -522,7 +645,7 @@ export function PlayerMappingManager({
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <Database className="h-4 w-4 mr-1" />
-                      Update Database - All
+                      Apply now
                     </Button>
                   )}
                 </div>
@@ -544,21 +667,9 @@ export function PlayerMappingManager({
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="font-medium text-lg">{canonical}</div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs text-muted-foreground">
-                                {aliases.length} alias{aliases.length !== 1 ? 'es' : ''}
-                              </span>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleUpdateDatabaseGroup(canonical, aliases)}
-                                disabled={updating}
-                                className="h-7 text-xs"
-                              >
-                                <Database className="h-3 w-3 mr-1" />
-                                Update
-                              </Button>
-                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {aliases.length} alias{aliases.length !== 1 ? 'es' : ''}
+                            </span>
                           </div>
                           <div className="space-y-1">
                             {aliases.sort().map((alias) => (
@@ -627,6 +738,47 @@ export function PlayerMappingManager({
                 </ScrollArea>
               )}
             </div>
+
+            {/* Current Key Merges — separate from name mappings */}
+            {keyMappings.length > 0 && (
+              <div className="space-y-2">
+                <div>
+                  <h3 className="font-medium">Current Key Merges</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Player keys merged into one identity (from split-name reviews above). Removing a merge stops it
+                    re-applying on the nightly sync; it does not un-rewrite rows already merged.
+                  </p>
+                </div>
+                <ScrollArea className="max-h-[220px] border rounded-lg">
+                  <div className="p-3 space-y-1">
+                    {keyMappings
+                      .slice()
+                      .sort((a, b) => (a.display_name || '').localeCompare(b.display_name || ''))
+                      .map((km) => (
+                        <div
+                          key={km.from_key}
+                          className="flex items-center justify-between py-1 px-2 bg-muted/50 rounded"
+                        >
+                          <div className="text-sm">
+                            <span className="font-medium">{km.display_name || '(unknown)'}</span>
+                            <span className="ml-2 font-mono text-xs text-muted-foreground">
+                              {km.from_key.slice(0, 8)}… → {km.to_key.slice(0, 8)}…
+                            </span>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDeleteKeyMerge(km.from_key)}
+                            title="Remove this merge"
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            )}
           </div>
         )}
       </DialogContent>

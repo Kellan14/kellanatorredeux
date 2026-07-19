@@ -21,6 +21,11 @@ import { fetchAllRecords } from '@/lib/supabase'
 
 export type NameIssueType = 'case' | 'split_key'
 
+export interface KeyRef {
+  player_key: string
+  count: number
+}
+
 export interface NameIssue {
   normalized_name: string
   variants: string[]
@@ -28,6 +33,10 @@ export interface NameIssue {
   issue_type: NameIssueType
   /** Shared player_key when all variants belong to one key; null for split_key. */
   player_key: string | null
+  /** split_key only: the distinct keys this name spans (by row count desc). */
+  keys?: KeyRef[]
+  /** split_key only: suggested canonical key to merge the others into. */
+  canonical_key?: string | null
 }
 
 /** Normalize a raw name to the identity it should collapse to. */
@@ -99,31 +108,37 @@ export async function computeNameIssues(supabase: any): Promise<NameIssue[]> {
     if (r.player_name) observations.push({ name: r.player_name, key: r.player_key ?? null })
   }
 
-  // Group by normalized name.
-  const groups = new Map<string, { names: Set<string>; keys: Set<string> }>()
+  // Group by normalized name, counting rows per key.
+  const groups = new Map<string, { names: Set<string>; keyCounts: Map<string, number> }>()
   for (const obs of observations) {
     const norm = normalizeName(obs.name)
     if (!norm) continue
-    if (!groups.has(norm)) groups.set(norm, { names: new Set(), keys: new Set() })
+    if (!groups.has(norm)) groups.set(norm, { names: new Set(), keyCounts: new Map() })
     const g = groups.get(norm)!
     g.names.add(obs.name)
-    if (obs.key) g.keys.add(obs.key)
+    if (obs.key) g.keyCounts.set(obs.key, (g.keyCounts.get(obs.key) || 0) + 1)
   }
 
   const issues: NameIssue[] = []
   Array.from(groups.entries()).forEach(([norm, g]) => {
     const variants = Array.from(g.names)
-    const keys = Array.from(g.keys)
+    const keys = Array.from(g.keyCounts.keys())
     const canonical = pickCanonical(variants)
 
     if (keys.length > 1) {
       // Same normalized name across multiple keys → needs human review.
+      // Rank keys by row count so the most-used key is the merge target.
+      const keyRefs: KeyRef[] = Array.from(g.keyCounts.entries())
+        .map(([player_key, count]) => ({ player_key, count }))
+        .sort((a, b) => b.count - a.count)
       issues.push({
         normalized_name: norm,
         variants,
         suggested_canonical: canonical,
         issue_type: 'split_key',
         player_key: null,
+        keys: keyRefs,
+        canonical_key: keyRefs[0].player_key,
       })
       return
     }

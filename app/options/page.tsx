@@ -24,6 +24,7 @@ import { VenueMachineListManager } from '@/components/venue-machine-list-manager
 import { MachineMappingManager } from '@/components/machine-mapping-manager'
 import { PlayerMappingManager } from '@/components/player-mapping-manager'
 import { SubLinkManager } from '@/components/sub-link-manager'
+import { IntegrityManager } from '@/components/integrity-manager'
 import { PlayerCombobox } from '@/components/ui/player-combobox'
 import { createSupabaseClient } from '@/lib/supabase'
 import { authFetch } from '@/lib/auth-fetch'
@@ -47,11 +48,14 @@ export default function OptionsPage() {
   const [machineMappingOpen, setMachineMappingOpen] = useState(false)
   const [playerMappingOpen, setPlayerMappingOpen] = useState(false)
   const [subLinkOpen, setSubLinkOpen] = useState(false)
+  const [integrityOpen, setIntegrityOpen] = useState(false)
   const [activeVenuesOpen, setActiveVenuesOpen] = useState(false)
   const [linkAccountOpen, setLinkAccountOpen] = useState(false)
 
   // Count of actionable player-name issues (drives the red "!" badge).
   const [nameIssueCount, setNameIssueCount] = useState(0)
+  // Latest integrity check failed (drives its red "!" badge).
+  const [integrityProblem, setIntegrityProblem] = useState(false)
 
   // Link account state
   const supabase = createSupabaseClient()
@@ -80,6 +84,7 @@ export default function OptionsPage() {
     loadMachines()
     loadUserAndPlayers()
     loadNameIssueCount()
+    loadIntegrityStatus()
   }, [])
 
   // Cached count of actionable name issues (cheap read; no rescan).
@@ -89,6 +94,19 @@ export default function OptionsPage() {
       if (res.ok) {
         const data = await res.json()
         setNameIssueCount(data.actionableCount || 0)
+      }
+    } catch {
+      /* non-fatal */
+    }
+  }
+
+  // Latest integrity report status (cheap read; no run).
+  const loadIntegrityStatus = async () => {
+    try {
+      const res = await fetch('/api/integrity-check?read=true')
+      if (res.ok) {
+        const data = await res.json()
+        setIntegrityProblem(!!data.report && data.report.ok === false)
       }
     } catch {
       /* non-fatal */
@@ -369,6 +387,23 @@ export default function OptionsPage() {
 
             <Button
               variant="outline"
+              className="h-24 flex flex-col items-center justify-center gap-2 relative"
+              onClick={() => setIntegrityOpen(true)}
+            >
+              {integrityProblem && (
+                <span
+                  className="absolute top-2 right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white"
+                  title="Latest integrity check found problems"
+                >
+                  !
+                </span>
+              )}
+              <span className="text-lg font-medium">Data Integrity</span>
+              <span className="text-xs text-muted-foreground">Verify DB against the archive &amp; edit history</span>
+            </Button>
+
+            <Button
+              variant="outline"
               className="h-24 flex flex-col items-center justify-center gap-2"
               onClick={() => {
                 setActiveVenuesOpen(true)
@@ -578,6 +613,15 @@ export default function OptionsPage() {
       <SubLinkManager
         open={subLinkOpen}
         onOpenChange={setSubLinkOpen}
+      />
+
+      {/* Data Integrity Dialog */}
+      <IntegrityManager
+        open={integrityOpen}
+        onOpenChange={(o) => {
+          setIntegrityOpen(o)
+          if (!o) loadIntegrityStatus() // refresh badge after a manual run
+        }}
       />
 
       {/* Active Venues Dialog */}
