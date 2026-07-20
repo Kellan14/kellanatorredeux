@@ -51,13 +51,18 @@ export function normalizeName(name: string | null | undefined): string {
 
 /**
  * Pick the best canonical spelling from a set of variants: prefer non-`(sub)`,
- * no leading/trailing space, Title Case, and penalize ALL CAPS.
+ * clean whitespace (no stray leading/trailing OR doubled internal spaces),
+ * Title Case, and penalize ALL CAPS.
  */
 export function pickCanonical(names: string[]): string {
   const scored = names.map((name) => {
     let score = 0
     if (/\(sub\)/i.test(name)) score -= 5 // never prefer a (sub) spelling
-    if (name !== name.trim()) score -= 3 // penalize stray leading/trailing space
+    // Penalize any non-collapsed whitespace — leading/trailing AND internal
+    // doubles ("Evan  Zynda") — so the clean spelling always wins. Otherwise a
+    // doubled-space variant can become the canonical and, once whitespace is
+    // normalized on save, the fix collapses into an unstorable self-map.
+    if (name !== name.replace(/\s+/g, ' ').trim()) score -= 3
     const words = name.trim().split(/\s+/)
     for (const word of words) {
       if (word[0] && word[0] === word[0].toUpperCase()) score += 1 // Title Case start
