@@ -1,7 +1,7 @@
 import { fetchAllRecords } from '@/lib/supabase'
 import { applyNameMappings } from '@/lib/apply-name-mappings'
 import { applySubLinks } from '@/lib/apply-sub-links'
-import { applyKeyMapping } from '@/lib/apply-key-mappings'
+import { applyAndTrackKeyMapping } from '@/lib/apply-key-mappings'
 
 const ARCHIVE_API = 'https://api.github.com/repos/Invader-Zim/mnp-data-archive/contents'
 
@@ -35,7 +35,7 @@ export async function healEdits(supabase: any): Promise<HealResult> {
   try {
     const { data: keyMaps } = await supabase.from('player_key_mappings').select('from_key, to_key')
     for (const km of keyMaps || []) {
-      healedKeys += await applyKeyMapping(supabase, km.from_key, km.to_key)
+      healedKeys += await applyAndTrackKeyMapping(supabase, km.from_key, km.to_key)
     }
   } catch { /* table may be absent */ }
 

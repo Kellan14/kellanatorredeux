@@ -12,6 +12,14 @@ CREATE TABLE IF NOT EXISTS player_key_mappings (
   from_key TEXT NOT NULL UNIQUE,   -- the key being merged away
   to_key TEXT NOT NULL,            -- the canonical key it merges into
   display_name TEXT,               -- human label (the shared player name)
+  -- Per-slot row ids this merge rewrote, so the merge can be undone surgically
+  -- (instead of a full resync). Shape:
+  --   { g1,g2,g3,g4: games.id by player_N_key slot,
+  --     part: player_match_participation.id, stats: player_stats.id }
+  -- Refreshed (union + pruned to rows still holding to_key) on every apply.
+  -- Needed because seasons < MIN_SEASON (20) are never re-imported by the sync,
+  -- so their original key can't be reconstructed from the archive.
+  affected_ids JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
