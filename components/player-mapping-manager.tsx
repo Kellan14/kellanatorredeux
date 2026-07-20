@@ -526,7 +526,7 @@ export function PlayerMappingManager({
                         )}
                       </Button>
                     </div>
-                    <ScrollArea className="max-h-[300px]">
+                    <ScrollArea className="h-[300px]">
                       <div className="space-y-1 pr-2">
                         {unmergedSplitIssues.map((issue) => (
                           <div key={issue.normalized_name} className="text-sm flex items-center justify-between gap-2">
@@ -807,7 +807,7 @@ export function PlayerMappingManager({
                     restores the affected rows to their original keys and stops it re-applying on the nightly sync.
                   </p>
                 </div>
-                <ScrollArea className="max-h-[360px] border rounded-lg">
+                <ScrollArea className="h-[320px] border rounded-lg">
                   <div className="p-2 space-y-1">
                     {mergeGroups.map((g) => (
                       <div
