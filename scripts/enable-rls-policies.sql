@@ -46,3 +46,22 @@ END $$;
 ALTER TABLE public.user_machine_inputs   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.active_venue_overrides ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.player_name_update_log ENABLE ROW LEVEL SECURITY;
+
+-- ── Tighten the standardization tables ──────────────────────────────────────
+-- These already had RLS on, but with permissive "FOR ALL USING(true)" anon
+-- write policies — anyone with the public anon key could write to them
+-- directly, bypassing the admin-gated API routes. Writes there use the service
+-- role (which bypasses RLS), so drop the anon-write policies; existing read
+-- policies stay, so anon/authenticated reads are unaffected.
+DROP POLICY IF EXISTS "Allow anon write" ON public.player_key_mappings;
+DROP POLICY IF EXISTS "Allow anon write" ON public.player_name_issues;
+DROP POLICY IF EXISTS "Allow anon write" ON public.player_sub_links;
+DROP POLICY IF EXISTS "Allow anon write" ON public.player_sub_link_log;
+DROP POLICY IF EXISTS "Allow anon write" ON public.integrity_reports;
+
+-- player_name_mappings had a single ALL/public "allow_all" policy (read + write
+-- for everyone) — replace it with read-only for anon/authenticated.
+DROP POLICY IF EXISTS "allow_all" ON public.player_name_mappings;
+DROP POLICY IF EXISTS "Public read" ON public.player_name_mappings;
+CREATE POLICY "Public read" ON public.player_name_mappings
+  FOR SELECT TO anon, authenticated USING (true);
