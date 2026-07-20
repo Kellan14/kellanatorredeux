@@ -34,12 +34,15 @@ export function MainNav() {
   }, [supabase.auth])
 
   // Cheap cached read of the player-name-issue count → red "!" on Options.
+  // Re-checked on every route change (the nav persists across client-side
+  // navigation in the App Router, so a mount-only fetch would show a stale count
+  // after issues are resolved). no-store avoids a cached response.
   useEffect(() => {
-    fetch('/api/player-name-issues')
+    fetch('/api/player-name-issues', { cache: 'no-store' })
       .then(res => (res.ok ? res.json() : null))
       .then(data => { if (data) setNameIssueCount(data.actionableCount || 0) })
       .catch(() => {})
-  }, [])
+  }, [pathname])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
