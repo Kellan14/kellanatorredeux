@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/auth'
 import { fetchAllRecords } from '@/lib/supabase'
-import { normalizeName } from '@/lib/player-name-issues'
+import { normalizeName, pickCanonical } from '@/lib/player-name-issues'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -13,6 +13,35 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const isHashKey = (k: string | null | undefined): boolean => !!k && /^[0-9a-f]{40}$/.test(k)
 
 interface GameRef { id: number; pos: number }
+
+/**
+ * Build a resolver that maps any player_key through the recorded key-merges to
+ * its canonical key (transitively). Without this, a player who was key-merged
+ * (or recorded under several spellings across old keys) shows up as several
+ * duplicate candidates for the same sub — see player_key_mappings.
+ */
+async function loadKeyResolver(supabase: any): Promise<(k: string) => string> {
+  const { data } = await supabase.from('player_key_mappings').select('from_key, to_key')
+  const map = new Map<string, string>()
+  for (const m of data || []) map.set(m.from_key, m.to_key)
+  return (k: string) => {
+    let cur = k
+    const seen = new Set<string>()
+    while (map.has(cur) && !seen.has(cur)) {
+      seen.add(cur)
+      cur = map.get(cur)!
+    }
+    return cur
+  }
+}
+
+/** alias -> canonical name, for showing the standardized spelling. */
+async function loadNameMap(supabase: any): Promise<Map<string, string>> {
+  const { data } = await supabase.from('player_name_mappings').select('alias, canonical_name')
+  const m = new Map<string, string>()
+  for (const r of data || []) m.set(r.alias, r.canonical_name)
+  return m
+}
 
 /**
  * GET  → list all sub-links + recent edit log (for the Options tool).
@@ -40,17 +69,23 @@ export async function GET(request: Request) {
       .order('created_at', { ascending: false })
       .limit(200)
 
-    // Distinct real (hash-keyed) players for the manual-link picker.
+    // Distinct real (hash-keyed) players for the manual-link picker — resolved
+    // through key-merges and name-mappings so each identity appears once with
+    // its canonical spelling.
     let players: { player_key: string; player_name: string }[] = []
     if (includePlayers) {
+      const resolveKey = await loadKeyResolver(supabase)
+      const nameMap = await loadNameMap(supabase)
       const psRows = await fetchAllRecords<{ player_name: string | null; player_key: string | null }>(
         () => supabase.from('player_stats').select('player_name, player_key').order('id', { ascending: true })
       )
       const seen = new Map<string, string>()
       for (const r of psRows) {
-        if (r.player_name && isHashKey(r.player_key) && !seen.has(r.player_key as string)) {
-          seen.set(r.player_key as string, r.player_name)
-        }
+        if (!r.player_name || !isHashKey(r.player_key)) continue
+        const rKey = resolveKey(r.player_key as string)
+        const cName = nameMap.get(r.player_name) || r.player_name
+        const prev = seen.get(rKey)
+        seen.set(rKey, prev ? pickCanonical([prev, cName]) : cName)
       }
       players = Array.from(seen.entries())
         .map(([player_key, player_name]) => ({ player_key, player_name }))
@@ -115,15 +150,25 @@ async function handleScan(supabase: any, performedBy: string) {
   }
 
   // 2. Build candidate lookup: normalized name -> real (hash-keyed) players.
+  //    Keys are resolved through key-merges and names through name-mappings, so
+  //    a single person recorded under several spellings or old (merged) keys
+  //    collapses to ONE candidate with the canonical spelling — not a pile of
+  //    duplicates.
+  const resolveKey = await loadKeyResolver(supabase)
+  const nameMap = await loadNameMap(supabase)
   const psRows = await fetchAllRecords<{ player_name: string | null; player_key: string | null }>(
     () => supabase.from('player_stats').select('player_name, player_key').order('id', { ascending: true })
   )
-  const realByNorm = new Map<string, Map<string, string>>() // norm -> (key -> name)
+  const realByNorm = new Map<string, Map<string, string>>() // norm -> (resolvedKey -> bestName)
   for (const r of psRows) {
     if (!r.player_name || !isHashKey(r.player_key)) continue
     const norm = normalizeName(r.player_name)
+    const rKey = resolveKey(r.player_key as string)
+    const cName = nameMap.get(r.player_name) || r.player_name
     if (!realByNorm.has(norm)) realByNorm.set(norm, new Map())
-    realByNorm.get(norm)!.set(r.player_key as string, r.player_name)
+    const byKey = realByNorm.get(norm)!
+    const prev = byKey.get(rKey)
+    byKey.set(rKey, prev ? pickCanonical([prev, cName]) : cName)
   }
 
   // 3. Load existing rows to preserve applied links.
@@ -189,6 +234,7 @@ async function handleScan(supabase: any, performedBy: string) {
 
 /** Auto-link every unlinked identity that has exactly one candidate. */
 async function handleAuto(supabase: any, performedBy: string) {
+  const resolveKey = await loadKeyResolver(supabase)
   const { data: rows } = await supabase.from('player_sub_links').select('*').eq('status', 'unlinked')
   let linked = 0
   let gamesUpdated = 0
@@ -196,7 +242,7 @@ async function handleAuto(supabase: any, performedBy: string) {
     const cands = row.candidates || []
     if (cands.length !== 1) continue
     const target = cands[0]
-    const updated = await applyLink(supabase, row, target.player_key, target.player_name, true, 'auto_link', performedBy)
+    const updated = await applyLink(supabase, row, resolveKey(target.player_key), target.player_name, true, 'auto_link', performedBy)
     linked++
     gamesUpdated += updated
   }
@@ -211,8 +257,12 @@ async function handleLink(supabase: any, body: any, performedBy: string) {
   }
   const { data: row } = await supabase.from('player_sub_links').select('*').eq('slug_key', slug_key).single()
   if (!row) return NextResponse.json({ error: 'Sub-link not found' }, { status: 404 })
+  // Resolve the chosen key through key-merges so a stale/merged candidate still
+  // lands on the canonical identity rather than a dead key.
+  const resolveKey = await loadKeyResolver(supabase)
+  const targetKey = resolveKey(player_key)
   const action = row.status === 'linked' ? 'relink' : 'link'
-  const updated = await applyLink(supabase, row, player_key, player_name, false, action, performedBy)
+  const updated = await applyLink(supabase, row, targetKey, player_name, false, action, performedBy)
   return NextResponse.json({ success: true, gamesUpdated: updated })
 }
 
