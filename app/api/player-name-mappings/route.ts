@@ -42,10 +42,24 @@ export async function POST(request: Request) {
       )
     }
 
+    // The canonical is the display name we control, so normalize its whitespace
+    // (trim + collapse runs). A trailing/leading space here is invisible in the
+    // UI and produces look-alike duplicate/cycle mappings. The alias is left
+    // exactly as given — it must match the raw data spelling to have any effect.
+    const cleanCanonical = String(canonical_name).replace(/\s+/g, ' ').trim()
+    if (!cleanCanonical) {
+      return NextResponse.json({ error: 'canonical_name is empty' }, { status: 400 })
+    }
+    // alias already equals the cleaned canonical → nothing to standardize; skip
+    // rather than store a self-mapping.
+    if (alias === cleanCanonical) {
+      return NextResponse.json({ mapping: null, skipped: true })
+    }
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
     const { data, error } = await (supabase
       .from('player_name_mappings') as any)
-      .upsert({ alias, canonical_name }, { onConflict: 'alias' })
+      .upsert({ alias, canonical_name: cleanCanonical }, { onConflict: 'alias' })
       .select()
       .single()
 
