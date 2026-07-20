@@ -505,6 +505,11 @@ export function PlayerMappingManager({
                           occasionally two different people. Merge only when it&apos;s the same person; each merge is
                           reversible with the trash icon.
                         </p>
+                        {mergeGroups.length > 0 && (
+                          <p className="text-sm text-green-700 dark:text-green-400 mt-1">
+                            ✓ {mergeGroups.length} already merged — scroll the list to review or undo any of them.
+                          </p>
+                        )}
                       </div>
                       <Button
                         onClick={handleMergeAllKeys}
@@ -521,7 +526,7 @@ export function PlayerMappingManager({
                         )}
                       </Button>
                     </div>
-                    <ScrollArea className="max-h-[220px]">
+                    <ScrollArea className="max-h-[300px]">
                       <div className="space-y-1 pr-2">
                         {unmergedSplitIssues.map((issue) => (
                           <div key={issue.normalized_name} className="text-sm flex items-center justify-between gap-2">
@@ -796,60 +801,40 @@ export function PlayerMappingManager({
             {mergeGroups.length > 0 && (
               <div className="space-y-2">
                 <div>
-                  <h3 className="font-medium">Merged by player key</h3>
+                  <h3 className="font-medium">Merged by player key ({mergeGroups.length})</h3>
                   <p className="text-xs text-muted-foreground">
                     Separate player keys combined into one identity (from the split-key review above). Removing a merge
                     restores the affected rows to their original keys and stops it re-applying on the nightly sync.
                   </p>
                 </div>
-                <ScrollArea className="max-h-[300px] border rounded-lg">
-                  <div className="p-4 space-y-4">
+                <ScrollArea className="max-h-[360px] border rounded-lg">
+                  <div className="p-2 space-y-1">
                     {mergeGroups.map((g) => (
-                      <div key={g.to_key} className="p-3 border rounded-lg bg-muted/50">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="font-medium text-lg">{g.display_name || '(unknown)'}</div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">
-                              {g.froms.length + 1} keys
-                            </span>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-7 w-7 p-0"
-                              disabled={mergingKeys}
-                              title="Undo this merge"
-                              onClick={() => handleUndoMerge(g.froms.map((f) => f.from_key))}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
+                      <div
+                        key={g.to_key}
+                        className="flex items-center justify-between gap-2 py-1.5 px-2 bg-muted/50 rounded"
+                      >
+                        <div className="min-w-0">
+                          <div className="font-medium truncate">{g.display_name || '(unknown)'}</div>
+                          <div className="font-mono text-[10px] leading-tight text-muted-foreground truncate">
+                            {g.to_key.slice(0, 8)}… ←{' '}
+                            {g.froms.map((f) => `${f.from_key.slice(0, 8)}…`).join(', ')}
                           </div>
                         </div>
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between py-1 px-2 bg-background rounded">
-                            <span className="font-mono text-xs">{g.to_key}</span>
-                            <span className="text-xs text-muted-foreground">canonical key</span>
-                          </div>
-                          {g.froms.map((f) => (
-                            <div
-                              key={f.from_key}
-                              className="flex items-center justify-between py-1 px-2 bg-background rounded"
-                            >
-                              <span className="font-mono text-xs text-muted-foreground">{f.from_key}</span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-muted-foreground">→ merged in</span>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-6 w-6 p-0"
-                                  disabled={mergingKeys}
-                                  title="Undo just this key"
-                                  onClick={() => handleUndoMerge([f.from_key])}
-                                >
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                              </div>
-                            </div>
-                          ))}
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">
+                            {g.froms.length + 1} keys
+                          </span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 w-7 p-0"
+                            disabled={mergingKeys}
+                            title="Undo this merge"
+                            onClick={() => handleUndoMerge(g.froms.map((f) => f.from_key))}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
                         </div>
                       </div>
                     ))}
