@@ -339,6 +339,14 @@ export function PlayerMappingManager({
     }
     newMappings[oldCanonical] = target
     if (newMappings[target] === target) delete newMappings[target]
+    // Selection is keyed by canonical name; the group just got renamed, so carry
+    // any existing selection over to the new canonical (otherwise the ticked box
+    // appears to clear because it no longer matches a rendered group).
+    setSelectedCanonicals((prev) =>
+      prev.includes(oldCanonical)
+        ? Array.from(new Set(prev.map((c) => (c === oldCanonical ? target : c))))
+        : prev
+    )
     setSaving(true)
     await saveMappings(newMappings)
     setSaving(false)
