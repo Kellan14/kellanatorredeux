@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/auth'
+import { renamePlayerStats } from '@/lib/apply-name-mappings'
 
 export const dynamic = 'force-dynamic'
 
@@ -91,14 +92,8 @@ export async function POST(request: Request) {
         mappingTotal += g4Data?.length || 0
       }
 
-      // Update player_stats table
-      const { data: psData } = await supabase
-        .from('player_stats')
-        // @ts-ignore - Supabase typing issue with update
-        .update({ player_name: canonical })
-        .eq('player_name', alias)
-        .select('id')
-      mappingTotal += psData?.length || 0
+      // Update player_stats — collision-safe (see renamePlayerStats).
+      mappingTotal += await renamePlayerStats(supabase, alias, canonical)
 
       results.push({ alias, canonical, updated: mappingTotal })
       totalUpdated += mappingTotal

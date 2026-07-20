@@ -4,6 +4,7 @@ import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName } from '@/lib/venue-mappings'
 import { applyAndTrackKeyMapping } from '@/lib/apply-key-mappings'
 import { applySubLinks } from '@/lib/apply-sub-links'
+import { renamePlayerStats } from '@/lib/apply-name-mappings'
 
 // Vercel Cron job to sync MNP data from GitHub.
 // Runs daily at 2am UTC (see vercel.json: "0 2 * * *").
@@ -510,13 +511,8 @@ export async function GET(request: Request) {
             .select('id')
           if (pmpData?.length) standardizationsApplied += pmpData.length
 
-          // Update player_stats table
-          const { data: psData } = await supabase
-            .from('player_stats')
-            .update({ player_name: mapping.canonical_name })
-            .eq('player_name', mapping.alias)
-            .select('id')
-          if (psData?.length) standardizationsApplied += psData.length
+          // Update player_stats — collision-safe (see renamePlayerStats).
+          standardizationsApplied += await renamePlayerStats(supabase, mapping.alias, mapping.canonical_name)
         }
         console.log(`[cron/sync-data] Applied ${standardizationsApplied} name standardizations`)
       }
