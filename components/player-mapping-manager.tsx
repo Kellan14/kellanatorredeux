@@ -713,37 +713,32 @@ export function PlayerMappingManager({
                   No player mappings found. Select players above to get started.
                 </p>
               ) : (
-                <ScrollArea className="h-[300px] border rounded-lg">
-                  <div className="p-4 space-y-4">
+                <ScrollArea className="h-[320px] border rounded-lg">
+                  <div className="p-2 space-y-1">
                     {Object.entries(groupedMappings)
                       .sort(([a], [b]) => a.localeCompare(b))
                       .map(([canonical, aliases]) => (
-                        <div
-                          key={canonical}
-                          className="p-3 border rounded-lg bg-muted/50"
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="font-medium text-lg">{canonical}</div>
-                            <span className="text-xs text-muted-foreground">
+                        <div key={canonical} className="py-1.5 px-2 bg-muted/50 rounded">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="font-medium truncate">{canonical}</div>
+                            <span className="text-xs text-muted-foreground shrink-0">
                               {aliases.length} alias{aliases.length !== 1 ? 'es' : ''}
                             </span>
                           </div>
-                          <div className="space-y-1">
+                          <div className="mt-0.5 space-y-0.5">
                             {aliases.sort().map((alias) => (
-                              <div
-                                key={alias}
-                                className="flex items-center justify-between py-1 px-2 bg-background rounded"
-                              >
+                              <div key={alias} className="flex items-center justify-between gap-2 pl-2">
                                 {editingAlias === alias ? (
-                                  <div className="flex-1 flex gap-2">
+                                  <div className="flex-1 flex gap-1">
                                     <Input
                                       value={editValue}
                                       onChange={(e) => setEditValue(e.target.value)}
-                                      className="h-8"
+                                      className="h-7 text-xs"
                                       placeholder="New canonical name"
                                     />
                                     <Button
                                       size="sm"
+                                      className="h-7 w-7 p-0"
                                       onClick={() => handleUpdateMapping(alias)}
                                       disabled={saving}
                                     >
@@ -752,6 +747,7 @@ export function PlayerMappingManager({
                                     <Button
                                       size="sm"
                                       variant="outline"
+                                      className="h-7 w-7 p-0"
                                       onClick={() => {
                                         setEditingAlias(null)
                                         setEditValue('')
@@ -762,11 +758,12 @@ export function PlayerMappingManager({
                                   </div>
                                 ) : (
                                   <>
-                                    <span className="font-mono text-sm">{alias}</span>
-                                    <div className="flex gap-1">
+                                    <span className="font-mono text-xs text-muted-foreground truncate">{alias}</span>
+                                    <div className="flex gap-0.5 shrink-0">
                                       <Button
                                         size="sm"
                                         variant="ghost"
+                                        className="h-6 w-6 p-0"
                                         onClick={() => {
                                           setEditingAlias(alias)
                                           setEditValue(canonical)
@@ -778,6 +775,7 @@ export function PlayerMappingManager({
                                       <Button
                                         size="sm"
                                         variant="ghost"
+                                        className="h-6 w-6 p-0"
                                         onClick={() => handleDeleteMapping(alias)}
                                         disabled={saving}
                                       >
