@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { X, Plus, Save, Loader2, Pencil, Trash2, Users, Database } from 'lucide-react'
+import { X, Plus, Save, Loader2, Pencil, Trash2, Users, Database, ArrowUp } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { authFetch } from '@/lib/auth-fetch'
 
@@ -325,6 +325,23 @@ export function PlayerMappingManager({
     await saveMappings(newMappings)
     setSaving(false)
     setSelectedCanonicals([])
+  }
+
+  // Promote one of a group's linked names to be the canonical: the old canonical
+  // (and the other aliases) repoint to it, and it stops being an alias of itself.
+  const handlePromoteToCanonical = async (oldCanonical: string, promotedAlias: string) => {
+    const target = promotedAlias.replace(/\s+/g, ' ').trim()
+    if (!target || target === oldCanonical) return
+    const newMappings = { ...mappings }
+    for (const alias of groupedMappings[oldCanonical] || []) {
+      if (alias === promotedAlias || alias === target) delete newMappings[alias]
+      else newMappings[alias] = target
+    }
+    newMappings[oldCanonical] = target
+    if (newMappings[target] === target) delete newMappings[target]
+    setSaving(true)
+    await saveMappings(newMappings)
+    setSaving(false)
   }
 
   const togglePlayerSelection = (player: string) => {
@@ -813,6 +830,17 @@ export function PlayerMappingManager({
                                         size="sm"
                                         variant="ghost"
                                         className="h-6 w-6 p-0"
+                                        title="Make this the canonical name"
+                                        onClick={() => handlePromoteToCanonical(canonical, alias)}
+                                        disabled={saving}
+                                      >
+                                        <ArrowUp className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-6 w-6 p-0"
+                                        title="Edit which name this maps to"
                                         onClick={() => {
                                           setEditingAlias(alias)
                                           setEditValue(canonical)
