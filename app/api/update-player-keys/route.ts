@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/auth'
-import { applyKeyMapping } from '@/lib/apply-key-mappings'
+import { applyAndTrackKeyMapping } from '@/lib/apply-key-mappings'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const results: { from_key: string; to_key: string; updated: number }[] = []
     for (const m of merges) {
       if (!m.from_key || !m.to_key) continue
-      const updated = await applyKeyMapping(supabase, m.from_key, m.to_key)
+      const updated = await applyAndTrackKeyMapping(supabase, m.from_key, m.to_key)
       totalUpdated += updated
       results.push({ from_key: m.from_key, to_key: m.to_key, updated })
     }

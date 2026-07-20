@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/auth'
+import { revertKeyMapping } from '@/lib/apply-key-mappings'
 
 export const dynamic = 'force-dynamic'
 
@@ -54,7 +55,10 @@ export async function POST(request: Request) {
   }
 }
 
-// DELETE - remove a key merge by from_key (admin)
+// DELETE - undo a key merge by from_key (admin). Surgically restores the rows
+// this merge rewrote (using the recorded affected_ids) back to from_key, then
+// removes the mapping so the nightly sync won't re-apply it. No full resync
+// needed — see lib/apply-key-mappings.ts.
 export async function DELETE(request: Request) {
   try {
     const auth = await requireAdmin(request)
@@ -64,9 +68,22 @@ export async function DELETE(request: Request) {
     if (!from_key) return NextResponse.json({ error: 'from_key is required' }, { status: 400 })
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+    // Look up the merge so we know what to reverse before deleting it.
+    const { data: row } = await supabase
+      .from('player_key_mappings')
+      .select('from_key, to_key, affected_ids')
+      .eq('from_key', from_key)
+      .maybeSingle()
+
+    let restored = 0
+    if (row) {
+      restored = await revertKeyMapping(supabase, row.from_key, row.to_key, row.affected_ids)
+    }
+
     const { error } = await supabase.from('player_key_mappings').delete().eq('from_key', from_key)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true, restored })
   } catch (error) {
     console.error('Error deleting key mapping:', error)
     return NextResponse.json({ error: 'Failed to delete key mapping' }, { status: 500 })

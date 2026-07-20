@@ -41,6 +41,14 @@ interface KeyMapping {
   from_key: string
   to_key: string
   display_name: string | null
+  affected_ids?: Record<string, number[]> | null
+}
+
+// Applied merges grouped into one identity per canonical (to_key).
+interface MergeGroup {
+  to_key: string
+  display_name: string
+  froms: KeyMapping[]
 }
 
 export function PlayerMappingManager({
@@ -167,26 +175,30 @@ export function PlayerMappingManager({
     }
   }
 
-  // A split_key group whose keys all share ONE spelling already reads as a
-  // single player by name ("already merged"); only differing-spelling groups
-  // are offered for a key merge.
-  const isAlreadyMergedByName = (issue: NameIssue) => (issue.variants?.length ?? 1) === 1
-
   const handleMergeAllKeys = () => {
-    const mergeable = splitKeyIssues.filter((i) => !isAlreadyMergedByName(i))
-    applyKeyMerges(mergeable.flatMap(mergesForIssue))
+    applyKeyMerges(unmergedSplitIssues.flatMap(mergesForIssue))
   }
 
-  const handleDeleteKeyMerge = async (from_key: string) => {
+  // Undo one or more applied merges (all the from_keys for an identity). The
+  // DELETE route surgically restores the affected rows, so a rescan re-splits
+  // the name and it reappears in the review list above.
+  const handleUndoMerge = async (fromKeys: string[]) => {
+    if (fromKeys.length === 0) return
+    setMergingKeys(true)
     try {
-      await authFetch('/api/player-key-mappings', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from_key }),
-      })
-      await loadKeyMappings()
+      for (const from_key of fromKeys) {
+        await authFetch('/api/player-key-mappings', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from_key }),
+        })
+      }
+      await Promise.all([loadIssues(), loadKeyMappings()])
     } catch (error) {
-      console.error('Error deleting key merge:', error)
+      console.error('Error undoing merge:', error)
+      alert('Failed to undo merge. Check console.')
+    } finally {
+      setMergingKeys(false)
     }
   }
 
@@ -314,6 +326,33 @@ export function PlayerMappingManager({
   // old "found N / already fixed" contradiction can't happen.
   const caseIssues = issues.filter(i => i.issue_type === 'case')
   const splitKeyIssues = issues.filter(i => i.issue_type === 'split_key')
+
+  // Applied merges, grouped into one identity per canonical key. This is the
+  // durable record of "already merged" — a merged name drops out of the live
+  // scan (its rows now share one key), so we reconstruct it from here.
+  const mergeGroups: MergeGroup[] = (() => {
+    const byTo = new Map<string, MergeGroup>()
+    for (const km of keyMappings) {
+      let g = byTo.get(km.to_key)
+      if (!g) {
+        g = { to_key: km.to_key, display_name: km.display_name || '', froms: [] }
+        byTo.set(km.to_key, g)
+      }
+      if (!g.display_name && km.display_name) g.display_name = km.display_name
+      g.froms.push(km)
+    }
+    return Array.from(byTo.values()).sort((a, b) => a.display_name.localeCompare(b.display_name))
+  })()
+
+  // A split_key issue is "unmerged" until every non-canonical key has a merge
+  // recorded. (Fully merged ones normally vanish from the scan; this also guards
+  // partially-merged groups from showing a stale "Merge" action.)
+  const mergedFromKeys = new Set(keyMappings.map(k => k.from_key))
+  const unmergedSplitIssues = splitKeyIssues.filter(issue => {
+    const canonical = issue.canonical_key || issue.keys?.[0]?.player_key
+    const others = (issue.keys || []).filter(k => k.player_key !== canonical)
+    return others.length > 0 && !others.every(k => mergedFromKeys.has(k.player_key))
+  })
 
   // Fix All: write a non-destructive mapping (variant → canonical) for every
   // auto-fixable 'case' issue, then rescan so the list + badge clear instantly.
@@ -455,74 +494,87 @@ export function PlayerMappingManager({
                   </div>
                 )}
 
-                {splitKeyIssues.length > 0 && (
+                {(unmergedSplitIssues.length > 0 || mergeGroups.length > 0) && (
                   <div className="border rounded-lg p-4 bg-orange-500/10 space-y-3">
-                    {(() => {
-                      const mergeableCount = splitKeyIssues.filter((i) => !isAlreadyMergedByName(i)).length
-                      return (
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <h3 className="font-medium">Same name, different player keys</h3>
-                            <p className="text-sm text-muted-foreground">
-                              {splitKeyIssues.length} name{splitKeyIssues.length !== 1 ? 's' : ''} appear under more than
-                              one player key. Ones already spelled identically read as a single player (“already merged”);
-                              the {mergeableCount} with differing spellings can be merged under the most-used key. Each
-                              merge is listed below and can be removed.
-                            </p>
-                          </div>
-                          <Button onClick={handleMergeAllKeys} variant="outline" disabled={mergingKeys || mergeableCount === 0}>
-                            {mergingKeys ? (
-                              <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Merging…
-                              </>
-                            ) : (
-                              `Merge All (${mergeableCount})`
-                            )}
-                          </Button>
-                        </div>
-                      )
-                    })()}
-                    <ScrollArea className="max-h-[180px]">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h3 className="font-medium">Same name, different player keys</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {unmergedSplitIssues.length} name{unmergedSplitIssues.length !== 1 ? 's' : ''} appear under more
+                          than one player key — usually the same person assigned a new key in an older season, but
+                          occasionally two different people. Merge only when it&apos;s the same person; each merge is
+                          reversible with the trash icon.
+                        </p>
+                      </div>
+                      <Button
+                        onClick={handleMergeAllKeys}
+                        variant="outline"
+                        disabled={mergingKeys || unmergedSplitIssues.length === 0}
+                      >
+                        {mergingKeys ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Merging…
+                          </>
+                        ) : (
+                          `Merge All (${unmergedSplitIssues.length})`
+                        )}
+                      </Button>
+                    </div>
+                    <ScrollArea className="max-h-[220px]">
                       <div className="space-y-1 pr-2">
-                        {splitKeyIssues
-                          .slice()
-                          .sort((a, b) => Number(isAlreadyMergedByName(a)) - Number(isAlreadyMergedByName(b)))
-                          .map((issue) => {
-                            const alreadyMerged = isAlreadyMergedByName(issue)
-                            return (
-                              <div key={issue.normalized_name} className="text-sm flex items-center justify-between gap-2">
-                                <span>
-                                  <span className="font-medium">{issue.suggested_canonical}</span>
-                                  <span className="text-muted-foreground">
-                                    {' '}— {issue.keys?.length ?? 2} keys
-                                    {issue.keys ? ` (${issue.keys.map((k) => k.count).join(' / ')} rows)` : ''}
-                                  </span>
-                                </span>
-                                {alreadyMerged ? (
-                                  <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground whitespace-nowrap">
-                                    already merged
-                                  </span>
-                                ) : (
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="h-6 text-xs"
-                                    disabled={mergingKeys}
-                                    onClick={() => applyKeyMerges(mergesForIssue(issue))}
-                                  >
-                                    Merge
-                                  </Button>
-                                )}
-                              </div>
-                            )
-                          })}
+                        {unmergedSplitIssues.map((issue) => (
+                          <div key={issue.normalized_name} className="text-sm flex items-center justify-between gap-2">
+                            <span>
+                              <span className="font-medium">{issue.suggested_canonical}</span>
+                              <span className="text-muted-foreground">
+                                {' '}— {issue.keys?.length ?? 2} keys
+                                {issue.keys ? ` (${issue.keys.map((k) => k.count).join(' / ')} rows)` : ''}
+                              </span>
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 text-xs"
+                              disabled={mergingKeys}
+                              onClick={() => applyKeyMerges(mergesForIssue(issue))}
+                            >
+                              Merge
+                            </Button>
+                          </div>
+                        ))}
+                        {/* Already-merged identities (reconstructed from recorded merges). */}
+                        {mergeGroups.map((g) => (
+                          <div key={g.to_key} className="text-sm flex items-center justify-between gap-2">
+                            <span>
+                              <span className="font-medium">{g.display_name || '(unknown)'}</span>
+                              <span className="text-muted-foreground">
+                                {' '}— {g.froms.length + 1} keys merged
+                              </span>
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground whitespace-nowrap">
+                                already merged
+                              </span>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0"
+                                disabled={mergingKeys}
+                                title="Undo this merge"
+                                onClick={() => handleUndoMerge(g.froms.map((f) => f.from_key))}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </ScrollArea>
                   </div>
                 )}
 
-                {caseIssues.length === 0 && splitKeyIssues.length === 0 && (
+                {caseIssues.length === 0 && unmergedSplitIssues.length === 0 && mergeGroups.length === 0 && (
                   <div className="border rounded-lg p-4 bg-green-500/10 text-sm">
                     No name inconsistencies found. Everything is standardized. ✓
                   </div>
@@ -739,42 +791,68 @@ export function PlayerMappingManager({
               )}
             </div>
 
-            {/* Current Key Merges — separate from name mappings */}
-            {keyMappings.length > 0 && (
+            {/* Merged by player key — the applied key merges, shown alongside the
+                name mappings. Delete (trash) surgically undoes the merge. */}
+            {mergeGroups.length > 0 && (
               <div className="space-y-2">
                 <div>
-                  <h3 className="font-medium">Current Key Merges</h3>
+                  <h3 className="font-medium">Merged by player key</h3>
                   <p className="text-xs text-muted-foreground">
-                    Player keys merged into one identity (from split-name reviews above). Removing a merge stops it
-                    re-applying on the nightly sync; it does not un-rewrite rows already merged.
+                    Separate player keys combined into one identity (from the split-key review above). Removing a merge
+                    restores the affected rows to their original keys and stops it re-applying on the nightly sync.
                   </p>
                 </div>
-                <ScrollArea className="max-h-[220px] border rounded-lg">
-                  <div className="p-3 space-y-1">
-                    {keyMappings
-                      .slice()
-                      .sort((a, b) => (a.display_name || '').localeCompare(b.display_name || ''))
-                      .map((km) => (
-                        <div
-                          key={km.from_key}
-                          className="flex items-center justify-between py-1 px-2 bg-muted/50 rounded"
-                        >
-                          <div className="text-sm">
-                            <span className="font-medium">{km.display_name || '(unknown)'}</span>
-                            <span className="ml-2 font-mono text-xs text-muted-foreground">
-                              {km.from_key.slice(0, 8)}… → {km.to_key.slice(0, 8)}…
+                <ScrollArea className="max-h-[300px] border rounded-lg">
+                  <div className="p-4 space-y-4">
+                    {mergeGroups.map((g) => (
+                      <div key={g.to_key} className="p-3 border rounded-lg bg-muted/50">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="font-medium text-lg">{g.display_name || '(unknown)'}</div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">
+                              {g.froms.length + 1} keys
                             </span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 w-7 p-0"
+                              disabled={mergingKeys}
+                              title="Undo this merge"
+                              onClick={() => handleUndoMerge(g.froms.map((f) => f.from_key))}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
                           </div>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleDeleteKeyMerge(km.from_key)}
-                            title="Remove this merge"
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
                         </div>
-                      ))}
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between py-1 px-2 bg-background rounded">
+                            <span className="font-mono text-xs">{g.to_key}</span>
+                            <span className="text-xs text-muted-foreground">canonical key</span>
+                          </div>
+                          {g.froms.map((f) => (
+                            <div
+                              key={f.from_key}
+                              className="flex items-center justify-between py-1 px-2 bg-background rounded"
+                            >
+                              <span className="font-mono text-xs text-muted-foreground">{f.from_key}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-muted-foreground">→ merged in</span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0"
+                                  disabled={mergingKeys}
+                                  title="Undo just this key"
+                                  onClick={() => handleUndoMerge([f.from_key])}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </ScrollArea>
               </div>

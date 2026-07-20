@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName } from '@/lib/venue-mappings'
-import { applyKeyMapping } from '@/lib/apply-key-mappings'
+import { applyAndTrackKeyMapping } from '@/lib/apply-key-mappings'
 import { applySubLinks } from '@/lib/apply-sub-links'
 
 // Vercel Cron job to sync MNP data from GitHub.
@@ -532,7 +532,7 @@ export async function GET(request: Request) {
         .select('from_key, to_key')
       let keyMergesApplied = 0
       for (const km of keyMaps || []) {
-        keyMergesApplied += await applyKeyMapping(supabase, km.from_key, km.to_key)
+        keyMergesApplied += await applyAndTrackKeyMapping(supabase, km.from_key, km.to_key)
       }
       if (keyMaps?.length) console.log(`[cron/sync-data] Applied ${keyMergesApplied} key-merge row updates`)
     } catch (error) {
