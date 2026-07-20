@@ -72,6 +72,9 @@ export function PlayerMappingManager({
   const [loadingIssues, setLoadingIssues] = useState(false)
   const [keyMappings, setKeyMappings] = useState<KeyMapping[]>([])
   const [mergingKeys, setMergingKeys] = useState(false)
+  // Selection + target-picker for merging name-mapping groups together.
+  const [selectedCanonicals, setSelectedCanonicals] = useState<string[]>([])
+  const [mergeGroupsOpen, setMergeGroupsOpen] = useState(false)
 
   // Load mappings from localStorage and players from API when dialog opens
   useEffect(() => {
@@ -82,6 +85,7 @@ export function PlayerMappingManager({
 
   const loadData = async () => {
     setLoading(true)
+    setSelectedCanonicals([])
     try {
       // Load mappings from Supabase table
       const mappingsResponse = await fetch('/api/player-name-mappings')
@@ -293,6 +297,34 @@ export function PlayerMappingManager({
     setSaving(true)
     await saveMappings(newMappings)
     setSaving(false)
+  }
+
+  const toggleCanonicalSelection = (canonical: string) => {
+    setSelectedCanonicals((prev) =>
+      prev.includes(canonical) ? prev.filter((c) => c !== canonical) : [...prev, canonical]
+    )
+  }
+
+  // Merge several name-mapping groups into one canonical name: every selected
+  // group's aliases (and the other groups' canonical spellings themselves) are
+  // repointed to `target`. Non-destructive — persisted as ordinary mappings.
+  const handleMergeGroups = async (target: string) => {
+    const newMappings = { ...mappings }
+    for (const canonical of selectedCanonicals) {
+      for (const alias of groupedMappings[canonical] || []) {
+        newMappings[alias] = target
+      }
+      // The group's own canonical spelling becomes an alias of the target.
+      if (canonical !== target) newMappings[canonical] = target
+    }
+    // Never leave a name mapped to itself.
+    if (newMappings[target] === target) delete newMappings[target]
+
+    setMergeGroupsOpen(false)
+    setSaving(true)
+    await saveMappings(newMappings)
+    setSaving(false)
+    setSelectedCanonicals([])
   }
 
   const togglePlayerSelection = (player: string) => {
@@ -687,10 +719,22 @@ export function PlayerMappingManager({
                 <div>
                   <h3 className="font-medium">Current Player Mappings</h3>
                   <p className="text-xs text-muted-foreground">
-                    Mappings apply automatically on the nightly sync. Use “Apply now” only to update the database immediately.
+                    Tick two or more names and press Merge to combine them into one. Mappings apply automatically on the
+                    nightly sync; use “Apply now” only to update the database immediately.
                   </p>
                 </div>
                 <div className="flex gap-2">
+                  {selectedCanonicals.length >= 2 && (
+                    <Button size="sm" variant="outline" onClick={() => setMergeGroupsOpen(true)} disabled={saving}>
+                      <Users className="h-4 w-4 mr-1" />
+                      Merge {selectedCanonicals.length}
+                    </Button>
+                  )}
+                  {selectedCanonicals.length > 0 && (
+                    <Button size="sm" variant="ghost" onClick={() => setSelectedCanonicals([])} disabled={saving}>
+                      Clear
+                    </Button>
+                  )}
                   <Button variant="outline" size="sm" onClick={loadData} disabled={loading}>
                     Reload
                   </Button>
@@ -719,8 +763,13 @@ export function PlayerMappingManager({
                       .sort(([a], [b]) => a.localeCompare(b))
                       .map(([canonical, aliases]) => (
                         <div key={canonical} className="py-1.5 px-2 bg-muted/50 rounded">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="font-medium truncate">{canonical}</div>
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              checked={selectedCanonicals.includes(canonical)}
+                              onCheckedChange={() => toggleCanonicalSelection(canonical)}
+                              aria-label={`Select ${canonical} for merge`}
+                            />
+                            <div className="font-medium truncate flex-1">{canonical}</div>
                             <span className="text-xs text-muted-foreground shrink-0">
                               {aliases.length} alias{aliases.length !== 1 ? 'es' : ''}
                             </span>
@@ -874,6 +923,40 @@ export function PlayerMappingManager({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Merge-groups target picker: choose which selected name to keep. */}
+      <Dialog open={mergeGroupsOpen} onOpenChange={setMergeGroupsOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Merge {selectedCanonicals.length} names into one</DialogTitle>
+            <DialogDescription>
+              Pick the name to keep. Every other selected name (and its aliases) will map to it.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-1">
+            {selectedCanonicals
+              .slice()
+              .sort((a, b) => a.localeCompare(b))
+              .map((canonical) => {
+                const aliasCount = (groupedMappings[canonical] || []).length
+                return (
+                  <Button
+                    key={canonical}
+                    variant="outline"
+                    className="w-full justify-between"
+                    disabled={saving}
+                    onClick={() => handleMergeGroups(canonical)}
+                  >
+                    <span className="truncate">{canonical}</span>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      keep this{aliasCount ? ` · ${aliasCount} alias${aliasCount !== 1 ? 'es' : ''}` : ''}
+                    </span>
+                  </Button>
+                )
+              })}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   )
 }
