@@ -17,7 +17,17 @@ interface IntegrityReport {
   orphan_total: number
   duplicate_total: number
   ok: boolean
-  seasons: { season: number; dbCount: number; archiveCount: number; missing: string[]; orphan: string[]; skipped?: boolean }[]
+  gameless_total?: number
+  seasons: {
+    season: number
+    source?: 'archive' | 'reference' | 'none'
+    dbCount: number
+    refCount?: number
+    missing: string[]
+    orphan: string[]
+    gameless?: string[]
+    unverified?: boolean
+  }[]
   missing: { season: number; match_key: string }[]
   orphan: { season: number; match_key: string }[]
   duplicates: { match_key: string; round_number: number; game_number: number; count: number }[]
@@ -87,7 +97,8 @@ export function IntegrityManager({ open, onOpenChange }: Props) {
           <DialogTitle>Data Integrity</DialogTitle>
           <DialogDescription>
             Re-applies every recorded edit (name mappings, key merges, sub-links) and reconciles the database against the
-            GitHub match archive. Runs automatically Sunday &amp; Tuesday mornings; you can also run it now.
+            GitHub match archive (seasons 14+) and the historical reference table (seasons 2–12). Runs automatically
+            Sunday &amp; Tuesday mornings; you can also run it now.
           </DialogDescription>
         </DialogHeader>
 
@@ -128,24 +139,61 @@ export function IntegrityManager({ open, onOpenChange }: Props) {
               </div>
             </div>
 
-            <div>
-              <h4 className="text-sm font-medium mb-1">Archive coverage</h4>
-              <div className="grid grid-cols-3 gap-2">
-                {stat('missing matches', report.missing_total, true)}
-                {stat('orphan matches', report.orphan_total, true)}
-                {stat('duplicate games', report.duplicate_total, true)}
-              </div>
-            </div>
+            {(() => {
+              const gamelessTotal = report.gameless_total ?? report.seasons.reduce((n, s) => n + (s.gameless?.length || 0), 0)
+              const unverified = report.seasons.filter((s) => s.unverified).map((s) => s.season)
+              return (
+                <>
+                  <div>
+                    <h4 className="text-sm font-medium mb-1">Match coverage</h4>
+                    <div className="grid grid-cols-4 gap-2">
+                      {stat('missing', report.missing_total, true)}
+                      {stat('orphan', report.orphan_total, true)}
+                      {stat('duplicate games', report.duplicate_total, true)}
+                      {stat('gameless', gamelessTotal)}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Missing/orphan/duplicates are problems. “Gameless” = forfeits/byes recorded with no games (fine).
+                      {unverified.length > 0 && ` Seasons with no reference source (unverified): ${unverified.join(', ')}.`}
+                    </p>
+                  </div>
 
-            {report.missing_total > 0 && (
-              <Detail title="Missing (in archive, not in DB)" items={report.missing.map((m) => `S${m.season} · ${m.match_key}`)} />
-            )}
-            {report.orphan_total > 0 && (
-              <Detail title="Orphan (in DB, not in archive)" items={report.orphan.map((o) => `S${o.season} · ${o.match_key}`)} />
-            )}
-            {report.duplicate_total > 0 && (
-              <Detail title="Duplicate games" items={report.duplicates.map((d) => `${d.match_key} r${d.round_number} g${d.game_number} ×${d.count}`)} />
-            )}
+                  {/* Per-season source + counts */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-1">By season</h4>
+                    <ScrollArea className="max-h-[180px] border rounded-lg">
+                      <div className="p-2 space-y-0.5 text-xs">
+                        {report.seasons.slice().sort((a, b) => a.season - b.season).map((s) => {
+                          const bad = s.missing.length > 0 || s.orphan.length > 0
+                          return (
+                            <div key={s.season} className="flex items-center justify-between gap-2 px-1">
+                              <span className="font-medium">S{s.season}</span>
+                              <span className="text-muted-foreground">{s.source ?? '—'}</span>
+                              <span className="flex-1 text-right">
+                                {s.dbCount}/{s.refCount ?? 0} matches
+                                {bad && <span className="text-red-600"> · {s.missing.length} missing · {s.orphan.length} orphan</span>}
+                                {s.unverified && <span className="text-amber-600"> · unverified</span>}
+                                {(s.gameless?.length || 0) > 0 && <span className="text-muted-foreground"> · {s.gameless!.length} gameless</span>}
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </ScrollArea>
+                  </div>
+
+                  {report.missing_total > 0 && (
+                    <Detail title="Missing (in source, not in DB)" items={report.missing.map((m) => `S${m.season} · ${m.match_key}`)} />
+                  )}
+                  {report.orphan_total > 0 && (
+                    <Detail title="Orphan (in DB, not in source)" items={report.orphan.map((o) => `S${o.season} · ${o.match_key}`)} />
+                  )}
+                  {report.duplicate_total > 0 && (
+                    <Detail title="Duplicate games" items={report.duplicates.map((d) => `${d.match_key} r${d.round_number} g${d.game_number} ×${d.count}`)} />
+                  )}
+                </>
+              )
+            })()}
           </div>
         ) : null}
       </DialogContent>

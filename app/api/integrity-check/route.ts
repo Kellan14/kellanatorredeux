@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getSessionUser, isAdminUser } from '@/lib/auth'
-import { healEdits, checkArchiveCoverage, getDbSeasons } from '@/lib/integrity'
+import { healEdits, checkCoverage, getDbSeasons } from '@/lib/integrity'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -62,11 +62,14 @@ export async function GET(request: Request) {
       const { data: maxRow } = await supabase.from('games').select('season').order('season', { ascending: false }).limit(1)
       seasons = maxRow?.[0]?.season ? [maxRow[0].season] : []
     }
-    const coverage = await checkArchiveCoverage(supabase, seasons)
+    const coverage = await checkCoverage(supabase, seasons)
 
     const duplicateTotal = coverage.duplicateGames.length
+    // Missing/orphan/duplicates fail the check; gameless & unverified are informational.
     const ok = coverage.missingTotal === 0 && coverage.orphanTotal === 0 && duplicateTotal === 0
 
+    // Columns that exist on integrity_reports (gameless & per-season source live
+    // inside the `seasons` JSONB, so no schema change is needed).
     const report = {
       scope: triggeredBy === 'cron' ? scope : 'manual',
       healed_names: heal.healedNames,
@@ -90,8 +93,9 @@ export async function GET(request: Request) {
       console.error('[integrity] failed to store report:', e)
     }
 
-    console.log(`[integrity] scope=${scope} healed(${heal.healedNames}/${heal.healedKeys}/${heal.healedSubLinks}) missing=${coverage.missingTotal} orphan=${coverage.orphanTotal} dup=${duplicateTotal}`)
-    return NextResponse.json({ success: true, report })
+    console.log(`[integrity] scope=${scope} healed(${heal.healedNames}/${heal.healedKeys}/${heal.healedSubLinks}) missing=${coverage.missingTotal} orphan=${coverage.orphanTotal} gameless=${coverage.gamelessTotal} dup=${duplicateTotal}`)
+    // gamelessTotal is returned for the UI but not stored as a column.
+    return NextResponse.json({ success: true, report: { ...report, gameless_total: coverage.gamelessTotal } })
   } catch (error) {
     console.error('[integrity] error:', error)
     return NextResponse.json({ error: 'Integrity check failed' }, { status: 500 })
