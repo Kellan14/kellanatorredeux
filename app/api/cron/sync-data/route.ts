@@ -103,11 +103,19 @@ export async function GET(request: Request) {
   const supabase = createClient(supabaseUrl, supabaseKey)
   const { searchParams } = new URL(request.url)
   const fullImport = searchParams.get('full') === 'true'
+  // Explicit season list, e.g. ?seasons=17,19 — used to backfill specific
+  // (including pre-MIN_SEASON) seasons from the archive. Overrides full/current.
+  const seasonsParam = searchParams.get('seasons')
+  // Skip the (heavy, delete-all) cache rebuild — for targeted backfills; the
+  // nightly full sync rebuilds every cache from a full scan anyway.
+  const skipCache = searchParams.get('skipCache') === 'true'
 
   // Detect the current season instead of hardcoding, so this keeps working
   // when a new season starts.
   const currentSeason = await detectCurrentSeason(supabase)
-  const seasons = fullImport
+  const seasons = seasonsParam
+    ? seasonsParam.split(',').map((s) => parseInt(s.trim(), 10)).filter((n) => Number.isFinite(n))
+    : fullImport
     ? Array.from({ length: currentSeason - MIN_SEASON + 1 }, (_, i) => MIN_SEASON + i)
     : [currentSeason]
 
@@ -398,13 +406,12 @@ export async function GET(request: Request) {
     // actually have new games to insert, so a failed fetch never empties the
     // table. The delete+insert window is a few seconds.
     if (gamesBatch.length > 0) {
-      if (fullImport) {
-        await supabase.from('games').delete().in('season', seasons)
-        await supabase.from('player_match_participation').delete().in('season', seasons)
-      } else {
-        await supabase.from('games').delete().eq('season', currentSeason)
-        await supabase.from('player_match_participation').delete().eq('season', currentSeason)
-      }
+      // Delete exactly the seasons we're re-importing (current, full range, or an
+      // explicit ?seasons= list). Previously this was gated on fullImport and
+      // otherwise deleted currentSeason — which, for a targeted ?seasons= run,
+      // wiped the current season and duplicated the requested seasons.
+      await supabase.from('games').delete().in('season', seasons)
+      await supabase.from('player_match_participation').delete().in('season', seasons)
     }
 
     // Insert games in batches
@@ -425,15 +432,27 @@ export async function GET(request: Request) {
       }
     }
 
-    // Insert participations (use insert, not upsert - we delete first so no conflicts)
-    if (participationsBatch.length > 0) {
-      console.log(`[cron/sync-data] Inserting ${participationsBatch.length} participations...`)
+    // Deduplicate by (match_id, player_key): a match can list the same player
+    // twice (e.g. a substitute who also played their own slot), which violates
+    // UNIQUE(match_id, player_key) and would fail the whole batch. Keep the first.
+    const seenParticipation = new Set<string>()
+    const dedupedParticipations = participationsBatch.filter((p) => {
+      const k = `${p.match_id}|${p.player_key}`
+      if (seenParticipation.has(k)) return false
+      seenParticipation.add(k)
+      return true
+    })
+
+    // Insert participations. upsert + ignoreDuplicates tolerates any residual
+    // conflict (e.g. a prior delete that didn't fully clear) without failing the batch.
+    if (dedupedParticipations.length > 0) {
+      console.log(`[cron/sync-data] Inserting ${dedupedParticipations.length} participations (${participationsBatch.length - dedupedParticipations.length} intra-match dups dropped)...`)
       const insertBatchSize = 500
-      for (let i = 0; i < participationsBatch.length; i += insertBatchSize) {
-        const batch = participationsBatch.slice(i, i + insertBatchSize)
+      for (let i = 0; i < dedupedParticipations.length; i += insertBatchSize) {
+        const batch = dedupedParticipations.slice(i, i + insertBatchSize)
         const { error } = await supabase
           .from('player_match_participation')
-          .insert(batch)
+          .upsert(batch, { onConflict: 'match_id,player_key', ignoreDuplicates: true })
         if (error) console.error(`[cron/sync-data] Error inserting participations batch ${i}:`, error.message)
       }
     }
@@ -545,10 +564,10 @@ export async function GET(request: Request) {
     }
 
     // ===== PRE-COMPUTE CACHE TABLES =====
-    console.log('[cron/sync-data] Building cache tables...')
+    console.log(skipCache ? '[cron/sync-data] Skipping cache rebuild (targeted backfill)' : '[cron/sync-data] Building cache tables...')
     let cacheStats = { teamMachine: 0, playerMachine: 0, topScores: 0 }
 
-    try {
+    if (!skipCache) try {
       // Build a player name standardization map from the mappings we just applied
       const nameStdMap = new Map<string, string>()
       {
