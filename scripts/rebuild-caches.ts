@@ -129,7 +129,7 @@ async function main() {
     avg_score: a.gameCount > 0 ? Math.round(a.totalScore / a.gameCount) : 0, total_points: a.totalPoints, possible_points: a.possiblePoints,
   }))
   const topRows: any[] = []
-  for (const [key, scores] of topScoresAgg.entries()) {
+  for (const [key, scores] of Array.from(topScoresAgg.entries())) {
     const [machine, venueStr, seasonStr] = key.split('|')
     const venue = venueStr === '__ALL__' ? null : venueStr
     const season = seasonStr === '__ALL__' ? null : parseInt(seasonStr)
