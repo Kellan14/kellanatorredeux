@@ -50,6 +50,7 @@ import {
 } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Loader2, X, ChevronDown, ChevronUp, Target, Users, Info, Check, ArrowUp, ArrowDown, ArrowUpDown, Send } from 'lucide-react'
+import { AlexLoader } from '@/components/alex-loader'
 import { Input } from '@/components/ui/input'
 import {
   Collapsible,
@@ -2013,7 +2014,7 @@ export default function StrategyPage() {
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="flex items-center justify-center p-12">
-            <Loader2 className="h-8 w-8 animate-spin mr-2" />
+            <AlexLoader className="mr-2" />
             <span>Loading venues and teams...</span>
           </CardContent>
         </Card>
@@ -2129,7 +2130,7 @@ export default function StrategyPage() {
 
           {loading && (
             <div className="flex items-center justify-center p-12">
-              <Loader2 className="h-8 w-8 animate-spin mr-2" />
+              <AlexLoader className="mr-2" />
               <span>Loading strategic analysis...</span>
             </div>
           )}
@@ -4546,7 +4547,7 @@ export default function StrategyPage() {
 
                   {loadingAnalysis && (
                     <div className="flex items-center justify-center p-12">
-                      <Loader2 className="h-8 w-8 animate-spin mr-2" />
+                      <AlexLoader className="mr-2" />
                       <span>Loading player analysis...</span>
                     </div>
                   )}
@@ -5063,7 +5064,7 @@ export default function StrategyPage() {
 
           {loadingDetails && (
             <div className="flex items-center justify-center p-12">
-              <Loader2 className="h-8 w-8 animate-spin mr-2" />
+              <AlexLoader className="mr-2" />
               <span>Loading details...</span>
             </div>
           )}

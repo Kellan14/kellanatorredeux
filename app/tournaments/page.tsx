@@ -22,7 +22,8 @@ import {
   type MachineStats,
   type ProcessedScore
 } from '@/lib/tournament-data'
-import { Loader2, Trophy, Target, TrendingUp } from 'lucide-react'
+import { Trophy, Target, TrendingUp } from 'lucide-react'
+import { AlexLoader } from '@/components/alex-loader'
 
 export default function TournamentsPage() {
   const [loading, setLoading] = useState(true)
@@ -91,7 +92,7 @@ export default function TournamentsPage() {
   if (loading) {
     return (
       <div className="container flex items-center justify-center min-h-[calc(100vh-3.5rem)]">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <AlexLoader />
       </div>
     )
   }

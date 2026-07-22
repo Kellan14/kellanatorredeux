@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Loader2, RefreshCw, CheckCircle2, AlertTriangle } from 'lucide-react'
+import { AlexLoader } from '@/components/alex-loader'
 import { authFetch } from '@/lib/auth-fetch'
 
 interface IntegrityReport {
@@ -115,7 +116,7 @@ export function IntegrityManager({ open, onOpenChange }: Props) {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
+          <div className="flex items-center justify-center py-10"><AlexLoader /></div>
         ) : neverRun ? (
           <div className="border rounded-lg p-4 text-sm text-muted-foreground">No integrity check has run yet. Click “Run full check”.</div>
         ) : report ? (

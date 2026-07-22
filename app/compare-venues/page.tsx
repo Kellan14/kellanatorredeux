@@ -7,7 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
-import { Loader2, ArrowUpDown } from 'lucide-react'
+import { ArrowUpDown } from 'lucide-react'
+import { AlexLoader } from '@/components/alex-loader'
 import { getMachineDisplayName } from '@/lib/machine-mappings'
 
 interface Venue {
@@ -309,7 +310,7 @@ export default function CompareVenuesPage() {
 
       {selected.length >= 2 && loading && (
         <div className="flex items-center justify-center p-12">
-          <Loader2 className="h-6 w-6 animate-spin mr-2" />
+          <AlexLoader size={44} className="mr-2" />
           <span className="text-sm">Loading comparison…</span>
         </div>
       )}

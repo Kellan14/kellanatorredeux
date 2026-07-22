@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
+import { AlexLoader } from '@/components/alex-loader'
 import { VenueMachineListManager } from '@/components/venue-machine-list-manager'
 import { MachineMappingManager } from '@/components/machine-mapping-manager'
 import { PlayerMappingManager } from '@/components/player-mapping-manager'
@@ -313,7 +314,7 @@ export default function OptionsPage() {
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="flex items-center justify-center p-12">
-            <Loader2 className="h-8 w-8 animate-spin mr-2" />
+            <AlexLoader className="mr-2" />
             <span>Loading...</span>
           </CardContent>
         </Card>
@@ -636,7 +637,7 @@ export default function OptionsPage() {
 
           {loadingActiveVenues ? (
             <div className="flex items-center justify-center p-8">
-              <Loader2 className="h-6 w-6 animate-spin mr-2" />
+              <AlexLoader size={44} className="mr-2" />
               <span>Loading venues...</span>
             </div>
           ) : (

@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { PlayerCombobox } from '@/components/ui/player-combobox'
 import { Loader2, RefreshCw, Wand2, Link2, Unlink } from 'lucide-react'
+import { AlexLoader } from '@/components/alex-loader'
 import { authFetch } from '@/lib/auth-fetch'
 
 interface SubLink {
@@ -152,7 +153,7 @@ export function SubLinkManager({ open, onOpenChange }: Props) {
         </DialogHeader>
 
         {loading ? (
-          <div className="flex items-center justify-center py-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
+          <div className="flex items-center justify-center py-10"><AlexLoader /></div>
         ) : needsMigration ? (
           <div className="space-y-4">
             <div className="border rounded-lg p-4 bg-yellow-500/10 text-sm">

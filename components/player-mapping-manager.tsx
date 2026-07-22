@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { X, Plus, Save, Loader2, Pencil, Trash2, Users, Database, ArrowUp } from 'lucide-react'
+import { AlexLoader } from '@/components/alex-loader'
 import { Checkbox } from '@/components/ui/checkbox'
 import { authFetch } from '@/lib/auth-fetch'
 
@@ -501,7 +502,7 @@ export function PlayerMappingManager({
 
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin" />
+            <AlexLoader />
           </div>
         ) : (
           <div className="space-y-6">

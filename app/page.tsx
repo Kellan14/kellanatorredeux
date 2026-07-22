@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Trophy, Target, TrendingUp, Users, Calendar, BarChart3, Percent, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, ArrowUpDown, ArrowUp, ArrowDown, LineChart, Loader2, Check, Send } from 'lucide-react'
+import { AlexLoader } from '@/components/alex-loader'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
@@ -2521,7 +2522,7 @@ function HomePageContent() {
 
               {loadingTopPickCell && (
                 <div className="flex items-center justify-center p-12">
-                  <Loader2 className="h-8 w-8 animate-spin mr-2" />
+                  <AlexLoader className="mr-2" />
                   <span>Loading details...</span>
                 </div>
               )}

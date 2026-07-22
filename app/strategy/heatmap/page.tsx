@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { PerformanceMatrix } from '@/components/strategy/PerformanceMatrix'
 import type { PlayerMachineStats } from '@/types/strategy'
-import { Loader2 } from 'lucide-react'
+import { AlexLoader } from '@/components/alex-loader'
 
 function HeatmapContent() {
   const searchParams = useSearchParams()
@@ -111,7 +111,7 @@ function HeatmapContent() {
 
       {loading && (
         <div className="flex items-center justify-center flex-1">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400 mr-2" />
+          <AlexLoader className="mr-2" />
           <span className="text-gray-400">Loading performance matrix...</span>
         </div>
       )}
@@ -137,7 +137,7 @@ export default function HeatmapPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400 mr-2" />
+        <AlexLoader className="mr-2" />
         <span className="text-gray-400">Loading...</span>
       </div>
     }>

@@ -28,7 +28,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ChevronUp, ChevronDown, Loader2, ArrowUp, ArrowDown } from 'lucide-react'
+import { ChevronUp, ChevronDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { AlexLoader } from '@/components/alex-loader'
 import { type MachineStats } from '@/lib/tournament-data'
 import { VenueMachineListManager } from '@/components/venue-machine-list-manager'
 import { MachineMappingManager } from '@/components/machine-mapping-manager'
@@ -672,7 +673,7 @@ export default function StatsPage() {
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="flex items-center justify-center p-12">
-            <Loader2 className="h-8 w-8 animate-spin mr-2" />
+            <AlexLoader className="mr-2" />
             <span>Loading venues and teams...</span>
           </CardContent>
         </Card>
@@ -1079,7 +1080,7 @@ export default function StatsPage() {
 
           {loading && (
             <div className="flex items-center justify-center p-12">
-              <Loader2 className="h-8 w-8 animate-spin mr-2" />
+              <AlexLoader className="mr-2" />
               <span>Loading statistics...</span>
             </div>
           )}
@@ -1162,7 +1163,7 @@ export default function StatsPage() {
 
           {loadingDetails && (
             <div className="flex items-center justify-center p-12">
-              <Loader2 className="h-8 w-8 animate-spin mr-2" />
+              <AlexLoader className="mr-2" />
               <span>Loading details...</span>
             </div>
           )}
