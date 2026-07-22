@@ -637,7 +637,7 @@ export default function OptionsPage() {
 
           {loadingActiveVenues ? (
             <div className="flex items-center justify-center p-8">
-              <AlexLoader size={44} className="mr-2" />
+              <AlexLoader size={88} className="mr-2" />
               <span>Loading venues...</span>
             </div>
           ) : (

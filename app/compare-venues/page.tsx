@@ -310,7 +310,7 @@ export default function CompareVenuesPage() {
 
       {selected.length >= 2 && loading && (
         <div className="flex items-center justify-center p-12">
-          <AlexLoader size={44} className="mr-2" />
+          <AlexLoader size={88} className="mr-2" />
           <span className="text-sm">Loading comparison…</span>
         </div>
       )}
