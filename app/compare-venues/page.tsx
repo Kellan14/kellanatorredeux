@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/table'
 import { ArrowUpDown } from 'lucide-react'
 import { AlexLoader } from '@/components/alex-loader'
-import { getMachineDisplayName } from '@/lib/machine-mappings'
+import { useMachineCanon } from '@/hooks/use-machine-canon'
 
 interface Venue {
   key: string
@@ -37,6 +37,8 @@ interface CompareRow {
 type SortKey = 'machine' | { type: 'avg' | 'top' | 'games'; venue: string }
 
 export default function CompareVenuesPage() {
+  // Long form is the sitewide display name; the canon lives in the DB.
+  const { display: getMachineDisplayName } = useMachineCanon()
   const [allVenues, setAllVenues] = useState<Venue[]>([])
   const [availableSeasons, setAvailableSeasons] = useState<number[]>([20, 21, 22, 23])
   const [selected, setSelected] = useState<string[]>([])

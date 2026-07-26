@@ -28,10 +28,12 @@ import {
 } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import { getMachineImagePath } from '@/lib/machine-images'
-import { getMachineDisplayName } from '@/lib/machine-mappings'
+import { useMachineCanon } from '@/hooks/use-machine-canon'
 import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts'
 
 function HomePageContent() {
+  // Long form is the sitewide display name; the canon lives in the DB.
+  const { display: getMachineDisplayName } = useMachineCanon()
   const searchParams = useSearchParams()
   const viewPlayerParam = searchParams.get('viewPlayer')
 

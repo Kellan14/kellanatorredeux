@@ -58,7 +58,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import { getMachineImagePath } from '@/lib/machine-images'
-import { getMachineDisplayName } from '@/lib/machine-mappings'
+import { useMachineCanon } from '@/hooks/use-machine-canon'
 import { MachinePicker } from '@/components/strategy/MachinePicker'
 import { TwcPlayerAvailability } from '@/components/twc-player-availability'
 import { PlayerAvailability } from '@/components/player-availability'
@@ -129,6 +129,8 @@ interface PlayerAssignment {
 }
 
 export default function StrategyPage() {
+  // Long form is the sitewide display name; the canon lives in the DB.
+  const { display: getMachineDisplayName } = useMachineCanon()
   // State
   const [venues, setVenues] = useState<Venue[]>([])
   const [teams, setTeams] = useState<Team[]>([])

@@ -22,7 +22,7 @@ import { Trophy, Target, Calendar, BarChart3, Percent, ChevronRight, ChevronDown
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { getMachineImagePath } from '@/lib/machine-images'
-import { getMachineDisplayName } from '@/lib/machine-mappings'
+import { useMachineCanon } from '@/hooks/use-machine-canon'
 import { usePlayerNames } from '@/hooks/use-player-names'
 
 interface Top10Entry {
@@ -84,6 +84,8 @@ interface Venue {
 }
 
 export default function PlayerProfilePage() {
+  // Long form is the sitewide display name; the canon lives in the DB.
+  const { display: getMachineDisplayName } = useMachineCanon()
   const router = useRouter()
   const { players } = usePlayerNames()
   const [selectedPlayer, setSelectedPlayer] = useState<string>('')
