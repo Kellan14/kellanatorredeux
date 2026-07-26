@@ -1,20 +1,10 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName } from '@/lib/venue-mappings'
 import { orEqAcrossColumnsMulti } from '@/lib/pg-filter'
 import { getAllPlayerNames, getCanonicalPlayerName } from '@/lib/players'
 
 const PLAYER_NAME_COLUMNS = ['player_1_name', 'player_2_name', 'player_3_name', 'player_4_name']
-
-// Helper to standardize machine names using mappings
-function standardizeMachineName(machineName: string): string {
-  const lowerName = machineName.toLowerCase()
-  if (machineMappings[lowerName]) {
-    return machineMappings[lowerName]
-  }
-  return machineName
-}
 
 // Helper to check if a player name matches (considering sub variants)
 function playerMatches(gameName: string | null, targetName: string): boolean {
@@ -199,7 +189,7 @@ export async function GET(request: Request) {
       }> = []
 
       for (const game of allGames) {
-        const machineName = standardizeMachineName(game.machine)
+        const machineName = game.machine
         if (machineName.toLowerCase() !== machineFilter.toLowerCase() &&
             game.machine.toLowerCase() !== machineFilter.toLowerCase()) {
           continue
@@ -304,7 +294,7 @@ export async function GET(request: Request) {
 
         if (!roundMap.has(game.round_number)) {
           roundMap.set(game.round_number, {
-            machine: standardizeMachineName(game.machine),
+            machine: game.machine,
             player1Score: null,
             player1Points: null,
             player2Score: null,
@@ -378,7 +368,7 @@ export async function GET(request: Request) {
     for (const game of games) {
       const gamePlayerNames = [game.player_1_name, game.player_2_name, game.player_3_name, game.player_4_name]
       if (gamePlayerNames.some(name => playerMatches(name, player1))) {
-        player1Machines.add(standardizeMachineName(game.machine))
+        player1Machines.add(game.machine)
       }
     }
 
@@ -397,7 +387,7 @@ export async function GET(request: Request) {
     for (const game of player2AllGames) {
       const gamePlayerNames = [game.player_1_name, game.player_2_name, game.player_3_name, game.player_4_name]
       if (gamePlayerNames.some(name => playerMatches(name, player2))) {
-        player2Machines.add(standardizeMachineName(game.machine))
+        player2Machines.add(game.machine)
       }
     }
 

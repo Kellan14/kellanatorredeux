@@ -9,7 +9,6 @@ import {
   type ScoreWeights
 } from './calculator'
 import { calculatePlayerMachineStats, calculatePairStats, type UserInputData, type AvgMethod } from './stats-calculator'
-import { getAllMachineVariations, getCanonicalMachineKey } from '../machine-mappings'
 import { createClient } from '@supabase/supabase-js'
 import type {
   OptimizationResult,
@@ -33,7 +32,7 @@ async function fetchUserInputs(
   if (!supabaseUrl || !supabaseKey) return result
 
   // Query all machine name variations since user_machine_inputs stores display names
-  const machineVariations = getAllMachineVariations(machines)
+  const machineVariations = machines
 
   const supabase = createClient(supabaseUrl, supabaseKey)
   let query = supabase
@@ -52,7 +51,7 @@ async function fetchUserInputs(
 
   for (const row of data) {
     // Normalize stored machine name to canonical key for matching
-    const canonical = getCanonicalMachineKey(row.machine)
+    const canonical = row.machine
     const machineKey = machines.includes(canonical) ? canonical
       : machines.find(m => m.toLowerCase() === canonical.toLowerCase()) || canonical
     if (!result.has(row.player_name)) {

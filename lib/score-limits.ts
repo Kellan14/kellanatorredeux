@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-import { getMachineVariations } from '@/lib/machine-mappings'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -31,14 +30,12 @@ export async function getScoreLimits(): Promise<Record<string, number>> {
       return cachedLimits || {}
     }
 
-    // Convert to {machine: max_score} format, expanding all name variations
+    // score_limits.machine is a canon key, as is every machine name the callers
+    // pass in, so one case-folded entry per row matches exactly. This used to
+    // fan out over spelling variations, which still missed limits stored under
+    // a display name (Star Trek (Stern) and Black Knight SOR matched nothing).
     const limits: Record<string, number> = {}
     for (const row of data || []) {
-      const variations = getMachineVariations(row.machine)
-      for (const variation of variations) {
-        limits[variation.toLowerCase()] = row.max_score
-      }
-      // Also store the original name
       limits[row.machine.toLowerCase()] = row.max_score
     }
 

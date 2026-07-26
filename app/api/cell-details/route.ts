@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, fetchAllRecords } from '@/lib/supabase';
 import { getVenueVariations } from '@/lib/venue-mappings';
-import { machineMappings } from '@/lib/machine-mappings';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,19 +73,8 @@ export async function GET(request: NextRequest) {
 
     // Query games from Supabase for the specified machine and seasons
     // Only filter by venue if the venue-specific flag is set for this team
-    // Build list of possible machine name variations (DB key, display name, etc.)
+    // games.machine is a canon key, so the caller's key matches exactly.
     const machineVariations = new Set<string>([machine])
-    const machineLower = machine.toLowerCase().trim()
-    // Check if the machine name maps to a DB value
-    const mapped = machineMappings[machineLower] || machineMappings[machine]
-    if (mapped) machineVariations.add(mapped)
-    // Also check if any mapping values match (reverse lookup)
-    Object.entries(machineMappings).forEach(([alias, dbValue]) => {
-      if (dbValue.toLowerCase() === machineLower || alias.toLowerCase().trim() === machineLower) {
-        machineVariations.add(alias)
-        machineVariations.add(dbValue)
-      }
-    })
 
     let gamesData
     try {

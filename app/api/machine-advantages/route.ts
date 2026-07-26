@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getVenueVariations } from '@/lib/venue-mappings'
-import { getAllMachineVariations, machineMappings } from '@/lib/machine-mappings'
 import { getTeamRoster } from '@/lib/team-roster'
 import { aggregateAvg, type AvgMethod } from '@/lib/strategy/stats-calculator'
 
@@ -56,9 +55,7 @@ export async function GET(request: Request) {
     // Build a lookup from any variation of a machine name to its canonical (venues.json) name
     const machineVariationToCanonical = new Map<string, string>()
     for (const machine of machinesAtVenue) {
-      for (const variation of getAllMachineVariations([machine])) {
-        machineVariationToCanonical.set(variation, machine)
-      }
+      machineVariationToCanonical.set(machine, machine)
     }
     const allMachineVariations = new Set(machineVariationToCanonical.keys())
 

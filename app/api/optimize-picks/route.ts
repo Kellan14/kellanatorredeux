@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
 import { getVenueVariations } from '@/lib/venue-mappings'
-import { getAllMachineVariations, getCanonicalMachineKey } from '@/lib/machine-mappings'
 import { calculatePlayerMachineStats, type UserInputData } from '@/lib/strategy/stats-calculator'
 import { calculatePerformanceScore, type ScoreWeights } from '@/lib/strategy/calculator'
 import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
@@ -237,7 +236,7 @@ export async function POST(request: Request) {
     const venueVariations = getVenueVariations(venue)
 
     // Fetch user inputs (self-reported averages and confidence) from user_machine_inputs table
-    const machineVariations = getAllMachineVariations(machinesAtVenue)
+    const machineVariations = machinesAtVenue
     const userInputMap = new Map<string, Map<string, UserInputData>>()
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -253,7 +252,7 @@ export async function POST(request: Request) {
 
       if (uiData) {
         for (const row of uiData) {
-          const canonicalMachine = getCanonicalMachineKey(row.machine)
+          const canonicalMachine = row.machine
           const machineKey = machinesAtVenue.includes(canonicalMachine) ? canonicalMachine
             : machinesAtVenue.find(m => m.toLowerCase() === canonicalMachine.toLowerCase()) || canonicalMachine
           if (!userInputMap.has(row.player_name)) userInputMap.set(row.player_name, new Map())

@@ -1,17 +1,7 @@
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import type { PlayerMachineStats, ScoreBreakdown, ScoreEntry } from '@/types/strategy'
 import { getVenueVariations } from '@/lib/venue-mappings'
-import { getMachineVariations, machineMappings } from '@/lib/machine-mappings'
 import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
-
-// Helper to standardize machine name using mappings
-function standardizeMachineName(machineName: string): string {
-  const lowerName = machineName.toLowerCase()
-  if (machineMappings[lowerName]) {
-    return machineMappings[lowerName]
-  }
-  return machineName
-}
 
 /**
  * Calculate player-machine stats from games table
@@ -67,21 +57,12 @@ export async function calculatePlayerMachineStats(
   // Build a lookup: any machine name variation → original input machine name
   // This ensures DB values like "DP" map back to the input key "DP" even when
   // standardizeMachineName converts "DP" to "Deadpool " (a display name)
-  const allMachineVariations: string[] = []
+  // Machine names are canon keys everywhere now (machine_canon), so matching is
+  // an exact lookup rather than a fan-out over spelling variations.
+  const allMachineVariations: string[] = Array.from(new Set(machines))
   const variationToInput = new Map<string, string>()
   for (const machine of machines) {
     variationToInput.set(machine.toLowerCase().trim(), machine)
-    const standardized = standardizeMachineName(machine)
-    variationToInput.set(standardized.toLowerCase().trim(), machine)
-    const variations = getMachineVariations(machine)
-    for (const v of variations) {
-      if (!allMachineVariations.includes(v)) {
-        allMachineVariations.push(v)
-      }
-      variationToInput.set(v.toLowerCase().trim(), machine)
-      const stdV = standardizeMachineName(v)
-      variationToInput.set(stdV.toLowerCase().trim(), machine)
-    }
   }
 
   // Optionally get venue variations
@@ -188,40 +169,8 @@ export async function calculatePlayerMachineStats(
     const rawMachine = userScore.machine || ''
     const rawMachineLower = rawMachine.toLowerCase().trim()
 
-    // Try to find the input machine name - check multiple ways
-    let inputMachine = variationToInput.get(rawMachineLower)
-
-    // If not found, try standardizing the machine name
-    if (!inputMachine) {
-      const standardized = standardizeMachineName(rawMachine)
-      inputMachine = variationToInput.get(standardized.toLowerCase().trim())
-    }
-
-    // If still not found, check if the user score's machine name maps to one of our target machines
-    // e.g., "James Bond 007 (Thunderball/Dr No)" -> "007"
-    if (!inputMachine) {
-      const mappedValue = machineMappings[rawMachineLower] || machineMappings[rawMachine]
-      if (mappedValue) {
-        const mappedLower = mappedValue.toLowerCase().trim()
-        inputMachine = variationToInput.get(mappedLower)
-        if (!inputMachine) {
-          // Also check if the mapped value is in our machines list
-          inputMachine = machines.find(m => m.toLowerCase().trim() === mappedLower)
-        }
-      }
-    }
-
-    // If still not found, try to match against the machines list directly
-    if (!inputMachine) {
-      for (const m of machines) {
-        const mVariations = getMachineVariations(m)
-        if (mVariations.some(v => v.toLowerCase() === rawMachineLower)) {
-          inputMachine = m
-          break
-        }
-      }
-    }
-
+    // user_machine_scores.machine is a canon key, same as the requested list.
+    const inputMachine = variationToInput.get(rawMachineLower)
     if (!inputMachine) continue
 
     // Filter out scores that exceed machine score limits
@@ -724,21 +673,12 @@ export async function calculatePairStats(
   seasonEnd: number = 22
 ): Promise<Map<string, { winRate: number; gamesPlayed: number }>> {
   // Build variation lookup (same approach as calculatePlayerMachineStats)
-  const allMachineVariations: string[] = []
+  // Machine names are canon keys everywhere now (machine_canon), so matching is
+  // an exact lookup rather than a fan-out over spelling variations.
+  const allMachineVariations: string[] = Array.from(new Set(machines))
   const variationToInput = new Map<string, string>()
   for (const machine of machines) {
     variationToInput.set(machine.toLowerCase().trim(), machine)
-    const standardized = standardizeMachineName(machine)
-    variationToInput.set(standardized.toLowerCase().trim(), machine)
-    const variations = getMachineVariations(machine)
-    for (const v of variations) {
-      if (!allMachineVariations.includes(v)) {
-        allMachineVariations.push(v)
-      }
-      variationToInput.set(v.toLowerCase().trim(), machine)
-      const stdV = standardizeMachineName(v)
-      variationToInput.set(stdV.toLowerCase().trim(), machine)
-    }
   }
 
   // Fetch all relevant games with proper pagination (MUST use .order('id') for consistent results)

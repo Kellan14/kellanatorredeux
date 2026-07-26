@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, fetchAllRecords } from '@/lib/supabase';
 
-import { machineMappings } from '@/lib/machine-mappings';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
@@ -99,11 +98,7 @@ export async function GET(request: NextRequest) {
 
     // Parse venue machines if provided
     const venueMachines = machinesParam
-      ? machinesParam.split(',').map(m => {
-          const lower = m.trim().toLowerCase();
-          const mapped = machineMappings[lower];
-          return mapped ? mapped.toLowerCase() : lower;
-        })
+      ? machinesParam.split(',').map(m => m.trim().toLowerCase())
       : null;
 
     // Build a map of machine -> Set of unique players who played it ANYWHERE in the league
@@ -113,14 +108,8 @@ export async function GET(request: NextRequest) {
     // Try cache-first: use cache_player_machine_stats (venue=NULL = all-venues)
     let usedCache = false;
     if (venueMachines) {
-      // Build all machine variations to search for
-      const machineSearchKeys: string[] = [];
-      for (const vm of venueMachines) {
-        machineSearchKeys.push(vm);
-        // Also add the raw form in case cache stored it differently
-        const mapped = machineMappings[vm];
-        if (mapped) machineSearchKeys.push(mapped.toLowerCase());
-      }
+      // The cache is keyed by canon key (case-folded), same as venueMachines.
+      const machineSearchKeys: string[] = [...venueMachines];
 
       const { data: cacheData } = await supabase
         .from('cache_player_machine_stats' as any)
@@ -134,12 +123,8 @@ export async function GET(request: NextRequest) {
       if (cacheData && cacheData.length > 0) {
         usedCache = true;
         for (const row of cacheData) {
-          const normalizedMachine = row.machine.toLowerCase();
-          // Map back to venue machine name
-          const mappedBack = machineMappings[normalizedMachine];
-          const key = mappedBack ? mappedBack.toLowerCase() : normalizedMachine;
-          if (!venueMachines.includes(key) && !venueMachines.includes(normalizedMachine)) continue;
-          const machineKey = venueMachines.includes(key) ? key : normalizedMachine;
+          const machineKey = row.machine.toLowerCase();
+          if (!venueMachines.includes(machineKey)) continue;
 
           if (!activePlayers.has(row.player_name)) continue;
 
@@ -171,9 +156,7 @@ export async function GET(request: NextRequest) {
       }
 
       gamesData.forEach((game: any) => {
-        const rawMachine = (game.machine || '').toLowerCase();
-        const mappedMachine = machineMappings[rawMachine];
-        const normalizedMachine = mappedMachine ? mappedMachine.toLowerCase() : rawMachine;
+        const normalizedMachine = (game.machine || '').toLowerCase();
 
         if (venueMachines && !venueMachines.includes(normalizedMachine)) return;
 

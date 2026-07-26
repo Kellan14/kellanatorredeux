@@ -5,296 +5,267 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { X, Plus, Save, Loader2, Pencil, Trash2 } from 'lucide-react'
+import { RefreshCw, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { AlexLoader } from '@/components/alex-loader'
 import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface MachineMappingManagerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function MachineMappingManager({
-  open,
-  onOpenChange,
-}: MachineMappingManagerProps) {
-  const [mappings, setMappings] = useState<Record<string, string>>({})
-  const [allMachines, setAllMachines] = useState<string[]>([])
-  const [newAlias, setNewAlias] = useState('')
-  const [newStandardized, setNewStandardized] = useState('')
-  const [selectedMachine, setSelectedMachine] = useState<string>('')
-  const [editingAlias, setEditingAlias] = useState<string | null>(null)
-  const [editValue, setEditValue] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
+interface CanonMachine {
+  key: string
+  name: string
+  displayName: string
+  source: 'mnp' | 'local'
+}
 
-  // Load mappings and machines when dialog opens
+interface Alias {
+  alias: string
+  alias_raw: string | null
+  canon_key: string
+  origin: string
+  reason: string | null
+}
+
+interface MachineIssue {
+  raw_value: string
+  table_name: string
+  column_name: string
+  occurrences: number
+  issue_type: 'case' | 'long_form' | 'alias' | 'unmapped' | 'upstream_added' | 'upstream_changed'
+  suggested_key: string | null
+  confidence: 'exact' | 'likely' | 'unknown'
+  seasons: string | null
+  venues: string | null
+}
+
+const ISSUE_LABEL: Record<MachineIssue['issue_type'], string> = {
+  unmapped: 'Not in canon',
+  upstream_added: 'New on MNP',
+  upstream_changed: 'Renamed on MNP',
+  long_form: 'Long form stored',
+  case: 'Wrong case',
+  alias: 'Via alias',
+}
+
+/**
+ * Machine canon manager.
+ *
+ * Shows the canon (short key + long form), the aliases that resolve non-canon
+ * spellings, and the scanner's findings. Read-only by design: canon and alias
+ * edits go through scripts/seed-machine-*.ts so every row records why it exists
+ * and each run is logged to data_provenance.
+ */
+export function MachineMappingManager({ open, onOpenChange }: MachineMappingManagerProps) {
+  const [machines, setMachines] = useState<CanonMachine[]>([])
+  const [aliases, setAliases] = useState<Alias[]>([])
+  const [issues, setIssues] = useState<MachineIssue[]>([])
+  const [scannedAt, setScannedAt] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [scanning, setScanning] = useState(false)
+
   useEffect(() => {
-    if (open) {
-      loadMappings()
-    }
+    if (open) load()
   }, [open])
 
-  const loadMappings = async () => {
+  const load = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/machine-mappings')
-      const data = await response.json()
-      setMappings(data.mappings || {})
-      setAllMachines(data.allMachines || [])
+      const [canonRes, issuesRes] = await Promise.all([
+        fetch('/api/machine-mappings'),
+        fetch('/api/machine-name-issues'),
+      ])
+      if (canonRes.ok) {
+        const data = await canonRes.json()
+        setMachines(data.machines || [])
+        setAliases(data.aliases || [])
+      }
+      if (issuesRes.ok) {
+        const data = await issuesRes.json()
+        setIssues(data.issues || [])
+        setScannedAt(data.scannedAt || null)
+      }
     } catch (error) {
-      console.error('Error loading machine mappings:', error)
+      console.error('Error loading machine canon:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleAddMapping = async () => {
-    if (!newAlias || !newStandardized) return
-
-    setSaving(true)
+  const rescan = async () => {
+    setScanning(true)
     try {
-      const response = await fetch('/api/machine-mappings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          alias: newAlias,
-          standardized: newStandardized,
-        }),
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setMappings(data.mappings)
-        setNewAlias('')
-        setNewStandardized('')
-        setSelectedMachine('')
+      const res = await fetch('/api/machine-name-issues?refresh=true')
+      if (res.ok) {
+        const data = await res.json()
+        setIssues(data.issues || [])
+        setScannedAt(data.scannedAt || null)
       }
     } catch (error) {
-      console.error('Error adding mapping:', error)
+      console.error('Error scanning machine names:', error)
     } finally {
-      setSaving(false)
+      setScanning(false)
     }
   }
 
-  const handleUpdateMapping = async (alias: string) => {
-    if (!editValue) return
-
-    setSaving(true)
-    try {
-      const response = await fetch('/api/machine-mappings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          alias,
-          standardized: editValue,
-        }),
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setMappings(data.mappings)
-        setEditingAlias(null)
-        setEditValue('')
-      }
-    } catch (error) {
-      console.error('Error updating mapping:', error)
-    } finally {
-      setSaving(false)
-    }
+  const q = search.trim().toLowerCase()
+  const shownMachines = q
+    ? machines.filter((m) => m.key.toLowerCase().includes(q) || m.displayName.toLowerCase().includes(q))
+    : machines
+  const aliasesByKey = new Map<string, Alias[]>()
+  for (const a of aliases) {
+    if (!aliasesByKey.has(a.canon_key)) aliasesByKey.set(a.canon_key, [])
+    aliasesByKey.get(a.canon_key)!.push(a)
   }
 
-  const handleDeleteMapping = async (alias: string) => {
-    setSaving(true)
-    try {
-      const response = await fetch(`/api/machine-mappings?alias=${encodeURIComponent(alias)}`, {
-        method: 'DELETE',
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setMappings(data.mappings)
-      }
-    } catch (error) {
-      console.error('Error deleting mapping:', error)
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const handleSelectMachine = (machine: string) => {
-    setSelectedMachine(machine)
-    setNewAlias(machine)
-    setNewStandardized(machine)
-  }
+  const unmapped = issues.filter((i) => i.issue_type === 'unmapped')
+  const upstream = issues.filter((i) => i.issue_type.startsWith('upstream'))
+  const tidy = issues.filter((i) => !['unmapped', 'upstream_added', 'upstream_changed'].includes(i.issue_type))
+  const localCount = machines.filter((m) => m.source === 'local').length
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[85vh]">
         <DialogHeader>
-          <DialogTitle>Standardize Machines</DialogTitle>
+          <DialogTitle>Machine Canon</DialogTitle>
           <DialogDescription>
-            Create mappings from machine aliases to standardized names.
-            This helps ensure consistent machine names across the database.
+            Every machine has a short form (what the APIs use) and a long form (shown across the site).
+            Source of truth is mondaynightpinball.com/machines.
           </DialogDescription>
         </DialogHeader>
 
         {loading ? (
-          <div className="flex items-center justify-center py-8">
+          <div className="py-12 flex justify-center">
             <AlexLoader />
           </div>
         ) : (
-          <div className="space-y-6">
-            {/* Add New Mapping Section */}
-            <div className="space-y-4 border rounded-lg p-4">
-              <h3 className="font-medium">Add New Machine Mapping</h3>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Select a machine from the database</label>
-                <Select value={selectedMachine} onValueChange={handleSelectMachine}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose a machine..." />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {allMachines.map((machine) => (
-                      <SelectItem key={machine} value={machine}>
-                        {machine}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Alias (from database)</label>
-                  <Input
-                    placeholder="e.g., bksor"
-                    value={newAlias}
-                    onChange={(e) => setNewAlias(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Standardized name</label>
-                  <Input
-                    placeholder="e.g., BlackKnight"
-                    value={newStandardized}
-                    onChange={(e) => setNewStandardized(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <Button
-                onClick={handleAddMapping}
-                disabled={!newAlias || !newStandardized || saving}
-                className="w-full"
-              >
-                {saving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Adding...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Mapping
-                  </>
-                )}
+          <div className="space-y-4">
+            {/* Health summary */}
+            <div className="flex flex-wrap items-center gap-3 rounded-lg border p-3">
+              {unmapped.length === 0 ? (
+                <span className="flex items-center gap-2 text-sm font-medium text-green-600">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Every stored machine name resolves to the canon
+                </span>
+              ) : (
+                <span className="flex items-center gap-2 text-sm font-medium text-red-600">
+                  <AlertTriangle className="h-4 w-4" />
+                  {unmapped.length} name{unmapped.length === 1 ? '' : 's'} not in the canon
+                </span>
+              )}
+              <span className="text-xs text-muted-foreground">
+                {machines.length} machines ({localCount} local) · {aliases.length} aliases
+                {scannedAt && ` · scanned ${new Date(scannedAt).toLocaleString()}`}
+              </span>
+              <Button size="sm" variant="outline" className="ml-auto" onClick={rescan} disabled={scanning}>
+                {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                <span className="ml-2">Rescan</span>
               </Button>
             </div>
 
-            {/* Current Mappings Section */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium">Current Machine Mappings ({Object.keys(mappings).length})</h3>
-                <Button variant="outline" size="sm" onClick={loadMappings} disabled={loading}>
-                  Reload
-                </Button>
+            {/* Anything needing a decision */}
+            {(unmapped.length > 0 || upstream.length > 0) && (
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold">Needs attention</h3>
+                <div className="space-y-1">
+                  {[...unmapped, ...upstream].map((i, idx) => (
+                    <div
+                      key={`${i.table_name}-${i.raw_value}-${idx}`}
+                      className="flex items-center justify-between rounded border p-2 text-sm"
+                    >
+                      <div className="min-w-0">
+                        <span className="font-medium">{i.raw_value}</span>
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          {i.table_name}
+                          {i.occurrences > 0 && ` · ${i.occurrences} row${i.occurrences === 1 ? '' : 's'}`}
+                          {i.seasons && ` · ${i.seasons}`}
+                        </span>
+                      </div>
+                      <Badge variant="destructive" className="shrink-0">
+                        {ISSUE_LABEL[i.issue_type]}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
               </div>
+            )}
 
-              {Object.keys(mappings).length === 0 ? (
-                <p className="text-sm text-muted-foreground py-8 text-center">
-                  No machine mappings found. Add one above to get started.
-                </p>
-              ) : (
-                <ScrollArea className="h-[400px] border rounded-lg">
-                  <div className="p-4 space-y-2">
-                    {Object.entries(mappings)
-                      .sort(([a], [b]) => a.localeCompare(b))
-                      .map(([alias, standardized]) => (
-                        <div
-                          key={alias}
-                          className="flex items-center justify-between p-3 border rounded-lg bg-muted/50"
-                        >
-                          <div className="flex-1 grid grid-cols-2 gap-4">
-                            <div>
-                              <div className="text-xs text-muted-foreground mb-1">Alias</div>
-                              <div className="font-mono">{alias}</div>
-                            </div>
-                            <div>
-                              <div className="text-xs text-muted-foreground mb-1">Standardized</div>
-                              {editingAlias === alias ? (
-                                <div className="flex gap-2">
-                                  <Input
-                                    value={editValue}
-                                    onChange={(e) => setEditValue(e.target.value)}
-                                    className="h-8"
-                                  />
-                                  <Button
-                                    size="sm"
-                                    onClick={() => handleUpdateMapping(alias)}
-                                    disabled={saving}
-                                  >
-                                    <Save className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      setEditingAlias(null)
-                                      setEditValue('')
-                                    }}
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              ) : (
-                                <div className="font-mono">{standardized}</div>
-                              )}
-                            </div>
-                          </div>
+            {/* Non-conforming but resolvable */}
+            {tidy.length > 0 && (
+              <details className="rounded border p-2">
+                <summary className="cursor-pointer text-sm font-semibold">
+                  Resolvable spellings ({tidy.length})
+                </summary>
+                <div className="mt-2 space-y-1">
+                  {tidy.map((i, idx) => (
+                    <div key={`${i.table_name}-${i.raw_value}-${idx}`} className="flex items-center justify-between text-sm">
+                      <span className="truncate">
+                        {i.raw_value}
+                        <span className="mx-2 text-muted-foreground">→</span>
+                        <span className="font-medium">{i.suggested_key}</span>
+                      </span>
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {ISSUE_LABEL[i.issue_type]} · {i.table_name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            )}
 
-                          {editingAlias !== alias && (
-                            <div className="flex gap-2 ml-4">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => {
-                                  setEditingAlias(alias)
-                                  setEditValue(standardized)
-                                }}
-                                disabled={saving}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleDeleteMapping(alias)}
-                                disabled={saving}
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                  </div>
-                </ScrollArea>
-              )}
+            {/* The canon itself */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold">Canon</h3>
+                <Input
+                  placeholder="Search machines..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="h-8 max-w-xs"
+                />
+              </div>
+              <ScrollArea className="h-[280px] rounded border">
+                <table className="w-full text-sm">
+                  <thead className="sticky top-0 bg-background">
+                    <tr className="border-b">
+                      <th className="p-2 text-left font-medium">Short</th>
+                      <th className="p-2 text-left font-medium">Long (displayed)</th>
+                      <th className="p-2 text-left font-medium">Aliases</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {shownMachines.map((m) => {
+                      const as = aliasesByKey.get(m.key) || []
+                      return (
+                        <tr key={m.key} className="border-b hover:bg-muted/50">
+                          <td className="p-2 font-mono text-xs">
+                            {m.key}
+                            {m.source === 'local' && (
+                              <Badge variant="outline" className="ml-2 text-[10px]">
+                                local
+                              </Badge>
+                            )}
+                          </td>
+                          <td className="p-2">{m.displayName}</td>
+                          <td className="p-2 text-xs text-muted-foreground">
+                            {as.map((a) => a.alias_raw || a.alias).join(', ')}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </ScrollArea>
             </div>
+
+            <p className="text-xs text-muted-foreground">
+              Canon and alias edits run through scripts/seed-machine-canon.ts and
+              scripts/seed-machine-aliases.ts, so each row records why it exists and every run is
+              logged to data_provenance.
+            </p>
           </div>
         )}
       </DialogContent>

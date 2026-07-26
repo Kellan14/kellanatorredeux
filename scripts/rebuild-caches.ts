@@ -2,7 +2,7 @@
  * Standalone rebuild of the cache_* tables from the games table.
  *
  * Mirrors the cache-build block of app/api/cron/sync-data/route.ts EXACTLY
- * (same aggregation, same machine/venue/name standardization + score limits),
+ * (same aggregation, same venue/name standardization + score limits),
  * but WITHOUT the GitHub archive re-import — so it can refresh caches after a
  * direct games-table change (e.g. the seasons 2-12 reconstruction) with no
  * GitHub token and no risk to modern-season data.
@@ -14,7 +14,6 @@ import { readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createClient } from '@supabase/supabase-js'
-import { machineMappings } from '../lib/machine-mappings'
 import { standardizeVenueName } from '../lib/venue-mappings'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -70,7 +69,7 @@ async function main() {
   for (const game of allHistoryGames) {
     const rawMachine = (game.machine || '').toLowerCase()
     if (!rawMachine) continue
-    const machine = ((machineMappings as Record<string, string>)[rawMachine] || rawMachine).toLowerCase()
+    const machine = rawMachine.toLowerCase()
     const venue = standardizeVenueName(game.venue) || null
     const season = game.season
     if (season == null) continue

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getCanonicalMachineKey } from '@/lib/machine-mappings'
+import { resolveMachineKey } from '@/lib/machines-canon'
 import { requireUser } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic';
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     }
 
     // Normalize machine name to canonical key for consistent storage
-    const canonicalMachine = getCanonicalMachineKey(machine)
+    const canonicalMachine = (await resolveMachineKey(machine)) ?? machine
 
     // Get the current season (max season from matches table)
     const { data: seasonData } = await supabase

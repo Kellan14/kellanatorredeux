@@ -3,7 +3,6 @@ import { LineupOptimizer } from '@/lib/strategy/optimizer'
 import { calculatePairStats } from '@/lib/strategy/stats-calculator'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getVenueVariations } from '@/lib/venue-mappings'
-import { getAllMachineVariations } from '@/lib/machine-mappings'
 import { hungarianAlgorithm } from '@/lib/strategy/hungarian'
 import { buildCostMatrix, calculatePerformanceScore, calculatePairSynergy } from '@/lib/strategy/calculator'
 import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
@@ -188,9 +187,7 @@ export async function POST(request: NextRequest) {
       const venueVariations = getVenueVariations(venue)
       const machineVariationToCanonical = new Map<string, string>()
       for (const machine of allMachinesForStats) {
-        for (const variation of getAllMachineVariations([machine])) {
-          machineVariationToCanonical.set(variation, machine)
-        }
+        machineVariationToCanonical.set(machine, machine)
       }
 
       const allGames = await fetchAllRecords<any>(

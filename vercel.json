@@ -17,6 +17,10 @@
       "schedule": "0 4 * * 1"
     },
     {
+      "path": "/api/cron/scan-machine-names",
+      "schedule": "30 4 * * 1"
+    },
+    {
       "path": "/api/integrity-check?scope=full",
       "schedule": "0 15 * * 0"
     },

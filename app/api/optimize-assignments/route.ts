@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
 import { getVenueVariations } from '@/lib/venue-mappings'
-import { getAllMachineVariations, getCanonicalMachineKey } from '@/lib/machine-mappings'
 import { calculatePlayerMachineStats, type UserInputData } from '@/lib/strategy/stats-calculator'
 import { calculatePerformanceScore, type ScoreWeights } from '@/lib/strategy/calculator'
 import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
@@ -169,9 +168,7 @@ export async function POST(request: Request) {
     // Build machine variation lookup for normalizing game machine names
     const machineVariationToCanonical = new Map<string, string>()
     for (const machine of machines) {
-      for (const variation of getAllMachineVariations([machine as string])) {
-        machineVariationToCanonical.set(variation, machine as string)
-      }
+      machineVariationToCanonical.set(machine as string, machine as string)
     }
 
     // Fetch venue-specific games (all machines at venue for advantage baseline)
@@ -258,7 +255,7 @@ export async function POST(request: Request) {
     }
 
     // Fetch user inputs (self-reported averages and confidence)
-    const machineVariationsForInputs = getAllMachineVariations(machines as string[])
+    const machineVariationsForInputs = machines as string[]
     const userInputMap = new Map<string, Map<string, UserInputData>>()
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -274,7 +271,7 @@ export async function POST(request: Request) {
 
       if (uiData) {
         for (const row of uiData) {
-          const canonicalMachine = getCanonicalMachineKey(row.machine)
+          const canonicalMachine = row.machine
           const machineKey = (machines as string[]).includes(canonicalMachine) ? canonicalMachine
             : (machines as string[]).find(m => m.toLowerCase() === canonicalMachine.toLowerCase()) || canonicalMachine
           if (!userInputMap.has(row.player_name)) userInputMap.set(row.player_name, new Map())

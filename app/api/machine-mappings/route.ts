@@ -1,75 +1,66 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
-import { machineMappings } from '@/lib/machine-mappings'
+import { supabase, fetchAllRecords } from '@/lib/supabase'
+import { listMachines } from '@/lib/machines-canon'
 
 export const dynamic = 'force-dynamic'
 
-// Helper function to get all unique machines from database
-async function getAllMachines(): Promise<string[]> {
-  try {
-    const { data, error } = await supabase
-      .from('games')
-      .select('machine')
-      .not('machine', 'is', null)
-
-    if (error) {
-      console.error('Error fetching machines:', error)
-      return []
-    }
-
-    const uniqueMachines = new Set<string>()
-    data?.forEach((game: { machine: string }) => {
-      if (game.machine) {
-        uniqueMachines.add(game.machine)
-      }
-    })
-
-    return Array.from(uniqueMachines).sort()
-  } catch (error) {
-    console.error('Error getting all machines:', error)
-    return []
-  }
-}
-
-// GET - Fetch all machine mappings and available machines
-// Machine mappings are now defined in lib/machine-mappings.ts (single source of truth)
+/**
+ * Machine aliases: raw spelling -> canon key.
+ *
+ * This used to serve a 683-entry hand-maintained table from
+ * lib/machine-mappings.ts. That table mapped both key->name and name->key, so
+ * standardization had no single output space. Aliases now live in the
+ * machine_aliases table and only cover spellings that cannot be reached by
+ * normalizing or by matching a canon long form — see lib/machines-canon.ts.
+ */
 export async function GET() {
   try {
-    const allMachines = await getAllMachines()
+    const [aliases, machines] = await Promise.all([
+      fetchAllRecords<{
+        alias: string
+        alias_raw: string | null
+        canon_key: string
+        origin: string
+        reason: string | null
+      }>(() =>
+        supabase
+          .from('machine_aliases')
+          .select('alias, alias_raw, canon_key, origin, reason')
+          .order('canon_key', { ascending: true })
+      ),
+      listMachines(true),
+    ])
 
     return NextResponse.json({
-      mappings: machineMappings,
-      allMachines,
-      count: Object.keys(machineMappings).length,
-      note: 'Mappings are defined in lib/machine-mappings.ts. Edit that file to update mappings.'
+      aliases,
+      count: aliases.length,
+      machines: machines.map((m) => ({
+        key: m.key,
+        name: m.name,
+        displayName: m.displayName,
+        source: m.source,
+      })),
+      note: 'Aliases live in machine_aliases; the canon lives in machine_canon. Most spellings resolve without one.',
     })
   } catch (error) {
     console.error('Error in GET /api/machine-mappings:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch machine mappings' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch machine aliases' }, { status: 500 })
   }
 }
 
-// POST, PUT, DELETE - No longer supported since mappings are in TypeScript file
+const EDIT_HINT = {
+  error:
+    'Machine aliases are rows in machine_aliases, keyed to machine_canon. Add them via scripts/seed-machine-aliases.ts — each row records the reason it exists and the run is logged to data_provenance.',
+}
+
 export async function POST() {
-  return NextResponse.json(
-    { error: 'Machine mappings are now defined in lib/machine-mappings.ts. Edit that file directly to add new mappings.' },
-    { status: 405 }
-  )
+  return NextResponse.json(EDIT_HINT, { status: 405 })
 }
 
 export async function PUT() {
-  return NextResponse.json(
-    { error: 'Machine mappings are now defined in lib/machine-mappings.ts. Edit that file directly to update mappings.' },
-    { status: 405 }
-  )
+  return NextResponse.json(EDIT_HINT, { status: 405 })
 }
 
 export async function DELETE() {
-  return NextResponse.json(
-    { error: 'Machine mappings are now defined in lib/machine-mappings.ts. Edit that file directly to delete mappings.' },
-    { status: 405 }
-  )
+  return NextResponse.json(EDIT_HINT, { status: 405 })
 }

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { fetchMNPData } from '@/lib/fetch-mnp-data'
 import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists'
-import { getAllMachineVariations } from '@/lib/machine-mappings'
 import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
 
 export const dynamic = 'force-dynamic'
@@ -109,12 +108,10 @@ export async function GET(request: NextRequest) {
 
     // 3. Build machine variation lookup so cache rows match the canonical
     //    venues.json name even if stored under an alias.
-    const allMachineVars = getAllMachineVariations(sharedMachines).map(v => v.toLowerCase())
+    const allMachineVars = sharedMachines.map(v => v.toLowerCase())
     const variationToCanonicalMachine = new Map<string, string>()
     for (const machine of sharedMachines) {
-      for (const v of getAllMachineVariations([machine])) {
-        variationToCanonicalMachine.set(v.toLowerCase(), machine)
-      }
+      variationToCanonicalMachine.set(machine.toLowerCase(), machine)
     }
 
     // 4. Build per-(machine, venue) maps. Two paths:
@@ -180,7 +177,7 @@ export async function GET(request: NextRequest) {
       // not lowercase. Build the original-case variation set so the SQL
       // .in() actually matches; in-memory matching below does its own
       // case-fold via variationToCanonicalMachine.
-      const machineFilterValues = getAllMachineVariations(sharedMachines)
+      const machineFilterValues = sharedMachines
       const games = await fetchAllRecords<any>(() =>
         supabase
           .from('games')

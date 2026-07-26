@@ -3,7 +3,6 @@ import { supabase, fetchAllRecords } from '@/lib/supabase';
 import { createClient } from '@supabase/supabase-js';
 import { type MachineStats, type ProcessedScore, computePops } from '@/lib/tournament-data';
 import { standardizeVenueName, venuesMatch } from '@/lib/venue-mappings';
-import { machineMappings } from '@/lib/machine-mappings';
 import { gamesToProcessedScores, buildTeamNameMap } from '@/lib/game-scores';
 import { cache, TTL } from '@/lib/cache';
 
@@ -119,9 +118,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Build team_key -> team_name map, then flatten games to ProcessedScore
-    // rows via the shared transform (mapMachine resolves machine aliases).
+    // rows via the shared transform.
     const teamNameMap = await buildTeamNameMap(supabase, gamesData);
-    const processedScores: ProcessedScore[] = gamesToProcessedScores(gamesData, teamNameMap, { mapMachine: true });
+    const processedScores: ProcessedScore[] = gamesToProcessedScores(gamesData, teamNameMap);
 
     console.log('[machine-stats] Processed scores from league games:', processedScores.length);
 
@@ -145,13 +144,8 @@ export async function GET(request: NextRequest) {
           // Convert manual scores to ProcessedScore format
           // Manual scores are attributed to TWC
           for (const ms of manualScores) {
-            // Normalize machine name using mappings to match league data format
-            const inputMachine = ms.machine.toLowerCase();
-            // Look up in mappings - if found, use the mapped value lowercase
-            // This handles cases like "pulp fiction" -> "Pulp Fiction" -> "pulp fiction"
-            // Or "pulp" -> "Pulp Fiction" -> "pulp fiction"
-            const mappedMachine = machineMappings[inputMachine];
-            const machineLower = mappedMachine ? mappedMachine.toLowerCase() : inputMachine;
+            // user_machine_scores.machine is a canon key, same space as league data.
+            const machineLower = ms.machine.toLowerCase();
             const venueName = standardizeVenueName(ms.venue) || ms.venue || '';
 
             processedScores.push({
@@ -207,11 +201,8 @@ export async function GET(request: NextRequest) {
         twcVenueSpecific,
         twcPlayers,
         opponentRoster,
-        machines: machinesParam ? machinesParam.split(',').map(m => {
-          const lower = m.toLowerCase();
-          const mapped = machineMappings[lower] || machineMappings[m];
-          return mapped ? mapped.toLowerCase() : lower;
-        }) : undefined,
+        // Callers pass canon keys; processed scores are case-folded.
+        machines: machinesParam ? machinesParam.split(',').map(m => m.toLowerCase()) : undefined,
       }
     );
 

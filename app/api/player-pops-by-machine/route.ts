@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName, venuesMatch } from '@/lib/venue-mappings'
 import { orEqAcrossColumns } from '@/lib/pg-filter'
 
@@ -115,10 +114,8 @@ export async function GET(request: NextRequest) {
 
       if (playerPoints === null) continue
 
-      // Normalize machine name
-      const rawMachine = (game.machine || '').toLowerCase()
-      const mapped = machineMappings[rawMachine]
-      const machine = mapped ? mapped.toLowerCase() : rawMachine
+      // games.machine is a canon key; case-folded for grouping.
+      const machine = (game.machine || '').toLowerCase()
 
       if (!machine) continue
 

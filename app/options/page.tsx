@@ -56,6 +56,8 @@ export default function OptionsPage() {
 
   // Count of actionable player-name issues (drives the red "!" badge).
   const [nameIssueCount, setNameIssueCount] = useState(0)
+  // Machine names that resolve to nothing in the canon (drives its red "!" badge).
+  const [machineIssueCount, setMachineIssueCount] = useState(0)
   // Latest integrity check failed (drives its red "!" badge).
   const [integrityProblem, setIntegrityProblem] = useState(false)
 
@@ -86,6 +88,7 @@ export default function OptionsPage() {
     loadMachines()
     loadUser()
     loadNameIssueCount()
+    loadMachineIssueCount()
     loadIntegrityStatus()
   }, [])
 
@@ -96,6 +99,19 @@ export default function OptionsPage() {
       if (res.ok) {
         const data = await res.json()
         setNameIssueCount(data.actionableCount || 0)
+      }
+    } catch {
+      /* non-fatal */
+    }
+  }
+
+  // Cached count of machine names that resolve to nothing (cheap read; no rescan).
+  const loadMachineIssueCount = async () => {
+    try {
+      const res = await fetch('/api/machine-name-issues')
+      if (res.ok) {
+        const data = await res.json()
+        setMachineIssueCount(data.actionable || 0)
       }
     } catch {
       /* non-fatal */
@@ -343,11 +359,19 @@ export default function OptionsPage() {
 
             <Button
               variant="outline"
-              className="h-24 flex flex-col items-center justify-center gap-2"
+              className="h-24 flex flex-col items-center justify-center gap-2 relative"
               onClick={() => setMachineMappingOpen(true)}
             >
-              <span className="text-lg font-medium">Standardize Machines</span>
-              <span className="text-xs text-muted-foreground">Map machine name variations</span>
+              {machineIssueCount > 0 && (
+                <span
+                  className="absolute top-2 right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white"
+                  title={`${machineIssueCount} machine name${machineIssueCount !== 1 ? 's' : ''} not in the canon`}
+                >
+                  !
+                </span>
+              )}
+              <span className="text-lg font-medium">Machine Canon</span>
+              <span className="text-xs text-muted-foreground">Short and long names for every machine</span>
             </Button>
 
             <Button
@@ -588,7 +612,10 @@ export default function OptionsPage() {
       {/* Machine Mapping Manager Dialog */}
       <MachineMappingManager
         open={machineMappingOpen}
-        onOpenChange={setMachineMappingOpen}
+        onOpenChange={(o) => {
+          setMachineMappingOpen(o)
+          if (!o) loadMachineIssueCount() // refresh badge after a rescan
+        }}
       />
 
       {/* Player Mapping Manager Dialog */}

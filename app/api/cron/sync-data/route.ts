@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName } from '@/lib/venue-mappings'
 import { applyAndTrackKeyMapping } from '@/lib/apply-key-mappings'
 import { applySubLinks } from '@/lib/apply-sub-links'
@@ -657,7 +656,7 @@ export async function GET(request: Request) {
         const rawMachine = (game.machine || '').toLowerCase()
         if (!rawMachine) continue
         // Standardize machine name so aliases (e.g., "king kong" and "kong") use one key
-        const machine = (machineMappings[rawMachine] || rawMachine).toLowerCase()
+        const machine = rawMachine.toLowerCase()
         // Standardize venue so name variations ("Ice Box" vs "Icebox") collapse
         // into ONE cache bucket. Readers query by getVenueVariations(), which
         // includes the canonical, so this stays matchable while removing the

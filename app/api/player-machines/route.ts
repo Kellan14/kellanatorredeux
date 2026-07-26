@@ -1,17 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { machineMappings } from '@/lib/machine-mappings'
 import { fetchAllRecords } from '@/lib/supabase'
 
 // Standardize machine name to its canonical form (DB value)
-function standardizeMachineName(machineName: string): string {
-  if (!machineName) return machineName
-  const normalized = machineName.toLowerCase().trim()
-  // Check if there's a mapping to a canonical name
-  const mapped = machineMappings[normalized] || machineMappings[machineName]
-  return mapped || machineName
-}
-
 export const dynamic = 'force-dynamic'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -92,7 +83,7 @@ export async function GET(request: Request) {
 
       if (playerPlayed && game.machine) {
         // Standardize machine name for display
-        const standardized = standardizeMachineName(game.machine)
+        const standardized = game.machine
         machineSet.add(standardized)
       }
     }

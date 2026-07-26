@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { getMachineVariations, machineMappings } from '@/lib/machine-mappings'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getScoreLimits } from '@/lib/score-limits'
 
@@ -35,15 +34,14 @@ export async function GET(request: Request) {
     // Helper to check if a score should be filtered out
     // Use standardized machine name to check limits
     const isScoreValid = (score: number): boolean => {
-      const standardized = (machineMappings[machineName.toLowerCase()] || machineName).toLowerCase()
+      const standardized = machineName.toLowerCase()
       const machineLimit = scoreLimits[standardized] || scoreLimits[machineName.toLowerCase()]
       if (!machineLimit) return true
       return score <= machineLimit
     }
 
-    // Get all machine name variations (aliases) for better matching
-    const machineVariations = getMachineVariations(machineName)
-    const lowerVariations = machineVariations.map((v: string) => v.toLowerCase())
+    // machineName is a canon key, matching what games and the cache both store.
+    const lowerMachineName = machineName.toLowerCase()
 
     // --- Try cache-first path ---
     const venueVariations = venue ? getVenueVariations(venue) : []
@@ -53,7 +51,7 @@ export async function GET(request: Request) {
       let seasonQuery = supabase
         .from('cache_machine_top_scores' as any)
         .select('*')
-        .in('machine', lowerVariations)
+        .eq('machine', lowerMachineName)
         .eq('season', currentSeason)
       if (venue) {
         seasonQuery = seasonQuery.in('venue', venueVariations)
@@ -66,7 +64,7 @@ export async function GET(request: Request) {
       let allTimeQuery = supabase
         .from('cache_machine_top_scores' as any)
         .select('*')
-        .in('machine', lowerVariations)
+        .eq('machine', lowerMachineName)
         .is('season', null)
       if (venue) {
         allTimeQuery = allTimeQuery.in('venue', venueVariations)
@@ -116,7 +114,6 @@ export async function GET(request: Request) {
     console.log(`[machine-top-scores] Cache miss, falling back to full scan for "${machineName}"`)
 
     // Query current season games with pagination using .in() for exact matching
-    // getMachineVariations returns all case variations (PULP, pulp, Pulp, etc.)
     const fallbackVenueVariations = venue ? getVenueVariations(venue) : []
     let seasonGames
     try {
@@ -124,7 +121,7 @@ export async function GET(request: Request) {
         let query = supabase
           .from('games')
           .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue')
-          .in('machine', machineVariations)
+          .eq('machine', machineName)
           .eq('season', currentSeason)
 
         if (venue) {
@@ -144,7 +141,7 @@ export async function GET(request: Request) {
         let query = supabase
           .from('games')
           .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue')
-          .in('machine', machineVariations)
+          .eq('machine', machineName)
           .gte('season', 2)
           .lte('season', currentSeason)
 

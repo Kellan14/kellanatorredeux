@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getVenueVariations } from '@/lib/venue-mappings'
-import { getAllMachineVariations } from '@/lib/machine-mappings'
 import { orEqAcrossColumns } from '@/lib/pg-filter'
 
 export const dynamic = 'force-dynamic';
@@ -72,7 +71,7 @@ export async function GET(request: Request) {
     ) => {
       if (!opponentTeam || opponentPlayers.length === 0 || rows.length === 0) return rows
 
-      const allMachineVars = getAllMachineVariations(rows.map(r => r.machine)).map(v => v.toLowerCase())
+      const allMachineVars = rows.map(r => r.machine).map(v => v.toLowerCase())
 
       // Pull opponent's per-(machine, venue) rows. Always venue-specific
       // because per-game normalization needs to know which venue each row
@@ -211,9 +210,7 @@ export async function GET(request: Request) {
     // Build a lookup from any variation of a machine name to its canonical (venues.json) name
     const machineVariationToCanonical = new Map<string, string>()
     for (const machine of machinesAtVenue) {
-      for (const variation of getAllMachineVariations([machine])) {
-        machineVariationToCanonical.set(variation, machine)
-      }
+      machineVariationToCanonical.set(machine, machine)
     }
 
     if (machinesAtVenue.length === 0) {
@@ -229,7 +226,7 @@ export async function GET(request: Request) {
 
     // --- Try cache-first path ---
     {
-      const allMachineVars = getAllMachineVariations(machinesAtVenue).map(v => v.toLowerCase())
+      const allMachineVars = machinesAtVenue.map(v => v.toLowerCase())
 
       // Pull the player's per-venue rows. Per-game-normalized pctOfVenue
       // requires per-(machine, venue) totals, not the venue=NULL rollup.
@@ -254,9 +251,7 @@ export async function GET(request: Request) {
       // Map any machine variation back to its canonical (venues.json) name.
       const machineVarToCanon = new Map<string, string>()
       for (const m of machinesAtVenue) {
-        for (const v of getAllMachineVariations([m])) {
-          machineVarToCanon.set(v.toLowerCase(), m)
-        }
+        machineVarToCanon.set(m.toLowerCase(), m)
       }
 
       // Build the set of venues we need a per-machine average for. For
@@ -536,7 +531,7 @@ export async function GET(request: Request) {
         }
       }
       if (otherVenues.size > 0) {
-        const allMachineVars = getAllMachineVariations(machinesAtVenue).map(v => v.toLowerCase())
+        const allMachineVars = machinesAtVenue.map(v => v.toLowerCase())
         const { data: extraVenueCache } = await (supabase
           .from('cache_team_machine_stats' as any)
           .select('machine, venue, total_score, game_count')
@@ -603,9 +598,7 @@ export async function GET(request: Request) {
     // machineVarToCanon for the fallback path: any variation → canonical.
     const fallbackMachineVarToCanon = new Map<string, string>()
     for (const m of machinesAtVenue) {
-      for (const v of getAllMachineVariations([m])) {
-        fallbackMachineVarToCanon.set(v.toLowerCase(), m)
-      }
+      fallbackMachineVarToCanon.set(m.toLowerCase(), m)
     }
     const enriched = await enrichWithOpponent(machinePerformance, venueByMachineVenueMap, fallbackMachineVarToCanon)
 

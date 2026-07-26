@@ -1,6 +1,5 @@
 import { type ProcessedScore } from '@/lib/tournament-data'
 import { standardizeVenueName } from '@/lib/venue-mappings'
-import { machineMappings } from '@/lib/machine-mappings'
 
 /**
  * Convert raw `games` table rows into flat ProcessedScore rows.
@@ -12,22 +11,16 @@ import { machineMappings } from '@/lib/machine-mappings'
  *
  * @param games        rows from the `games` table (denormalized player columns)
  * @param teamNameMap  team_key -> display name
- * @param opts.mapMachine  when true, resolve machine aliases via machineMappings
- *                         before lowercasing (matches machine-stats); otherwise
- *                         just lowercase the raw machine (matches processed-scores)
  */
 export function gamesToProcessedScores(
   games: any[],
-  teamNameMap: Record<string, string>,
-  opts: { mapMachine?: boolean } = {}
+  teamNameMap: Record<string, string>
 ): ProcessedScore[] {
   const out: ProcessedScore[] = []
 
   for (const game of games) {
-    const rawMachine = (game.machine || '').toLowerCase()
-    const machine = opts.mapMachine
-      ? (machineMappings[rawMachine] ? machineMappings[rawMachine].toLowerCase() : rawMachine)
-      : rawMachine
+    // games.machine is a canon key; case-folded for comparison downstream.
+    const machine = (game.machine || '').toLowerCase()
 
     for (let i = 1; i <= 4; i++) {
       const playerKey = game[`player_${i}_key`]

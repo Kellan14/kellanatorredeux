@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getAllMachineVariations, getMachineVariations, getCanonicalMachineKey } from '@/lib/machine-mappings'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,12 +34,11 @@ export async function GET(request: Request) {
 
     if (player && machine) {
       // Use variations for inclusive matching (handles different stored formats)
-      const machineVariations = getMachineVariations(machine)
       let query = supabase
         .from('user_machine_inputs')
         .select('user_average, user_confidence, updated_at')
         .eq('player_name', player)
-        .in('machine', machineVariations)
+        .eq('machine', machine)
 
       if (venue) {
         query = query.in('venue', [venue, ''])
@@ -77,13 +75,12 @@ export async function GET(request: Request) {
 
     const playerNames = playerNamesParam.split(',').map(n => n.trim())
     const machines = machinesParam.split(',').map(n => n.trim())
-    const machineVariations = getAllMachineVariations(machines)
 
     let bulkQuery = supabase
       .from('user_machine_inputs')
       .select('player_name, machine, user_average, user_confidence')
       .in('player_name', playerNames)
-      .in('machine', machineVariations)
+      .eq('machine', machine)
 
     if (venue) {
       bulkQuery = bulkQuery.in('venue', [venue, ''])
@@ -101,7 +98,7 @@ export async function GET(request: Request) {
 
     for (const row of data || []) {
       // Normalize stored machine name to canonical key for matching
-      const canonical = getCanonicalMachineKey(row.machine)
+      const canonical = row.machine
       const machineKey = machines.includes(canonical) ? canonical
         : machines.find(m => m.toLowerCase() === canonical.toLowerCase()) || canonical
       if (!inputs[row.player_name]) {

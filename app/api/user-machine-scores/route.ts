@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { getMachineVariations } from '@/lib/machine-mappings'
 import { getScoreLimits } from '@/lib/score-limits'
 import { requireUser } from '@/lib/auth'
 
@@ -29,22 +28,20 @@ export async function GET(request: Request) {
 
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Use machine variations for comprehensive matching (handles all name formats)
-    const machineVariations = getMachineVariations(machine)
 
     // Fetch manually added scores from user_machine_scores table
     const { data: manualScores, error: manualError } = await supabaseAdmin
       .from('user_machine_scores')
       .select('*')
       .eq('player_name', player)
-      .in('machine', machineVariations)
+      .eq('machine', machine)
       .order('score', { ascending: false })
 
     if (manualError) {
       console.error('Error fetching manual scores:', manualError)
     }
 
-    // Fetch league scores from games table (reuse machineVariations from above)
+    // Fetch league scores from games table
 
     // Helper to check if a score should be filtered out
     const isScoreValid = (score: number): boolean => {
@@ -59,7 +56,7 @@ export async function GET(request: Request) {
         supabase
           .from('games')
           .select('player_1_name, player_1_score, player_2_name, player_2_score, player_3_name, player_3_score, player_4_name, player_4_score, season, week, venue, match_key, created_at')
-          .in('machine', machineVariations)
+          .eq('machine', machine)
           .gte('season', 2)
       )
     } catch (error) {

@@ -3,7 +3,6 @@ import { calculatePlayerMachineStats, type UserInputData } from '@/lib/strategy/
 import { calculatePerformanceScore, calculateConfidenceLevel } from '@/lib/strategy/calculator'
 import type { PlayerMachineStats } from '@/types/strategy'
 import { createClient } from '@supabase/supabase-js'
-import { getAllMachineVariations, getCanonicalMachineKey } from '@/lib/machine-mappings'
 
 export const dynamic = 'force-dynamic'
 
@@ -48,7 +47,7 @@ export async function POST(request: NextRequest) {
       const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
       if (supabaseUrl && supabaseKey) {
         const supabase = createClient(supabaseUrl, supabaseKey)
-        const machineVariations = getAllMachineVariations(machines)
+        const machineVariations = machines
         let query = supabase
           .from('user_machine_inputs')
           .select('player_name, machine, user_average, user_confidence')
@@ -65,7 +64,7 @@ export async function POST(request: NextRequest) {
           userInputs = new Map()
           for (const row of data) {
             // Normalize stored machine name to canonical key for matching
-            const canonical = getCanonicalMachineKey(row.machine)
+            const canonical = row.machine
             const machineKey = machines.includes(canonical) ? canonical
               : machines.find(m => m.toLowerCase() === canonical.toLowerCase()) || canonical
             if (!userInputs.has(row.player_name)) {

@@ -1,18 +1,10 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getVenueVariations } from '@/lib/venue-mappings'
-import { machineMappings, getMachineVariations } from '@/lib/machine-mappings'
 import { orEqAcrossColumns } from '@/lib/pg-filter'
 
 export const dynamic = 'force-dynamic';
 
-// Standardize a raw DB machine name to its canonical form
-function canonicalizeMachine(raw: string): string {
-  const lower = raw.toLowerCase()
-  // If mappings point this to a canonical value, use it
-  const mapped = machineMappings[lower] || machineMappings[raw]
-  return mapped || raw
-}
 
 export async function GET(request: Request) {
   try {
@@ -128,7 +120,7 @@ export async function GET(request: Request) {
         game.player_4_key === playerKey
 
       if (isPlayerGame) {
-        const canonical = canonicalizeMachine(game.machine)
+        const canonical = String(game.machine)
         venueCounts[canonical] = (venueCounts[canonical] || 0) + 1
       }
     }
@@ -144,7 +136,7 @@ export async function GET(request: Request) {
         game.player_4_key === playerKey
 
       if (isPlayerGame) {
-        const canonical = canonicalizeMachine(game.machine)
+        const canonical = String(game.machine)
         allVenuesCounts[canonical] = (allVenuesCounts[canonical] || 0) + 1
         totalGames++
       }
@@ -166,14 +158,8 @@ export async function GET(request: Request) {
         atVenue: venueCounts[canonical] || 0,
         allVenues: allVenuesCounts[canonical] || 0
       }
-      // Add under canonical name
+      // Canon keys are the only spelling now, so one entry per machine.
       counts[canonical] = entry
-      // Add under all known variations so frontend can look up by any name
-      for (const variation of getMachineVariations(canonical)) {
-        if (!counts[variation]) {
-          counts[variation] = entry
-        }
-      }
     })
 
     return NextResponse.json({

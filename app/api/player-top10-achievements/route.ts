@@ -1,26 +1,11 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName } from '@/lib/venue-mappings'
 import { getScoreLimits } from '@/lib/score-limits'
 import { orEqAcrossColumns } from '@/lib/pg-filter'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0 // No caching - always fetch fresh data
-
-// Helper to standardize machine names using mappings
-function standardizeMachineName(machineName: string): string {
-  const lowerName = machineName.toLowerCase()
-
-  // Check if this name is an alias in our mappings
-  if (machineMappings[lowerName]) {
-    return machineMappings[lowerName]
-  }
-
-  // No mapping found - standardize to Title Case for consistency
-  // This ensures 'torpedo', 'Torpedo', and 'TORPEDO' are all treated as same machine
-  return machineName.charAt(0).toUpperCase() + machineName.slice(1).toLowerCase()
-}
 
 interface Achievement {
   machine: string
@@ -145,7 +130,7 @@ export async function GET(request: Request) {
           }
 
           achievements.push({
-            machine: standardizeMachineName(row.machine),
+            machine: row.machine,
             context,
             venue: venueLabel || undefined,
             rank: row.rank,
@@ -188,7 +173,7 @@ export async function GET(request: Request) {
     // Function to check if a score is valid (not glitched)
     // Use standardized machine name to check limits
     const isValidScore = (machine: string, score: number): boolean => {
-      const standardized = standardizeMachineName(machine).toLowerCase()
+      const standardized = machine.toLowerCase()
       const limit = scoreLimits[standardized] || scoreLimits[machine.toLowerCase()]
       return !limit || score <= limit
     }
@@ -199,7 +184,7 @@ export async function GET(request: Request) {
 
       for (const game of games) {
         // Standardize machine name using mappings
-        const standardizedMachine = standardizeMachineName(game.machine)
+        const standardizedMachine = game.machine
 
         // Check each player position (1-4)
         for (let i = 1; i <= 4; i++) {

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getCanonicalMachineKey, getMachineVariations } from '@/lib/machine-mappings'
+import { resolveMachineKey } from '@/lib/machines-canon'
 import { requireUser } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
@@ -28,16 +28,15 @@ export async function POST(request: Request) {
     }
 
     // Normalize machine name to canonical key for consistent storage
-    const canonicalMachine = getCanonicalMachineKey(machine)
+    const canonicalMachine = (await resolveMachineKey(machine)) ?? machine
 
     // Handle clear request — delete the row (use variations to match any stored format)
     if (clear) {
-      const machineVariations = getMachineVariations(machine)
       const { error } = await supabase
         .from('user_machine_inputs')
         .delete()
         .eq('player_name', playerName)
-        .in('machine', machineVariations)
+        .eq('machine', canonicalMachine)
         .eq('venue', venue)
 
       if (error) {

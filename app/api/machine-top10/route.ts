@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { getMachineVariations, machineMappings } from '@/lib/machine-mappings'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getScoreLimits } from '@/lib/score-limits'
 import { rankTopScores } from '@/lib/top-scores'
@@ -41,8 +40,8 @@ export async function GET(request: Request) {
     // all-time buckets), so the dialog and the achievement card read the same
     // source and can't drift apart. Falls through to the live scan below when
     // the cache has no rows for this bucket.
-    const machineVariations = getMachineVariations(machineKey)
-    const lowerVariations = machineVariations.map((v: string) => v.toLowerCase())
+    // machineKey is a canon key, matching what games and the cache both store.
+    const lowerMachineKey = machineKey.toLowerCase()
     const isVenueSpecific = venue && !context.includes('League-wide')
     const venueVariationsForCache = isVenueSpecific ? getVenueVariations(venue) : []
 
@@ -51,7 +50,7 @@ export async function GET(request: Request) {
       let cacheQuery = supabase
         .from('cache_machine_top_scores' as any)
         .select('*')
-        .in('machine', lowerVariations)
+        .eq('machine', lowerMachineKey)
 
       if (isThisSeason) {
         cacheQuery = cacheQuery.eq('season', currentSeason)
@@ -110,9 +109,7 @@ export async function GET(request: Request) {
     }
 
     // --- Fallback: full games scan ---
-    // Get all machine name variations to query for (case-insensitive via ilike)
-    const lowerMachineKey = machineKey.toLowerCase()
-    console.log(`[machine-top10] Querying for machine "${machineKey}" with variations:`, machineVariations)
+    console.log(`[machine-top10] Querying for machine "${machineKey}"`)
     console.log(`[machine-top10] Also using ilike for case-insensitive: ${lowerMachineKey}`)
     console.log(`[machine-top10] Season filter: isThisSeason=${isThisSeason}, range=${isThisSeason ? currentSeason : '2-22'}`)
 
@@ -141,13 +138,11 @@ export async function GET(request: Request) {
       }>(() => {
         // Use .in() to match any of the machine name variations (case-sensitive)
         // This handles cases where DB has "PULP" in old seasons and "Pulp Fiction" in new seasons
-        // getMachineVariations returns all case variations so .in() works correctly
-        console.log(`[machine-top10] Searching for variations:`, machineVariations)
 
         let query = supabase
           .from('games')
           .select('player_1_key, player_1_name, player_1_score, player_2_key, player_2_name, player_2_score, player_3_key, player_3_name, player_3_score, player_4_key, player_4_name, player_4_score, venue, season, week, match_key, round_number')
-          .in('machine', machineVariations)
+          .eq('machine', machineKey)
 
         // Filter by season if "this season"
         if (isThisSeason) {
@@ -179,7 +174,7 @@ export async function GET(request: Request) {
     // Helper to check if a score should be filtered out based on machine limits
     // Use standardized machine name to check limits
     const isScoreValid = (score: number): boolean => {
-      const standardized = (machineMappings[machineKey.toLowerCase()] || machineKey).toLowerCase()
+      const standardized = machineKey.toLowerCase()
       const machineLimit = scoreLimits[standardized] || scoreLimits[machineKey.toLowerCase()]
       if (!machineLimit) return true
       return score <= machineLimit
