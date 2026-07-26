@@ -29,6 +29,7 @@ import { IntegrityManager } from '@/components/integrity-manager'
 import { PlayerCombobox } from '@/components/ui/player-combobox'
 import { createSupabaseClient } from '@/lib/supabase'
 import { authFetch } from '@/lib/auth-fetch'
+import { usePlayerNames } from '@/hooks/use-player-names'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 interface Venue {
@@ -62,7 +63,7 @@ export default function OptionsPage() {
   const supabase = createSupabaseClient()
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [currentPlayerName, setCurrentPlayerName] = useState<string | null>(null)
-  const [allPlayers, setAllPlayers] = useState<string[]>([])
+  const { players: allPlayers } = usePlayerNames()
   const [selectedPlayerToLink, setSelectedPlayerToLink] = useState<string>('')
   const [linkingAccount, setLinkingAccount] = useState(false)
 
@@ -83,7 +84,7 @@ export default function OptionsPage() {
     loadVenues()
     loadScoreLimits()
     loadMachines()
-    loadUserAndPlayers()
+    loadUser()
     loadNameIssueCount()
     loadIntegrityStatus()
   }, [])
@@ -114,7 +115,7 @@ export default function OptionsPage() {
     }
   }
 
-  const loadUserAndPlayers = async () => {
+  const loadUser = async () => {
     // Load current user
     const { data: { user } } = await supabase.auth.getUser()
     setUser(user)
@@ -131,17 +132,6 @@ export default function OptionsPage() {
       if (profile?.player_name) {
         setCurrentPlayerName(profile.player_name)
       }
-    }
-
-    // Load all players
-    try {
-      const response = await fetch('/api/head-to-head')
-      if (response.ok) {
-        const data = await response.json()
-        setAllPlayers(data.players || [])
-      }
-    } catch (error) {
-      console.error('Error loading players:', error)
     }
   }
 

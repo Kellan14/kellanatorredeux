@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { getMachineImagePath } from '@/lib/machine-images'
 import { getMachineDisplayName } from '@/lib/machine-mappings'
+import { usePlayerNames } from '@/hooks/use-player-names'
 
 interface Top10Entry {
   rank: number
@@ -84,7 +85,7 @@ interface Venue {
 
 export default function PlayerProfilePage() {
   const router = useRouter()
-  const [players, setPlayers] = useState<string[]>([])
+  const { players } = usePlayerNames()
   const [selectedPlayer, setSelectedPlayer] = useState<string>('')
   const [playerStats, setPlayerStats] = useState<PlayerStats | null>(null)
   const [achievements, setAchievements] = useState<Achievement[]>([])
@@ -114,9 +115,8 @@ export default function PlayerProfilePage() {
   const [twcRosterPlayers, setTwcRosterPlayers] = useState<string[]>([])
   const [isOnTwcRoster, setIsOnTwcRoster] = useState<boolean>(false)
 
-  // Load all players, venues, seasons, and TWC roster on mount
+  // Load venues, seasons, and TWC roster on mount (players come from the cached hook)
   useEffect(() => {
-    loadPlayers()
     loadVenuesAndSeasons()
     loadTwcRoster()
   }, [])
@@ -162,18 +162,6 @@ export default function PlayerProfilePage() {
       setMachineScores([])
     }
   }, [selectedPlayer, selectedMachine])
-
-  const loadPlayers = async () => {
-    try {
-      const response = await fetch('/api/head-to-head')
-      if (response.ok) {
-        const data = await response.json()
-        setPlayers(data.players || [])
-      }
-    } catch (error) {
-      console.error('Error loading players:', error)
-    }
-  }
 
   const loadTwcRoster = async () => {
     try {

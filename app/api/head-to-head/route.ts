@@ -3,6 +3,7 @@ import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { machineMappings } from '@/lib/machine-mappings'
 import { standardizeVenueName } from '@/lib/venue-mappings'
 import { orEqAcrossColumnsMulti } from '@/lib/pg-filter'
+import { getAllPlayerNames, getCanonicalPlayerName } from '@/lib/players'
 
 const PLAYER_NAME_COLUMNS = ['player_1_name', 'player_2_name', 'player_3_name', 'player_4_name']
 
@@ -13,12 +14,6 @@ function standardizeMachineName(machineName: string): string {
     return machineMappings[lowerName]
   }
   return machineName
-}
-
-// Helper to get canonical player name (removes " (sub)" suffix)
-function getCanonicalPlayerName(name: string | null): string | null {
-  if (!name) return null
-  return name.replace(/\s*\(sub\)\s*$/i, '').trim()
 }
 
 // Helper to check if a player name matches (considering sub variants)
@@ -66,31 +61,17 @@ export async function GET(request: Request) {
     const machineFilter = searchParams.get('machine') // Optional: get all scores for a specific machine
 
     // If no players specified, return list of all players
+    // (served from the cache_players table — see lib/players.ts)
     if (!player1 && !player2) {
-      // IMPORTANT: Must use .order('id') for consistent pagination
-      const games = await fetchAllRecords<GameRecord>(() =>
-        supabase
-          .from('games')
-          .select('player_1_name, player_2_name, player_3_name, player_4_name')
-          .gte('season', 2)
-          .order('id', { ascending: true })
+      const players = await getAllPlayerNames()
+      return NextResponse.json(
+        { players },
+        {
+          headers: {
+            'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        }
       )
-
-      // Use canonical names (without " (sub)") to combine variants
-      const playerSet = new Set<string>()
-      for (const game of games) {
-        const canonical1 = getCanonicalPlayerName(game.player_1_name)
-        const canonical2 = getCanonicalPlayerName(game.player_2_name)
-        const canonical3 = getCanonicalPlayerName(game.player_3_name)
-        const canonical4 = getCanonicalPlayerName(game.player_4_name)
-        if (canonical1) playerSet.add(canonical1)
-        if (canonical2) playerSet.add(canonical2)
-        if (canonical3) playerSet.add(canonical3)
-        if (canonical4) playerSet.add(canonical4)
-      }
-
-      const players = Array.from(playerSet).sort((a, b) => a.localeCompare(b))
-      return NextResponse.json({ players })
     }
 
     if (!player1 || !player2) {

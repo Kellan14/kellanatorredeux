@@ -107,3 +107,65 @@ CREATE INDEX IF NOT EXISTS idx_cd_season_week ON cache_dashboard(season, week);
 ALTER TABLE cache_dashboard ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public read cache_dashboard" ON cache_dashboard;
 CREATE POLICY "Public read cache_dashboard" ON cache_dashboard FOR SELECT USING (true);
+
+-- 5. Distinct canonical player names (drives every player picker)
+CREATE TABLE IF NOT EXISTS cache_players (
+  player_name TEXT PRIMARY KEY,
+  player_key TEXT,
+  first_season INT,
+  last_season INT,
+  game_count INT NOT NULL DEFAULT 0,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_cache_players_lower_name ON cache_players (lower(player_name));
+CREATE INDEX IF NOT EXISTS idx_cache_players_last_season ON cache_players (last_season);
+
+ALTER TABLE cache_players ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public read cache_players" ON cache_players;
+CREATE POLICY "Public read cache_players" ON cache_players FOR SELECT USING (true);
+
+-- Rebuild helper: one server-side statement instead of paging every game row.
+-- Called by the sync-data cron and scripts/rebuild-caches.ts via supabase.rpc().
+CREATE OR REPLACE FUNCTION rebuild_cache_players()
+RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  inserted INTEGER;
+BEGIN
+  DELETE FROM cache_players;
+
+  INSERT INTO cache_players (player_name, player_key, first_season, last_season, game_count, updated_at)
+  WITH slots AS (
+    SELECT btrim(regexp_replace(n.name, '\s*\(sub\)\s*$', '', 'i')) AS player_name,
+           n.key AS player_key,
+           g.season
+    FROM games g
+    CROSS JOIN LATERAL (VALUES
+      (g.player_1_name, g.player_1_key),
+      (g.player_2_name, g.player_2_key),
+      (g.player_3_name, g.player_3_key),
+      (g.player_4_name, g.player_4_key)
+    ) AS n(name, key)
+    WHERE g.season >= 2
+      AND n.name IS NOT NULL
+      AND btrim(regexp_replace(n.name, '\s*\(sub\)\s*$', '', 'i')) <> ''
+  )
+  SELECT player_name,
+         (array_remove(array_agg(player_key ORDER BY season DESC), NULL))[1],
+         min(season),
+         max(season),
+         count(*)::INT,
+         NOW()
+  FROM slots
+  GROUP BY player_name;
+
+  GET DIAGNOSTICS inserted = ROW_COUNT;
+  RETURN inserted;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION rebuild_cache_players() FROM PUBLIC, anon, authenticated;

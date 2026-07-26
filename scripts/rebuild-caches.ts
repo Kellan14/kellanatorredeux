@@ -151,6 +151,12 @@ async function main() {
   await insertAll('cache_team_machine_stats', teamRows, 'team_key,machine,venue,season_start,season_end')
   await insertAll('cache_player_machine_stats', playerRows, 'player_name,machine,venue,season_start,season_end')
   await insertAll('cache_machine_top_scores', topRows, 'machine,venue,season,rank')
+
+  // Distinct canonical player names — rebuilt server-side in a single statement.
+  const { data: playerCount, error: playersError } = await supabase.rpc('rebuild_cache_players')
+  if (playersError) { console.error('cache_players:', playersError.message); process.exit(1) }
+  console.log(`  cache_players: ${playerCount} rows`)
+
   console.log('Done — caches rebuilt from games.')
 }
 

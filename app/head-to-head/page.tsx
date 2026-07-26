@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { PlayerCombobox } from '@/components/ui/player-combobox'
 import { Users, Trophy, Swords } from 'lucide-react'
 import { getMachineImagePath } from '@/lib/machine-images'
+import { usePlayerNames } from '@/hooks/use-player-names'
 
 interface Match {
   matchKey: string
@@ -57,7 +58,7 @@ interface MachineScore {
 }
 
 export default function HeadToHeadPage() {
-  const [players, setPlayers] = useState<string[]>([])
+  const { players } = usePlayerNames()
   const [player1, setPlayer1] = useState<string>('')
   const [player2, setPlayer2] = useState<string>('')
   const [matches, setMatches] = useState<Match[]>([])
@@ -73,23 +74,6 @@ export default function HeadToHeadPage() {
   const [player1MachineScores, setPlayer1MachineScores] = useState<MachineScore[]>([])
   const [player2MachineScores, setPlayer2MachineScores] = useState<MachineScore[]>([])
   const [loadingMachineScores, setLoadingMachineScores] = useState(false)
-
-  // Load all players on mount
-  useEffect(() => {
-    loadPlayers()
-  }, [])
-
-  const loadPlayers = async () => {
-    try {
-      const response = await fetch('/api/head-to-head')
-      if (response.ok) {
-        const data = await response.json()
-        setPlayers(data.players || [])
-      }
-    } catch (error) {
-      console.error('Error loading players:', error)
-    }
-  }
 
   // Auto-load head-to-head data when both players are selected
   useEffect(() => {

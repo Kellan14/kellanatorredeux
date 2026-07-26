@@ -565,7 +565,7 @@ export async function GET(request: Request) {
 
     // ===== PRE-COMPUTE CACHE TABLES =====
     console.log(skipCache ? '[cron/sync-data] Skipping cache rebuild (targeted backfill)' : '[cron/sync-data] Building cache tables...')
-    let cacheStats = { teamMachine: 0, playerMachine: 0, topScores: 0 }
+    let cacheStats = { teamMachine: 0, playerMachine: 0, topScores: 0, players: 0 }
 
     if (!skipCache) try {
       // Build a player name standardization map from the mappings we just applied
@@ -871,7 +871,16 @@ export async function GET(request: Request) {
         cacheStats.topScores = topScoreRows.length
       }
 
-      console.log(`[cron/sync-data] Cache built: ${cacheStats.teamMachine} team-machine, ${cacheStats.playerMachine} player-machine, ${cacheStats.topScores} top-scores`)
+      // ---- Rebuild cache_players (distinct canonical player names) ----
+      // Done server-side in one statement rather than re-scanning games here.
+      const { data: playerCount, error: playersError } = await supabase.rpc('rebuild_cache_players')
+      if (playersError) {
+        console.error('[cron/sync-data] Error rebuilding cache_players:', playersError.message)
+      } else {
+        cacheStats.players = (playerCount as unknown as number) || 0
+      }
+
+      console.log(`[cron/sync-data] Cache built: ${cacheStats.teamMachine} team-machine, ${cacheStats.playerMachine} player-machine, ${cacheStats.topScores} top-scores, ${cacheStats.players} players`)
     } catch (cacheError) {
       console.error('[cron/sync-data] Cache building error (non-fatal):', cacheError)
     }
