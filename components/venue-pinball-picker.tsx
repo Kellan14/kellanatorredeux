@@ -893,7 +893,7 @@ export function VenuePinballPicker() {
   }, [winner])
 
   return (
-    <div className="container h-[calc(100dvh-3.5rem)] overflow-hidden px-2 py-2 pb-20 md:px-4 xl:h-auto xl:overflow-visible xl:px-6 xl:py-8">
+    <div className="container flex h-[calc(100dvh-3.5rem)] flex-col overflow-hidden px-2 py-2 pb-20 md:px-4 xl:block xl:h-auto xl:overflow-visible xl:px-6 xl:py-8">
       {celebration && (
         <div className="winner-backglass-overlay" aria-hidden="true">
           <Image
@@ -907,7 +907,7 @@ export function VenuePinballPicker() {
           />
         </div>
       )}
-      <Card className="mb-2 xl:hidden">
+      <Card className="mb-2 shrink-0 xl:hidden">
         <CardContent className="grid grid-cols-2 gap-2 p-2">
           <label className="min-w-0 text-[11px] font-semibold text-muted-foreground">
             Venue
@@ -924,8 +924,15 @@ export function VenuePinballPicker() {
         </CardContent>
       </Card>
 
-      <div className="grid h-[calc(100%-4.25rem)] gap-6 xl:h-auto xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="relative aspect-[952/2256] h-full w-auto max-w-full justify-self-center xl:h-[900px]">
+      <div className="grid min-h-0 flex-1 gap-6 xl:h-auto xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="grid h-full min-h-0 w-full place-items-center [container-type:size] xl:h-[900px]">
+        <div
+          className="relative"
+          style={{
+            width: `min(100cqw, calc(100cqh * ${WIDTH} / ${HEIGHT}))`,
+            height: `min(100cqh, calc(100cqw * ${HEIGHT} / ${WIDTH}))`,
+          }}
+        >
           <Card className="h-full w-full overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl">
             <CardContent className="relative flex h-full items-center justify-center p-0">
               <VpxTableScene className="absolute inset-0" />
@@ -965,6 +972,7 @@ export function VenuePinballPicker() {
               <Image src="/flipper-button.png" alt="" fill sizes="72px" className="scale-[1.24] object-cover" priority />
             </span>
           </button>
+        </div>
         </div>
 
         <div className="hidden space-y-5 xl:block">
