@@ -20,7 +20,8 @@ type Layout = {
   rails: Rail[]
 }
 type Ball = {
-  machine: string
+  machineKey: string
+  label: string
   x: number
   y: number
   vx: number
@@ -185,7 +186,10 @@ export function VenuePinballPicker() {
 
   const venue = venues.find((item) => item.key === venueKey) ?? venues.find((item) => item.name === venueKey)
   const layout = LAYOUTS.find((item) => item.id === layoutId) ?? LAYOUTS[0]
-  const machineNames = useMemo(() => venue?.machines.map((machine) => display(machine)) ?? [], [venue, display])
+  // Venue lists speak canonical short keys. Preserve those keys through the
+  // entire race; long names are display-only and must never be fed back into
+  // image or data lookups.
+  const machineKeys = useMemo(() => venue?.machines ?? [], [venue])
 
   useEffect(() => {
     fetch('/api/venues')
@@ -332,7 +336,7 @@ export function VenuePinballPicker() {
       ctx.fillStyle = '#fff'; ctx.font = '700 10px sans-serif'; ctx.textAlign = 'center'
       ctx.fillText(String(index + 1), ball.x, ball.y + 3)
       ctx.font = '600 11px sans-serif'
-      ctx.fillText(shortName(ball.machine), Math.max(52, Math.min(WIDTH - 52, ball.x)), ball.y - ball.radius - 8)
+      ctx.fillText(shortName(ball.label), Math.max(52, Math.min(WIDTH - 52, ball.x)), ball.y - ball.radius - 8)
     })
   }, [layout])
 
@@ -362,7 +366,7 @@ export function VenuePinballPicker() {
       if (ball.x > WIDTH - ball.radius) { ball.x = WIDTH - ball.radius; ball.vx = -Math.abs(ball.vx) * 0.78 }
       if (ball.y > FINISH_Y && ball.x > 205 && ball.x < 435) {
         ball.finished = true
-        finishingRef.current = [...finishingRef.current, ball.machine]
+        finishingRef.current = [...finishingRef.current, ball.machineKey]
         setRanking([...finishingRef.current])
       }
       if (ball.y > HEIGHT + 40) { ball.y = 130; ball.x = 320; ball.vy = 0 }
@@ -376,9 +380,10 @@ export function VenuePinballPicker() {
     stop()
     finishingRef.current = []
     setRanking([])
-    const machines = machineNames.slice(0, 30)
-    ballsRef.current = machines.map((machine, index) => ({
-      machine,
+    const machines = machineKeys.slice(0, 30)
+    ballsRef.current = machines.map((machineKey, index) => ({
+      machineKey,
+      label: display(machineKey),
       x: 58 + (index % 10) * 58 + (Math.random() - 0.5) * 8,
       y: 58 - Math.floor(index / 10) * 34,
       vx: (Math.random() - 0.5) * 1.2,
@@ -388,7 +393,7 @@ export function VenuePinballPicker() {
       finished: false,
     }))
     requestAnimationFrame(draw)
-  }, [draw, machineNames, stop])
+  }, [display, draw, machineKeys, stop])
 
   useEffect(() => { reset(); return stop }, [reset, stop])
 
@@ -414,13 +419,13 @@ export function VenuePinballPicker() {
       {celebration && (
         <div className="winner-backglass-overlay" aria-hidden="true">
           <Image
-            src={getMachineImagePath(celebration, celebration)}
+            src={getMachineImagePath(celebration)}
             alt=""
             fill
             priority
             className="object-contain"
             unoptimized
-            onError={(event) => { (event.target as HTMLImageElement).src = '/opdb_backglass_images/AFM.jpg' }}
+            onError={() => setCelebration(null)}
           />
         </div>
       )}
@@ -476,10 +481,10 @@ export function VenuePinballPicker() {
                 </div>
               </div>
               <div className="hidden grid-cols-2 gap-2 pt-1 xl:grid">
-                <Button onClick={start} disabled={loading || running || machineNames.length < 2}><Play className="mr-2 h-4 w-4" /> Start</Button>
+                <Button onClick={start} disabled={loading || running || machineKeys.length < 2}><Play className="mr-2 h-4 w-4" /> Start</Button>
                 <Button variant="outline" onClick={reset}><RotateCcw className="mr-2 h-4 w-4" /> Reset</Button>
               </div>
-              {machineNames.length > 30 && <p className="text-xs text-muted-foreground">This venue has {machineNames.length} machines. The race uses the first 30.</p>}
+              {machineKeys.length > 30 && <p className="text-xs text-muted-foreground">This venue has {machineKeys.length} machines. The race uses the first 30.</p>}
             </CardContent>
           </Card>
 
@@ -487,11 +492,11 @@ export function VenuePinballPicker() {
             <Card className="overflow-hidden border-neon-yellow/50 bg-gradient-to-br from-neon-yellow/15 to-neon-pink/10">
               <CardContent className="flex items-center gap-4 p-4">
                 <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-md bg-slate-900">
-                  <Image src={getMachineThumbnailPath(winner, winner)} alt="" fill className="object-cover" unoptimized onError={(event) => { (event.target as HTMLImageElement).src = '/opdb_backglass_images/thumbnails/AFM.jpg' }} />
+                  <Image src={getMachineThumbnailPath(winner)} alt="" fill className="object-cover" unoptimized onError={(event) => { (event.target as HTMLImageElement).style.display = 'none' }} />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400"><Trophy className="h-4 w-4" /> Your machine</div>
-                  <div className="mt-1 truncate text-xl font-bold">{winner}</div>
+                  <div className="mt-1 truncate text-xl font-bold">{display(winner)}</div>
                   <div className="text-sm text-muted-foreground">at {venue?.name}</div>
                 </div>
               </CardContent>
@@ -503,7 +508,7 @@ export function VenuePinballPicker() {
             <CardContent>
               {ranking.length === 0 ? <p className="text-sm text-muted-foreground">Start the table to see the finish order.</p> : (
                 <ol className="max-h-52 space-y-2 overflow-y-auto">
-                  {ranking.map((machine, index) => <li key={machine} className="flex items-center gap-3 text-sm"><span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${index === 0 ? 'bg-amber-400 text-slate-950' : 'bg-muted'}`}>{index + 1}</span><span className="truncate">{machine}</span></li>)}
+                  {ranking.map((machineKey, index) => <li key={machineKey} className="flex items-center gap-3 text-sm"><span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${index === 0 ? 'bg-amber-400 text-slate-950' : 'bg-muted'}`}>{index + 1}</span><span className="truncate">{display(machineKey)}</span></li>)}
                 </ol>
               )}
             </CardContent>
@@ -513,7 +518,7 @@ export function VenuePinballPicker() {
 
       <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 p-3 pb-[max(.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,.18)] backdrop-blur xl:hidden">
         <div className="mx-auto grid max-w-md grid-cols-[1fr_auto_auto] gap-2">
-          <Button size="lg" onClick={start} disabled={loading || running || machineNames.length < 2}>
+          <Button size="lg" onClick={start} disabled={loading || running || machineKeys.length < 2}>
             <Play className="mr-2 h-5 w-5" /> Start race
           </Button>
           <Button size="lg" variant={motionEnabled ? 'default' : 'outline'} onClick={enableMotion} disabled={motionEnabled} aria-label={motionEnabled ? 'Motion controls enabled' : 'Enable motion controls'} title={motionEnabled ? 'Motion controls enabled' : 'Enable motion controls'}>
