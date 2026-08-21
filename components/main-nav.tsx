@@ -56,6 +56,7 @@ export function MainNav() {
     { href: '/head-to-head' as const, label: 'Head to Head' },
     { href: '/player-profile' as const, label: 'Player Profile' },
     { href: '/compare-venues' as const, label: 'Compare Venues' },
+    { href: '/virtual-picker' as const, label: 'Game Picker' },
     ...(user ? [
       { href: '/strategy' as const, label: 'Strategy' },
     ] : []),
