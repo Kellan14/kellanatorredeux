@@ -319,7 +319,7 @@ export function VenuePinballPicker() {
   }, [winner])
 
   return (
-    <div className="container px-4 py-8 md:px-6">
+    <div className="container px-4 py-8 pb-28 md:px-6 xl:pb-8">
       {celebration && (
         <div className="winner-backglass-overlay" aria-hidden="true">
           <Image
@@ -362,7 +362,7 @@ export function VenuePinballPicker() {
                   ))}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2 pt-1">
+              <div className="hidden grid-cols-2 gap-2 pt-1 xl:grid">
                 <Button onClick={start} disabled={loading || running || machineNames.length < 2}><Play className="mr-2 h-4 w-4" /> Start</Button>
                 <Button variant="outline" onClick={reset}><RotateCcw className="mr-2 h-4 w-4" /> Reset</Button>
               </div>
@@ -395,6 +395,17 @@ export function VenuePinballPicker() {
               )}
             </CardContent>
           </Card>
+        </div>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 p-3 pb-[max(.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,.18)] backdrop-blur xl:hidden">
+        <div className="mx-auto grid max-w-md grid-cols-[1fr_auto] gap-2">
+          <Button size="lg" onClick={start} disabled={loading || running || machineNames.length < 2}>
+            <Play className="mr-2 h-5 w-5" /> Start race
+          </Button>
+          <Button size="lg" variant="outline" onClick={reset} aria-label="Reset race">
+            <RotateCcw className="h-5 w-5" />
+          </Button>
         </div>
       </div>
     </div>
