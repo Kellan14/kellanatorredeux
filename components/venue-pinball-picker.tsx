@@ -6,7 +6,7 @@ import { MapPin, Play, RotateCcw, Smartphone, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getMachineImagePath, getMachineThumbnailPath } from '@/lib/machine-images'
-import { VPX_TABLE, type VpxPoint, type VpxWall } from '@/lib/vpx-example-playfield'
+import { VPX_TABLE, type VpxPoint, type VpxWall } from '@/lib/vpx-robocop-playfield'
 import {
   applyVpxScatter,
   createVpxFlipperMover,
@@ -53,10 +53,9 @@ type Ball = {
 }
 
 const WIDTH = 640
-const HEIGHT = 900
-const FINISH_Y = 842
-const FINISH_LEFT = 286
-const FINISH_RIGHT = 354
+// Keep RoboCop's native playfield aspect ratio in the simulation buffer. CSS
+// may fit this dashboard to the viewport, but never stretches its geometry.
+const HEIGHT = 1518
 const BALL_TO_VPX_VELOCITY_SCALE = 10 / 16.667
 const PALETTE = ['#ff006e', '#3a86ff', '#06d6a0', '#ffbe0b', '#8338ec', '#fb5607', '#00b4d8', '#ef476f']
 
@@ -65,11 +64,18 @@ const scaleVpxPoint = ([x, y]: VpxPoint) => ({
   y: y * HEIGHT / VPX_TABLE.height,
 })
 
-function railsFromVpxWall(wall: VpxWall): Rail[] {
-  return wall.points.map((point, index) => {
+const VPX_DRAIN_CENTER = scaleVpxPoint(VPX_TABLE.drain.center)
+const VPX_DRAIN_RADIUS = VPX_TABLE.drain.radius * WIDTH / VPX_TABLE.playableWidth
+const FINISH_Y = VPX_DRAIN_CENTER.y
+const FINISH_LEFT = VPX_DRAIN_CENTER.x - VPX_DRAIN_RADIUS
+const FINISH_RIGHT = VPX_DRAIN_CENTER.x + VPX_DRAIN_RADIUS
+
+function railsFromVpxWall(wall: VpxWall, excludedEdge?: number): Rail[] {
+  return wall.points.flatMap((point, index) => {
+    if (index === excludedEdge) return []
     const start = scaleVpxPoint(point)
     const end = scaleVpxPoint(wall.points[(index + 1) % wall.points.length])
-    return {
+    return [{
       x1: start.x, y1: start.y, x2: end.x, y2: end.y, kind: 'wall',
       elasticity: wall.elasticity,
       elasticityFalloff: wall.elasticityFalloff,
@@ -78,7 +84,7 @@ function railsFromVpxWall(wall: VpxWall): Rail[] {
       thickness: 0,
       vpxWall: true,
       allowsInvertedEscape: wall.name === 'Wall4',
-    }
+    }]
   })
 }
 
@@ -86,7 +92,7 @@ const VPX_SLING_POLYGONS = VPX_TABLE.slingBodies.map((wall) => wall.points.map(s
 const LOWER_PLAYFIELD_RAILS: Rail[] = [
   ...VPX_TABLE.boundaryWalls.flatMap(railsFromVpxWall),
   ...VPX_TABLE.lowerWalls.flatMap(railsFromVpxWall),
-  ...VPX_TABLE.slingBodies.flatMap(railsFromVpxWall),
+  ...VPX_TABLE.slingBodies.flatMap((wall) => railsFromVpxWall(wall, wall.slingshotEdge)),
   ...VPX_TABLE.slingFaces.map((face) => {
     const start = scaleVpxPoint(face.from)
     const end = scaleVpxPoint(face.to)
@@ -167,7 +173,7 @@ const LAYOUTS: Layout[] = [
     pegs: [...pegGrid(7, 6, 190, 72), { x: 180, y: 690, r: 28 }, { x: 460, y: 690, r: 28 }],
     rails: [
       { x1: 34, y1: 120, x2: 34, y2: 790 }, { x1: 606, y1: 120, x2: 606, y2: 790 },
-      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: 842 }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: 842 },
+      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: FINISH_Y }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: FINISH_Y },
     ],
   },
   {
@@ -184,7 +190,7 @@ const LAYOUTS: Layout[] = [
     rails: [
       { x1: 34, y1: 120, x2: 34, y2: 790 }, { x1: 606, y1: 120, x2: 606, y2: 790 },
       { x1: 35, y1: 365, x2: 205, y2: 440 }, { x1: 605, y1: 365, x2: 435, y2: 440 },
-      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: 842 }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: 842 },
+      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: FINISH_Y }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: FINISH_Y },
     ],
   },
   {
@@ -197,7 +203,7 @@ const LAYOUTS: Layout[] = [
       { x1: 34, y1: 120, x2: 34, y2: 790 }, { x1: 606, y1: 120, x2: 606, y2: 790 },
       { x1: 34, y1: 245, x2: 515, y2: 330 }, { x1: 606, y1: 440, x2: 125, y2: 525 },
       { x1: 34, y1: 635, x2: 515, y2: 720 },
-      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: 842 }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: 842 },
+      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: FINISH_Y }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: FINISH_Y },
     ],
   },
   {
@@ -708,7 +714,7 @@ export function VenuePinballPicker() {
     ctx.setLineDash([14, 10]); ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 4
     ctx.beginPath(); ctx.moveTo(FINISH_LEFT, FINISH_Y); ctx.lineTo(FINISH_RIGHT, FINISH_Y); ctx.stroke(); ctx.setLineDash([])
     ctx.font = '700 14px sans-serif'; ctx.fillStyle = '#f8fafc'; ctx.textAlign = 'center'
-    ctx.fillText('FINISH', 320, FINISH_Y + 28)
+    ctx.fillText('FINISH', VPX_DRAIN_CENTER.x, FINISH_Y + 28)
 
     ballsRef.current.forEach((ball, index) => {
       if (ball.finished) return
@@ -769,7 +775,7 @@ export function VenuePinballPicker() {
           finishingRef.current = [...finishingRef.current, ball.machineKey]
           setRanking([...finishingRef.current])
         }
-        if (ball.y > HEIGHT + 40) { ball.y = 130; ball.x = 320; ball.vy = 0 }
+        if (ball.y > HEIGHT + 40) { ball.y = 130; ball.x = VPX_DRAIN_CENTER.x; ball.vy = 0 }
       })
       for (let first = 0; first < balls.length; first += 1) {
         for (let second = first + 1; second < balls.length; second += 1) collideBalls(balls[first], balls[second])
@@ -857,9 +863,9 @@ export function VenuePinballPicker() {
       </Card>
 
       <div className="grid h-[calc(100%-4.25rem)] gap-6 xl:h-auto xl:grid-cols-[minmax(0,1fr)_360px]">
-        <Card className="h-full overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl xl:h-[900px] xl:w-[640px] xl:justify-self-center">
+        <Card className="aspect-[952/2256] h-full w-auto max-w-full justify-self-center overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl xl:h-[900px]">
           <CardContent className="relative flex h-full items-center justify-center p-0">
-            <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="block h-auto max-h-full w-auto max-w-full bg-slate-950 xl:h-[900px] xl:w-[640px] xl:max-h-none xl:max-w-none" aria-label="Virtual pinball machine race" />
+            <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="block h-full w-full bg-slate-950" aria-label="Virtual pinball machine race" />
             <button
               type="button"
               aria-label="Left flipper"
