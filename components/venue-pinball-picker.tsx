@@ -29,6 +29,7 @@ type Rail = {
   kind?: 'rubber' | 'wall' | 'slingshot'
   elasticity?: number; elasticityFalloff?: number; friction?: number; scatter?: number; force?: number; thickness?: number
   vpxWall?: boolean
+  allowsInvertedEscape?: boolean
 }
 type Layout = {
   id: string
@@ -76,12 +77,14 @@ function railsFromVpxWall(wall: VpxWall): Rail[] {
       scatter: wall.scatter,
       thickness: 0,
       vpxWall: true,
+      allowsInvertedEscape: wall.name === 'Wall4',
     }
   })
 }
 
 const VPX_SLING_POLYGONS = VPX_TABLE.slingBodies.map((wall) => wall.points.map(scaleVpxPoint))
 const LOWER_PLAYFIELD_RAILS: Rail[] = [
+  ...VPX_TABLE.boundaryWalls.flatMap(railsFromVpxWall),
   ...VPX_TABLE.lowerWalls.flatMap(railsFromVpxWall),
   ...VPX_TABLE.slingBodies.flatMap(railsFromVpxWall),
   ...VPX_TABLE.slingFaces.map((face) => {
@@ -92,11 +95,6 @@ const LOWER_PLAYFIELD_RAILS: Rail[] = [
       elasticity: face.elasticity, elasticityFalloff: face.elasticityFalloff,
       friction: face.friction, scatter: face.scatter, force: face.force, thickness: 4,
     }
-  }),
-  ...VPX_TABLE.cabinetEdges.map(([from, to]) => {
-    const start = scaleVpxPoint(from)
-    const end = scaleVpxPoint(to)
-    return { x1: start.x, y1: Math.max(630, start.y), x2: end.x, y2: end.y, kind: 'wall' as const, thickness: 0 }
   }),
 ]
 
@@ -145,6 +143,10 @@ function predictedFlipperAngle(mover: VpxFlipperMover, pressed: boolean, enabled
 function isOldDrainGuide(rail: Rail) {
   return (rail.x2 === FINISH_LEFT || rail.x2 === FINISH_RIGHT || rail.x1 === FINISH_LEFT || rail.x1 === FINISH_RIGHT)
     || (Math.min(rail.y1, rail.y2) >= 650 && (rail.x1 === 34 || rail.x1 === 606))
+}
+
+function isImprovisedLayoutBoundary(rail: Rail) {
+  return rail.x1 === rail.x2 && (rail.x1 === 34 || rail.x1 === 606)
 }
 
 function pegGrid(rows: number, columns: number, top: number, gapY: number): Peg[] {
@@ -264,6 +266,7 @@ function advanceThroughVpxWalls(
     let earliest: { rail: Rail; time: number; normalX: number; normalY: number; penetration: number } | null = null
     for (const rail of rails) {
       if (!rail.vpxWall) continue
+      if (rail.allowsInvertedEscape && externalVelocityDeltaY < 0) continue
       const hit = getVpxLineSegmentHit(ball, rail, remainingTime)
       if (hit && (!earliest || hit.time < earliest.time)) earliest = { rail, ...hit }
     }
@@ -489,11 +492,7 @@ export function VenuePinballPicker() {
   const venue = venues.find((item) => item.key === venueKey) ?? venues.find((item) => item.name === venueKey)
   const layout = LAYOUTS.find((item) => item.id === layoutId) ?? LAYOUTS[0]
   const layoutRails = useMemo(
-    () => layout.rails.filter((rail) => !isOldDrainGuide(rail)).map((rail) => (
-        rail.x1 === rail.x2 && (rail.x1 === 34 || rail.x1 === 606) && rail.y2 > 630
-          ? { ...rail, y2: 630 }
-          : rail
-      )),
+    () => layout.rails.filter((rail) => !isOldDrainGuide(rail) && !isImprovisedLayoutBoundary(rail)),
     [layout],
   )
   const playfieldRails = useMemo(() => [...layoutRails, ...LOWER_PLAYFIELD_RAILS], [layoutRails])

@@ -16,12 +16,27 @@ export type VpxWall = {
 export const VPX_TABLE = {
   playableWidth: 874,
   height: 2162,
-  // Inner collision edges of the cabinet walls (Wall350, Wall5top/bottom).
-  cabinetEdges: [
-    [[23, 0], [23, 2000]],
-    [[851, 592], [851, 1818]],
-    [[851, 1883], [851, 2150]],
-  ] as const,
+  // Exact collidable cabinet boundary surfaces from exampleTable.vpx.
+  // Wall4 is disabled only while inverted so the existing motion-control
+  // behavior can still let balls roll out through the top of the screen.
+  boundaryWalls: [
+    {
+      name: 'Wall4', elasticity: 0.3, elasticityFalloff: 0, friction: 0.02, scatter: 0,
+      points: [[957.89246,0],[-4.5658703,0],[-4.5658703,23],[957.89246,23]],
+    },
+    {
+      name: 'Wall350', elasticity: 0.3, elasticityFalloff: 0, friction: 0.02, scatter: 0,
+      points: [[0,0],[0,2000],[23,2000],[23,0]],
+    },
+    {
+      name: 'Wall5top', elasticity: 0.25, elasticityFalloff: 0, friction: 0.25, scatter: 5,
+      points: [[851.1274,591.638],[851.1274,1817.6367],[874.1274,1817.6367],[874.1274,591.638]],
+    },
+    {
+      name: 'Wall5bottom', elasticity: 0.25, elasticityFalloff: 0, friction: 0.25, scatter: 5,
+      points: [[851.1274,1882.8282],[851.1274,2149.831],[874.1274,2149.831],[874.1274,1882.8282]],
+    },
+  ] as const satisfies readonly VpxWall[],
   lowerWalls: [
     {
       name: 'Wall5', elasticity: 0.3, elasticityFalloff: 0, friction: 0.15, scatter: 5,
