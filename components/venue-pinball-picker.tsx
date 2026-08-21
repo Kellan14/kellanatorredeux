@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getMachineImagePath, getMachineThumbnailPath } from '@/lib/machine-images'
 import { VPX_TABLE, type VpxPoint, type VpxWall } from '@/lib/vpx-example-playfield'
+import { applyVpxScatter, resolveVpxBallCollision, resolveVpxSurfaceContact } from '@/lib/vpx-physics'
 import { useMachineCanon } from '@/hooks/use-machine-canon'
 
 type Venue = { key: string; name: string; machines: string[] }
@@ -31,6 +32,7 @@ type Ball = {
   y: number
   vx: number
   vy: number
+  angularVelocity: number
   radius: number
   color: string
   finished: boolean
@@ -169,19 +171,6 @@ const LAYOUTS: Layout[] = [
   },
 ]
 
-function resolveSurface(ball: Ball, nx: number, ny: number, elasticity: number, friction: number, surfaceVx = 0, surfaceVy = 0, elasticityFalloff = 0) {
-  const relativeVx = ball.vx - surfaceVx
-  const relativeVy = ball.vy - surfaceVy
-  const normalSpeed = relativeVx * nx + relativeVy * ny
-  if (normalSpeed >= 0) return
-  const tangentX = -ny
-  const tangentY = nx
-  const tangentSpeed = relativeVx * tangentX + relativeVy * tangentY
-  const effectiveElasticity = elasticity / (1 + elasticityFalloff * Math.abs(normalSpeed) / 18.53)
-  ball.vx -= (1 + effectiveElasticity) * normalSpeed * nx + tangentSpeed * friction * tangentX
-  ball.vy -= (1 + effectiveElasticity) * normalSpeed * ny + tangentSpeed * friction * tangentY
-}
-
 function collideRail(ball: Ball, rail: Rail) {
   const dx = rail.x2 - rail.x1
   const dy = rail.y2 - rail.y1
@@ -194,25 +183,21 @@ function collideRail(ball: Ball, rail: Rail) {
   const distance = Math.hypot(nxRaw, nyRaw)
   const railThickness = rail.thickness ?? 5
   if (distance >= ball.radius + railThickness || distance === 0) return false
-  let nx = nxRaw / distance
-  let ny = nyRaw / distance
+  const nx = nxRaw / distance
+  const ny = nyRaw / distance
   const overlap = ball.radius + railThickness - distance
   ball.x += nx * overlap
   ball.y += ny * overlap
-  if (rail.scatter) {
-    const scatterAngle = (Math.random() - 0.5) * rail.scatter * Math.PI / 180
-    const cos = Math.cos(scatterAngle)
-    const sin = Math.sin(scatterAngle)
-    ;[nx, ny] = [nx * cos - ny * sin, nx * sin + ny * cos]
-  }
   const rubber = rail.kind !== 'wall'
-  resolveSurface(
-    ball, nx, ny,
-    rail.elasticity ?? (rubber ? 0.62 : 0.48),
-    rail.friction ?? (rubber ? 0.04 : 0.1),
-    0, 0, rail.elasticityFalloff ?? 0,
-  )
-  if (rail.kind === 'slingshot') {
+  const contact = resolveVpxSurfaceContact(ball, {
+    normalX: nx,
+    normalY: ny,
+    elasticity: rail.elasticity ?? (rubber ? 0.62 : 0.48),
+    elasticityFalloff: rail.elasticityFalloff ?? 0,
+    friction: rail.friction ?? (rubber ? 0.04 : 0.1),
+  })
+  if (contact && rail.scatter) applyVpxScatter(ball, rail.scatter, contact.normalImpulse)
+  if (contact && rail.kind === 'slingshot') {
     const kick = (rail.force ?? 40) * 0.06125
     ball.vx += nx * kick
     ball.vy += ny * kick
@@ -268,14 +253,18 @@ function collideFlipper(ball: Ball, rail: Rail, angularVelocity: number) {
   const radiusY = closestY - rail.y1
   const surfaceVx = -angularVelocity * radiusY
   const surfaceVy = angularVelocity * radiusX
-  // Flipper rubber is deliberately low-elasticity. The bat's powered surface
-  // supplies the shot energy; a stationary bat should not trampoline the ball.
-  resolveSurface(
-    ball, nx, ny,
-    VPX_FLIPPER.elasticity * 0.425,
-    VPX_FLIPPER.friction * 0.094,
-    surfaceVx, surfaceVy, VPX_FLIPPER.elasticityFalloff,
-  )
+  // Keep the temporary elasticity calibration until flipper inertia and recoil
+  // are ported, but use the table's actual friction in the VPX impulse model.
+  resolveVpxSurfaceContact(ball, {
+    normalX: nx,
+    normalY: ny,
+    elasticity: VPX_FLIPPER.elasticity * 0.425,
+    elasticityFalloff: VPX_FLIPPER.elasticityFalloff,
+    friction: VPX_FLIPPER.friction,
+    surfaceVelocityX: surfaceVx,
+    surfaceVelocityY: surfaceVy,
+    frictionUsesCollisionImpulse: true,
+  })
 }
 
 function collidePeg(ball: Ball, peg: Peg) {
@@ -290,7 +279,13 @@ function collidePeg(ball: Ball, peg: Peg) {
   ball.x += nx * overlap
   ball.y += ny * overlap
   const isBumper = peg.kind === 'bumper' || (peg.kind !== 'post' && radius > 20)
-  resolveSurface(ball, nx, ny, isBumper ? 0.58 : 0.68, isBumper ? 0.025 : 0.075)
+  resolveVpxSurfaceContact(ball, {
+    normalX: nx,
+    normalY: ny,
+    elasticity: isBumper ? 0.58 : 0.68,
+    elasticityFalloff: 0,
+    friction: isBumper ? 0.025 : 0.075,
+  })
   // Large pegs are active pop bumpers: add a consistent kick so even a
   // glancing, low-speed hit launches the ball back into the playfield.
   if (isBumper) {
@@ -314,13 +309,7 @@ function collideBalls(first: Ball, second: Ball) {
   first.y -= ny * overlap * 0.5
   second.x += nx * overlap * 0.5
   second.y += ny * overlap * 0.5
-  const closingSpeed = (second.vx - first.vx) * nx + (second.vy - first.vy) * ny
-  if (closingSpeed >= 0) return
-  const impulse = -(1 + 0.9) * closingSpeed * 0.5
-  first.vx -= impulse * nx
-  first.vy -= impulse * ny
-  second.vx += impulse * nx
-  second.vy += impulse * ny
+  resolveVpxBallCollision(first, second, nx, ny)
 }
 
 function traceVpxFlipperProfile(ctx: CanvasRenderingContext2D, length: number, baseRadius: number, endRadius: number) {
@@ -711,6 +700,7 @@ export function VenuePinballPicker() {
       y: 58 - Math.floor(index / 10) * 34,
       vx: (Math.random() - 0.5) * 1.2,
       vy: Math.random() * 0.3,
+      angularVelocity: 0,
       radius: machines.length > 20 ? 10 : machines.length > 12 ? 12 : 15,
       color: PALETTE[index % PALETTE.length],
       finished: false,
