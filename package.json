@@ -41,12 +41,14 @@
     "recharts": "^2.10.3",
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
+    "three": "^0.185.1",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/three": "^0.185.4",
     "autoprefixer": "^10.0.1",
     "baseline-browser-mapping": "^2.10.0",
     "eslint": "^8",

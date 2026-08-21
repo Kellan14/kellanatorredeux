@@ -5,8 +5,9 @@ import Image from 'next/image'
 import { MapPin, Play, RotateCcw, Smartphone, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { VpxTableScene } from '@/components/vpx-table-scene'
 import { getMachineImagePath, getMachineThumbnailPath } from '@/lib/machine-images'
-import { VPX_TABLE, type VpxPoint, type VpxWall } from '@/lib/vpx-robocop-playfield'
+import { VPX_TABLE, type VpxPoint, type VpxSegment, type VpxWall } from '@/lib/vpx-robocop-table'
 import {
   applyVpxScatter,
   createVpxFlipperMover,
@@ -23,7 +24,10 @@ import {
 import { useMachineCanon } from '@/hooks/use-machine-canon'
 
 type Venue = { key: string; name: string; machines: string[] }
-type Peg = { x: number; y: number; r?: number; kind?: 'post' | 'bumper' }
+type Peg = {
+  x: number; y: number; r?: number; kind?: 'post' | 'bumper'
+  elasticity?: number; elasticityFalloff?: number; friction?: number; scatter?: number; force?: number
+}
 type Rail = {
   x1: number; y1: number; x2: number; y2: number
   kind?: 'rubber' | 'wall' | 'slingshot'
@@ -69,6 +73,7 @@ const VPX_DRAIN_RADIUS = VPX_TABLE.drain.radius * WIDTH / VPX_TABLE.playableWidt
 const FINISH_Y = VPX_DRAIN_CENTER.y
 const FINISH_LEFT = VPX_DRAIN_CENTER.x - VPX_DRAIN_RADIUS
 const FINISH_RIGHT = VPX_DRAIN_CENTER.x + VPX_DRAIN_RADIUS
+const VPX_PLAYFIELD_SCALE = WIDTH / VPX_TABLE.playableWidth
 
 function railsFromVpxWall(wall: VpxWall, excludedEdge?: number): Rail[] {
   return wall.points.flatMap((point, index) => {
@@ -81,18 +86,29 @@ function railsFromVpxWall(wall: VpxWall, excludedEdge?: number): Rail[] {
       elasticityFalloff: wall.elasticityFalloff,
       friction: wall.friction,
       scatter: wall.scatter,
-      thickness: 0,
+      thickness: (wall.thickness ?? 0) * VPX_PLAYFIELD_SCALE,
       vpxWall: true,
       allowsInvertedEscape: wall.name === 'Wall4',
     }]
   })
 }
 
-const VPX_SLING_POLYGONS = VPX_TABLE.slingBodies.map((wall) => wall.points.map(scaleVpxPoint))
-const LOWER_PLAYFIELD_RAILS: Rail[] = [
-  ...VPX_TABLE.boundaryWalls.flatMap(railsFromVpxWall),
-  ...VPX_TABLE.lowerWalls.flatMap(railsFromVpxWall),
+function railsFromVpxSegment(segment: VpxSegment): Rail[] {
+  const start = scaleVpxPoint(segment.from)
+  const end = scaleVpxPoint(segment.to)
+  const rail: Rail = {
+    x1: start.x, y1: start.y, x2: end.x, y2: end.y, kind: 'wall',
+    elasticity: segment.elasticity, elasticityFalloff: segment.elasticityFalloff,
+    friction: segment.friction, scatter: segment.scatter, thickness: 0, vpxWall: true,
+  }
+  return segment.oneWay ? [rail] : [rail, { ...rail, x1: end.x, y1: end.y, x2: start.x, y2: start.y }]
+}
+
+const VPX_PLAYFIELD_RAILS: Rail[] = [
+  ...VPX_TABLE.walls.flatMap(railsFromVpxWall),
+  ...VPX_TABLE.rubbers.flatMap(railsFromVpxWall),
   ...VPX_TABLE.slingBodies.flatMap((wall) => railsFromVpxWall(wall, wall.slingshotEdge)),
+  ...VPX_TABLE.contacts.flatMap(railsFromVpxSegment),
   ...VPX_TABLE.slingFaces.map((face) => {
     const start = scaleVpxPoint(face.from)
     const end = scaleVpxPoint(face.to)
@@ -104,8 +120,15 @@ const LOWER_PLAYFIELD_RAILS: Rail[] = [
   }),
 ]
 
+const VPX_BUMPERS: Peg[] = VPX_TABLE.bumpers.map((bumper) => {
+  const center = scaleVpxPoint(bumper.center)
+  return {
+    x: center.x, y: center.y, r: bumper.radius * VPX_PLAYFIELD_SCALE, kind: 'bumper',
+    elasticity: 1, elasticityFalloff: 0, friction: 0, scatter: bumper.scatter, force: bumper.force,
+  }
+})
+
 const VPX_FLIPPER = VPX_TABLE.flippers.left
-const VPX_PLAYFIELD_SCALE = WIDTH / VPX_TABLE.playableWidth
 const FLIPPER_LENGTH = VPX_FLIPPER.length * VPX_PLAYFIELD_SCALE
 const FLIPPER_BASE_RADIUS = VPX_FLIPPER.baseRadius * VPX_PLAYFIELD_SCALE
 const FLIPPER_END_RADIUS = VPX_FLIPPER.endRadius * VPX_PLAYFIELD_SCALE
@@ -146,83 +169,14 @@ function predictedFlipperAngle(mover: VpxFlipperMover, pressed: boolean, enabled
   return predicted.angle
 }
 
-function isOldDrainGuide(rail: Rail) {
-  return (rail.x2 === FINISH_LEFT || rail.x2 === FINISH_RIGHT || rail.x1 === FINISH_LEFT || rail.x1 === FINISH_RIGHT)
-    || (Math.min(rail.y1, rail.y2) >= 650 && (rail.x1 === 34 || rail.x1 === 606))
-}
-
-function isImprovisedLayoutBoundary(rail: Rail) {
-  return rail.x1 === rail.x2 && (rail.x1 === 34 || rail.x1 === 606)
-}
-
-function pegGrid(rows: number, columns: number, top: number, gapY: number): Peg[] {
-  return Array.from({ length: rows * columns }, (_, index) => {
-    const row = Math.floor(index / columns)
-    const column = index % columns
-    const gapX = 480 / Math.max(1, columns - 1)
-    return { x: 80 + column * gapX + (row % 2 ? gapX / 2 : 0), y: top + row * gapY, r: 10 }
-  }).filter((peg) => peg.x < WIDTH - 45)
-}
-
 const LAYOUTS: Layout[] = [
   {
-    id: 'peg-drop',
-    name: 'Peg Drop',
-    description: 'A fast, chaotic plunge through a classic field of pins.',
-    accent: '#3a86ff',
-    pegs: [...pegGrid(7, 6, 190, 72), { x: 180, y: 690, r: 28 }, { x: 460, y: 690, r: 28 }],
-    rails: [
-      { x1: 34, y1: 120, x2: 34, y2: 790 }, { x1: 606, y1: 120, x2: 606, y2: 790 },
-      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: FINISH_Y }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: FINISH_Y },
-    ],
-  },
-  {
-    id: 'bumper-run',
-    name: 'Bumper Run',
-    description: 'Big bumpers launch the field into unpredictable rebounds.',
-    accent: '#ff006e',
-    pegs: [
-      { x: 190, y: 250, r: 42 }, { x: 450, y: 250, r: 42 }, { x: 320, y: 410, r: 54 },
-      { x: 155, y: 565, r: 38 }, { x: 485, y: 565, r: 38 },
-      { x: 320, y: 585, r: 32 }, { x: 255, y: 655, r: 24 }, { x: 385, y: 655, r: 24 },
-      ...pegGrid(2, 6, 720, 68),
-    ],
-    rails: [
-      { x1: 34, y1: 120, x2: 34, y2: 790 }, { x1: 606, y1: 120, x2: 606, y2: 790 },
-      { x1: 35, y1: 365, x2: 205, y2: 440 }, { x1: 605, y1: 365, x2: 435, y2: 440 },
-      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: FINISH_Y }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: FINISH_Y },
-    ],
-  },
-  {
-    id: 'switchbacks',
-    name: 'Switchbacks',
-    description: 'Slanted rails trade the lead all the way to the finish.',
-    accent: '#06d6a0',
-    pegs: [{ x: 550, y: 275, r: 18 }, { x: 90, y: 470, r: 18 }, { x: 550, y: 665, r: 18 }],
-    rails: [
-      { x1: 34, y1: 120, x2: 34, y2: 790 }, { x1: 606, y1: 120, x2: 606, y2: 790 },
-      { x1: 34, y1: 245, x2: 515, y2: 330 }, { x1: 606, y1: 440, x2: 125, y2: 525 },
-      { x1: 34, y1: 635, x2: 515, y2: 720 },
-      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: FINISH_Y }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: FINISH_Y },
-    ],
-  },
-  {
-    id: 'arcade-gauntlet',
-    name: 'Arcade Gauntlet',
-    description: 'A traditional playfield silhouette with lanes, rings, and flipper-shaped exits.',
-    accent: '#fb5607',
-    pegs: [
-      { x: 175, y: 235, r: 34 }, { x: 320, y: 205, r: 26 }, { x: 465, y: 235, r: 34 },
-      { x: 245, y: 390, r: 18 }, { x: 395, y: 390, r: 18 }, { x: 320, y: 505, r: 48 },
-      { x: 120, y: 590, r: 14 }, { x: 520, y: 590, r: 14 },
-    ],
-    rails: [
-      { x1: 34, y1: 120, x2: 34, y2: 650 }, { x1: 606, y1: 120, x2: 606, y2: 650 },
-      { x1: 34, y1: 650, x2: 150, y2: 785 }, { x1: 606, y1: 650, x2: 490, y2: 785 },
-      { x1: 150, y1: 785, x2: FINISH_LEFT, y2: 825 }, { x1: 490, y1: 785, x2: FINISH_RIGHT, y2: 825 },
-      { x1: 70, y1: 330, x2: 195, y2: 355 }, { x1: 570, y1: 330, x2: 445, y2: 355 },
-      { x1: 145, y1: 510, x2: 225, y2: 555 }, { x1: 495, y1: 510, x2: 415, y2: 555 },
-    ],
+    id: 'robocop',
+    name: 'RoboCop (1989)',
+    description: 'The complete VPX playfield, objects, art, and ground-level collision geometry.',
+    accent: '#d71920',
+    pegs: [],
+    rails: [],
   },
 ]
 
@@ -381,17 +335,16 @@ function collidePeg(ball: Ball, peg: Peg) {
   ball.x += nx * overlap
   ball.y += ny * overlap
   const isBumper = peg.kind === 'bumper' || (peg.kind !== 'post' && radius > 20)
-  resolveVpxSurfaceContact(ball, {
+  const contact = resolveVpxSurfaceContact(ball, {
     normalX: nx,
     normalY: ny,
-    elasticity: isBumper ? 0.58 : 0.68,
-    elasticityFalloff: 0,
-    friction: isBumper ? 0.025 : 0.075,
+    elasticity: peg.elasticity ?? (isBumper ? 0.58 : 0.68),
+    elasticityFalloff: peg.elasticityFalloff ?? 0,
+    friction: peg.friction ?? (isBumper ? 0.025 : 0.075),
   })
-  // Large pegs are active pop bumpers: add a consistent kick so even a
-  // glancing, low-speed hit launches the ball back into the playfield.
+  if (contact && peg.scatter) applyVpxScatter(ball, peg.scatter, contact.normalImpulse)
   if (isBumper) {
-    const kick = radius >= 45 ? 3.8 : 3.1
+    const kick = peg.force == null ? (radius >= 45 ? 3.8 : 3.1) : peg.force * 0.06125
     ball.vx += nx * kick
     ball.vy += ny * kick
   }
@@ -497,14 +450,8 @@ export function VenuePinballPicker() {
 
   const venue = venues.find((item) => item.key === venueKey) ?? venues.find((item) => item.name === venueKey)
   const layout = LAYOUTS.find((item) => item.id === layoutId) ?? LAYOUTS[0]
-  const layoutRails = useMemo(
-    () => layout.rails.filter((rail) => !isOldDrainGuide(rail) && !isImprovisedLayoutBoundary(rail)),
-    [layout],
-  )
-  const playfieldRails = useMemo(() => [...layoutRails, ...LOWER_PLAYFIELD_RAILS], [layoutRails])
-  // The imported VPX lower field owns this space; layout-specific objects
-  // must not overlap its lanes, sling plastics, or flippers.
-  const playfieldPegs = useMemo(() => layout.pegs.filter((peg) => peg.y < 590), [layout])
+  const playfieldRails = VPX_PLAYFIELD_RAILS
+  const playfieldPegs = VPX_BUMPERS
   // Venue lists speak canonical short keys. Preserve those keys through the
   // entire race; long names are display-only and must never be fed back into
   // image or data lookups.
@@ -650,58 +597,6 @@ export function VenuePinballPicker() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
     ctx.clearRect(0, 0, WIDTH, HEIGHT)
-    const gradient = ctx.createLinearGradient(0, 0, 0, HEIGHT)
-    gradient.addColorStop(0, '#111827')
-    gradient.addColorStop(1, '#020617')
-    ctx.fillStyle = gradient
-    ctx.fillRect(0, 0, WIDTH, HEIGHT)
-
-    ctx.strokeStyle = `${layout.accent}55`
-    ctx.lineWidth = 1
-    for (let x = 0; x <= WIDTH; x += 40) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke()
-    }
-    for (let y = 0; y <= HEIGHT; y += 40) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WIDTH, y); ctx.stroke()
-    }
-
-    ctx.lineCap = 'round'
-    const drawRail = (rail: Rail) => {
-      ctx.beginPath(); ctx.moveTo(rail.x1, rail.y1); ctx.lineTo(rail.x2, rail.y2)
-      const bodyWidth = rail.kind === 'slingshot' ? 9 : rail.thickness === 0 ? 5 : 11
-      ctx.strokeStyle = rail.kind === 'slingshot' ? layout.accent : '#94a3b8'; ctx.lineWidth = bodyWidth; ctx.stroke()
-      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = Math.min(3, bodyWidth); ctx.stroke()
-    }
-    layoutRails.forEach(drawRail)
-    playfieldPegs.forEach((peg) => {
-      const radius = peg.r ?? 10
-      ctx.beginPath(); ctx.arc(peg.x, peg.y, radius, 0, Math.PI * 2)
-      ctx.fillStyle = radius > 20 ? layout.accent : '#cbd5e1'; ctx.fill()
-      ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 3; ctx.stroke()
-      if (radius > 20) {
-        ctx.beginPath(); ctx.arc(peg.x, peg.y, Math.max(5, radius - 10), 0, Math.PI * 2)
-        ctx.strokeStyle = '#ffffff88'; ctx.lineWidth = 4; ctx.stroke()
-      }
-    })
-
-    // Draw the exact Wall30/Wall31 polygons from exampleTable.vpx.
-    VPX_SLING_POLYGONS.forEach((points) => {
-      ctx.beginPath()
-      ctx.moveTo(points[0].x, points[0].y)
-      points.slice(1).forEach((point) => ctx.lineTo(point.x, point.y))
-      ctx.closePath()
-      ctx.fillStyle = '#f8fafc'
-      ctx.fill()
-      ctx.strokeStyle = '#111827'
-      ctx.lineWidth = 7
-      ctx.stroke()
-    })
-    LOWER_PLAYFIELD_RAILS.forEach(drawRail)
-    ctx.font = '700 11px sans-serif'
-    ctx.fillStyle = '#f8fafc99'
-    ctx.textAlign = 'center'
-    ctx.fillText('OUT', 43, 718); ctx.fillText('IN', 95, 654)
-    ctx.fillText('IN', 545, 654); ctx.fillText('OUT', 597, 718)
 
     const flippers = getFlipperRails(
       predictedFlipperAngle(flipperMoversRef.current.left, flipperPressedRef.current.left, runningRef.current),
@@ -727,7 +622,7 @@ export function VenuePinballPicker() {
       ctx.font = '600 11px sans-serif'
       ctx.fillText(shortName(ball.label), Math.max(52, Math.min(WIDTH - 52, ball.x)), ball.y - ball.radius - 8)
     })
-  }, [layout, layoutRails, playfieldPegs, playfieldRails])
+  }, [layout])
 
   useEffect(() => {
     drawRef.current = draw
@@ -865,11 +760,12 @@ export function VenuePinballPicker() {
       <div className="grid h-[calc(100%-4.25rem)] gap-6 xl:h-auto xl:grid-cols-[minmax(0,1fr)_360px]">
         <Card className="aspect-[952/2256] h-full w-auto max-w-full justify-self-center overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl xl:h-[900px]">
           <CardContent className="relative flex h-full items-center justify-center p-0">
-            <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="block h-full w-full bg-slate-950" aria-label="Virtual pinball machine race" />
+            <VpxTableScene className="absolute inset-0" />
+            <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="relative z-10 block h-full w-full" aria-label="Virtual pinball machine race" />
             <button
               type="button"
               aria-label="Left flipper"
-              className="absolute bottom-0 left-0 h-[28%] w-1/2 touch-none select-none border-0 bg-gradient-to-t from-neon-pink/10 to-transparent text-left text-[10px] font-bold tracking-widest text-white/45 active:from-neon-yellow/25"
+              className="absolute bottom-0 left-0 z-20 h-[28%] w-1/2 touch-none select-none border-0 bg-gradient-to-t from-neon-pink/10 to-transparent text-left text-[10px] font-bold tracking-widest text-white/45 active:from-neon-yellow/25"
               onPointerDown={(event) => { setFlipperInput('left', true); event.currentTarget.setPointerCapture(event.pointerId) }}
               onPointerUp={() => { setFlipperInput('left', false) }}
               onPointerCancel={() => { setFlipperInput('left', false) }}
@@ -880,7 +776,7 @@ export function VenuePinballPicker() {
             <button
               type="button"
               aria-label="Right flipper"
-              className="absolute bottom-0 right-0 h-[28%] w-1/2 touch-none select-none border-0 bg-gradient-to-t from-neon-blue/10 to-transparent text-right text-[10px] font-bold tracking-widest text-white/45 active:from-neon-yellow/25"
+              className="absolute bottom-0 right-0 z-20 h-[28%] w-1/2 touch-none select-none border-0 bg-gradient-to-t from-neon-blue/10 to-transparent text-right text-[10px] font-bold tracking-widest text-white/45 active:from-neon-yellow/25"
               onPointerDown={(event) => { setFlipperInput('right', true); event.currentTarget.setPointerCapture(event.pointerId) }}
               onPointerUp={() => { setFlipperInput('right', false) }}
               onPointerCancel={() => { setFlipperInput('right', false) }}
@@ -889,7 +785,7 @@ export function VenuePinballPicker() {
               <span className="absolute bottom-3 right-4">RIGHT FLIP</span>
             </button>
             {motionNotice && (
-              <div className={`pointer-events-none absolute rounded-lg border px-5 py-2 text-lg font-black tracking-[.18em] shadow-2xl ${motionNotice === 'TILT' ? 'border-red-400 bg-red-600 text-white' : 'border-neon-blue/60 bg-slate-950/90 text-neon-blue'}`}>
+              <div className={`pointer-events-none absolute z-20 rounded-lg border px-5 py-2 text-lg font-black tracking-[.18em] shadow-2xl ${motionNotice === 'TILT' ? 'border-red-400 bg-red-600 text-white' : 'border-neon-blue/60 bg-slate-950/90 text-neon-blue'}`}>
                 {motionNotice}
               </div>
             )}
