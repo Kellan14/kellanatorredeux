@@ -10,6 +10,7 @@ import { VPX_TABLE, type VpxPoint, type VpxWall } from '@/lib/vpx-example-playfi
 import {
   applyVpxScatter,
   createVpxFlipperMover,
+  getVpxLineSegmentContact,
   resolveVpxBallCollision,
   resolveVpxFlipperContact,
   resolveVpxSurfaceContact,
@@ -25,6 +26,7 @@ type Rail = {
   x1: number; y1: number; x2: number; y2: number
   kind?: 'rubber' | 'wall' | 'slingshot'
   elasticity?: number; elasticityFalloff?: number; friction?: number; scatter?: number; force?: number; thickness?: number
+  vpxWall?: boolean
 }
 type Layout = {
   id: string
@@ -71,6 +73,7 @@ function railsFromVpxWall(wall: VpxWall): Rail[] {
       friction: wall.friction,
       scatter: wall.scatter,
       thickness: 0,
+      vpxWall: true,
     }
   })
 }
@@ -245,6 +248,30 @@ function collideRail(ball: Ball, rail: Rail) {
     ball.vy += ny * kick
   }
   return true
+}
+
+function collideVpxWalls(ball: Ball, rails: Rail[]) {
+  let closest: { rail: Rail; normalX: number; normalY: number; penetration: number } | null = null
+  for (const rail of rails) {
+    if (!rail.vpxWall) continue
+    const contact = getVpxLineSegmentContact(ball, rail)
+    if (contact && (!closest || contact.penetration > closest.penetration)) {
+      closest = { rail, ...contact }
+    }
+  }
+  if (!closest) return
+
+  const { rail, normalX, normalY, penetration } = closest
+  ball.x += normalX * penetration
+  ball.y += normalY * penetration
+  const contact = resolveVpxSurfaceContact(ball, {
+    normalX,
+    normalY,
+    elasticity: rail.elasticity ?? 0.48,
+    elasticityFalloff: rail.elasticityFalloff ?? 0,
+    friction: rail.friction ?? 0.1,
+  })
+  if (contact && rail.scatter) applyVpxScatter(ball, rail.scatter, contact.normalImpulse)
 }
 
 function getFlipperRails(leftAngle: number, rightAngle: number): { left: Rail; right: Rail } {
@@ -704,7 +731,11 @@ export function VenuePinballPicker() {
         ball.x += ball.vx * step
         ball.y += ball.vy * step
         playfieldPegs.forEach((peg) => collidePeg(ball, peg))
-        playfieldRails.forEach((rail) => collideRail(ball, rail))
+        // VPX chooses the earliest wall hit, resolves it, then searches again.
+        // At our 1 ms-equivalent step, resolving the deepest single imported
+        // wall contact avoids applying two impulses at a shared inlane joint.
+        collideVpxWalls(ball, playfieldRails)
+        playfieldRails.forEach((rail) => { if (!rail.vpxWall) collideRail(ball, rail) })
         collideFlipper(ball, flippers.left, flipperMoversRef.current.left, 1)
         collideFlipper(ball, flippers.right, flipperMoversRef.current.right, -1)
         if (ball.x < ball.radius) { ball.x = ball.radius; ball.vx = Math.abs(ball.vx) * 0.78 }

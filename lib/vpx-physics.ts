@@ -2,6 +2,7 @@
 // Contact response ported from Visual Pinball's GPLv3+ physics implementation:
 // https://github.com/vpinball/vpinball/blob/master/src/physics/hitflipper.cpp
 // https://github.com/vpinball/vpinball/blob/master/src/physics/hitball.cpp
+// https://github.com/vpinball/vpinball/blob/master/src/physics/collide.cpp
 
 export type VpxPhysicsBall = {
   vx: number
@@ -24,6 +25,25 @@ export type VpxSurfaceContact = {
 export type VpxContactResult = {
   normalSpeed: number
   normalImpulse: number
+}
+
+export type VpxPlanarBall = VpxPhysicsBall & {
+  x: number
+  y: number
+}
+
+export type VpxLineSegment = {
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  thickness?: number
+}
+
+export type VpxLineContact = {
+  normalX: number
+  normalY: number
+  penetration: number
 }
 
 export type VpxFlipperParameters = {
@@ -63,6 +83,57 @@ export type VpxFlipperContact = {
 
 const VPX_ONE_METER_IN_SPEED_UNITS = 18.53
 const SOLID_SPHERE_INERTIA_FACTOR = 2 / 5
+
+/**
+ * Discrete counterpart of VPX LineSeg + HitLineZ collision geometry.
+ *
+ * A VPX wall face is one-sided and uses its winding-defined normal; it is
+ * not an independent two-sided capsule. The vertical joint at v1 supplies
+ * the radial endpoint contact. Since every closed wall segment contributes
+ * its own v1, each polygon joint is represented exactly once.
+ */
+export function getVpxLineSegmentContact(
+  ball: VpxPlanarBall,
+  segment: VpxLineSegment,
+): VpxLineContact | null {
+  const dx = segment.x2 - segment.x1
+  const dy = segment.y2 - segment.y1
+  const length = Math.hypot(dx, dy)
+  if (length <= 1e-8) return null
+
+  const tangentX = dx / length
+  const tangentY = dy / length
+  // Direct port of LineSeg::CalcNormalAndLength. Clockwise VPX wall
+  // polygons therefore expose their outward-facing normal.
+  const faceNormalX = -tangentY
+  const faceNormalY = tangentX
+  const relativeX = ball.x - segment.x1
+  const relativeY = ball.y - segment.y1
+  const tangentDistance = relativeX * tangentX + relativeY * tangentY
+  const normalDistance = relativeX * faceNormalX + relativeY * faceNormalY
+  const contactRadius = ball.radius + (segment.thickness ?? 0)
+
+  let closest: VpxLineContact | null = null
+  if (normalDistance >= 0 && tangentDistance >= 0 && tangentDistance <= length) {
+    const penetration = contactRadius - normalDistance
+    if (penetration > 0) {
+      closest = { normalX: faceNormalX, normalY: faceNormalY, penetration }
+    }
+  }
+
+  // VPX adds a HitLineZ at v1 for the round vertical polygon joint.
+  const jointDistance = Math.hypot(relativeX, relativeY)
+  if (jointDistance > 1e-8 && jointDistance < contactRadius) {
+    const jointContact = {
+      normalX: relativeX / jointDistance,
+      normalY: relativeY / jointDistance,
+      penetration: contactRadius - jointDistance,
+    }
+    if (!closest || jointContact.penetration > closest.penetration) closest = jointContact
+  }
+
+  return closest
+}
 
 export function createVpxFlipperMover(parameters: VpxFlipperParameters): VpxFlipperMover {
   return {
