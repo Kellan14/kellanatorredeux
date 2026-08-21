@@ -7,7 +7,16 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getMachineImagePath, getMachineThumbnailPath } from '@/lib/machine-images'
 import { VPX_TABLE, type VpxPoint, type VpxWall } from '@/lib/vpx-example-playfield'
-import { applyVpxScatter, resolveVpxBallCollision, resolveVpxSurfaceContact } from '@/lib/vpx-physics'
+import {
+  applyVpxScatter,
+  createVpxFlipperMover,
+  resolveVpxBallCollision,
+  resolveVpxFlipperContact,
+  resolveVpxSurfaceContact,
+  stepVpxFlipperMover,
+  type VpxFlipperMover,
+  type VpxFlipperParameters,
+} from '@/lib/vpx-physics'
 import { useMachineCanon } from '@/hooks/use-machine-canon'
 
 type Venue = { key: string; name: string; machines: string[] }
@@ -43,6 +52,7 @@ const HEIGHT = 900
 const FINISH_Y = 842
 const FINISH_LEFT = 286
 const FINISH_RIGHT = 354
+const BALL_TO_VPX_VELOCITY_SCALE = 10 / 16.667
 const PALETTE = ['#ff006e', '#3a86ff', '#06d6a0', '#ffbe0b', '#8338ec', '#fb5607', '#00b4d8', '#ef476f']
 
 const scaleVpxPoint = ([x, y]: VpxPoint) => ({
@@ -86,14 +96,31 @@ const LOWER_PLAYFIELD_RAILS: Rail[] = [
 ]
 
 const VPX_FLIPPER = VPX_TABLE.flippers.left
-const FLIPPER_LENGTH = VPX_FLIPPER.length * WIDTH / VPX_TABLE.playableWidth
-const FLIPPER_BASE_RADIUS = VPX_FLIPPER.baseRadius * WIDTH / VPX_TABLE.playableWidth
-const FLIPPER_END_RADIUS = VPX_FLIPPER.endRadius * WIDTH / VPX_TABLE.playableWidth
-const FLIPPER_RUBBER_THICKNESS = VPX_FLIPPER.rubberThickness * WIDTH / VPX_TABLE.playableWidth
+const VPX_PLAYFIELD_SCALE = WIDTH / VPX_TABLE.playableWidth
+const FLIPPER_LENGTH = VPX_FLIPPER.length * VPX_PLAYFIELD_SCALE
+const FLIPPER_BASE_RADIUS = VPX_FLIPPER.baseRadius * VPX_PLAYFIELD_SCALE
+const FLIPPER_END_RADIUS = VPX_FLIPPER.endRadius * VPX_PLAYFIELD_SCALE
+const FLIPPER_RUBBER_THICKNESS = VPX_FLIPPER.rubberThickness * VPX_PLAYFIELD_SCALE
 const FLIPPER_REST_ANGLE = (VPX_FLIPPER.startAngle - 90) * Math.PI / 180
 const FLIPPER_END_ANGLE = (VPX_FLIPPER.endAngle - 90) * Math.PI / 180
 const FLIPPER_LEFT_CENTER = scaleVpxPoint(VPX_TABLE.flippers.left.center)
 const FLIPPER_RIGHT_CENTER = scaleVpxPoint(VPX_TABLE.flippers.right.center)
+const FLIPPER_PARAMETERS: VpxFlipperParameters = {
+  startAngle: FLIPPER_REST_ANGLE,
+  endAngle: FLIPPER_END_ANGLE,
+  length: FLIPPER_LENGTH,
+  mass: VPX_FLIPPER.mass,
+  // Torque scales with distance squared so angular acceleration matches VPX
+  // after mapping table coordinates into the canvas coordinate system.
+  strength: VPX_FLIPPER.strength * VPX_PLAYFIELD_SCALE * VPX_PLAYFIELD_SCALE,
+  returnRatio: VPX_FLIPPER.returnStrength,
+  rampUp: VPX_FLIPPER.rampUp,
+  torqueDamping: VPX_FLIPPER.torqueDamping,
+  torqueDampingAngle: VPX_FLIPPER.torqueDampingAngle * Math.PI / 180,
+  elasticity: VPX_FLIPPER.elasticity,
+  elasticityFalloff: VPX_FLIPPER.elasticityFalloff,
+  friction: VPX_FLIPPER.friction,
+}
 
 function isOldDrainGuide(rail: Rail) {
   return (rail.x2 === FINISH_LEFT || rail.x2 === FINISH_RIGHT || rail.x1 === FINISH_LEFT || rail.x1 === FINISH_RIGHT)
@@ -222,7 +249,12 @@ function getFlipperRails(leftAngle: number, rightAngle: number): { left: Rail; r
   }
 }
 
-function collideFlipper(ball: Ball, rail: Rail, angularVelocity: number) {
+function collideFlipper(
+  ball: Ball,
+  rail: Rail,
+  mover: VpxFlipperMover,
+  worldAngularDirection: 1 | -1,
+) {
   const dx = rail.x2 - rail.x1
   const dy = rail.y2 - rail.y1
   const lengthSquared = dx * dx + dy * dy
@@ -246,24 +278,15 @@ function collideFlipper(ball: Ball, rail: Rail, angularVelocity: number) {
   ball.x += nx * overlap
   ball.y += ny * overlap
 
-  // A point on a rotating flipper moves perpendicular to its pivot radius.
-  // Resolve the ball against that moving surface rather than adding a fixed
-  // kick. This naturally makes fast tip hits stronger than hits near the bat.
-  const radiusX = closestX - rail.x1
-  const radiusY = closestY - rail.y1
-  const surfaceVx = -angularVelocity * radiusY
-  const surfaceVy = angularVelocity * radiusX
-  // Keep the temporary elasticity calibration until flipper inertia and recoil
-  // are ported, but use the table's actual friction in the VPX impulse model.
-  resolveVpxSurfaceContact(ball, {
+  const radiusX = ball.x - ball.radius * nx - rail.x1
+  const radiusY = ball.y - ball.radius * ny - rail.y1
+  resolveVpxFlipperContact(ball, mover, FLIPPER_PARAMETERS, {
     normalX: nx,
     normalY: ny,
-    elasticity: VPX_FLIPPER.elasticity * 0.425,
-    elasticityFalloff: VPX_FLIPPER.elasticityFalloff,
-    friction: VPX_FLIPPER.friction,
-    surfaceVelocityX: surfaceVx,
-    surfaceVelocityY: surfaceVy,
-    frictionUsesCollisionImpulse: true,
+    radiusX,
+    radiusY,
+    worldAngularDirection,
+    ballVelocityScale: BALL_TO_VPX_VELOCITY_SCALE,
   })
 }
 
@@ -376,8 +399,10 @@ export function VenuePinballPicker() {
   const motionNoticeTimerRef = useRef<number | null>(null)
   const tiltedRef = useRef(false)
   const flipperPressedRef = useRef({ left: false, right: false })
-  const flipperAnglesRef = useRef({ left: FLIPPER_REST_ANGLE, right: FLIPPER_REST_ANGLE })
-  const flipperVelocityRef = useRef({ left: 0, right: 0 })
+  const flipperMoversRef = useRef({
+    left: createVpxFlipperMover(FLIPPER_PARAMETERS),
+    right: createVpxFlipperMover(FLIPPER_PARAMETERS),
+  })
   const { display } = useMachineCanon()
   const [venues, setVenues] = useState<Venue[]>([])
   const [venueKey, setVenueKey] = useState('')
@@ -593,7 +618,7 @@ export function VenuePinballPicker() {
     ctx.fillText('OUT', 43, 718); ctx.fillText('IN', 95, 654)
     ctx.fillText('IN', 545, 654); ctx.fillText('OUT', 597, 718)
 
-    const flippers = getFlipperRails(flipperAnglesRef.current.left, flipperAnglesRef.current.right)
+    const flippers = getFlipperRails(flipperMoversRef.current.left.angle, flipperMoversRef.current.right.angle)
     ;([flippers.left, flippers.right] as Rail[]).forEach((flipper, index) => {
       drawFlipper(ctx, flipper, flipperPressedRef.current[index === 0 ? 'left' : 'right'] ? '#fff36a' : '#ffd92f')
     })
@@ -628,33 +653,15 @@ export function VenuePinballPicker() {
     const elapsed = Math.min(32, time - (lastTimeRef.current || time)) / 16.667
     lastTimeRef.current = time
     const balls = ballsRef.current
-    const updateFlipper = (side: 'left' | 'right', step: number) => {
-      const pressed = flipperPressedRef.current[side]
-      const desiredVelocity = pressed ? -0.31 : 0.18
-      // The ported table uses RampUp=0: full coil power is immediate.
-      const ramp = (pressed ? 1 : 0.08) * step
-      const velocityDelta = desiredVelocity - flipperVelocityRef.current[side]
-      flipperVelocityRef.current[side] += Math.max(-ramp, Math.min(ramp, velocityDelta))
-      flipperAnglesRef.current[side] += flipperVelocityRef.current[side] * step
-
-      const endStop = FLIPPER_END_ANGLE
-      const restStop = FLIPPER_REST_ANGLE
-      if (flipperAnglesRef.current[side] <= endStop) {
-        flipperAnglesRef.current[side] = endStop
-        flipperVelocityRef.current[side] = 0
-      } else if (flipperAnglesRef.current[side] >= restStop) {
-        flipperAnglesRef.current[side] = restStop
-        flipperVelocityRef.current[side] = 0
-      }
-    }
     // VPX targets a 1 ms physics step. Twelve subdivisions per nominal 60 Hz
     // frame keep the moving flipper tip from tunneling through a ball.
     const substeps = Math.max(1, Math.ceil(elapsed * 12))
     const step = elapsed / substeps
     for (let substep = 0; substep < substeps; substep += 1) {
-      updateFlipper('left', step)
-      updateFlipper('right', step)
-      const flippers = getFlipperRails(flipperAnglesRef.current.left, flipperAnglesRef.current.right)
+      const vpxStep = step / BALL_TO_VPX_VELOCITY_SCALE
+      stepVpxFlipperMover(flipperMoversRef.current.left, FLIPPER_PARAMETERS, flipperPressedRef.current.left, vpxStep)
+      stepVpxFlipperMover(flipperMoversRef.current.right, FLIPPER_PARAMETERS, flipperPressedRef.current.right, vpxStep)
+      const flippers = getFlipperRails(flipperMoversRef.current.left.angle, flipperMoversRef.current.right.angle)
       balls.forEach((ball) => {
         if (ball.finished) return
         ball.vy += 0.115 * (motionEnabled ? verticalGravityRef.current : 1) * step
@@ -665,8 +672,8 @@ export function VenuePinballPicker() {
         ball.y += ball.vy * step
         playfieldPegs.forEach((peg) => collidePeg(ball, peg))
         playfieldRails.forEach((rail) => collideRail(ball, rail))
-        collideFlipper(ball, flippers.left, flipperVelocityRef.current.left)
-        collideFlipper(ball, flippers.right, -flipperVelocityRef.current.right)
+        collideFlipper(ball, flippers.left, flipperMoversRef.current.left, 1)
+        collideFlipper(ball, flippers.right, flipperMoversRef.current.right, -1)
         if (ball.x < ball.radius) { ball.x = ball.radius; ball.vx = Math.abs(ball.vx) * 0.78 }
         if (ball.x > WIDTH - ball.radius) { ball.x = WIDTH - ball.radius; ball.vx = -Math.abs(ball.vx) * 0.78 }
         if (ball.y > FINISH_Y && ball.x > FINISH_LEFT && ball.x < FINISH_RIGHT) {
@@ -690,8 +697,10 @@ export function VenuePinballPicker() {
     finishingRef.current = []
     setRanking([])
     flipperPressedRef.current = { left: false, right: false }
-    flipperAnglesRef.current = { left: FLIPPER_REST_ANGLE, right: FLIPPER_REST_ANGLE }
-    flipperVelocityRef.current = { left: 0, right: 0 }
+    flipperMoversRef.current = {
+      left: createVpxFlipperMover(FLIPPER_PARAMETERS),
+      right: createVpxFlipperMover(FLIPPER_PARAMETERS),
+    }
     const machines = machineKeys.slice(0, 30)
     ballsRef.current = machines.map((machineKey, index) => ({
       machineKey,
