@@ -32,6 +32,7 @@ type Rail = {
   x1: number; y1: number; x2: number; y2: number
   kind?: 'rubber' | 'wall' | 'slingshot'
   elasticity?: number; elasticityFalloff?: number; friction?: number; scatter?: number; force?: number; thickness?: number
+  heightBottom?: number; heightTop?: number
   vpxWall?: boolean
   allowsInvertedEscape?: boolean
 }
@@ -51,6 +52,11 @@ type Ball = {
   angularVelocity: number
   radius: number
   color: string
+  z: number
+  vz: number
+  wireformDistance: number | null
+  wireformSpeed: number
+  wireformOffset: number
   active: boolean
   launchAt: number
   finished: boolean
@@ -82,6 +88,7 @@ const RAPID_FIRE_LANE = {
 }
 
 function railsFromVpxWall(wall: VpxWall, excludedEdge?: number): Rail[] {
+  const isSlingBody = wall.name === 'LeftSlingShot' || wall.name === 'RightSlingShot'
   return wall.points.flatMap((point, index) => {
     if (index === excludedEdge) return []
     const start = scaleVpxPoint(point)
@@ -93,6 +100,8 @@ function railsFromVpxWall(wall: VpxWall, excludedEdge?: number): Rail[] {
       friction: wall.friction,
       scatter: wall.scatter,
       thickness: (wall.thickness ?? 0) * VPX_PLAYFIELD_SCALE,
+      heightBottom: (isSlingBody ? 26 : 0) * VPX_PLAYFIELD_SCALE,
+      heightTop: (isSlingBody ? 36 : 55) * VPX_PLAYFIELD_SCALE,
       vpxWall: true,
       allowsInvertedEscape: wall.name === 'Wall4',
     }]
@@ -105,7 +114,8 @@ function railsFromVpxSegment(segment: VpxSegment): Rail[] {
   const rail: Rail = {
     x1: start.x, y1: start.y, x2: end.x, y2: end.y, kind: 'wall',
     elasticity: segment.elasticity, elasticityFalloff: segment.elasticityFalloff,
-    friction: segment.friction, scatter: segment.scatter, thickness: 0, vpxWall: true,
+    friction: segment.friction, scatter: segment.scatter, thickness: 0,
+    heightBottom: 0, heightTop: 65 * VPX_PLAYFIELD_SCALE, vpxWall: true,
   }
   return segment.oneWay ? [rail] : [rail, { ...rail, x1: end.x, y1: end.y, x2: start.x, y2: start.y }]
 }
@@ -122,6 +132,7 @@ const VPX_PLAYFIELD_RAILS: Rail[] = [
       x1: start.x, y1: start.y, x2: end.x, y2: end.y, kind: 'slingshot' as const,
       elasticity: face.elasticity, elasticityFalloff: face.elasticityFalloff,
       friction: face.friction, scatter: face.scatter, force: face.force, thickness: 4,
+      heightBottom: 26 * VPX_PLAYFIELD_SCALE, heightTop: 36 * VPX_PLAYFIELD_SCALE,
     }
   }),
 ]
@@ -133,6 +144,58 @@ const VPX_BUMPERS: Peg[] = VPX_TABLE.bumpers.map((bumper) => {
     elasticity: 1, elasticityFalloff: 0, friction: 0, scatter: bumper.scatter, force: bumper.force,
   }
 })
+
+type WireformNode = { x: number; y: number; z: number; width: number; distance: number }
+
+const VPX_WIREFORM_ROUTE: readonly WireformNode[] = (() => {
+  const route: WireformNode[] = []
+  VPX_TABLE.shooterWireform.forEach((ramp) => {
+    const sourcePoints = ramp.reverse ? [...ramp.points].reverse() : [...ramp.points]
+    const sourceStartHeight = ramp.reverse ? ramp.heightTop : ramp.heightBottom
+    const sourceEndHeight = ramp.reverse ? ramp.heightBottom : ramp.heightTop
+    const sourceDistances = [0]
+    for (let index = 1; index < sourcePoints.length; index += 1) {
+      sourceDistances.push(sourceDistances[index - 1] + Math.hypot(
+        sourcePoints[index][0] - sourcePoints[index - 1][0],
+        sourcePoints[index][1] - sourcePoints[index - 1][1],
+      ))
+    }
+    const sourceLength = sourceDistances[sourceDistances.length - 1] || 1
+    sourcePoints.forEach((point, index) => {
+      const scaled = scaleVpxPoint(point)
+      const previous = route[route.length - 1]
+      if (previous && Math.hypot(scaled.x - previous.x, scaled.y - previous.y) < 1) return
+      const progress = sourceDistances[index] / sourceLength
+      const z = (sourceStartHeight + (sourceEndHeight - sourceStartHeight) * progress) * VPX_PLAYFIELD_SCALE
+      const distance = previous ? previous.distance + Math.hypot(scaled.x - previous.x, scaled.y - previous.y) : 0
+      route.push({ x: scaled.x, y: scaled.y, z, width: ramp.width * VPX_PLAYFIELD_SCALE, distance })
+    })
+  })
+  return route
+})()
+
+const VPX_WIREFORM_LENGTH = VPX_WIREFORM_ROUTE[VPX_WIREFORM_ROUTE.length - 1].distance
+
+function sampleWireform(distance: number) {
+  const clamped = Math.max(0, Math.min(VPX_WIREFORM_LENGTH, distance))
+  let upperIndex = 1
+  while (upperIndex < VPX_WIREFORM_ROUTE.length - 1 && VPX_WIREFORM_ROUTE[upperIndex].distance < clamped) upperIndex += 1
+  const from = VPX_WIREFORM_ROUTE[upperIndex - 1]
+  const to = VPX_WIREFORM_ROUTE[upperIndex]
+  const segmentLength = Math.max(0.0001, to.distance - from.distance)
+  const progress = (clamped - from.distance) / segmentLength
+  const tangentX = (to.x - from.x) / segmentLength
+  const tangentY = (to.y - from.y) / segmentLength
+  return {
+    x: from.x + (to.x - from.x) * progress,
+    y: from.y + (to.y - from.y) * progress,
+    z: from.z + (to.z - from.z) * progress,
+    width: from.width + (to.width - from.width) * progress,
+    tangentX,
+    tangentY,
+    tangentZ: (to.z - from.z) / segmentLength,
+  }
+}
 
 const VPX_FLIPPER = VPX_TABLE.flippers.left
 const FLIPPER_LENGTH = VPX_FLIPPER.length * VPX_PLAYFIELD_SCALE
@@ -185,6 +248,8 @@ const MODES: Mode[] = [
 ]
 
 function collideRail(ball: Ball, rail: Rail) {
+  if (ball.z - ball.radius > (rail.heightTop ?? Number.POSITIVE_INFINITY)) return false
+  if (ball.z + ball.radius < (rail.heightBottom ?? 0)) return false
   const dx = rail.x2 - rail.x1
   const dy = rail.y2 - rail.y1
   const lengthSquared = dx * dx + dy * dy
@@ -230,6 +295,8 @@ function advanceThroughVpxWalls(
     let earliest: { rail: Rail; time: number; normalX: number; normalY: number; penetration: number } | null = null
     for (const rail of rails) {
       if (!rail.vpxWall) continue
+      if (ball.z - ball.radius > (rail.heightTop ?? Number.POSITIVE_INFINITY)) continue
+      if (ball.z + ball.radius < (rail.heightBottom ?? 0)) continue
       if (rail.allowsInvertedEscape && externalVelocityDeltaY < 0) continue
       const hit = getVpxLineSegmentHit(ball, rail, remainingTime)
       if (hit && (!earliest || hit.time < earliest.time)) earliest = { rail, ...hit }
@@ -292,6 +359,7 @@ function collideFlipper(
   mover: VpxFlipperMover,
   worldAngularDirection: 1 | -1,
 ) {
+  if (ball.z - ball.radius > 50 * VPX_PLAYFIELD_SCALE) return
   const dx = rail.x2 - rail.x1
   const dy = rail.y2 - rail.y1
   const lengthSquared = dx * dx + dy * dy
@@ -328,6 +396,7 @@ function collideFlipper(
 }
 
 function collidePeg(ball: Ball, peg: Peg) {
+  if (ball.z - ball.radius > 90 * VPX_PLAYFIELD_SCALE) return
   const radius = peg.r ?? 10
   const dx = ball.x - peg.x
   const dy = ball.y - peg.y
@@ -356,6 +425,7 @@ function collidePeg(ball: Ball, peg: Peg) {
 
 function collideBalls(first: Ball, second: Ball) {
   if (!first.active || !second.active || first.finished || second.finished) return
+  if (Math.abs(first.z - second.z) >= first.radius + second.radius) return
   const dx = second.x - first.x
   const dy = second.y - first.y
   const distance = Math.hypot(dx, dy)
@@ -431,6 +501,62 @@ function shuffled<T>(values: readonly T[]) {
 
 function randomBetween(minimum: number, maximum: number) {
   return minimum + Math.random() * (maximum - minimum)
+}
+
+function tryEnterShooterWireform(ball: Ball, step: number) {
+  if (ball.wireformDistance != null || ball.vy >= 0 || ball.z > 0) return false
+  const entry = sampleWireform(0)
+  const nextY = ball.y + ball.vy * step
+  if (ball.y < entry.y - ball.radius || nextY > entry.y + ball.radius) return false
+  const normalX = -entry.tangentY
+  const normalY = entry.tangentX
+  const offset = (ball.x - entry.x) * normalX + (ball.y - entry.y) * normalY
+  const maximumOffset = Math.max(0, entry.width / 2 - ball.radius)
+  if (Math.abs(offset) > entry.width / 2 + ball.radius) return false
+  ball.wireformDistance = 0
+  ball.wireformSpeed = Math.max(1, ball.vx * entry.tangentX + ball.vy * entry.tangentY)
+  ball.wireformOffset = Math.max(-maximumOffset, Math.min(maximumOffset, offset))
+  ball.z = entry.z
+  ball.vz = 0
+  return true
+}
+
+function advanceShooterWireform(ball: Ball, step: number, forceX: number, forceY: number) {
+  if (ball.wireformDistance == null) return false
+  const current = sampleWireform(ball.wireformDistance)
+  // Project playfield tilt and vertical gravity onto the 3D ramp tangent.
+  ball.wireformSpeed += forceX * current.tangentX
+    + forceY * current.tangentY
+    - 0.28 * current.tangentZ * step
+  ball.wireformSpeed *= Math.pow(0.999, step)
+  ball.wireformDistance += ball.wireformSpeed * step
+
+  const leftRoute = ball.wireformDistance < 0
+  const leftTop = ball.wireformDistance > VPX_WIREFORM_LENGTH
+  const sampled = sampleWireform(ball.wireformDistance)
+  const normalX = -sampled.tangentY
+  const normalY = sampled.tangentX
+  ball.x = sampled.x + normalX * ball.wireformOffset
+  ball.y = sampled.y + normalY * ball.wireformOffset
+  ball.z = sampled.z
+  ball.vx = sampled.tangentX * ball.wireformSpeed
+  ball.vy = sampled.tangentY * ball.wireformSpeed
+  ball.vz = sampled.tangentZ * ball.wireformSpeed
+
+  if (leftRoute || leftTop) {
+    ball.wireformDistance = null
+    return false
+  }
+  return true
+}
+
+function advanceBallHeight(ball: Ball, step: number) {
+  if (ball.z <= 0 && ball.vz <= 0) return
+  ball.vz -= 0.28 * step
+  ball.z += ball.vz * step
+  if (ball.z >= 0) return
+  ball.z = 0
+  ball.vz = Math.abs(ball.vz) > 0.8 ? -ball.vz * 0.2 : 0
 }
 
 export function VenuePinballPicker() {
@@ -675,6 +801,9 @@ export function VenuePinballPicker() {
         }
         const gravityDeltaY = 0.115 * (motionEnabled ? verticalGravityRef.current : 1) * step
         const tiltDeltaX = motionEnabled && !tiltedRef.current ? tiltRef.current * 0.035 * step : 0
+        tryEnterShooterWireform(ball, step)
+        if (advanceShooterWireform(ball, step, tiltDeltaX, gravityDeltaY)) return
+        advanceBallHeight(ball, step)
         ball.vy += gravityDeltaY
         ball.vx += tiltDeltaX
         ball.vx *= Math.pow(0.997, step)
@@ -691,7 +820,10 @@ export function VenuePinballPicker() {
           finishingRef.current = [...finishingRef.current, ball.machineKey]
           setRanking([...finishingRef.current])
         }
-        if (ball.y > HEIGHT + 40) { ball.y = 130; ball.x = VPX_DRAIN_CENTER.x; ball.vy = 0 }
+        if (ball.y > HEIGHT + 40) {
+          ball.y = 130; ball.x = VPX_DRAIN_CENTER.x; ball.z = 0
+          ball.vy = 0; ball.vz = 0; ball.wireformDistance = null
+        }
       })
       for (let first = 0; first < balls.length; first += 1) {
         for (let second = first + 1; second < balls.length; second += 1) collideBalls(balls[first], balls[second])
@@ -718,10 +850,15 @@ export function VenuePinballPicker() {
       x: randomBetween(RAPID_FIRE_LANE.left, RAPID_FIRE_LANE.right),
       y: randomBetween(RAPID_FIRE_LANE.top, RAPID_FIRE_LANE.bottom),
       vx: randomBetween(-0.35, 0.2),
-      vy: -randomBetween(10.5, 14),
+      vy: -randomBetween(20, 25),
       angularVelocity: 0,
       radius: machines.length > 20 ? 10 : machines.length > 12 ? 12 : 15,
       color: PALETTE[index % PALETTE.length],
+      z: 0,
+      vz: 0,
+      wireformDistance: null,
+      wireformSpeed: 0,
+      wireformOffset: 0,
       active: false,
       launchAt: Number.POSITIVE_INFINITY,
       finished: false,

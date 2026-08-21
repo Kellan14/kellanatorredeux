@@ -25,6 +25,15 @@ export type VpxSegment = {
   oneWay: boolean
 }
 
+export type VpxRamp = {
+  name: string
+  points: readonly VpxPoint[]
+  heightBottom: number
+  heightTop: number
+  width: number
+  reverse?: boolean
+}
+
 export const VPX_TABLE = {
   sourceMachine: 'RoboCop (Data East 1989)',
   modelPath: '/vpx/robocop/Robocop%20(Data%20East%201989)_drakkon(mod_1.2).glb',
@@ -386,9 +395,18 @@ export const VPX_TABLE = {
     { name: 'Gate1', from: [359.23195175075136, 169.8164716027288], to: [304.76804824924864, 253.6835283972712], elasticity: 0.3, elasticityFalloff: 0, friction: 0.02, scatter: 0, oneWay: true },
     { name: 'Gate2', from: [302.3814147638632, 268.43476220184823], to: [331.6185852361368, 364.06523779815177], elasticity: 0.3, elasticityFalloff: 0, friction: 0.02, scatter: 0, oneWay: true },
   ] as const satisfies readonly VpxSegment[],
+  // Connected shooter-lane wireform, ordered in the direction of launch.
+  // Ramp10 is reversed because its VPX control points run from exit to entry.
+  shooterWireform: [
+    { name: 'Ramp93', reverse: false, points: [[904.25, 1571.125], [904.25, 1152.375]], heightBottom: 0, heightTop: 70, width: 60 },
+    { name: 'Ramp91', reverse: false, points: [[904.25, 1152.25], [904.25, 159.25]], heightBottom: 70, heightTop: 70, width: 60 },
+    {
+      name: 'Ramp10', reverse: true, heightBottom: 55, heightTop: 70, width: 60,
+      points: [[516.75, 210.625], [477.24423, 192.12956], [445.66656, 154.66643], [437.61816, 100.34891], [441.91522, 79.68387], [450.97348, 61.872993], [466.92252, 48.357872], [485.21844, 38.607098], [521.03125, 34.177017], [800.62573, 36.449387], [862.63727, 42.20411], [895.19073, 73.38744], [904.2679, 124.120544], [904.66864, 153.37894], [904.75, 160.875]],
+    },
+  ] as const satisfies readonly VpxRamp[],
   flippers: {
     left: { center: [281.5, 1922.75], baseRadius: 21.5, endRadius: 11.5, length: 122, rubberThickness: 7, startAngle: 121, endAngle: 70, returnStrength: 0.065, mass: 1, strength: 3100, elasticity: 0.88, elasticityFalloff: 0.15, friction: 0.9, rampUp: 2.5, scatter: 0, torqueDamping: 0.275, torqueDampingAngle: 6 },
     right: { center: [597.5, 1923], baseRadius: 21.5, endRadius: 11.5, length: 122, rubberThickness: 7, startAngle: -121, endAngle: -70, returnStrength: 0.065, mass: 1, strength: 3100, elasticity: 0.88, elasticityFalloff: 0.15, friction: 0.9, rampUp: 2.5, scatter: 0, torqueDamping: 0.275, torqueDampingAngle: 6 },
   } as const,
 } as const
-
