@@ -34,6 +34,8 @@ type Ball = {
 const WIDTH = 640
 const HEIGHT = 900
 const FINISH_Y = 842
+const FINISH_LEFT = 272
+const FINISH_RIGHT = 368
 const PALETTE = ['#ff006e', '#3a86ff', '#06d6a0', '#ffbe0b', '#8338ec', '#fb5607', '#00b4d8', '#ef476f']
 
 function pegGrid(rows: number, columns: number, top: number, gapY: number): Peg[] {
@@ -54,7 +56,7 @@ const LAYOUTS: Layout[] = [
     pegs: [...pegGrid(7, 6, 190, 72), { x: 180, y: 690, r: 28 }, { x: 460, y: 690, r: 28 }],
     rails: [
       { x1: 34, y1: 120, x2: 34, y2: 790 }, { x1: 606, y1: 120, x2: 606, y2: 790 },
-      { x1: 34, y1: 790, x2: 210, y2: 842 }, { x1: 606, y1: 790, x2: 430, y2: 842 },
+      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: 842 }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: 842 },
     ],
   },
   {
@@ -71,7 +73,7 @@ const LAYOUTS: Layout[] = [
     rails: [
       { x1: 34, y1: 120, x2: 34, y2: 790 }, { x1: 606, y1: 120, x2: 606, y2: 790 },
       { x1: 35, y1: 365, x2: 205, y2: 440 }, { x1: 605, y1: 365, x2: 435, y2: 440 },
-      { x1: 34, y1: 790, x2: 220, y2: 842 }, { x1: 606, y1: 790, x2: 420, y2: 842 },
+      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: 842 }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: 842 },
     ],
   },
   {
@@ -84,7 +86,7 @@ const LAYOUTS: Layout[] = [
       { x1: 34, y1: 120, x2: 34, y2: 790 }, { x1: 606, y1: 120, x2: 606, y2: 790 },
       { x1: 34, y1: 245, x2: 515, y2: 330 }, { x1: 606, y1: 440, x2: 125, y2: 525 },
       { x1: 34, y1: 635, x2: 515, y2: 720 },
-      { x1: 34, y1: 790, x2: 220, y2: 842 }, { x1: 606, y1: 790, x2: 420, y2: 842 },
+      { x1: 34, y1: 790, x2: FINISH_LEFT, y2: 842 }, { x1: 606, y1: 790, x2: FINISH_RIGHT, y2: 842 },
     ],
   },
   {
@@ -100,7 +102,7 @@ const LAYOUTS: Layout[] = [
     rails: [
       { x1: 34, y1: 120, x2: 34, y2: 650 }, { x1: 606, y1: 120, x2: 606, y2: 650 },
       { x1: 34, y1: 650, x2: 150, y2: 785 }, { x1: 606, y1: 650, x2: 490, y2: 785 },
-      { x1: 150, y1: 785, x2: 272, y2: 825 }, { x1: 490, y1: 785, x2: 368, y2: 825 },
+      { x1: 150, y1: 785, x2: FINISH_LEFT, y2: 825 }, { x1: 490, y1: 785, x2: FINISH_RIGHT, y2: 825 },
       { x1: 70, y1: 330, x2: 195, y2: 355 }, { x1: 570, y1: 330, x2: 445, y2: 355 },
       { x1: 145, y1: 510, x2: 225, y2: 555 }, { x1: 495, y1: 510, x2: 415, y2: 555 },
     ],
@@ -117,7 +119,7 @@ function collideRail(ball: Ball, rail: Rail) {
   const nxRaw = ball.x - closestX
   const nyRaw = ball.y - closestY
   const distance = Math.hypot(nxRaw, nyRaw)
-  if (distance >= ball.radius + 5 || distance === 0) return
+  if (distance >= ball.radius + 5 || distance === 0) return false
   const nx = nxRaw / distance
   const ny = nyRaw / distance
   const overlap = ball.radius + 5 - distance
@@ -127,6 +129,25 @@ function collideRail(ball: Ball, rail: Rail) {
   if (dot < 0) {
     ball.vx -= 1.72 * dot * nx
     ball.vy -= 1.72 * dot * ny
+  }
+  return true
+}
+
+function getFlipperRails(leftAngle: number, rightAngle: number): { left: Rail; right: Rail } {
+  const length = 92
+  return {
+    left: {
+      x1: 205,
+      y1: 762,
+      x2: 205 + Math.cos(leftAngle) * length,
+      y2: 762 + Math.sin(leftAngle) * length,
+    },
+    right: {
+      x1: 435,
+      y1: 762,
+      x2: 435 - Math.cos(rightAngle) * length,
+      y2: 762 + Math.sin(rightAngle) * length,
+    },
   }
 }
 
@@ -172,6 +193,8 @@ export function VenuePinballPicker() {
   const nudgeHistoryRef = useRef<number[]>([])
   const motionNoticeTimerRef = useRef<number | null>(null)
   const tiltedRef = useRef(false)
+  const flipperPressedRef = useRef({ left: false, right: false })
+  const flipperAnglesRef = useRef({ left: 0.34, right: 0.34 })
   const { display } = useMachineCanon()
   const [venues, setVenues] = useState<Venue[]>([])
   const [venueKey, setVenueKey] = useState('')
@@ -265,6 +288,27 @@ export function VenuePinballPicker() {
     if (motionNoticeTimerRef.current) window.clearTimeout(motionNoticeTimerRef.current)
   }, [])
 
+  useEffect(() => {
+    const setKey = (event: KeyboardEvent, pressed: boolean) => {
+      if (event.key === 'ArrowLeft' || event.key === 'Shift') {
+        flipperPressedRef.current.left = pressed
+        event.preventDefault()
+      }
+      if (event.key === 'ArrowRight' || event.key === 'Enter') {
+        flipperPressedRef.current.right = pressed
+        event.preventDefault()
+      }
+    }
+    const keyDown = (event: KeyboardEvent) => setKey(event, true)
+    const keyUp = (event: KeyboardEvent) => setKey(event, false)
+    window.addEventListener('keydown', keyDown)
+    window.addEventListener('keyup', keyUp)
+    return () => {
+      window.removeEventListener('keydown', keyDown)
+      window.removeEventListener('keyup', keyUp)
+    }
+  }, [])
+
   const enableMotion = async () => {
     try {
       const orientationApi = DeviceOrientationEvent as typeof DeviceOrientationEvent & { requestPermission?: () => Promise<'granted' | 'denied'> }
@@ -322,8 +366,18 @@ export function VenuePinballPicker() {
       }
     })
 
+    const flippers = getFlipperRails(flipperAnglesRef.current.left, flipperAnglesRef.current.right)
+    ;([flippers.left, flippers.right] as Rail[]).forEach((flipper, index) => {
+      ctx.beginPath(); ctx.moveTo(flipper.x1, flipper.y1); ctx.lineTo(flipper.x2, flipper.y2)
+      ctx.strokeStyle = flipperPressedRef.current[index === 0 ? 'left' : 'right'] ? '#ffbe0b' : '#ff5a36'
+      ctx.lineWidth = 18; ctx.lineCap = 'round'; ctx.stroke()
+      ctx.strokeStyle = '#fff7ed'; ctx.lineWidth = 3; ctx.stroke()
+      ctx.beginPath(); ctx.arc(flipper.x1, flipper.y1, 12, 0, Math.PI * 2)
+      ctx.fillStyle = '#c2410c'; ctx.fill(); ctx.strokeStyle = '#fff7ed'; ctx.lineWidth = 2; ctx.stroke()
+    })
+
     ctx.setLineDash([14, 10]); ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 4
-    ctx.beginPath(); ctx.moveTo(220, FINISH_Y); ctx.lineTo(420, FINISH_Y); ctx.stroke(); ctx.setLineDash([])
+    ctx.beginPath(); ctx.moveTo(FINISH_LEFT, FINISH_Y); ctx.lineTo(FINISH_RIGHT, FINISH_Y); ctx.stroke(); ctx.setLineDash([])
     ctx.font = '700 14px sans-serif'; ctx.fillStyle = '#f8fafc'; ctx.textAlign = 'center'
     ctx.fillText('FINISH', 320, FINISH_Y + 28)
 
@@ -352,6 +406,11 @@ export function VenuePinballPicker() {
     const elapsed = Math.min(32, time - (lastTimeRef.current || time)) / 16.667
     lastTimeRef.current = time
     const balls = ballsRef.current
+    const leftTarget = flipperPressedRef.current.left ? -0.62 : 0.34
+    const rightTarget = flipperPressedRef.current.right ? -0.62 : 0.34
+    flipperAnglesRef.current.left += (leftTarget - flipperAnglesRef.current.left) * Math.min(1, 0.42 * elapsed)
+    flipperAnglesRef.current.right += (rightTarget - flipperAnglesRef.current.right) * Math.min(1, 0.42 * elapsed)
+    const flippers = getFlipperRails(flipperAnglesRef.current.left, flipperAnglesRef.current.right)
     balls.forEach((ball) => {
       if (ball.finished) return
       ball.vy += 0.115 * elapsed
@@ -362,9 +421,19 @@ export function VenuePinballPicker() {
       ball.y += ball.vy * elapsed
       layout.pegs.forEach((peg) => collidePeg(ball, peg))
       layout.rails.forEach((rail) => collideRail(ball, rail))
+      const hitLeft = collideRail(ball, flippers.left)
+      const hitRight = collideRail(ball, flippers.right)
+      if (hitLeft && flipperPressedRef.current.left) {
+        ball.vx += 1.4
+        ball.vy -= 5.8
+      }
+      if (hitRight && flipperPressedRef.current.right) {
+        ball.vx -= 1.4
+        ball.vy -= 5.8
+      }
       if (ball.x < ball.radius) { ball.x = ball.radius; ball.vx = Math.abs(ball.vx) * 0.78 }
       if (ball.x > WIDTH - ball.radius) { ball.x = WIDTH - ball.radius; ball.vx = -Math.abs(ball.vx) * 0.78 }
-      if (ball.y > FINISH_Y && ball.x > 205 && ball.x < 435) {
+      if (ball.y > FINISH_Y && ball.x > FINISH_LEFT && ball.x < FINISH_RIGHT) {
         ball.finished = true
         finishingRef.current = [...finishingRef.current, ball.machineKey]
         setRanking([...finishingRef.current])
@@ -380,6 +449,8 @@ export function VenuePinballPicker() {
     stop()
     finishingRef.current = []
     setRanking([])
+    flipperPressedRef.current = { left: false, right: false }
+    flipperAnglesRef.current = { left: 0.34, right: 0.34 }
     const machines = machineKeys.slice(0, 30)
     ballsRef.current = machines.map((machineKey, index) => ({
       machineKey,
@@ -450,6 +521,28 @@ export function VenuePinballPicker() {
         <Card className="h-full overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl xl:h-auto">
           <CardContent className="relative flex h-full items-center justify-center p-0 xl:h-auto">
             <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="block h-auto max-h-full w-auto max-w-full bg-slate-950 xl:w-full xl:max-h-[78vh]" aria-label="Virtual pinball machine race" />
+            <button
+              type="button"
+              aria-label="Left flipper"
+              className="absolute bottom-0 left-0 h-[28%] w-1/2 touch-none select-none border-0 bg-gradient-to-t from-neon-pink/10 to-transparent text-left text-[10px] font-bold tracking-widest text-white/45 active:from-neon-yellow/25"
+              onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); flipperPressedRef.current.left = true }}
+              onPointerUp={() => { flipperPressedRef.current.left = false }}
+              onPointerCancel={() => { flipperPressedRef.current.left = false }}
+              onContextMenu={(event) => event.preventDefault()}
+            >
+              <span className="absolute bottom-3 left-4">LEFT FLIP</span>
+            </button>
+            <button
+              type="button"
+              aria-label="Right flipper"
+              className="absolute bottom-0 right-0 h-[28%] w-1/2 touch-none select-none border-0 bg-gradient-to-t from-neon-blue/10 to-transparent text-right text-[10px] font-bold tracking-widest text-white/45 active:from-neon-yellow/25"
+              onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); flipperPressedRef.current.right = true }}
+              onPointerUp={() => { flipperPressedRef.current.right = false }}
+              onPointerCancel={() => { flipperPressedRef.current.right = false }}
+              onContextMenu={(event) => event.preventDefault()}
+            >
+              <span className="absolute bottom-3 right-4">RIGHT FLIP</span>
+            </button>
             {motionNotice && (
               <div className={`pointer-events-none absolute rounded-lg border px-5 py-2 text-lg font-black tracking-[.18em] shadow-2xl ${motionNotice === 'TILT' ? 'border-red-400 bg-red-600 text-white' : 'border-neon-blue/60 bg-slate-950/90 text-neon-blue'}`}>
                 {motionNotice}
