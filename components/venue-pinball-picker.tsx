@@ -9,8 +9,8 @@ import { getMachineImagePath, getMachineThumbnailPath } from '@/lib/machine-imag
 import { useMachineCanon } from '@/hooks/use-machine-canon'
 
 type Venue = { key: string; name: string; machines: string[] }
-type Peg = { x: number; y: number; r?: number }
-type Rail = { x1: number; y1: number; x2: number; y2: number }
+type Peg = { x: number; y: number; r?: number; kind?: 'post' | 'bumper' }
+type Rail = { x1: number; y1: number; x2: number; y2: number; kind?: 'rubber' | 'wall' | 'slingshot' }
 type Layout = {
   id: string
   name: string
@@ -37,6 +37,26 @@ const FINISH_Y = 842
 const FINISH_LEFT = 272
 const FINISH_RIGHT = 368
 const PALETTE = ['#ff006e', '#3a86ff', '#06d6a0', '#ffbe0b', '#8338ec', '#fb5607', '#00b4d8', '#ef476f']
+
+const LOWER_PLAYFIELD_RAILS: Rail[] = [
+  // Outer outlanes and the dividers that create the return lanes.
+  { x1: 34, y1: 650, x2: 112, y2: 790, kind: 'wall' },
+  { x1: 606, y1: 650, x2: 528, y2: 790, kind: 'wall' },
+  { x1: 125, y1: 610, x2: 158, y2: 742, kind: 'rubber' },
+  { x1: 515, y1: 610, x2: 482, y2: 742, kind: 'rubber' },
+  { x1: 158, y1: 742, x2: 190, y2: 775, kind: 'rubber' },
+  { x1: 482, y1: 742, x2: 450, y2: 775, kind: 'rubber' },
+  // Two powered sling faces above the flippers.
+  { x1: 158, y1: 625, x2: 252, y2: 692, kind: 'slingshot' },
+  { x1: 482, y1: 625, x2: 388, y2: 692, kind: 'slingshot' },
+  { x1: 252, y1: 692, x2: 170, y2: 720, kind: 'slingshot' },
+  { x1: 388, y1: 692, x2: 470, y2: 720, kind: 'slingshot' },
+]
+
+function isOldDrainGuide(rail: Rail) {
+  return (rail.x2 === FINISH_LEFT || rail.x2 === FINISH_RIGHT || rail.x1 === FINISH_LEFT || rail.x1 === FINISH_RIGHT)
+    || (Math.min(rail.y1, rail.y2) >= 650 && (rail.x1 === 34 || rail.x1 === 606))
+}
 
 function pegGrid(rows: number, columns: number, top: number, gapY: number): Peg[] {
   return Array.from({ length: rows * columns }, (_, index) => {
@@ -109,6 +129,18 @@ const LAYOUTS: Layout[] = [
   },
 ]
 
+function resolveSurface(ball: Ball, nx: number, ny: number, elasticity: number, friction: number, surfaceVx = 0, surfaceVy = 0) {
+  const relativeVx = ball.vx - surfaceVx
+  const relativeVy = ball.vy - surfaceVy
+  const normalSpeed = relativeVx * nx + relativeVy * ny
+  if (normalSpeed >= 0) return
+  const tangentX = -ny
+  const tangentY = nx
+  const tangentSpeed = relativeVx * tangentX + relativeVy * tangentY
+  ball.vx -= (1 + elasticity) * normalSpeed * nx + tangentSpeed * friction * tangentX
+  ball.vy -= (1 + elasticity) * normalSpeed * ny + tangentSpeed * friction * tangentY
+}
+
 function collideRail(ball: Ball, rail: Rail) {
   const dx = rail.x2 - rail.x1
   const dy = rail.y2 - rail.y1
@@ -125,10 +157,11 @@ function collideRail(ball: Ball, rail: Rail) {
   const overlap = ball.radius + 5 - distance
   ball.x += nx * overlap
   ball.y += ny * overlap
-  const dot = ball.vx * nx + ball.vy * ny
-  if (dot < 0) {
-    ball.vx -= 1.72 * dot * nx
-    ball.vy -= 1.72 * dot * ny
+  const rubber = rail.kind !== 'wall'
+  resolveSurface(ball, nx, ny, rubber ? 0.84 : 0.68, rubber ? 0.025 : 0.09)
+  if (rail.kind === 'slingshot') {
+    ball.vx += nx * 2.8
+    ball.vy += ny * 2.8
   }
   return true
 }
@@ -151,6 +184,36 @@ function getFlipperRails(leftAngle: number, rightAngle: number): { left: Rail; r
   }
 }
 
+function collideFlipper(ball: Ball, rail: Rail, angularVelocity: number) {
+  const dx = rail.x2 - rail.x1
+  const dy = rail.y2 - rail.y1
+  const lengthSquared = dx * dx + dy * dy
+  const t = Math.max(0, Math.min(1, ((ball.x - rail.x1) * dx + (ball.y - rail.y1) * dy) / lengthSquared))
+  const closestX = rail.x1 + t * dx
+  const closestY = rail.y1 + t * dy
+  const nxRaw = ball.x - closestX
+  const nyRaw = ball.y - closestY
+  const distance = Math.hypot(nxRaw, nyRaw)
+  // Pinball flippers are tapered bats rather than constant-width rails.
+  const flipperRadius = 15 - t * 6
+  if (distance >= ball.radius + flipperRadius || distance === 0) return
+
+  const nx = nxRaw / distance
+  const ny = nyRaw / distance
+  const overlap = ball.radius + flipperRadius - distance
+  ball.x += nx * overlap
+  ball.y += ny * overlap
+
+  // A point on a rotating flipper moves perpendicular to its pivot radius.
+  // Resolve the ball against that moving surface rather than adding a fixed
+  // kick. This naturally makes fast tip hits stronger than hits near the bat.
+  const radiusX = closestX - rail.x1
+  const radiusY = closestY - rail.y1
+  const surfaceVx = -angularVelocity * radiusY
+  const surfaceVy = angularVelocity * radiusX
+  resolveSurface(ball, nx, ny, 0.82, 0.045, surfaceVx, surfaceVy)
+}
+
 function collidePeg(ball: Ball, peg: Peg) {
   const radius = peg.r ?? 10
   const dx = ball.x - peg.x
@@ -162,18 +225,60 @@ function collidePeg(ball: Ball, peg: Peg) {
   const overlap = ball.radius + radius - distance
   ball.x += nx * overlap
   ball.y += ny * overlap
-  const dot = ball.vx * nx + ball.vy * ny
-  if (dot < 0) {
-    ball.vx -= 1.8 * dot * nx
-    ball.vy -= 1.8 * dot * ny
-  }
+  const isBumper = peg.kind === 'bumper' || (peg.kind !== 'post' && radius > 20)
+  resolveSurface(ball, nx, ny, isBumper ? 0.9 : 0.76, isBumper ? 0.015 : 0.07)
   // Large pegs are active pop bumpers: add a consistent kick so even a
   // glancing, low-speed hit launches the ball back into the playfield.
-  if (radius > 20) {
+  if (isBumper) {
     const kick = radius >= 45 ? 3.8 : 3.1
     ball.vx += nx * kick
     ball.vy += ny * kick
   }
+}
+
+function collideBalls(first: Ball, second: Ball) {
+  if (first.finished || second.finished) return
+  const dx = second.x - first.x
+  const dy = second.y - first.y
+  const distance = Math.hypot(dx, dy)
+  const minimum = first.radius + second.radius
+  if (distance === 0 || distance >= minimum) return
+  const nx = dx / distance
+  const ny = dy / distance
+  const overlap = minimum - distance
+  first.x -= nx * overlap * 0.5
+  first.y -= ny * overlap * 0.5
+  second.x += nx * overlap * 0.5
+  second.y += ny * overlap * 0.5
+  const closingSpeed = (second.vx - first.vx) * nx + (second.vy - first.vy) * ny
+  if (closingSpeed >= 0) return
+  const impulse = -(1 + 0.9) * closingSpeed * 0.5
+  first.vx -= impulse * nx
+  first.vy -= impulse * ny
+  second.vx += impulse * nx
+  second.vy += impulse * ny
+}
+
+function drawFlipper(ctx: CanvasRenderingContext2D, flipper: Rail, fill: string) {
+  const dx = flipper.x2 - flipper.x1
+  const dy = flipper.y2 - flipper.y1
+  const length = Math.hypot(dx, dy)
+  const nx = -dy / length
+  const ny = dx / length
+  const baseRadius = 15
+  const tipRadius = 9
+  ctx.beginPath()
+  ctx.moveTo(flipper.x1 + nx * baseRadius, flipper.y1 + ny * baseRadius)
+  ctx.lineTo(flipper.x2 + nx * tipRadius, flipper.y2 + ny * tipRadius)
+  ctx.arc(flipper.x2, flipper.y2, tipRadius, Math.atan2(ny, nx), Math.atan2(-ny, -nx))
+  ctx.lineTo(flipper.x1 - nx * baseRadius, flipper.y1 - ny * baseRadius)
+  ctx.arc(flipper.x1, flipper.y1, baseRadius, Math.atan2(-ny, -nx), Math.atan2(ny, nx))
+  ctx.closePath()
+  ctx.fillStyle = fill
+  ctx.fill()
+  ctx.strokeStyle = '#fff7ed'
+  ctx.lineWidth = 3
+  ctx.stroke()
 }
 
 function shortName(name: string) {
@@ -196,6 +301,7 @@ export function VenuePinballPicker() {
   const tiltedRef = useRef(false)
   const flipperPressedRef = useRef({ left: false, right: false })
   const flipperAnglesRef = useRef({ left: 0.34, right: 0.34 })
+  const flipperVelocityRef = useRef({ left: 0, right: 0 })
   const { display } = useMachineCanon()
   const [venues, setVenues] = useState<Venue[]>([])
   const [venueKey, setVenueKey] = useState('')
@@ -210,6 +316,10 @@ export function VenuePinballPicker() {
 
   const venue = venues.find((item) => item.key === venueKey) ?? venues.find((item) => item.name === venueKey)
   const layout = LAYOUTS.find((item) => item.id === layoutId) ?? LAYOUTS[0]
+  const playfieldRails = useMemo(
+    () => [...layout.rails.filter((rail) => !isOldDrainGuide(rail)), ...LOWER_PLAYFIELD_RAILS],
+    [layout],
+  )
   // Venue lists speak canonical short keys. Preserve those keys through the
   // entire race; long names are display-only and must never be fed back into
   // image or data lookups.
@@ -361,10 +471,27 @@ export function VenuePinballPicker() {
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WIDTH, y); ctx.stroke()
     }
 
+    // Shared, traditional lower playfield: outlanes outside, return lanes
+    // inside, and triangular slingshots directly above the flippers.
+    ;[[[158, 625], [252, 692], [170, 720]], [[482, 625], [388, 692], [470, 720]]].forEach((points) => {
+      ctx.beginPath()
+      ctx.moveTo(points[0][0], points[0][1])
+      ctx.lineTo(points[1][0], points[1][1])
+      ctx.lineTo(points[2][0], points[2][1])
+      ctx.closePath()
+      ctx.fillStyle = `${layout.accent}88`
+      ctx.fill()
+    })
+    ctx.font = '700 11px sans-serif'
+    ctx.fillStyle = '#f8fafc99'
+    ctx.textAlign = 'center'
+    ctx.fillText('OUT', 76, 730); ctx.fillText('IN', 143, 700)
+    ctx.fillText('IN', 497, 700); ctx.fillText('OUT', 564, 730)
+
     ctx.lineCap = 'round'
-    layout.rails.forEach((rail) => {
+    playfieldRails.forEach((rail) => {
       ctx.beginPath(); ctx.moveTo(rail.x1, rail.y1); ctx.lineTo(rail.x2, rail.y2)
-      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 11; ctx.stroke()
+      ctx.strokeStyle = rail.kind === 'slingshot' ? layout.accent : '#94a3b8'; ctx.lineWidth = rail.kind === 'slingshot' ? 13 : 11; ctx.stroke()
       ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 3; ctx.stroke()
     })
     layout.pegs.forEach((peg) => {
@@ -380,10 +507,7 @@ export function VenuePinballPicker() {
 
     const flippers = getFlipperRails(flipperAnglesRef.current.left, flipperAnglesRef.current.right)
     ;([flippers.left, flippers.right] as Rail[]).forEach((flipper, index) => {
-      ctx.beginPath(); ctx.moveTo(flipper.x1, flipper.y1); ctx.lineTo(flipper.x2, flipper.y2)
-      ctx.strokeStyle = flipperPressedRef.current[index === 0 ? 'left' : 'right'] ? '#ffbe0b' : '#ff5a36'
-      ctx.lineWidth = 18; ctx.lineCap = 'round'; ctx.stroke()
-      ctx.strokeStyle = '#fff7ed'; ctx.lineWidth = 3; ctx.stroke()
+      drawFlipper(ctx, flipper, flipperPressedRef.current[index === 0 ? 'left' : 'right'] ? '#ffbe0b' : '#ff5a36')
       ctx.beginPath(); ctx.arc(flipper.x1, flipper.y1, 12, 0, Math.PI * 2)
       ctx.fillStyle = '#c2410c'; ctx.fill(); ctx.strokeStyle = '#fff7ed'; ctx.lineWidth = 2; ctx.stroke()
     })
@@ -404,7 +528,7 @@ export function VenuePinballPicker() {
       ctx.font = '600 11px sans-serif'
       ctx.fillText(shortName(ball.label), Math.max(52, Math.min(WIDTH - 52, ball.x)), ball.y - ball.radius - 8)
     })
-  }, [layout])
+  }, [layout, playfieldRails])
 
   const stop = useCallback(() => {
     runningRef.current = false
@@ -418,10 +542,26 @@ export function VenuePinballPicker() {
     const elapsed = Math.min(32, time - (lastTimeRef.current || time)) / 16.667
     lastTimeRef.current = time
     const balls = ballsRef.current
-    const leftTarget = flipperPressedRef.current.left ? -0.62 : 0.34
-    const rightTarget = flipperPressedRef.current.right ? -0.62 : 0.34
-    flipperAnglesRef.current.left += (leftTarget - flipperAnglesRef.current.left) * Math.min(1, 0.42 * elapsed)
-    flipperAnglesRef.current.right += (rightTarget - flipperAnglesRef.current.right) * Math.min(1, 0.42 * elapsed)
+    const updateFlipper = (side: 'left' | 'right') => {
+      const pressed = flipperPressedRef.current[side]
+      const desiredVelocity = pressed ? -0.155 : 0.085
+      const ramp = (pressed ? 0.038 : 0.021) * elapsed
+      const velocityDelta = desiredVelocity - flipperVelocityRef.current[side]
+      flipperVelocityRef.current[side] += Math.max(-ramp, Math.min(ramp, velocityDelta))
+      flipperAnglesRef.current[side] += flipperVelocityRef.current[side] * elapsed
+
+      const endStop = -0.62
+      const restStop = 0.34
+      if (flipperAnglesRef.current[side] <= endStop) {
+        flipperAnglesRef.current[side] = endStop
+        flipperVelocityRef.current[side] = 0
+      } else if (flipperAnglesRef.current[side] >= restStop) {
+        flipperAnglesRef.current[side] = restStop
+        flipperVelocityRef.current[side] = 0
+      }
+    }
+    updateFlipper('left')
+    updateFlipper('right')
     const flippers = getFlipperRails(flipperAnglesRef.current.left, flipperAnglesRef.current.right)
     balls.forEach((ball) => {
       if (ball.finished) return
@@ -432,17 +572,9 @@ export function VenuePinballPicker() {
       ball.x += ball.vx * elapsed
       ball.y += ball.vy * elapsed
       layout.pegs.forEach((peg) => collidePeg(ball, peg))
-      layout.rails.forEach((rail) => collideRail(ball, rail))
-      const hitLeft = collideRail(ball, flippers.left)
-      const hitRight = collideRail(ball, flippers.right)
-      if (hitLeft && flipperPressedRef.current.left) {
-        ball.vx += 1.4
-        ball.vy -= 5.8
-      }
-      if (hitRight && flipperPressedRef.current.right) {
-        ball.vx -= 1.4
-        ball.vy -= 5.8
-      }
+      playfieldRails.forEach((rail) => collideRail(ball, rail))
+      collideFlipper(ball, flippers.left, flipperVelocityRef.current.left)
+      collideFlipper(ball, flippers.right, -flipperVelocityRef.current.right)
       if (ball.x < ball.radius) { ball.x = ball.radius; ball.vx = Math.abs(ball.vx) * 0.78 }
       if (ball.x > WIDTH - ball.radius) { ball.x = WIDTH - ball.radius; ball.vx = -Math.abs(ball.vx) * 0.78 }
       if (ball.y > FINISH_Y && ball.x > FINISH_LEFT && ball.x < FINISH_RIGHT) {
@@ -452,10 +584,13 @@ export function VenuePinballPicker() {
       }
       if (ball.y > HEIGHT + 40) { ball.y = 130; ball.x = 320; ball.vy = 0 }
     })
+    for (let first = 0; first < balls.length; first += 1) {
+      for (let second = first + 1; second < balls.length; second += 1) collideBalls(balls[first], balls[second])
+    }
     draw()
     if (finishingRef.current.length >= balls.length) stop()
     else frameRef.current = requestAnimationFrame(animate)
-  }, [draw, layout, motionEnabled, stop])
+  }, [draw, layout, motionEnabled, playfieldRails, stop])
 
   const reset = useCallback(() => {
     stop()
@@ -463,6 +598,7 @@ export function VenuePinballPicker() {
     setRanking([])
     flipperPressedRef.current = { left: false, right: false }
     flipperAnglesRef.current = { left: 0.34, right: 0.34 }
+    flipperVelocityRef.current = { left: 0, right: 0 }
     const machines = machineKeys.slice(0, 30)
     ballsRef.current = machines.map((machineKey, index) => ({
       machineKey,
