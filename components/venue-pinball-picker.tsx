@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
-import { MapPin, Play, RotateCcw, Trophy } from 'lucide-react'
+import { MapPin, Play, RotateCcw, Smartphone, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getMachineImagePath, getMachineThumbnailPath } from '@/lib/machine-images'
@@ -165,6 +165,12 @@ export function VenuePinballPicker() {
   const lastTimeRef = useRef(0)
   const runningRef = useRef(false)
   const finishingRef = useRef<string[]>([])
+  const tiltRef = useRef(0)
+  const motionBaselineRef = useRef<number | null>(null)
+  const lastNudgeRef = useRef(0)
+  const nudgeHistoryRef = useRef<number[]>([])
+  const motionNoticeTimerRef = useRef<number | null>(null)
+  const tiltedRef = useRef(false)
   const { display } = useMachineCanon()
   const [venues, setVenues] = useState<Venue[]>([])
   const [venueKey, setVenueKey] = useState('')
@@ -173,6 +179,9 @@ export function VenuePinballPicker() {
   const [running, setRunning] = useState(false)
   const [ranking, setRanking] = useState<string[]>([])
   const [celebration, setCelebration] = useState<string | null>(null)
+  const [motionEnabled, setMotionEnabled] = useState(false)
+  const [motionNotice, setMotionNotice] = useState<string | null>(null)
+  const [tilted, setTilted] = useState(false)
 
   const venue = venues.find((item) => item.key === venueKey) ?? venues.find((item) => item.name === venueKey)
   const layout = LAYOUTS.find((item) => item.id === layoutId) ?? LAYOUTS[0]
@@ -189,6 +198,87 @@ export function VenuePinballPicker() {
       })
       .finally(() => setLoading(false))
   }, [])
+
+  const showMotionNotice = useCallback((message: string, duration = 500) => {
+    setMotionNotice(message)
+    if (motionNoticeTimerRef.current) window.clearTimeout(motionNoticeTimerRef.current)
+    motionNoticeTimerRef.current = window.setTimeout(() => setMotionNotice(null), duration)
+  }, [])
+
+  useEffect(() => {
+    if (!motionEnabled) return
+
+    const handleOrientation = (event: DeviceOrientationEvent) => {
+      if (event.gamma == null || tiltedRef.current) return
+      if (motionBaselineRef.current == null) motionBaselineRef.current = event.gamma
+      const relativeTilt = event.gamma - motionBaselineRef.current
+      tiltRef.current = Math.max(-1, Math.min(1, relativeTilt / 24))
+    }
+
+    const handleMotion = (event: DeviceMotionEvent) => {
+      if (tiltedRef.current) return
+      const acceleration = event.acceleration
+      if (!acceleration) return
+      const magnitude = Math.hypot(acceleration.x ?? 0, acceleration.y ?? 0, acceleration.z ?? 0)
+      const now = performance.now()
+      if (magnitude < 7.5 || now - lastNudgeRef.current < 550) return
+      lastNudgeRef.current = now
+      nudgeHistoryRef.current = [...nudgeHistoryRef.current.filter((time) => now - time < 2400), now]
+
+      if (nudgeHistoryRef.current.length >= 3) {
+        tiltedRef.current = true
+        setTilted(true)
+        tiltRef.current = 0
+        nudgeHistoryRef.current = []
+        showMotionNotice('TILT', 1800)
+        window.setTimeout(() => {
+          tiltedRef.current = false
+          setTilted(false)
+        }, 1800)
+        return
+      }
+
+      const direction = (acceleration.x ?? 0) >= 0 ? 1 : -1
+      ballsRef.current.forEach((ball) => {
+        if (!ball.finished) {
+          ball.vx += direction * 2.2
+          ball.vy -= 0.65
+        }
+      })
+      showMotionNotice('NUDGE')
+    }
+
+    window.addEventListener('deviceorientation', handleOrientation)
+    window.addEventListener('devicemotion', handleMotion)
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientation)
+      window.removeEventListener('devicemotion', handleMotion)
+      tiltRef.current = 0
+    }
+  }, [motionEnabled, showMotionNotice, tilted])
+
+  useEffect(() => () => {
+    if (motionNoticeTimerRef.current) window.clearTimeout(motionNoticeTimerRef.current)
+  }, [])
+
+  const enableMotion = async () => {
+    try {
+      const orientationApi = DeviceOrientationEvent as typeof DeviceOrientationEvent & { requestPermission?: () => Promise<'granted' | 'denied'> }
+      const motionApi = DeviceMotionEvent as typeof DeviceMotionEvent & { requestPermission?: () => Promise<'granted' | 'denied'> }
+      const orientationPermission = orientationApi.requestPermission ? await orientationApi.requestPermission() : 'granted'
+      const motionPermission = motionApi.requestPermission ? await motionApi.requestPermission() : 'granted'
+      if (orientationPermission !== 'granted' || motionPermission !== 'granted') {
+        showMotionNotice('MOTION DENIED', 1400)
+        return
+      }
+      motionBaselineRef.current = null
+      nudgeHistoryRef.current = []
+      setMotionEnabled(true)
+      showMotionNotice('MOTION READY', 1000)
+    } catch {
+      showMotionNotice('MOTION UNAVAILABLE', 1400)
+    }
+  }
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current
@@ -261,6 +351,7 @@ export function VenuePinballPicker() {
     balls.forEach((ball) => {
       if (ball.finished) return
       ball.vy += 0.115 * elapsed
+      if (motionEnabled && !tiltedRef.current) ball.vx += tiltRef.current * 0.035 * elapsed
       ball.vx *= Math.pow(0.997, elapsed)
       ball.vy *= Math.pow(0.999, elapsed)
       ball.x += ball.vx * elapsed
@@ -279,7 +370,7 @@ export function VenuePinballPicker() {
     draw()
     if (finishingRef.current.length >= balls.length) stop()
     else frameRef.current = requestAnimationFrame(animate)
-  }, [draw, layout, stop])
+  }, [draw, layout, motionEnabled, stop])
 
   const reset = useCallback(() => {
     stop()
@@ -352,8 +443,13 @@ export function VenuePinballPicker() {
 
       <div className="grid h-[calc(100%-4.25rem)] gap-6 xl:h-auto xl:grid-cols-[minmax(0,1fr)_360px]">
         <Card className="h-full overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl xl:h-auto">
-          <CardContent className="flex h-full items-center justify-center p-0 xl:h-auto">
+          <CardContent className="relative flex h-full items-center justify-center p-0 xl:h-auto">
             <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="block h-auto max-h-full w-auto max-w-full bg-slate-950 xl:w-full xl:max-h-[78vh]" aria-label="Virtual pinball machine race" />
+            {motionNotice && (
+              <div className={`pointer-events-none absolute rounded-lg border px-5 py-2 text-lg font-black tracking-[.18em] shadow-2xl ${motionNotice === 'TILT' ? 'border-red-400 bg-red-600 text-white' : 'border-neon-blue/60 bg-slate-950/90 text-neon-blue'}`}>
+                {motionNotice}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -416,9 +512,12 @@ export function VenuePinballPicker() {
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 p-3 pb-[max(.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,.18)] backdrop-blur xl:hidden">
-        <div className="mx-auto grid max-w-md grid-cols-[1fr_auto] gap-2">
+        <div className="mx-auto grid max-w-md grid-cols-[1fr_auto_auto] gap-2">
           <Button size="lg" onClick={start} disabled={loading || running || machineNames.length < 2}>
             <Play className="mr-2 h-5 w-5" /> Start race
+          </Button>
+          <Button size="lg" variant={motionEnabled ? 'default' : 'outline'} onClick={enableMotion} disabled={motionEnabled} aria-label={motionEnabled ? 'Motion controls enabled' : 'Enable motion controls'} title={motionEnabled ? 'Motion controls enabled' : 'Enable motion controls'}>
+            <Smartphone className={`h-5 w-5 ${motionEnabled ? 'text-neon-green' : ''}`} />
           </Button>
           <Button size="lg" variant="outline" onClick={reset} aria-label="Reset race">
             <RotateCcw className="h-5 w-5" />
