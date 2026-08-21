@@ -12,7 +12,6 @@ import {
   applyVpxScatter,
   createVpxFlipperMover,
   getVpxLineSegmentHit,
-  resolveVpxBallCollision,
   resolveVpxFlipperContact,
   resolveVpxStaticContact,
   resolveVpxSurfaceContact,
@@ -54,6 +53,7 @@ type Ball = {
   color: string
   z: number
   vz: number
+  straightZDrop: boolean
   wireformDistance: number | null
   wireformSpeed: number
   wireformOffset: number
@@ -246,6 +246,18 @@ const MODES: Mode[] = [
     description: 'Every machine is randomized and fired up the plunger lane in quick succession.',
     accent: '#d71920',
   },
+  {
+    id: 'start-at-top',
+    name: 'Start at Top',
+    description: 'Every machine begins together in a randomized cluster on the upper playfield.',
+    accent: '#3a86ff',
+  },
+  {
+    id: 'pour-from-top',
+    name: 'Pour from Top',
+    description: 'Every machine falls from a randomized 3D cloud above the upper playfield.',
+    accent: '#8338ec',
+  },
 ]
 
 function collideRail(ball: Ball, rail: Rail) {
@@ -426,20 +438,35 @@ function collidePeg(ball: Ball, peg: Peg) {
 
 function collideBalls(first: Ball, second: Ball) {
   if (!first.active || !second.active || first.finished || second.finished) return
-  if (Math.abs(first.z - second.z) >= first.radius + second.radius) return
   const dx = second.x - first.x
   const dy = second.y - first.y
-  const distance = Math.hypot(dx, dy)
+  const dz = second.z - first.z
+  const distance = Math.hypot(dx, dy, dz)
   const minimum = first.radius + second.radius
-  if (distance === 0 || distance >= minimum) return
-  const nx = dx / distance
-  const ny = dy / distance
+  if (distance >= minimum) return
+  const nx = distance > 1e-6 ? dx / distance : 0
+  const ny = distance > 1e-6 ? dy / distance : 0
+  const nz = distance > 1e-6 ? dz / distance : 1
   const overlap = minimum - distance
   first.x -= nx * overlap * 0.5
   first.y -= ny * overlap * 0.5
+  first.z = Math.max(0, first.z - nz * overlap * 0.5)
   second.x += nx * overlap * 0.5
   second.y += ny * overlap * 0.5
-  resolveVpxBallCollision(first, second, nx, ny)
+  second.z = Math.max(0, second.z + nz * overlap * 0.5)
+
+  const closingSpeed = (second.vx - first.vx) * nx
+    + (second.vy - first.vy) * ny
+    + (second.vz - first.vz) * nz
+  if (closingSpeed >= 0) return
+  // VPX uses a fixed 0.8 coefficient of restitution for equal-mass balls.
+  const impulse = -(1 + 0.8) * closingSpeed / 2
+  first.vx -= impulse * nx
+  first.vy -= impulse * ny
+  first.vz -= impulse * nz
+  second.vx += impulse * nx
+  second.vy += impulse * ny
+  second.vz += impulse * nz
 }
 
 function traceVpxFlipperProfile(ctx: CanvasRenderingContext2D, length: number, baseRadius: number, endRadius: number) {
@@ -502,6 +529,49 @@ function shuffled<T>(values: readonly T[]) {
 
 function randomBetween(minimum: number, maximum: number) {
   return minimum + Math.random() * (maximum - minimum)
+}
+
+function createTopCluster(count: number) {
+  const centerX = randomBetween(WIDTH * 0.44, WIDTH * 0.56)
+  const centerY = randomBetween(HEIGHT * 0.12, HEIGHT * 0.15)
+  const radiusX = WIDTH * 0.29
+  const radiusY = HEIGHT * 0.095
+  const minimumDistance = VPX_BALL_RADIUS * 2.12
+  const positions: Array<{ x: number; y: number }> = []
+
+  for (let index = 0; index < count; index += 1) {
+    let placed = false
+    for (let attempt = 0; attempt < 1200; attempt += 1) {
+      // sqrt produces an even random distribution inside the cluster rather
+      // than concentrating every ball at its center.
+      const distance = Math.sqrt(Math.random())
+      const angle = Math.random() * Math.PI * 2
+      const candidate = {
+        x: centerX + Math.cos(angle) * radiusX * distance,
+        y: centerY + Math.sin(angle) * radiusY * distance,
+      }
+      if (candidate.x < VPX_BALL_RADIUS || candidate.x > WIDTH - VPX_BALL_RADIUS) continue
+      if (candidate.y < VPX_BALL_RADIUS || candidate.y > HEIGHT * 0.27) continue
+      if (positions.every((position) => Math.hypot(candidate.x - position.x, candidate.y - position.y) >= minimumDistance)) {
+        positions.push(candidate)
+        placed = true
+        break
+      }
+    }
+
+    if (!placed) {
+      // This is only a safety net for unusually large future venue lists.
+      // Staggered rows preserve a traversable, non-overlapping ball cluster.
+      const column = index % 6
+      const row = Math.floor(index / 6)
+      positions.push({
+        x: centerX + (column - 2.5) * minimumDistance + (row % 2 ? minimumDistance * 0.5 : 0),
+        y: centerY + (row - 2) * minimumDistance,
+      })
+    }
+  }
+
+  return positions
 }
 
 function tryEnterShooterWireform(ball: Ball, step: number) {
@@ -757,6 +827,10 @@ export function VenuePinballPicker() {
 
     ballsRef.current.forEach((ball, index) => {
       if (!ball.active || ball.finished) return
+      // The z axis points out of the screen toward the viewer. Very high pour
+      // balls are beyond the near viewing plane and appear only as they fall
+      // close enough to the table, all at the same x/y drop point.
+      if (ball.straightZDrop && ball.z > 320) return
       ctx.shadowColor = ball.color; ctx.shadowBlur = 15
       ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2)
       ctx.fillStyle = ball.color; ctx.fill()
@@ -804,9 +878,12 @@ export function VenuePinballPicker() {
         const tiltDeltaX = motionEnabled && !tiltedRef.current ? tiltRef.current * 0.035 * step : 0
         tryEnterShooterWireform(ball, step)
         if (advanceShooterWireform(ball, step, tiltDeltaX, gravityDeltaY)) return
+        const fallingStraightDown = ball.straightZDrop && ball.z > 0
         advanceBallHeight(ball, step)
-        ball.vy += gravityDeltaY
-        ball.vx += tiltDeltaX
+        if (!fallingStraightDown) {
+          ball.vy += gravityDeltaY
+          ball.vx += tiltDeltaX
+        }
         ball.vx *= Math.pow(0.997, step)
         ball.vy *= Math.pow(0.999, step)
         advanceThroughVpxWalls(ball, playfieldRails, step, tiltDeltaX, gravityDeltaY)
@@ -845,18 +922,26 @@ export function VenuePinballPicker() {
       right: createVpxFlipperMover(FLIPPER_PARAMETERS),
     }
     const machines = shuffled(machineKeys.slice(0, 30))
+    const startsAtTop = modeId === 'start-at-top'
+    const poursFromTop = modeId === 'pour-from-top'
+    const topCluster = startsAtTop ? createTopCluster(machines.length) : []
+    const pourPoint = {
+      x: randomBetween(WIDTH * 0.44, WIDTH * 0.56),
+      y: randomBetween(HEIGHT * 0.11, HEIGHT * 0.14),
+    }
     ballsRef.current = machines.map((machineKey, index) => ({
       machineKey,
       label: display(machineKey),
-      x: randomBetween(RAPID_FIRE_LANE.left, RAPID_FIRE_LANE.right),
-      y: randomBetween(RAPID_FIRE_LANE.top, RAPID_FIRE_LANE.bottom),
-      vx: randomBetween(-0.4, 0.25),
-      vy: -randomBetween(24, 30),
+      x: startsAtTop ? topCluster[index].x : poursFromTop ? pourPoint.x : randomBetween(RAPID_FIRE_LANE.left, RAPID_FIRE_LANE.right),
+      y: startsAtTop ? topCluster[index].y : poursFromTop ? pourPoint.y : randomBetween(RAPID_FIRE_LANE.top, RAPID_FIRE_LANE.bottom),
+      vx: startsAtTop ? randomBetween(-0.18, 0.18) : poursFromTop ? 0 : randomBetween(-0.4, 0.25),
+      vy: startsAtTop ? randomBetween(-0.05, 0.18) : poursFromTop ? 0 : -randomBetween(24, 30),
       angularVelocity: 0,
       radius: VPX_BALL_RADIUS,
       color: PALETTE[index % PALETTE.length],
-      z: 0,
+      z: poursFromTop ? 800 + index * 85 + randomBetween(-12, 12) : 0,
       vz: 0,
+      straightZDrop: poursFromTop,
       wireformDistance: null,
       wireformSpeed: 0,
       wireformOffset: 0,
@@ -865,7 +950,7 @@ export function VenuePinballPicker() {
       finished: false,
     }))
     requestAnimationFrame(draw)
-  }, [display, draw, machineKeys, stop])
+  }, [display, draw, machineKeys, modeId, stop])
 
   useEffect(() => { reset(); return stop }, [reset, stop])
 
@@ -874,7 +959,7 @@ export function VenuePinballPicker() {
     const launchStart = performance.now()
     let nextLaunch = launchStart
     ballsRef.current.forEach((ball) => {
-      nextLaunch += randomBetween(80, 150)
+      if (modeId === 'rapid-fire') nextLaunch += randomBetween(80, 150)
       ball.launchAt = nextLaunch
     })
     runningRef.current = true
@@ -998,7 +1083,7 @@ export function VenuePinballPicker() {
                 </div>
               </div>
               <div className="hidden grid-cols-2 gap-2 pt-1 xl:grid">
-                <Button onClick={start} disabled={loading || running || machineKeys.length < 2}><Play className="mr-2 h-4 w-4" /> Start Rapid Fire</Button>
+                <Button onClick={start} disabled={loading || running || machineKeys.length < 2}><Play className="mr-2 h-4 w-4" /> {mode.name}</Button>
                 <Button variant="outline" onClick={reset}><RotateCcw className="mr-2 h-4 w-4" /> Reset</Button>
               </div>
               {machineKeys.length > 30 && <p className="text-xs text-muted-foreground">This venue has {machineKeys.length} machines. The race uses the first 30.</p>}
@@ -1036,7 +1121,7 @@ export function VenuePinballPicker() {
       <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 p-3 pb-[max(.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,.18)] backdrop-blur xl:hidden">
         <div className="mx-auto grid max-w-md grid-cols-[1fr_auto_auto] gap-2">
           <Button size="lg" onClick={start} disabled={loading || running || machineKeys.length < 2}>
-            <Play className="mr-2 h-5 w-5" /> Rapid Fire
+            <Play className="mr-2 h-5 w-5" /> {mode.name}
           </Button>
           <Button size="lg" variant={motionEnabled ? 'default' : 'outline'} onClick={enableMotion} disabled={motionEnabled} aria-label={motionEnabled ? 'Motion controls enabled' : 'Enable motion controls'} title={motionEnabled ? 'Motion controls enabled' : 'Enable motion controls'}>
             <Smartphone className={`h-5 w-5 ${motionEnabled ? 'text-neon-green' : ''}`} />
