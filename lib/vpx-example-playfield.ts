@@ -16,6 +16,12 @@ export type VpxWall = {
 export const VPX_TABLE = {
   playableWidth: 874,
   height: 2162,
+  // Inner collision edges of the cabinet walls (Wall350, Wall5top/bottom).
+  cabinetEdges: [
+    [[23, 0], [23, 2000]],
+    [[851, 592], [851, 1818]],
+    [[851, 1883], [851, 2150]],
+  ] as const,
   lowerWalls: [
     {
       name: 'Wall5', elasticity: 0.3, elasticityFalloff: 0, friction: 0.15, scatter: 5,

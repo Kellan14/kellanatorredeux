@@ -14,7 +14,7 @@ type Peg = { x: number; y: number; r?: number; kind?: 'post' | 'bumper' }
 type Rail = {
   x1: number; y1: number; x2: number; y2: number
   kind?: 'rubber' | 'wall' | 'slingshot'
-  elasticity?: number; elasticityFalloff?: number; friction?: number; scatter?: number; force?: number
+  elasticity?: number; elasticityFalloff?: number; friction?: number; scatter?: number; force?: number; thickness?: number
 }
 type Layout = {
   id: string
@@ -58,6 +58,7 @@ function railsFromVpxWall(wall: VpxWall): Rail[] {
       elasticityFalloff: wall.elasticityFalloff,
       friction: wall.friction,
       scatter: wall.scatter,
+      thickness: 0,
     }
   })
 }
@@ -72,8 +73,13 @@ const LOWER_PLAYFIELD_RAILS: Rail[] = [
     return {
       x1: start.x, y1: start.y, x2: end.x, y2: end.y, kind: 'slingshot' as const,
       elasticity: face.elasticity, elasticityFalloff: face.elasticityFalloff,
-      friction: face.friction, scatter: face.scatter, force: face.force,
+      friction: face.friction, scatter: face.scatter, force: face.force, thickness: 4,
     }
+  }),
+  ...VPX_TABLE.cabinetEdges.map(([from, to]) => {
+    const start = scaleVpxPoint(from)
+    const end = scaleVpxPoint(to)
+    return { x1: start.x, y1: Math.max(630, start.y), x2: end.x, y2: end.y, kind: 'wall' as const, thickness: 0 }
   }),
 ]
 
@@ -185,10 +191,11 @@ function collideRail(ball: Ball, rail: Rail) {
   const nxRaw = ball.x - closestX
   const nyRaw = ball.y - closestY
   const distance = Math.hypot(nxRaw, nyRaw)
-  if (distance >= ball.radius + 5 || distance === 0) return false
+  const railThickness = rail.thickness ?? 5
+  if (distance >= ball.radius + railThickness || distance === 0) return false
   let nx = nxRaw / distance
   let ny = nyRaw / distance
-  const overlap = ball.radius + 5 - distance
+  const overlap = ball.radius + railThickness - distance
   ball.x += nx * overlap
   ball.y += ny * overlap
   if (rail.scatter) {
@@ -375,10 +382,18 @@ export function VenuePinballPicker() {
 
   const venue = venues.find((item) => item.key === venueKey) ?? venues.find((item) => item.name === venueKey)
   const layout = LAYOUTS.find((item) => item.id === layoutId) ?? LAYOUTS[0]
-  const playfieldRails = useMemo(
-    () => [...layout.rails.filter((rail) => !isOldDrainGuide(rail)), ...LOWER_PLAYFIELD_RAILS],
+  const layoutRails = useMemo(
+    () => layout.rails.filter((rail) => !isOldDrainGuide(rail)).map((rail) => (
+        rail.x1 === rail.x2 && (rail.x1 === 34 || rail.x1 === 606) && rail.y2 > 630
+          ? { ...rail, y2: 630 }
+          : rail
+      )),
     [layout],
   )
+  const playfieldRails = useMemo(() => [...layoutRails, ...LOWER_PLAYFIELD_RAILS], [layoutRails])
+  // The imported VPX lower field owns this space; layout-specific objects
+  // must not overlap its lanes, sling plastics, or flippers.
+  const playfieldPegs = useMemo(() => layout.pegs.filter((peg) => peg.y < 590), [layout])
   // Venue lists speak canonical short keys. Preserve those keys through the
   // entire race; long names are display-only and must never be fed back into
   // image or data lookups.
@@ -533,11 +548,12 @@ export function VenuePinballPicker() {
     ctx.lineCap = 'round'
     const drawRail = (rail: Rail) => {
       ctx.beginPath(); ctx.moveTo(rail.x1, rail.y1); ctx.lineTo(rail.x2, rail.y2)
-      ctx.strokeStyle = rail.kind === 'slingshot' ? layout.accent : '#94a3b8'; ctx.lineWidth = rail.kind === 'slingshot' ? 13 : 11; ctx.stroke()
-      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 3; ctx.stroke()
+      const bodyWidth = rail.kind === 'slingshot' ? 9 : rail.thickness === 0 ? 5 : 11
+      ctx.strokeStyle = rail.kind === 'slingshot' ? layout.accent : '#94a3b8'; ctx.lineWidth = bodyWidth; ctx.stroke()
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = Math.min(3, bodyWidth); ctx.stroke()
     }
-    layout.rails.filter((rail) => !isOldDrainGuide(rail)).forEach(drawRail)
-    layout.pegs.forEach((peg) => {
+    layoutRails.forEach(drawRail)
+    playfieldPegs.forEach((peg) => {
       const radius = peg.r ?? 10
       ctx.beginPath(); ctx.arc(peg.x, peg.y, radius, 0, Math.PI * 2)
       ctx.fillStyle = radius > 20 ? layout.accent : '#cbd5e1'; ctx.fill()
@@ -588,7 +604,7 @@ export function VenuePinballPicker() {
       ctx.font = '600 11px sans-serif'
       ctx.fillText(shortName(ball.label), Math.max(52, Math.min(WIDTH - 52, ball.x)), ball.y - ball.radius - 8)
     })
-  }, [layout, playfieldRails])
+  }, [layout, layoutRails, playfieldPegs, playfieldRails])
 
   const stop = useCallback(() => {
     runningRef.current = false
@@ -632,7 +648,7 @@ export function VenuePinballPicker() {
       ball.vy *= Math.pow(0.999, elapsed)
       ball.x += ball.vx * elapsed
       ball.y += ball.vy * elapsed
-      layout.pegs.forEach((peg) => collidePeg(ball, peg))
+      playfieldPegs.forEach((peg) => collidePeg(ball, peg))
       playfieldRails.forEach((rail) => collideRail(ball, rail))
       collideFlipper(ball, flippers.left, flipperVelocityRef.current.left)
       collideFlipper(ball, flippers.right, -flipperVelocityRef.current.right)
@@ -651,7 +667,7 @@ export function VenuePinballPicker() {
     draw()
     if (finishingRef.current.length >= balls.length) stop()
     else frameRef.current = requestAnimationFrame(animate)
-  }, [draw, layout, motionEnabled, playfieldRails, stop])
+  }, [draw, layout, motionEnabled, playfieldPegs, playfieldRails, stop])
 
   const reset = useCallback(() => {
     stop()
