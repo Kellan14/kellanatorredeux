@@ -47,7 +47,7 @@ export const VPX_TABLE = {
     { name: 'RightSlingShot', from: [675.5262,1474.2494], to: [613.1677,1643.2195], elasticity: 0.9, elasticityFalloff: 0, friction: 0.9, scatter: 0.5, force: 40 },
   ] as const,
   flippers: {
-    left: { center: [278.2138,1803.2714], baseRadius: 20.58875, endRadius: 11.765, length: 117.65, startAngle: 120.5, endAngle: 70, returnStrength: 0.05, mass: 0.7, strength: 1800, elasticity: 0.8, elasticityFalloff: 0.001, friction: 0.8, rampUp: 0, scatter: 0, torqueDamping: 0.25, torqueDampingAngle: 6 },
-    right: { center: [595.869,1803.2711], baseRadius: 20.58875, endRadius: 11.765, length: 117.65, startAngle: -120.5, endAngle: -70, returnStrength: 0.05, mass: 0.7, strength: 1800, elasticity: 0.8, elasticityFalloff: 0.001, friction: 0.8, rampUp: 0, scatter: 0, torqueDamping: 0.25, torqueDampingAngle: 6 },
+    left: { center: [278.2138,1803.2714], baseRadius: 20.58875, endRadius: 11.765, length: 117.65, rubberThickness: 5.8825, startAngle: 120.5, endAngle: 70, returnStrength: 0.05, mass: 0.7, strength: 1800, elasticity: 0.8, elasticityFalloff: 0.001, friction: 0.8, rampUp: 0, scatter: 0, torqueDamping: 0.25, torqueDampingAngle: 6 },
+    right: { center: [595.869,1803.2711], baseRadius: 20.58875, endRadius: 11.765, length: 117.65, rubberThickness: 5.8825, startAngle: -120.5, endAngle: -70, returnStrength: 0.05, mass: 0.7, strength: 1800, elasticity: 0.8, elasticityFalloff: 0.001, friction: 0.8, rampUp: 0, scatter: 0, torqueDamping: 0.25, torqueDampingAngle: 6 },
   } as const,
 } as const

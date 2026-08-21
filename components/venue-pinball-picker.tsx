@@ -87,6 +87,7 @@ const VPX_FLIPPER = VPX_TABLE.flippers.left
 const FLIPPER_LENGTH = VPX_FLIPPER.length * WIDTH / VPX_TABLE.playableWidth
 const FLIPPER_BASE_RADIUS = VPX_FLIPPER.baseRadius * WIDTH / VPX_TABLE.playableWidth
 const FLIPPER_END_RADIUS = VPX_FLIPPER.endRadius * WIDTH / VPX_TABLE.playableWidth
+const FLIPPER_RUBBER_THICKNESS = VPX_FLIPPER.rubberThickness * WIDTH / VPX_TABLE.playableWidth
 const FLIPPER_REST_ANGLE = (VPX_FLIPPER.startAngle - 90) * Math.PI / 180
 const FLIPPER_END_ANGLE = (VPX_FLIPPER.endAngle - 90) * Math.PI / 180
 const FLIPPER_LEFT_CENTER = scaleVpxPoint(VPX_TABLE.flippers.left.center)
@@ -318,6 +319,26 @@ function collideBalls(first: Ball, second: Ball) {
   second.vy += impulse * ny
 }
 
+function traceVpxFlipperProfile(ctx: CanvasRenderingContext2D, length: number, baseRadius: number, endRadius: number) {
+  // Direct port of Flipper::SetVertices in VPX. The straight sides touch both
+  // circles tangentially instead of merely connecting their widest points.
+  const faceAngle = Math.asin((baseRadius - endRadius) / length)
+  const normalX = Math.sin(faceAngle)
+  const normalY = Math.cos(faceAngle)
+  const baseTangentX = baseRadius * normalX
+  const endTangentX = length + endRadius * normalX
+  const upperAngle = faceAngle - Math.PI / 2
+  const lowerAngle = Math.PI / 2 - faceAngle
+
+  ctx.beginPath()
+  ctx.moveTo(baseTangentX, -baseRadius * normalY)
+  ctx.lineTo(endTangentX, -endRadius * normalY)
+  ctx.arc(length, 0, endRadius, upperAngle, lowerAngle)
+  ctx.lineTo(baseTangentX, baseRadius * normalY)
+  ctx.arc(0, 0, baseRadius, lowerAngle, upperAngle)
+  ctx.closePath()
+}
+
 function drawFlipper(ctx: CanvasRenderingContext2D, flipper: Rail, fill: string) {
   const dx = flipper.x2 - flipper.x1
   const dy = flipper.y2 - flipper.y1
@@ -326,24 +347,20 @@ function drawFlipper(ctx: CanvasRenderingContext2D, flipper: Rail, fill: string)
   ctx.save()
   ctx.translate(flipper.x1, flipper.y1)
   ctx.rotate(angle)
-  ctx.beginPath()
-  ctx.moveTo(-3, -FLIPPER_BASE_RADIUS)
-  ctx.bezierCurveTo(23, -FLIPPER_BASE_RADIUS - 2, length - 23, -FLIPPER_END_RADIUS - 3, length - 7, -FLIPPER_END_RADIUS)
-  ctx.quadraticCurveTo(length + FLIPPER_END_RADIUS, 0, length - 7, FLIPPER_END_RADIUS)
-  ctx.bezierCurveTo(length - 23, FLIPPER_END_RADIUS + 3, 23, FLIPPER_BASE_RADIUS + 2, -3, FLIPPER_BASE_RADIUS)
-  ctx.quadraticCurveTo(-FLIPPER_BASE_RADIUS + 2, 0, -3, -FLIPPER_BASE_RADIUS)
-  ctx.closePath()
-  ctx.fillStyle = fill
+  traceVpxFlipperProfile(ctx, length, FLIPPER_BASE_RADIUS, FLIPPER_END_RADIUS)
+  ctx.fillStyle = '#b52f27'
   ctx.fill()
   ctx.strokeStyle = '#111827'
-  ctx.lineWidth = 5
-  ctx.stroke()
-  ctx.beginPath()
-  ctx.moveTo(5, -9)
-  ctx.bezierCurveTo(30, -10, length - 23, -8, length - 8, -5)
-  ctx.strokeStyle = '#fff7edaa'
   ctx.lineWidth = 2
   ctx.stroke()
+  traceVpxFlipperProfile(
+    ctx,
+    length,
+    FLIPPER_BASE_RADIUS - FLIPPER_RUBBER_THICKNESS,
+    FLIPPER_END_RADIUS - FLIPPER_RUBBER_THICKNESS,
+  )
+  ctx.fillStyle = fill
+  ctx.fill()
   ctx.restore()
 }
 
