@@ -319,7 +319,7 @@ export function VenuePinballPicker() {
   }, [winner])
 
   return (
-    <div className="container px-4 py-8 pb-28 md:px-6 xl:pb-8">
+    <div className="container h-[calc(100dvh-3.5rem)] overflow-hidden px-2 py-2 pb-20 md:px-4 xl:h-auto xl:overflow-visible xl:px-6 xl:py-8">
       {celebration && (
         <div className="winner-backglass-overlay" aria-hidden="true">
           <Image
@@ -333,14 +333,31 @@ export function VenuePinballPicker() {
           />
         </div>
       )}
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <Card className="overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl">
-          <CardContent className="p-0">
-            <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="block h-auto w-full max-h-[78vh] bg-slate-950 object-contain" aria-label="Virtual pinball machine race" />
+      <Card className="mb-2 xl:hidden">
+        <CardContent className="grid grid-cols-2 gap-2 p-2">
+          <label className="min-w-0 text-[11px] font-semibold text-muted-foreground">
+            Venue
+            <select disabled={loading || running} value={venueKey} onChange={(event) => setVenueKey(event.target.value)} className="mt-1 block h-9 w-full truncate rounded-md border bg-background px-2 text-sm text-foreground">
+              {venues.map((item) => <option key={item.key || item.name} value={item.key || item.name}>{item.name} ({item.machines.length})</option>)}
+            </select>
+          </label>
+          <label className="min-w-0 text-[11px] font-semibold text-muted-foreground">
+            Table
+            <select disabled={running} value={layoutId} onChange={(event) => setLayoutId(event.target.value)} className="mt-1 block h-9 w-full truncate rounded-md border bg-background px-2 text-sm text-foreground">
+              {LAYOUTS.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+            </select>
+          </label>
+        </CardContent>
+      </Card>
+
+      <div className="grid h-[calc(100%-4.25rem)] gap-6 xl:h-auto xl:grid-cols-[minmax(0,1fr)_360px]">
+        <Card className="h-full overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl xl:h-auto">
+          <CardContent className="flex h-full items-center justify-center p-0 xl:h-auto">
+            <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="block h-auto max-h-full w-auto max-w-full bg-slate-950 xl:w-full xl:max-h-[78vh]" aria-label="Virtual pinball machine race" />
           </CardContent>
         </Card>
 
-        <div className="space-y-5">
+        <div className="hidden space-y-5 xl:block">
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg"><MapPin className="h-5 w-5" /> Set up the race</CardTitle>
