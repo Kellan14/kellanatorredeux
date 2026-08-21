@@ -188,6 +188,7 @@ export function VenuePinballPicker() {
   const runningRef = useRef(false)
   const finishingRef = useRef<string[]>([])
   const tiltRef = useRef(0)
+  const verticalGravityRef = useRef(1)
   const motionBaselineRef = useRef<number | null>(null)
   const lastNudgeRef = useRef(0)
   const nudgeHistoryRef = useRef<number[]>([])
@@ -236,10 +237,19 @@ export function VenuePinballPicker() {
     if (!motionEnabled) return
 
     const handleOrientation = (event: DeviceOrientationEvent) => {
-      if (event.gamma == null || tiltedRef.current) return
-      if (motionBaselineRef.current == null) motionBaselineRef.current = event.gamma
-      const relativeTilt = event.gamma - motionBaselineRef.current
-      tiltRef.current = Math.max(-1, Math.min(1, relativeTilt / 24))
+      if (tiltedRef.current) return
+      if (event.gamma != null) {
+        if (motionBaselineRef.current == null) motionBaselineRef.current = event.gamma
+        const relativeTilt = event.gamma - motionBaselineRef.current
+        tiltRef.current = Math.max(-1, Math.min(1, relativeTilt / 24))
+      }
+      // beta is ~90° when a portrait phone is upright, ~0° when it is
+      // face-up and flat, and ~-90° when it is inverted. Projecting earth
+      // gravity with sin(beta) gives exactly the requested 1g → 0g → -1g.
+      if (event.beta != null) {
+        const projectedGravity = Math.sin(event.beta * Math.PI / 180)
+        verticalGravityRef.current = Math.abs(projectedGravity) < 0.025 ? 0 : projectedGravity
+      }
     }
 
     const handleMotion = (event: DeviceMotionEvent) => {
@@ -281,6 +291,7 @@ export function VenuePinballPicker() {
       window.removeEventListener('deviceorientation', handleOrientation)
       window.removeEventListener('devicemotion', handleMotion)
       tiltRef.current = 0
+      verticalGravityRef.current = 1
     }
   }, [motionEnabled, showMotionNotice, tilted])
 
@@ -320,6 +331,7 @@ export function VenuePinballPicker() {
         return
       }
       motionBaselineRef.current = null
+      verticalGravityRef.current = 1
       nudgeHistoryRef.current = []
       setMotionEnabled(true)
       showMotionNotice('MOTION READY', 1000)
@@ -413,7 +425,7 @@ export function VenuePinballPicker() {
     const flippers = getFlipperRails(flipperAnglesRef.current.left, flipperAnglesRef.current.right)
     balls.forEach((ball) => {
       if (ball.finished) return
-      ball.vy += 0.115 * elapsed
+      ball.vy += 0.115 * (motionEnabled ? verticalGravityRef.current : 1) * elapsed
       if (motionEnabled && !tiltedRef.current) ball.vx += tiltRef.current * 0.035 * elapsed
       ball.vx *= Math.pow(0.997, elapsed)
       ball.vy *= Math.pow(0.999, elapsed)
