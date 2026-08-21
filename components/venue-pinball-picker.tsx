@@ -80,6 +80,7 @@ const FINISH_Y = VPX_DRAIN_CENTER.y
 const FINISH_LEFT = VPX_DRAIN_CENTER.x - VPX_DRAIN_RADIUS
 const FINISH_RIGHT = VPX_DRAIN_CENTER.x + VPX_DRAIN_RADIUS
 const VPX_PLAYFIELD_SCALE = WIDTH / VPX_TABLE.playableWidth
+const VPX_BALL_RADIUS = 25 * VPX_PLAYFIELD_SCALE
 const RAPID_FIRE_LANE = {
   left: 875 * VPX_PLAYFIELD_SCALE,
   right: 915 * VPX_PLAYFIELD_SCALE,
@@ -852,7 +853,7 @@ export function VenuePinballPicker() {
       vx: randomBetween(-0.35, 0.2),
       vy: -randomBetween(20, 25),
       angularVelocity: 0,
-      radius: machines.length > 20 ? 10 : machines.length > 12 ? 12 : 15,
+      radius: VPX_BALL_RADIUS,
       color: PALETTE[index % PALETTE.length],
       z: 0,
       vz: 0,
