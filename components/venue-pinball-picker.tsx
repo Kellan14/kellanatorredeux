@@ -743,9 +743,9 @@ export function VenuePinballPicker() {
       </Card>
 
       <div className="grid h-[calc(100%-4.25rem)] gap-6 xl:h-auto xl:grid-cols-[minmax(0,1fr)_360px]">
-        <Card className="h-full overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl xl:h-auto">
-          <CardContent className="relative flex h-full items-center justify-center p-0 xl:h-auto">
-            <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="block h-auto max-h-full w-auto max-w-full bg-slate-950 xl:w-full xl:max-h-[78vh]" aria-label="Virtual pinball machine race" />
+        <Card className="h-full overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl xl:h-[900px] xl:w-[640px] xl:justify-self-center">
+          <CardContent className="relative flex h-full items-center justify-center p-0">
+            <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="block h-auto max-h-full w-auto max-w-full bg-slate-950 xl:h-[900px] xl:w-[640px] xl:max-h-none xl:max-w-none" aria-label="Virtual pinball machine race" />
             <button
               type="button"
               aria-label="Left flipper"
