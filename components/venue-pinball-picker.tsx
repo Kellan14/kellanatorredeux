@@ -993,19 +993,29 @@ export function VenuePinballPicker() {
         </div>
       )}
       <Card className="mb-2 shrink-0 xl:hidden">
-        <CardContent className="grid grid-cols-2 gap-2 p-2">
+        <CardContent className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] gap-2 p-2">
           <label className="min-w-0 text-[11px] font-semibold text-muted-foreground">
             Venue
             <select disabled={loading || running} value={venueKey} onChange={(event) => setVenueKey(event.target.value)} className="mt-1 block h-9 w-full truncate rounded-md border bg-background px-2 text-sm text-foreground">
               {venues.map((item) => <option key={item.key || item.name} value={item.key || item.name}>{item.name} ({item.machines.length})</option>)}
             </select>
           </label>
-          <label className="min-w-0 text-[11px] font-semibold text-muted-foreground">
+          <div className="min-w-0 text-[11px] font-semibold text-muted-foreground">
             Mode
-            <select disabled={running} value={modeId} onChange={(event) => setModeId(event.target.value)} className="mt-1 block h-9 w-full truncate rounded-md border bg-background px-2 text-sm text-foreground">
-              {MODES.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-            </select>
-          </label>
+            <div className="mt-1 grid h-9 grid-cols-3 gap-1">
+              {MODES.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  disabled={running}
+                  onClick={() => setModeId(item.id)}
+                  className={`min-w-0 rounded-md border px-1 text-[9px] font-bold leading-[1.05] text-foreground transition disabled:opacity-50 ${mode.id === item.id ? 'border-primary bg-primary text-primary-foreground' : 'bg-background'}`}
+                >
+                  {item.name}
+                </button>
+              ))}
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -1018,7 +1028,7 @@ export function VenuePinballPicker() {
             height: `min(100cqh, calc(100cqw * ${HEIGHT} / ${WIDTH}))`,
           }}
         >
-          <Card className="h-full w-full overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl">
+          <Card className="relative z-10 h-full w-full overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl">
             <CardContent className="relative flex h-full items-center justify-center p-0">
               <VpxTableScene className="absolute inset-0" />
               <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="relative z-10 block h-full w-full" aria-label="Virtual pinball machine race" />
@@ -1032,7 +1042,7 @@ export function VenuePinballPicker() {
           <button
             type="button"
             aria-label="Left flipper"
-            className="group absolute -left-14 bottom-[7%] z-30 flex h-[25%] min-h-36 max-h-52 w-24 touch-none select-none items-center justify-center border-0 bg-transparent xl:hidden"
+            className="group absolute -left-20 bottom-[7%] z-0 flex h-[25%] min-h-36 max-h-52 w-24 touch-none select-none items-center justify-center border-0 bg-transparent xl:hidden"
             onPointerDown={(event) => { setFlipperInput('left', true); event.currentTarget.setPointerCapture(event.pointerId) }}
             onPointerUp={() => { setFlipperInput('left', false) }}
             onPointerCancel={() => { setFlipperInput('left', false) }}
@@ -1046,7 +1056,7 @@ export function VenuePinballPicker() {
           <button
             type="button"
             aria-label="Right flipper"
-            className="group absolute -right-14 bottom-[7%] z-30 flex h-[25%] min-h-36 max-h-52 w-24 touch-none select-none items-center justify-center border-0 bg-transparent xl:hidden"
+            className="group absolute -right-20 bottom-[7%] z-0 flex h-[25%] min-h-36 max-h-52 w-24 touch-none select-none items-center justify-center border-0 bg-transparent xl:hidden"
             onPointerDown={(event) => { setFlipperInput('right', true); event.currentTarget.setPointerCapture(event.pointerId) }}
             onPointerUp={() => { setFlipperInput('right', false) }}
             onPointerCancel={() => { setFlipperInput('right', false) }}
