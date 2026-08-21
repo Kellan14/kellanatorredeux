@@ -6,11 +6,16 @@ import { MapPin, Play, RotateCcw, Smartphone, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getMachineImagePath, getMachineThumbnailPath } from '@/lib/machine-images'
+import { VPX_TABLE, type VpxPoint, type VpxWall } from '@/lib/vpx-example-playfield'
 import { useMachineCanon } from '@/hooks/use-machine-canon'
 
 type Venue = { key: string; name: string; machines: string[] }
 type Peg = { x: number; y: number; r?: number; kind?: 'post' | 'bumper' }
-type Rail = { x1: number; y1: number; x2: number; y2: number; kind?: 'rubber' | 'wall' | 'slingshot' }
+type Rail = {
+  x1: number; y1: number; x2: number; y2: number
+  kind?: 'rubber' | 'wall' | 'slingshot'
+  elasticity?: number; elasticityFalloff?: number; friction?: number; scatter?: number; force?: number
+}
 type Layout = {
   id: string
   name: string
@@ -38,24 +43,48 @@ const FINISH_LEFT = 286
 const FINISH_RIGHT = 354
 const PALETTE = ['#ff006e', '#3a86ff', '#06d6a0', '#ffbe0b', '#8338ec', '#fb5607', '#00b4d8', '#ef476f']
 
+const scaleVpxPoint = ([x, y]: VpxPoint) => ({
+  x: x * WIDTH / VPX_TABLE.playableWidth,
+  y: y * HEIGHT / VPX_TABLE.height,
+})
+
+function railsFromVpxWall(wall: VpxWall): Rail[] {
+  return wall.points.map((point, index) => {
+    const start = scaleVpxPoint(point)
+    const end = scaleVpxPoint(wall.points[(index + 1) % wall.points.length])
+    return {
+      x1: start.x, y1: start.y, x2: end.x, y2: end.y, kind: 'wall',
+      elasticity: wall.elasticity,
+      elasticityFalloff: wall.elasticityFalloff,
+      friction: wall.friction,
+      scatter: wall.scatter,
+    }
+  })
+}
+
+const VPX_SLING_POLYGONS = VPX_TABLE.slingBodies.map((wall) => wall.points.map(scaleVpxPoint))
 const LOWER_PLAYFIELD_RAILS: Rail[] = [
-  // Scaled from the extracted official VPX example table's lower walls.
-  { x1: 72, y1: 630, x2: 59, y2: 696, kind: 'wall' },
-  { x1: 568, y1: 630, x2: 581, y2: 696, kind: 'wall' },
-  { x1: 59, y1: 696, x2: 70, y2: 711, kind: 'wall' },
-  { x1: 581, y1: 696, x2: 570, y2: 711, kind: 'wall' },
-  { x1: 70, y1: 711, x2: 173, y2: 750, kind: 'wall' },
-  { x1: 570, y1: 711, x2: 467, y2: 750, kind: 'wall' },
-  { x1: 173, y1: 750, x2: 195, y2: 734, kind: 'rubber' },
-  { x1: 467, y1: 750, x2: 445, y2: 734, kind: 'rubber' },
-  // Only the inward diagonal is the powered slingshot face in VPX.
-  { x1: 122, y1: 608, x2: 119, y2: 669, kind: 'wall' },
-  { x1: 119, y1: 669, x2: 178, y2: 696, kind: 'wall' },
-  { x1: 189, y1: 684, x2: 139, y2: 617, kind: 'slingshot' },
-  { x1: 518, y1: 608, x2: 521, y2: 669, kind: 'wall' },
-  { x1: 521, y1: 669, x2: 462, y2: 696, kind: 'wall' },
-  { x1: 451, y1: 684, x2: 501, y2: 617, kind: 'slingshot' },
+  ...VPX_TABLE.lowerWalls.flatMap(railsFromVpxWall),
+  ...VPX_TABLE.slingBodies.flatMap(railsFromVpxWall),
+  ...VPX_TABLE.slingFaces.map((face) => {
+    const start = scaleVpxPoint(face.from)
+    const end = scaleVpxPoint(face.to)
+    return {
+      x1: start.x, y1: start.y, x2: end.x, y2: end.y, kind: 'slingshot' as const,
+      elasticity: face.elasticity, elasticityFalloff: face.elasticityFalloff,
+      friction: face.friction, scatter: face.scatter, force: face.force,
+    }
+  }),
 ]
+
+const VPX_FLIPPER = VPX_TABLE.flippers.left
+const FLIPPER_LENGTH = VPX_FLIPPER.length * WIDTH / VPX_TABLE.playableWidth
+const FLIPPER_BASE_RADIUS = VPX_FLIPPER.baseRadius * WIDTH / VPX_TABLE.playableWidth
+const FLIPPER_END_RADIUS = VPX_FLIPPER.endRadius * WIDTH / VPX_TABLE.playableWidth
+const FLIPPER_REST_ANGLE = (VPX_FLIPPER.startAngle - 90) * Math.PI / 180
+const FLIPPER_END_ANGLE = (VPX_FLIPPER.endAngle - 90) * Math.PI / 180
+const FLIPPER_LEFT_CENTER = scaleVpxPoint(VPX_TABLE.flippers.left.center)
+const FLIPPER_RIGHT_CENTER = scaleVpxPoint(VPX_TABLE.flippers.right.center)
 
 function isOldDrainGuide(rail: Rail) {
   return (rail.x2 === FINISH_LEFT || rail.x2 === FINISH_RIGHT || rail.x1 === FINISH_LEFT || rail.x1 === FINISH_RIGHT)
@@ -133,7 +162,7 @@ const LAYOUTS: Layout[] = [
   },
 ]
 
-function resolveSurface(ball: Ball, nx: number, ny: number, elasticity: number, friction: number, surfaceVx = 0, surfaceVy = 0) {
+function resolveSurface(ball: Ball, nx: number, ny: number, elasticity: number, friction: number, surfaceVx = 0, surfaceVy = 0, elasticityFalloff = 0) {
   const relativeVx = ball.vx - surfaceVx
   const relativeVy = ball.vy - surfaceVy
   const normalSpeed = relativeVx * nx + relativeVy * ny
@@ -141,8 +170,9 @@ function resolveSurface(ball: Ball, nx: number, ny: number, elasticity: number, 
   const tangentX = -ny
   const tangentY = nx
   const tangentSpeed = relativeVx * tangentX + relativeVy * tangentY
-  ball.vx -= (1 + elasticity) * normalSpeed * nx + tangentSpeed * friction * tangentX
-  ball.vy -= (1 + elasticity) * normalSpeed * ny + tangentSpeed * friction * tangentY
+  const effectiveElasticity = elasticity / (1 + elasticityFalloff * Math.abs(normalSpeed) / 18.53)
+  ball.vx -= (1 + effectiveElasticity) * normalSpeed * nx + tangentSpeed * friction * tangentX
+  ball.vy -= (1 + effectiveElasticity) * normalSpeed * ny + tangentSpeed * friction * tangentY
 }
 
 function collideRail(ball: Ball, rail: Rail) {
@@ -156,34 +186,45 @@ function collideRail(ball: Ball, rail: Rail) {
   const nyRaw = ball.y - closestY
   const distance = Math.hypot(nxRaw, nyRaw)
   if (distance >= ball.radius + 5 || distance === 0) return false
-  const nx = nxRaw / distance
-  const ny = nyRaw / distance
+  let nx = nxRaw / distance
+  let ny = nyRaw / distance
   const overlap = ball.radius + 5 - distance
   ball.x += nx * overlap
   ball.y += ny * overlap
+  if (rail.scatter) {
+    const scatterAngle = (Math.random() - 0.5) * rail.scatter * Math.PI / 180
+    const cos = Math.cos(scatterAngle)
+    const sin = Math.sin(scatterAngle)
+    ;[nx, ny] = [nx * cos - ny * sin, nx * sin + ny * cos]
+  }
   const rubber = rail.kind !== 'wall'
-  resolveSurface(ball, nx, ny, rubber ? 0.62 : 0.48, rubber ? 0.04 : 0.1)
+  resolveSurface(
+    ball, nx, ny,
+    rail.elasticity ?? (rubber ? 0.62 : 0.48),
+    rail.friction ?? (rubber ? 0.04 : 0.1),
+    0, 0, rail.elasticityFalloff ?? 0,
+  )
   if (rail.kind === 'slingshot') {
-    ball.vx += nx * 2.45
-    ball.vy += ny * 2.45
+    const kick = (rail.force ?? 40) * 0.06125
+    ball.vx += nx * kick
+    ball.vy += ny * kick
   }
   return true
 }
 
 function getFlipperRails(leftAngle: number, rightAngle: number): { left: Rail; right: Rail } {
-  const length = 86
   return {
     left: {
-      x1: 205,
-      y1: 762,
-      x2: 205 + Math.cos(leftAngle) * length,
-      y2: 762 + Math.sin(leftAngle) * length,
+      x1: FLIPPER_LEFT_CENTER.x,
+      y1: FLIPPER_LEFT_CENTER.y,
+      x2: FLIPPER_LEFT_CENTER.x + Math.cos(leftAngle) * FLIPPER_LENGTH,
+      y2: FLIPPER_LEFT_CENTER.y + Math.sin(leftAngle) * FLIPPER_LENGTH,
     },
     right: {
-      x1: 435,
-      y1: 762,
-      x2: 435 - Math.cos(rightAngle) * length,
-      y2: 762 + Math.sin(rightAngle) * length,
+      x1: FLIPPER_RIGHT_CENTER.x,
+      y1: FLIPPER_RIGHT_CENTER.y,
+      x2: FLIPPER_RIGHT_CENTER.x - Math.cos(rightAngle) * FLIPPER_LENGTH,
+      y2: FLIPPER_RIGHT_CENTER.y + Math.sin(rightAngle) * FLIPPER_LENGTH,
     },
   }
 }
@@ -199,7 +240,7 @@ function collideFlipper(ball: Ball, rail: Rail, angularVelocity: number) {
   const nyRaw = ball.y - closestY
   const distance = Math.hypot(nxRaw, nyRaw)
   // Pinball flippers are tapered bats rather than constant-width rails.
-  const flipperRadius = 15 - t * 6
+  const flipperRadius = FLIPPER_BASE_RADIUS + (FLIPPER_END_RADIUS - FLIPPER_BASE_RADIUS) * t
   if (distance >= ball.radius + flipperRadius || distance === 0) return
 
   const nx = nxRaw / distance
@@ -217,7 +258,12 @@ function collideFlipper(ball: Ball, rail: Rail, angularVelocity: number) {
   const surfaceVy = angularVelocity * radiusX
   // Flipper rubber is deliberately low-elasticity. The bat's powered surface
   // supplies the shot energy; a stationary bat should not trampoline the ball.
-  resolveSurface(ball, nx, ny, 0.34, 0.075, surfaceVx, surfaceVy)
+  resolveSurface(
+    ball, nx, ny,
+    VPX_FLIPPER.elasticity * 0.425,
+    VPX_FLIPPER.friction * 0.094,
+    surfaceVx, surfaceVy, VPX_FLIPPER.elasticityFalloff,
+  )
 }
 
 function collidePeg(ball: Ball, peg: Peg) {
@@ -274,11 +320,11 @@ function drawFlipper(ctx: CanvasRenderingContext2D, flipper: Rail, fill: string)
   ctx.translate(flipper.x1, flipper.y1)
   ctx.rotate(angle)
   ctx.beginPath()
-  ctx.moveTo(-3, -15)
-  ctx.bezierCurveTo(23, -17, length - 23, -12, length - 7, -8)
-  ctx.quadraticCurveTo(length + 7, 0, length - 7, 8)
-  ctx.bezierCurveTo(length - 23, 12, 23, 17, -3, 15)
-  ctx.quadraticCurveTo(-13, 0, -3, -15)
+  ctx.moveTo(-3, -FLIPPER_BASE_RADIUS)
+  ctx.bezierCurveTo(23, -FLIPPER_BASE_RADIUS - 2, length - 23, -FLIPPER_END_RADIUS - 3, length - 7, -FLIPPER_END_RADIUS)
+  ctx.quadraticCurveTo(length + FLIPPER_END_RADIUS, 0, length - 7, FLIPPER_END_RADIUS)
+  ctx.bezierCurveTo(length - 23, FLIPPER_END_RADIUS + 3, 23, FLIPPER_BASE_RADIUS + 2, -3, FLIPPER_BASE_RADIUS)
+  ctx.quadraticCurveTo(-FLIPPER_BASE_RADIUS + 2, 0, -3, -FLIPPER_BASE_RADIUS)
   ctx.closePath()
   ctx.fillStyle = fill
   ctx.fill()
@@ -313,7 +359,7 @@ export function VenuePinballPicker() {
   const motionNoticeTimerRef = useRef<number | null>(null)
   const tiltedRef = useRef(false)
   const flipperPressedRef = useRef({ left: false, right: false })
-  const flipperAnglesRef = useRef({ left: 0.56, right: 0.56 })
+  const flipperAnglesRef = useRef({ left: FLIPPER_REST_ANGLE, right: FLIPPER_REST_ANGLE })
   const flipperVelocityRef = useRef({ left: 0, right: 0 })
   const { display } = useMachineCanon()
   const [venues, setVenues] = useState<Venue[]>([])
@@ -502,40 +548,24 @@ export function VenuePinballPicker() {
       }
     })
 
-    // The sling plastics sit above the field posts, as they do on a physical
-    // table. Curved edges follow the traced white bodies in the reference.
-    ;[-1, 1].forEach((side) => {
-      ctx.save()
-      if (side === 1) { ctx.translate(WIDTH, 0); ctx.scale(-1, 1) }
+    // Draw the exact Wall30/Wall31 polygons from exampleTable.vpx.
+    VPX_SLING_POLYGONS.forEach((points) => {
       ctx.beginPath()
-      ctx.moveTo(133, 606)
-      ctx.quadraticCurveTo(121, 606, 119, 611)
-      ctx.lineTo(119, 669)
-      ctx.quadraticCurveTo(120, 679, 130, 682)
-      ctx.lineTo(171, 695)
-      ctx.quadraticCurveTo(184, 699, 194, 691)
-      ctx.lineTo(146, 612)
-      ctx.quadraticCurveTo(141, 606, 133, 606)
+      ctx.moveTo(points[0].x, points[0].y)
+      points.slice(1).forEach((point) => ctx.lineTo(point.x, point.y))
       ctx.closePath()
       ctx.fillStyle = '#f8fafc'
       ctx.fill()
       ctx.strokeStyle = '#111827'
       ctx.lineWidth = 7
       ctx.stroke()
-      ctx.beginPath()
-      ctx.moveTo(139, 617)
-      ctx.lineTo(189, 684)
-      ctx.strokeStyle = layout.accent
-      ctx.lineWidth = 12
-      ctx.stroke()
-      ctx.restore()
     })
     LOWER_PLAYFIELD_RAILS.forEach(drawRail)
     ctx.font = '700 11px sans-serif'
     ctx.fillStyle = '#f8fafc99'
     ctx.textAlign = 'center'
-    ctx.fillText('OUT', 37, 718); ctx.fillText('IN', 93, 690)
-    ctx.fillText('IN', 547, 690); ctx.fillText('OUT', 603, 718)
+    ctx.fillText('OUT', 43, 718); ctx.fillText('IN', 95, 654)
+    ctx.fillText('IN', 545, 654); ctx.fillText('OUT', 597, 718)
 
     const flippers = getFlipperRails(flipperAnglesRef.current.left, flipperAnglesRef.current.right)
     ;([flippers.left, flippers.right] as Rail[]).forEach((flipper, index) => {
@@ -574,14 +604,15 @@ export function VenuePinballPicker() {
     const balls = ballsRef.current
     const updateFlipper = (side: 'left' | 'right') => {
       const pressed = flipperPressedRef.current[side]
-      const desiredVelocity = pressed ? -0.27 : 0.16
-      const ramp = (pressed ? 0.11 : 0.06) * elapsed
+      const desiredVelocity = pressed ? -0.31 : 0.18
+      // The ported table uses RampUp=0: full coil power is immediate.
+      const ramp = (pressed ? 1 : 0.08) * elapsed
       const velocityDelta = desiredVelocity - flipperVelocityRef.current[side]
       flipperVelocityRef.current[side] += Math.max(-ramp, Math.min(ramp, velocityDelta))
       flipperAnglesRef.current[side] += flipperVelocityRef.current[side] * elapsed
 
-      const endStop = -0.32
-      const restStop = 0.56
+      const endStop = FLIPPER_END_ANGLE
+      const restStop = FLIPPER_REST_ANGLE
       if (flipperAnglesRef.current[side] <= endStop) {
         flipperAnglesRef.current[side] = endStop
         flipperVelocityRef.current[side] = 0
@@ -627,7 +658,7 @@ export function VenuePinballPicker() {
     finishingRef.current = []
     setRanking([])
     flipperPressedRef.current = { left: false, right: false }
-    flipperAnglesRef.current = { left: 0.56, right: 0.56 }
+    flipperAnglesRef.current = { left: FLIPPER_REST_ANGLE, right: FLIPPER_REST_ANGLE }
     flipperVelocityRef.current = { left: 0, right: 0 }
     const machines = machineKeys.slice(0, 30)
     ballsRef.current = machines.map((machineKey, index) => ({
