@@ -249,10 +249,14 @@ function collideFlipper(ball: Ball, rail: Rail, angularVelocity: number) {
   const distance = Math.hypot(nxRaw, nyRaw)
   // Pinball flippers are tapered bats rather than constant-width rails.
   const flipperRadius = FLIPPER_BASE_RADIUS + (FLIPPER_END_RADIUS - FLIPPER_BASE_RADIUS) * t
-  if (distance >= ball.radius + flipperRadius || distance === 0) return
+  if (distance >= ball.radius + flipperRadius) return
 
-  const nx = nxRaw / distance
-  const ny = nyRaw / distance
+  // If a fast-moving tip reaches the exact ball center, VPX still produces a
+  // separating contact normal. Do the same instead of dropping the contact.
+  const railLength = Math.sqrt(lengthSquared)
+  let nx = distance > 1e-6 ? nxRaw / distance : -dy / railLength
+  let ny = distance > 1e-6 ? nyRaw / distance : dx / railLength
+  if (distance <= 1e-6 && ball.vx * nx + ball.vy * ny > 0) { nx = -nx; ny = -ny }
   const overlap = ball.radius + flipperRadius - distance
   ball.x += nx * overlap
   ball.y += ny * overlap
@@ -635,14 +639,14 @@ export function VenuePinballPicker() {
     const elapsed = Math.min(32, time - (lastTimeRef.current || time)) / 16.667
     lastTimeRef.current = time
     const balls = ballsRef.current
-    const updateFlipper = (side: 'left' | 'right') => {
+    const updateFlipper = (side: 'left' | 'right', step: number) => {
       const pressed = flipperPressedRef.current[side]
       const desiredVelocity = pressed ? -0.31 : 0.18
       // The ported table uses RampUp=0: full coil power is immediate.
-      const ramp = (pressed ? 1 : 0.08) * elapsed
+      const ramp = (pressed ? 1 : 0.08) * step
       const velocityDelta = desiredVelocity - flipperVelocityRef.current[side]
       flipperVelocityRef.current[side] += Math.max(-ramp, Math.min(ramp, velocityDelta))
-      flipperAnglesRef.current[side] += flipperVelocityRef.current[side] * elapsed
+      flipperAnglesRef.current[side] += flipperVelocityRef.current[side] * step
 
       const endStop = FLIPPER_END_ANGLE
       const restStop = FLIPPER_REST_ANGLE
@@ -654,32 +658,38 @@ export function VenuePinballPicker() {
         flipperVelocityRef.current[side] = 0
       }
     }
-    updateFlipper('left')
-    updateFlipper('right')
-    const flippers = getFlipperRails(flipperAnglesRef.current.left, flipperAnglesRef.current.right)
-    balls.forEach((ball) => {
-      if (ball.finished) return
-      ball.vy += 0.115 * (motionEnabled ? verticalGravityRef.current : 1) * elapsed
-      if (motionEnabled && !tiltedRef.current) ball.vx += tiltRef.current * 0.035 * elapsed
-      ball.vx *= Math.pow(0.997, elapsed)
-      ball.vy *= Math.pow(0.999, elapsed)
-      ball.x += ball.vx * elapsed
-      ball.y += ball.vy * elapsed
-      playfieldPegs.forEach((peg) => collidePeg(ball, peg))
-      playfieldRails.forEach((rail) => collideRail(ball, rail))
-      collideFlipper(ball, flippers.left, flipperVelocityRef.current.left)
-      collideFlipper(ball, flippers.right, -flipperVelocityRef.current.right)
-      if (ball.x < ball.radius) { ball.x = ball.radius; ball.vx = Math.abs(ball.vx) * 0.78 }
-      if (ball.x > WIDTH - ball.radius) { ball.x = WIDTH - ball.radius; ball.vx = -Math.abs(ball.vx) * 0.78 }
-      if (ball.y > FINISH_Y && ball.x > FINISH_LEFT && ball.x < FINISH_RIGHT) {
-        ball.finished = true
-        finishingRef.current = [...finishingRef.current, ball.machineKey]
-        setRanking([...finishingRef.current])
+    // VPX targets a 1 ms physics step. Twelve subdivisions per nominal 60 Hz
+    // frame keep the moving flipper tip from tunneling through a ball.
+    const substeps = Math.max(1, Math.ceil(elapsed * 12))
+    const step = elapsed / substeps
+    for (let substep = 0; substep < substeps; substep += 1) {
+      updateFlipper('left', step)
+      updateFlipper('right', step)
+      const flippers = getFlipperRails(flipperAnglesRef.current.left, flipperAnglesRef.current.right)
+      balls.forEach((ball) => {
+        if (ball.finished) return
+        ball.vy += 0.115 * (motionEnabled ? verticalGravityRef.current : 1) * step
+        if (motionEnabled && !tiltedRef.current) ball.vx += tiltRef.current * 0.035 * step
+        ball.vx *= Math.pow(0.997, step)
+        ball.vy *= Math.pow(0.999, step)
+        ball.x += ball.vx * step
+        ball.y += ball.vy * step
+        playfieldPegs.forEach((peg) => collidePeg(ball, peg))
+        playfieldRails.forEach((rail) => collideRail(ball, rail))
+        collideFlipper(ball, flippers.left, flipperVelocityRef.current.left)
+        collideFlipper(ball, flippers.right, -flipperVelocityRef.current.right)
+        if (ball.x < ball.radius) { ball.x = ball.radius; ball.vx = Math.abs(ball.vx) * 0.78 }
+        if (ball.x > WIDTH - ball.radius) { ball.x = WIDTH - ball.radius; ball.vx = -Math.abs(ball.vx) * 0.78 }
+        if (ball.y > FINISH_Y && ball.x > FINISH_LEFT && ball.x < FINISH_RIGHT) {
+          ball.finished = true
+          finishingRef.current = [...finishingRef.current, ball.machineKey]
+          setRanking([...finishingRef.current])
+        }
+        if (ball.y > HEIGHT + 40) { ball.y = 130; ball.x = 320; ball.vy = 0 }
+      })
+      for (let first = 0; first < balls.length; first += 1) {
+        for (let second = first + 1; second < balls.length; second += 1) collideBalls(balls[first], balls[second])
       }
-      if (ball.y > HEIGHT + 40) { ball.y = 130; ball.x = 320; ball.vy = 0 }
-    })
-    for (let first = 0; first < balls.length; first += 1) {
-      for (let second = first + 1; second < balls.length; second += 1) collideBalls(balls[first], balls[second])
     }
     draw()
     if (finishingRef.current.length >= balls.length) stop()
