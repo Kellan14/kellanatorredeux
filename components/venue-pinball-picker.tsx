@@ -850,8 +850,8 @@ export function VenuePinballPicker() {
       label: display(machineKey),
       x: randomBetween(RAPID_FIRE_LANE.left, RAPID_FIRE_LANE.right),
       y: randomBetween(RAPID_FIRE_LANE.top, RAPID_FIRE_LANE.bottom),
-      vx: randomBetween(-0.35, 0.2),
-      vy: -randomBetween(20, 25),
+      vx: randomBetween(-0.4, 0.25),
+      vy: -randomBetween(24, 30),
       angularVelocity: 0,
       radius: VPX_BALL_RADIUS,
       color: PALETTE[index % PALETTE.length],
@@ -874,7 +874,7 @@ export function VenuePinballPicker() {
     const launchStart = performance.now()
     let nextLaunch = launchStart
     ballsRef.current.forEach((ball) => {
-      nextLaunch += randomBetween(45, 115)
+      nextLaunch += randomBetween(80, 150)
       ball.launchAt = nextLaunch
     })
     runningRef.current = true
@@ -925,39 +925,47 @@ export function VenuePinballPicker() {
       </Card>
 
       <div className="grid h-[calc(100%-4.25rem)] gap-6 xl:h-auto xl:grid-cols-[minmax(0,1fr)_360px]">
-        <Card className="aspect-[952/2256] h-full w-auto max-w-full justify-self-center overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl xl:h-[900px]">
-          <CardContent className="relative flex h-full items-center justify-center p-0">
-            <VpxTableScene className="absolute inset-0" />
-            <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="relative z-10 block h-full w-full" aria-label="Virtual pinball machine race" />
-            <button
-              type="button"
-              aria-label="Left flipper"
-              className="absolute bottom-0 left-0 z-20 h-[28%] w-1/2 touch-none select-none border-0 bg-gradient-to-t from-neon-pink/10 to-transparent text-left text-[10px] font-bold tracking-widest text-white/45 active:from-neon-yellow/25"
-              onPointerDown={(event) => { setFlipperInput('left', true); event.currentTarget.setPointerCapture(event.pointerId) }}
-              onPointerUp={() => { setFlipperInput('left', false) }}
-              onPointerCancel={() => { setFlipperInput('left', false) }}
-              onContextMenu={(event) => event.preventDefault()}
-            >
-              <span className="absolute bottom-3 left-4">LEFT FLIP</span>
-            </button>
-            <button
-              type="button"
-              aria-label="Right flipper"
-              className="absolute bottom-0 right-0 z-20 h-[28%] w-1/2 touch-none select-none border-0 bg-gradient-to-t from-neon-blue/10 to-transparent text-right text-[10px] font-bold tracking-widest text-white/45 active:from-neon-yellow/25"
-              onPointerDown={(event) => { setFlipperInput('right', true); event.currentTarget.setPointerCapture(event.pointerId) }}
-              onPointerUp={() => { setFlipperInput('right', false) }}
-              onPointerCancel={() => { setFlipperInput('right', false) }}
-              onContextMenu={(event) => event.preventDefault()}
-            >
-              <span className="absolute bottom-3 right-4">RIGHT FLIP</span>
-            </button>
-            {motionNotice && (
-              <div className={`pointer-events-none absolute z-20 rounded-lg border px-5 py-2 text-lg font-black tracking-[.18em] shadow-2xl ${motionNotice === 'TILT' ? 'border-red-400 bg-red-600 text-white' : 'border-neon-blue/60 bg-slate-950/90 text-neon-blue'}`}>
-                {motionNotice}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <div className="relative aspect-[952/2256] h-full w-auto max-w-full justify-self-center xl:h-[900px]">
+          <Card className="h-full w-full overflow-hidden border-slate-700 bg-slate-950 text-white shadow-2xl">
+            <CardContent className="relative flex h-full items-center justify-center p-0">
+              <VpxTableScene className="absolute inset-0" />
+              <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="relative z-10 block h-full w-full" aria-label="Virtual pinball machine race" />
+              {motionNotice && (
+                <div className={`pointer-events-none absolute z-20 rounded-lg border px-5 py-2 text-lg font-black tracking-[.18em] shadow-2xl ${motionNotice === 'TILT' ? 'border-red-400 bg-red-600 text-white' : 'border-neon-blue/60 bg-slate-950/90 text-neon-blue'}`}>
+                  {motionNotice}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          <button
+            type="button"
+            aria-label="Left flipper"
+            className="group absolute -left-14 bottom-[7%] z-30 flex h-[25%] min-h-36 max-h-52 w-24 touch-none select-none items-center justify-center border-0 bg-transparent xl:hidden"
+            onPointerDown={(event) => { setFlipperInput('left', true); event.currentTarget.setPointerCapture(event.pointerId) }}
+            onPointerUp={() => { setFlipperInput('left', false) }}
+            onPointerCancel={() => { setFlipperInput('left', false) }}
+            onLostPointerCapture={() => { setFlipperInput('left', false) }}
+            onContextMenu={(event) => event.preventDefault()}
+          >
+            <span className="pointer-events-none relative block h-[4.5rem] w-[4.5rem] overflow-hidden rounded-full drop-shadow-[0_0_14px_rgba(239,68,68,.65)] transition-transform duration-75 group-active:scale-90 group-active:brightness-125">
+              <Image src="/flipper-button.png" alt="" fill sizes="72px" className="scale-[1.24] object-cover" priority />
+            </span>
+          </button>
+          <button
+            type="button"
+            aria-label="Right flipper"
+            className="group absolute -right-14 bottom-[7%] z-30 flex h-[25%] min-h-36 max-h-52 w-24 touch-none select-none items-center justify-center border-0 bg-transparent xl:hidden"
+            onPointerDown={(event) => { setFlipperInput('right', true); event.currentTarget.setPointerCapture(event.pointerId) }}
+            onPointerUp={() => { setFlipperInput('right', false) }}
+            onPointerCancel={() => { setFlipperInput('right', false) }}
+            onLostPointerCapture={() => { setFlipperInput('right', false) }}
+            onContextMenu={(event) => event.preventDefault()}
+          >
+            <span className="pointer-events-none relative block h-[4.5rem] w-[4.5rem] overflow-hidden rounded-full drop-shadow-[0_0_14px_rgba(239,68,68,.65)] transition-transform duration-75 group-active:scale-90 group-active:brightness-125">
+              <Image src="/flipper-button.png" alt="" fill sizes="72px" className="scale-[1.24] object-cover" priority />
+            </span>
+          </button>
+        </div>
 
         <div className="hidden space-y-5 xl:block">
           <Card>
