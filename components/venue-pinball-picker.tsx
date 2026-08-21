@@ -10,11 +10,13 @@ import { VPX_TABLE, type VpxPoint, type VpxWall } from '@/lib/vpx-example-playfi
 import {
   applyVpxScatter,
   createVpxFlipperMover,
-  getVpxLineSegmentContact,
+  getVpxLineSegmentHit,
   resolveVpxBallCollision,
   resolveVpxFlipperContact,
+  resolveVpxStaticContact,
   resolveVpxSurfaceContact,
   stepVpxFlipperMover,
+  VPX_CONTACT_VELOCITY,
   type VpxFlipperMover,
   type VpxFlipperParameters,
 } from '@/lib/vpx-physics'
@@ -250,28 +252,54 @@ function collideRail(ball: Ball, rail: Rail) {
   return true
 }
 
-function collideVpxWalls(ball: Ball, rails: Rail[]) {
-  let closest: { rail: Rail; normalX: number; normalY: number; penetration: number } | null = null
-  for (const rail of rails) {
-    if (!rail.vpxWall) continue
-    const contact = getVpxLineSegmentContact(ball, rail)
-    if (contact && (!closest || contact.penetration > closest.penetration)) {
-      closest = { rail, ...contact }
+function advanceThroughVpxWalls(
+  ball: Ball,
+  rails: Rail[],
+  step: number,
+  externalVelocityDeltaX: number,
+  externalVelocityDeltaY: number,
+) {
+  let remainingTime = step
+  for (let iteration = 0; iteration < 4 && remainingTime > 1e-6; iteration += 1) {
+    let earliest: { rail: Rail; time: number; normalX: number; normalY: number; penetration: number } | null = null
+    for (const rail of rails) {
+      if (!rail.vpxWall) continue
+      const hit = getVpxLineSegmentHit(ball, rail, remainingTime)
+      if (hit && (!earliest || hit.time < earliest.time)) earliest = { rail, ...hit }
+    }
+    if (!earliest) break
+
+    ball.x += ball.vx * earliest.time
+    ball.y += ball.vy * earliest.time
+    remainingTime -= earliest.time
+    if (earliest.penetration > 0) {
+      ball.x += earliest.normalX * earliest.penetration
+      ball.y += earliest.normalY * earliest.penetration
+    }
+
+    const normalSpeed = ball.vx * earliest.normalX + ball.vy * earliest.normalY
+    const isStaticContact = Math.abs(normalSpeed * BALL_TO_VPX_VELOCITY_SCALE) <= VPX_CONTACT_VELOCITY
+    const contact = isStaticContact
+      ? resolveVpxStaticContact(ball, {
+          normalX: earliest.normalX,
+          normalY: earliest.normalY,
+          friction: earliest.rail.friction ?? 0.1,
+          externalVelocityDeltaX,
+          externalVelocityDeltaY,
+        })
+      : resolveVpxSurfaceContact(ball, {
+          normalX: earliest.normalX,
+          normalY: earliest.normalY,
+          elasticity: earliest.rail.elasticity ?? 0.48,
+          elasticityFalloff: earliest.rail.elasticityFalloff ?? 0,
+          friction: earliest.rail.friction ?? 0.1,
+        })
+    if (contact && !isStaticContact && earliest.rail.scatter) {
+      applyVpxScatter(ball, earliest.rail.scatter, contact.normalImpulse)
     }
   }
-  if (!closest) return
-
-  const { rail, normalX, normalY, penetration } = closest
-  ball.x += normalX * penetration
-  ball.y += normalY * penetration
-  const contact = resolveVpxSurfaceContact(ball, {
-    normalX,
-    normalY,
-    elasticity: rail.elasticity ?? 0.48,
-    elasticityFalloff: rail.elasticityFalloff ?? 0,
-    friction: rail.friction ?? 0.1,
-  })
-  if (contact && rail.scatter) applyVpxScatter(ball, rail.scatter, contact.normalImpulse)
+  ball.x += ball.vx * remainingTime
+  ball.y += ball.vy * remainingTime
 }
 
 function getFlipperRails(leftAngle: number, rightAngle: number): { left: Rail; right: Rail } {
@@ -724,17 +752,14 @@ export function VenuePinballPicker() {
       const flippers = getFlipperRails(flipperMoversRef.current.left.angle, flipperMoversRef.current.right.angle)
       balls.forEach((ball) => {
         if (ball.finished) return
-        ball.vy += 0.115 * (motionEnabled ? verticalGravityRef.current : 1) * step
-        if (motionEnabled && !tiltedRef.current) ball.vx += tiltRef.current * 0.035 * step
+        const gravityDeltaY = 0.115 * (motionEnabled ? verticalGravityRef.current : 1) * step
+        const tiltDeltaX = motionEnabled && !tiltedRef.current ? tiltRef.current * 0.035 * step : 0
+        ball.vy += gravityDeltaY
+        ball.vx += tiltDeltaX
         ball.vx *= Math.pow(0.997, step)
         ball.vy *= Math.pow(0.999, step)
-        ball.x += ball.vx * step
-        ball.y += ball.vy * step
+        advanceThroughVpxWalls(ball, playfieldRails, step, tiltDeltaX, gravityDeltaY)
         playfieldPegs.forEach((peg) => collidePeg(ball, peg))
-        // VPX chooses the earliest wall hit, resolves it, then searches again.
-        // At our 1 ms-equivalent step, resolving the deepest single imported
-        // wall contact avoids applying two impulses at a shared inlane joint.
-        collideVpxWalls(ball, playfieldRails)
         playfieldRails.forEach((rail) => { if (!rail.vpxWall) collideRail(ball, rail) })
         collideFlipper(ball, flippers.left, flipperMoversRef.current.left, 1)
         collideFlipper(ball, flippers.right, flipperMoversRef.current.right, -1)

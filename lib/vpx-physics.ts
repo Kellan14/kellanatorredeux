@@ -46,6 +46,18 @@ export type VpxLineContact = {
   penetration: number
 }
 
+export type VpxLineHit = VpxLineContact & {
+  time: number
+}
+
+export type VpxStaticContact = {
+  normalX: number
+  normalY: number
+  friction: number
+  externalVelocityDeltaX?: number
+  externalVelocityDeltaY?: number
+}
+
 export type VpxFlipperParameters = {
   startAngle: number
   endAngle: number
@@ -83,6 +95,7 @@ export type VpxFlipperContact = {
 
 const VPX_ONE_METER_IN_SPEED_UNITS = 18.53
 const SOLID_SPHERE_INERTIA_FACTOR = 2 / 5
+export const VPX_CONTACT_VELOCITY = 0.099
 
 /**
  * Discrete counterpart of VPX LineSeg + HitLineZ collision geometry.
@@ -133,6 +146,121 @@ export function getVpxLineSegmentContact(
   }
 
   return closest
+}
+
+/** Port of VPX LineSeg::HitTestBasic and HitLineZ::HitTest in the XY plane. */
+export function getVpxLineSegmentHit(
+  ball: VpxPlanarBall,
+  segment: VpxLineSegment,
+  maximumTime: number,
+): VpxLineHit | null {
+  const dx = segment.x2 - segment.x1
+  const dy = segment.y2 - segment.y1
+  const length = Math.hypot(dx, dy)
+  if (length <= 1e-8 || maximumTime < 0) return null
+
+  const tangentX = dx / length
+  const tangentY = dy / length
+  const faceNormalX = -tangentY
+  const faceNormalY = tangentX
+  const relativeX = ball.x - segment.x1
+  const relativeY = ball.y - segment.y1
+  const contactRadius = ball.radius + (segment.thickness ?? 0)
+  const normalDistance = relativeX * faceNormalX + relativeY * faceNormalY
+  const normalSpeed = ball.vx * faceNormalX + ball.vy * faceNormalY
+  const faceSeparation = normalDistance - contactRadius
+
+  let earliest: VpxLineHit | null = null
+  // VPX LineSeg faces are directional. A ball behind the winding-defined
+  // face or clearly receding from it cannot hit that face.
+  if (normalDistance >= 0 && normalSpeed < -1e-8) {
+    const time = faceSeparation <= 0 ? 0 : faceSeparation / -normalSpeed
+    if (time <= maximumTime) {
+      const tangentDistance = relativeX * tangentX + relativeY * tangentY
+        + (ball.vx * tangentX + ball.vy * tangentY) * time
+      if (tangentDistance >= 0 && tangentDistance <= length) {
+        earliest = {
+          time,
+          normalX: faceNormalX,
+          normalY: faceNormalY,
+          penetration: Math.max(0, -faceSeparation),
+        }
+      }
+    }
+  }
+
+  // Surface::AddLine creates a vertical HitLineZ at v1. In the playfield
+  // plane this is a swept circle-versus-point test for the round joint.
+  const speedSquared = ball.vx * ball.vx + ball.vy * ball.vy
+  const approach = relativeX * ball.vx + relativeY * ball.vy
+  const jointSeparationSquared = relativeX * relativeX + relativeY * relativeY - contactRadius * contactRadius
+  let jointTime = Number.POSITIVE_INFINITY
+  if (jointSeparationSquared < 0 && approach < 0) {
+    jointTime = 0
+  } else if (speedSquared > 1e-8 && approach < 0) {
+    const discriminant = approach * approach - speedSquared * jointSeparationSquared
+    if (discriminant >= 0) jointTime = (-approach - Math.sqrt(discriminant)) / speedSquared
+  }
+  if (jointTime >= 0 && jointTime <= maximumTime && (!earliest || jointTime < earliest.time)) {
+    const hitRelativeX = relativeX + ball.vx * jointTime
+    const hitRelativeY = relativeY + ball.vy * jointTime
+    const hitDistance = Math.hypot(hitRelativeX, hitRelativeY)
+    if (hitDistance > 1e-8) {
+      earliest = {
+        time: jointTime,
+        normalX: hitRelativeX / hitDistance,
+        normalY: hitRelativeY / hitDistance,
+        penetration: jointTime === 0 ? Math.max(0, contactRadius - Math.hypot(relativeX, relativeY)) : 0,
+      }
+    }
+  }
+
+  return earliest
+}
+
+/**
+ * Planar port of HitBall::HandleStaticContact/ApplyFriction. Gravity has
+ * already been integrated by the caller, so killing the remaining inward
+ * speed also supplies the supporting normal impulse without restitution.
+ */
+export function resolveVpxStaticContact(ball: VpxPhysicsBall, contact: VpxStaticContact) {
+  const {
+    normalX,
+    normalY,
+    friction,
+    externalVelocityDeltaX = 0,
+    externalVelocityDeltaY = 0,
+  } = contact
+  const normalSpeed = ball.vx * normalX + ball.vy * normalY
+  if (normalSpeed > VPX_CONTACT_VELOCITY) return null
+
+  const normalImpulse = Math.max(0, -normalSpeed)
+  ball.vx += normalImpulse * normalX
+  ball.vy += normalImpulse * normalY
+
+  const tangentX = -normalY
+  const tangentY = normalX
+  const contactRadiusX = -normalX * ball.radius
+  const contactRadiusY = -normalY * ball.radius
+  const ballInertia = SOLID_SPHERE_INERTIA_FACTOR * ball.radius * ball.radius
+  const ballSurfaceVelocityX = ball.vx - ball.angularVelocity * contactRadiusY
+  const ballSurfaceVelocityY = ball.vy + ball.angularVelocity * contactRadiusX
+  const tangentSpeed = ballSurfaceVelocityX * tangentX + ballSurfaceVelocityY * tangentY
+  const radiusCrossTangent = contactRadiusX * tangentY - contactRadiusY * tangentX
+  const tangentEffectiveMass = 1 + radiusCrossTangent * radiusCrossTangent / ballInertia
+  const externalNormalImpulse = Math.max(
+    0,
+    -(externalVelocityDeltaX * normalX + externalVelocityDeltaY * normalY),
+  )
+  const maximumFrictionImpulse = friction * Math.max(normalImpulse, externalNormalImpulse)
+  const tangentImpulse = Math.max(
+    -maximumFrictionImpulse,
+    Math.min(maximumFrictionImpulse, -tangentSpeed / tangentEffectiveMass),
+  )
+  ball.vx += tangentImpulse * tangentX
+  ball.vy += tangentImpulse * tangentY
+  ball.angularVelocity += radiusCrossTangent * tangentImpulse / ballInertia
+  return { normalSpeed, normalImpulse } satisfies VpxContactResult
 }
 
 export function createVpxFlipperMover(parameters: VpxFlipperParameters): VpxFlipperMover {
