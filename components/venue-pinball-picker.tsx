@@ -35,13 +35,11 @@ type Rail = {
   vpxWall?: boolean
   allowsInvertedEscape?: boolean
 }
-type Layout = {
+type Mode = {
   id: string
   name: string
   description: string
   accent: string
-  pegs: Peg[]
-  rails: Rail[]
 }
 type Ball = {
   machineKey: string
@@ -53,6 +51,8 @@ type Ball = {
   angularVelocity: number
   radius: number
   color: string
+  active: boolean
+  launchAt: number
   finished: boolean
 }
 
@@ -74,6 +74,12 @@ const FINISH_Y = VPX_DRAIN_CENTER.y
 const FINISH_LEFT = VPX_DRAIN_CENTER.x - VPX_DRAIN_RADIUS
 const FINISH_RIGHT = VPX_DRAIN_CENTER.x + VPX_DRAIN_RADIUS
 const VPX_PLAYFIELD_SCALE = WIDTH / VPX_TABLE.playableWidth
+const RAPID_FIRE_LANE = {
+  left: 875 * VPX_PLAYFIELD_SCALE,
+  right: 915 * VPX_PLAYFIELD_SCALE,
+  top: 1940 * HEIGHT / VPX_TABLE.height,
+  bottom: 2020 * HEIGHT / VPX_TABLE.height,
+}
 
 function railsFromVpxWall(wall: VpxWall, excludedEdge?: number): Rail[] {
   return wall.points.flatMap((point, index) => {
@@ -169,14 +175,12 @@ function predictedFlipperAngle(mover: VpxFlipperMover, pressed: boolean, enabled
   return predicted.angle
 }
 
-const LAYOUTS: Layout[] = [
+const MODES: Mode[] = [
   {
-    id: 'robocop',
-    name: 'RoboCop (1989)',
-    description: 'The complete VPX playfield, objects, art, and ground-level collision geometry.',
+    id: 'rapid-fire',
+    name: 'Rapid Fire',
+    description: 'Every machine is randomized and fired up the plunger lane in quick succession.',
     accent: '#d71920',
-    pegs: [],
-    rails: [],
   },
 ]
 
@@ -351,7 +355,7 @@ function collidePeg(ball: Ball, peg: Peg) {
 }
 
 function collideBalls(first: Ball, second: Ball) {
-  if (first.finished || second.finished) return
+  if (!first.active || !second.active || first.finished || second.finished) return
   const dx = second.x - first.x
   const dy = second.y - first.y
   const distance = Math.hypot(dx, dy)
@@ -416,6 +420,19 @@ function shortName(name: string) {
   return name.length > 16 ? `${name.slice(0, 14)}…` : name
 }
 
+function shuffled<T>(values: readonly T[]) {
+  const result = [...values]
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1))
+    ;[result[index], result[swapIndex]] = [result[swapIndex], result[index]]
+  }
+  return result
+}
+
+function randomBetween(minimum: number, maximum: number) {
+  return minimum + Math.random() * (maximum - minimum)
+}
+
 export function VenuePinballPicker() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const ballsRef = useRef<Ball[]>([])
@@ -439,7 +456,7 @@ export function VenuePinballPicker() {
   const { display } = useMachineCanon()
   const [venues, setVenues] = useState<Venue[]>([])
   const [venueKey, setVenueKey] = useState('')
-  const [layoutId, setLayoutId] = useState(LAYOUTS[0].id)
+  const [modeId, setModeId] = useState(MODES[0].id)
   const [loading, setLoading] = useState(true)
   const [running, setRunning] = useState(false)
   const [ranking, setRanking] = useState<string[]>([])
@@ -449,7 +466,7 @@ export function VenuePinballPicker() {
   const [tilted, setTilted] = useState(false)
 
   const venue = venues.find((item) => item.key === venueKey) ?? venues.find((item) => item.name === venueKey)
-  const layout = LAYOUTS.find((item) => item.id === layoutId) ?? LAYOUTS[0]
+  const mode = MODES.find((item) => item.id === modeId) ?? MODES[0]
   const playfieldRails = VPX_PLAYFIELD_RAILS
   const playfieldPegs = VPX_BUMPERS
   // Venue lists speak canonical short keys. Preserve those keys through the
@@ -519,7 +536,7 @@ export function VenuePinballPicker() {
 
       const direction = (acceleration.x ?? 0) >= 0 ? 1 : -1
       ballsRef.current.forEach((ball) => {
-        if (!ball.finished) {
+        if (ball.active && !ball.finished) {
           ball.vx += direction * 2.2
           ball.vy -= 0.65
         }
@@ -612,7 +629,7 @@ export function VenuePinballPicker() {
     ctx.fillText('FINISH', VPX_DRAIN_CENTER.x, FINISH_Y + 28)
 
     ballsRef.current.forEach((ball, index) => {
-      if (ball.finished) return
+      if (!ball.active || ball.finished) return
       ctx.shadowColor = ball.color; ctx.shadowBlur = 15
       ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2)
       ctx.fillStyle = ball.color; ctx.fill()
@@ -622,7 +639,7 @@ export function VenuePinballPicker() {
       ctx.font = '600 11px sans-serif'
       ctx.fillText(shortName(ball.label), Math.max(52, Math.min(WIDTH - 52, ball.x)), ball.y - ball.radius - 8)
     })
-  }, [layout])
+  }, [])
 
   useEffect(() => {
     drawRef.current = draw
@@ -652,6 +669,10 @@ export function VenuePinballPicker() {
       const flippers = getFlipperRails(flipperMoversRef.current.left.angle, flipperMoversRef.current.right.angle)
       balls.forEach((ball) => {
         if (ball.finished) return
+        if (!ball.active) {
+          if (time < ball.launchAt) return
+          ball.active = true
+        }
         const gravityDeltaY = 0.115 * (motionEnabled ? verticalGravityRef.current : 1) * step
         const tiltDeltaX = motionEnabled && !tiltedRef.current ? tiltRef.current * 0.035 * step : 0
         ball.vy += gravityDeltaY
@@ -679,7 +700,7 @@ export function VenuePinballPicker() {
     draw()
     if (finishingRef.current.length >= balls.length) stop()
     else frameRef.current = requestAnimationFrame(animate)
-  }, [draw, layout, motionEnabled, playfieldPegs, playfieldRails, stop])
+  }, [draw, motionEnabled, playfieldPegs, playfieldRails, stop])
 
   const reset = useCallback(() => {
     stop()
@@ -690,17 +711,19 @@ export function VenuePinballPicker() {
       left: createVpxFlipperMover(FLIPPER_PARAMETERS),
       right: createVpxFlipperMover(FLIPPER_PARAMETERS),
     }
-    const machines = machineKeys.slice(0, 30)
+    const machines = shuffled(machineKeys.slice(0, 30))
     ballsRef.current = machines.map((machineKey, index) => ({
       machineKey,
       label: display(machineKey),
-      x: 58 + (index % 10) * 58 + (Math.random() - 0.5) * 8,
-      y: 58 - Math.floor(index / 10) * 34,
-      vx: (Math.random() - 0.5) * 1.2,
-      vy: Math.random() * 0.3,
+      x: randomBetween(RAPID_FIRE_LANE.left, RAPID_FIRE_LANE.right),
+      y: randomBetween(RAPID_FIRE_LANE.top, RAPID_FIRE_LANE.bottom),
+      vx: randomBetween(-0.35, 0.2),
+      vy: -randomBetween(10.5, 14),
       angularVelocity: 0,
       radius: machines.length > 20 ? 10 : machines.length > 12 ? 12 : 15,
       color: PALETTE[index % PALETTE.length],
+      active: false,
+      launchAt: Number.POSITIVE_INFINITY,
       finished: false,
     }))
     requestAnimationFrame(draw)
@@ -710,9 +733,15 @@ export function VenuePinballPicker() {
 
   const start = () => {
     reset()
+    const launchStart = performance.now()
+    let nextLaunch = launchStart
+    ballsRef.current.forEach((ball) => {
+      nextLaunch += randomBetween(45, 115)
+      ball.launchAt = nextLaunch
+    })
     runningRef.current = true
     setRunning(true)
-    lastTimeRef.current = performance.now()
+    lastTimeRef.current = launchStart
     frameRef.current = requestAnimationFrame(animate)
   }
 
@@ -749,9 +778,9 @@ export function VenuePinballPicker() {
             </select>
           </label>
           <label className="min-w-0 text-[11px] font-semibold text-muted-foreground">
-            Table
-            <select disabled={running} value={layoutId} onChange={(event) => setLayoutId(event.target.value)} className="mt-1 block h-9 w-full truncate rounded-md border bg-background px-2 text-sm text-foreground">
-              {LAYOUTS.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+            Mode
+            <select disabled={running} value={modeId} onChange={(event) => setModeId(event.target.value)} className="mt-1 block h-9 w-full truncate rounded-md border bg-background px-2 text-sm text-foreground">
+              {MODES.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
             </select>
           </label>
         </CardContent>
@@ -804,10 +833,10 @@ export function VenuePinballPicker() {
                 {venues.map((item) => <option key={item.key || item.name} value={item.key || item.name}>{item.name} ({item.machines.length})</option>)}
               </select>
               <div>
-                <div className="mb-2 text-sm font-medium">Table layout</div>
+                <div className="mb-2 text-sm font-medium">Game mode</div>
                 <div className="grid gap-2">
-                  {LAYOUTS.map((item) => (
-                    <button key={item.id} disabled={running} onClick={() => setLayoutId(item.id)} className={`rounded-lg border p-3 text-left transition ${layoutId === item.id ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'hover:bg-muted'}`}>
+                  {MODES.map((item) => (
+                    <button key={item.id} disabled={running} onClick={() => setModeId(item.id)} className={`rounded-lg border p-3 text-left transition ${mode.id === item.id ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'hover:bg-muted'}`}>
                       <span className="flex items-center gap-2 font-semibold"><span className="h-3 w-3 rounded-full" style={{ background: item.accent }} />{item.name}</span>
                       <span className="mt-1 block text-xs text-muted-foreground">{item.description}</span>
                     </button>
@@ -815,7 +844,7 @@ export function VenuePinballPicker() {
                 </div>
               </div>
               <div className="hidden grid-cols-2 gap-2 pt-1 xl:grid">
-                <Button onClick={start} disabled={loading || running || machineKeys.length < 2}><Play className="mr-2 h-4 w-4" /> Start</Button>
+                <Button onClick={start} disabled={loading || running || machineKeys.length < 2}><Play className="mr-2 h-4 w-4" /> Start Rapid Fire</Button>
                 <Button variant="outline" onClick={reset}><RotateCcw className="mr-2 h-4 w-4" /> Reset</Button>
               </div>
               {machineKeys.length > 30 && <p className="text-xs text-muted-foreground">This venue has {machineKeys.length} machines. The race uses the first 30.</p>}
@@ -853,7 +882,7 @@ export function VenuePinballPicker() {
       <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 p-3 pb-[max(.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_30px_rgba(0,0,0,.18)] backdrop-blur xl:hidden">
         <div className="mx-auto grid max-w-md grid-cols-[1fr_auto_auto] gap-2">
           <Button size="lg" onClick={start} disabled={loading || running || machineKeys.length < 2}>
-            <Play className="mr-2 h-5 w-5" /> Start race
+            <Play className="mr-2 h-5 w-5" /> Rapid Fire
           </Button>
           <Button size="lg" variant={motionEnabled ? 'default' : 'outline'} onClick={enableMotion} disabled={motionEnabled} aria-label={motionEnabled ? 'Motion controls enabled' : 'Enable motion controls'} title={motionEnabled ? 'Motion controls enabled' : 'Enable motion controls'}>
             <Smartphone className={`h-5 w-5 ${motionEnabled ? 'text-neon-green' : ''}`} />

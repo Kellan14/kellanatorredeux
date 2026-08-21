@@ -49,6 +49,11 @@ export function VpxTableScene({ className }: Props) {
 
     new GLTFLoader().load(VPX_TABLE.modelPath, ({ scene: loadedScene }) => {
       if (disposed) return
+      loadedScene.traverse((object) => {
+        // VPX exports each playfield light as a flat insert mesh. Without the
+        // table script driving its falloff, those read as hard-edged circles.
+        if (/(?:_insert$|light|bulb|flasher)/i.test(object.name)) object.visible = false
+      })
       tableScene = loadedScene
       scene.add(loadedScene)
       render()
