@@ -184,7 +184,8 @@ export function VenuePinballPicker() {
       .then((data) => {
         const next = (data.venues ?? []).filter((item: Venue) => item.machines?.length)
         setVenues(next)
-        if (next[0]) setVenueKey(next[0].key || next[0].name)
+        const defaultVenue = next.find((item: Venue) => item.name === 'Georgetown Pizza and Arcade') ?? next[0]
+        if (defaultVenue) setVenueKey(defaultVenue.key || defaultVenue.name)
       })
       .finally(() => setLoading(false))
   }, [])
