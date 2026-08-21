@@ -122,6 +122,21 @@ const FLIPPER_PARAMETERS: VpxFlipperParameters = {
   friction: VPX_FLIPPER.friction,
 }
 
+// VPX renders moving objects slightly ahead of the last completed physics
+// state to keep input-to-photon latency from adding a whole display frame.
+// Keep the real mover/collision state untouched and advance a copy in 1 ms
+// increments so this uses the same coil, inertia, damping, and stop model.
+const FLIPPER_RENDER_PREDICTION_MS = 8
+
+function predictedFlipperAngle(mover: VpxFlipperMover, pressed: boolean, enabled: boolean) {
+  if (!enabled) return mover.angle
+  const predicted = { ...mover }
+  for (let millisecond = 0; millisecond < FLIPPER_RENDER_PREDICTION_MS; millisecond += 1) {
+    stepVpxFlipperMover(predicted, FLIPPER_PARAMETERS, pressed, 0.1)
+  }
+  return predicted.angle
+}
+
 function isOldDrainGuide(rail: Rail) {
   return (rail.x2 === FINISH_LEFT || rail.x2 === FINISH_RIGHT || rail.x1 === FINISH_LEFT || rail.x1 === FINISH_RIGHT)
     || (Math.min(rail.y1, rail.y2) >= 650 && (rail.x1 === 34 || rail.x1 === 606))
@@ -399,6 +414,7 @@ export function VenuePinballPicker() {
   const motionNoticeTimerRef = useRef<number | null>(null)
   const tiltedRef = useRef(false)
   const flipperPressedRef = useRef({ left: false, right: false })
+  const drawRef = useRef<() => void>(() => {})
   const flipperMoversRef = useRef({
     left: createVpxFlipperMover(FLIPPER_PARAMETERS),
     right: createVpxFlipperMover(FLIPPER_PARAMETERS),
@@ -518,14 +534,23 @@ export function VenuePinballPicker() {
     if (motionNoticeTimerRef.current) window.clearTimeout(motionNoticeTimerRef.current)
   }, [])
 
+  const setFlipperInput = useCallback((side: 'left' | 'right', pressed: boolean) => {
+    if (flipperPressedRef.current[side] === pressed) return
+    flipperPressedRef.current[side] = pressed
+    // Drawing directly from the input event lets the browser include the
+    // predicted flipper pose in its next paint instead of waiting for our
+    // already-scheduled animation callback.
+    drawRef.current()
+  }, [])
+
   useEffect(() => {
     const setKey = (event: KeyboardEvent, pressed: boolean) => {
       if (event.key === 'ArrowLeft' || event.key === 'Shift') {
-        flipperPressedRef.current.left = pressed
+        setFlipperInput('left', pressed)
         event.preventDefault()
       }
       if (event.key === 'ArrowRight' || event.key === 'Enter') {
-        flipperPressedRef.current.right = pressed
+        setFlipperInput('right', pressed)
         event.preventDefault()
       }
     }
@@ -537,7 +562,7 @@ export function VenuePinballPicker() {
       window.removeEventListener('keydown', keyDown)
       window.removeEventListener('keyup', keyUp)
     }
-  }, [])
+  }, [setFlipperInput])
 
   const enableMotion = async () => {
     try {
@@ -618,7 +643,10 @@ export function VenuePinballPicker() {
     ctx.fillText('OUT', 43, 718); ctx.fillText('IN', 95, 654)
     ctx.fillText('IN', 545, 654); ctx.fillText('OUT', 597, 718)
 
-    const flippers = getFlipperRails(flipperMoversRef.current.left.angle, flipperMoversRef.current.right.angle)
+    const flippers = getFlipperRails(
+      predictedFlipperAngle(flipperMoversRef.current.left, flipperPressedRef.current.left, runningRef.current),
+      predictedFlipperAngle(flipperMoversRef.current.right, flipperPressedRef.current.right, runningRef.current),
+    )
     ;([flippers.left, flippers.right] as Rail[]).forEach((flipper, index) => {
       drawFlipper(ctx, flipper, flipperPressedRef.current[index === 0 ? 'left' : 'right'] ? '#fff36a' : '#ffd92f')
     })
@@ -640,6 +668,11 @@ export function VenuePinballPicker() {
       ctx.fillText(shortName(ball.label), Math.max(52, Math.min(WIDTH - 52, ball.x)), ball.y - ball.radius - 8)
     })
   }, [layout, layoutRails, playfieldPegs, playfieldRails])
+
+  useEffect(() => {
+    drawRef.current = draw
+    return () => { drawRef.current = () => {} }
+  }, [draw])
 
   const stop = useCallback(() => {
     runningRef.current = false
@@ -776,9 +809,9 @@ export function VenuePinballPicker() {
               type="button"
               aria-label="Left flipper"
               className="absolute bottom-0 left-0 h-[28%] w-1/2 touch-none select-none border-0 bg-gradient-to-t from-neon-pink/10 to-transparent text-left text-[10px] font-bold tracking-widest text-white/45 active:from-neon-yellow/25"
-              onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); flipperPressedRef.current.left = true }}
-              onPointerUp={() => { flipperPressedRef.current.left = false }}
-              onPointerCancel={() => { flipperPressedRef.current.left = false }}
+              onPointerDown={(event) => { setFlipperInput('left', true); event.currentTarget.setPointerCapture(event.pointerId) }}
+              onPointerUp={() => { setFlipperInput('left', false) }}
+              onPointerCancel={() => { setFlipperInput('left', false) }}
               onContextMenu={(event) => event.preventDefault()}
             >
               <span className="absolute bottom-3 left-4">LEFT FLIP</span>
@@ -787,9 +820,9 @@ export function VenuePinballPicker() {
               type="button"
               aria-label="Right flipper"
               className="absolute bottom-0 right-0 h-[28%] w-1/2 touch-none select-none border-0 bg-gradient-to-t from-neon-blue/10 to-transparent text-right text-[10px] font-bold tracking-widest text-white/45 active:from-neon-yellow/25"
-              onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); flipperPressedRef.current.right = true }}
-              onPointerUp={() => { flipperPressedRef.current.right = false }}
-              onPointerCancel={() => { flipperPressedRef.current.right = false }}
+              onPointerDown={(event) => { setFlipperInput('right', true); event.currentTarget.setPointerCapture(event.pointerId) }}
+              onPointerUp={() => { setFlipperInput('right', false) }}
+              onPointerCancel={() => { setFlipperInput('right', false) }}
               onContextMenu={(event) => event.preventDefault()}
             >
               <span className="absolute bottom-3 right-4">RIGHT FLIP</span>
