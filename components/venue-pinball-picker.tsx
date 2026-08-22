@@ -162,6 +162,17 @@ const PLAYFIELD_TOTAL_GRAVITY = VPX_TABLE.playfield.gravity * VPX_PLAYFIELD_SCAL
 const PLAYFIELD_SLOPE_RADIANS = VPX_TABLE.playfield.slope * Math.PI / 180
 const PLAYFIELD_PLANAR_GRAVITY = PLAYFIELD_TOTAL_GRAVITY * Math.sin(PLAYFIELD_SLOPE_RADIANS)
 const PLAYFIELD_NORMAL_GRAVITY = PLAYFIELD_TOTAL_GRAVITY * Math.cos(PLAYFIELD_SLOPE_RADIANS)
+
+// The gravity split actually in force. It stays at the table's 6-degree pitch
+// unless motion control is on, in which case it tracks the phone's real pitch:
+// planar = g*sin(pitch), normal = g*cos(pitch). Hold the phone at a pinball
+// machine's angle and it plays normally; hold it vertical and normal gravity
+// goes to zero, which removes the normal force friction depends on, so the
+// ball simply free-falls at a full g.
+const playfieldGravity = {
+  planar: PLAYFIELD_PLANAR_GRAVITY,
+  normal: PLAYFIELD_NORMAL_GRAVITY,
+}
 // The ball parks on the plunger tip, one radius up-lane of the plunger centre,
 // centred between the walls that form the lane. These come from the VPX rather
 // than from an eyeballed box.
@@ -689,6 +700,11 @@ function ballOverlapsHeightBand(ball: Ball, heightBottom?: number, heightTop?: n
 const scatterDegrees = (scatter?: number) => (scatter && scatter > 0 ? scatter : VPX_TABLE.playfield.scatter)
 
 const vpxVelocityToCanvas = (velocity: number) => velocity / BALL_TO_VPX_VELOCITY_SCALE
+
+/** Flipper buttons are inert while the machine is tilted. */
+const flipperHeld = (pressed: { left: boolean; right: boolean }, side: 'left' | 'right', tilted: boolean) => (
+  !tilted && pressed[side]
+)
 
 function collideRail(ball: Ball, rail: Rail) {
   if (!ballOverlapsHeightBand(ball, rail.heightBottom, rail.heightTop)) return false
@@ -1376,7 +1392,7 @@ function advanceVpxRamp(
   const tangentAcceleration = (
     accelerationX * current.tangentX
     + accelerationY * current.tangentY
-    - PLAYFIELD_NORMAL_GRAVITY * current.tangentZ
+    - playfieldGravity.normal * current.tangentZ
   )
   const lateralAcceleration = accelerationX * current.normalX + accelerationY * current.normalY
   ball.rampSpeed += tangentAcceleration * step
@@ -1388,7 +1404,7 @@ function advanceVpxRamp(
   applyVpxSurfaceFriction(ball, {
     deltaTime: vpxStep,
     friction: current.friction,
-    normalAcceleration: Math.max(0, PLAYFIELD_NORMAL_GRAVITY * current.surfaceNormalZ
+    normalAcceleration: Math.max(0, playfieldGravity.normal * current.surfaceNormalZ
       - accelerationX * current.surfaceNormalX
       - accelerationY * current.surfaceNormalY),
     tangentAcceleration,
@@ -1494,7 +1510,7 @@ function advanceBallHeight(ball: Ball, step: number) {
     ? -(1 - kicker.source.hitAccuracy) * ball.radius - 0.25
     : 0
   if (ball.z <= floorZ && ball.vz <= 0) return
-  ball.vz -= PLAYFIELD_NORMAL_GRAVITY * step
+  ball.vz -= playfieldGravity.normal * step
   ball.z += ball.vz * step
   if (ball.z >= floorZ) return
   ball.z = floorZ
@@ -1646,12 +1662,21 @@ export function VenuePinballPicker() {
         const relativeTilt = event.gamma - motionBaselineRef.current
         tiltRef.current = Math.max(-1, Math.min(1, relativeTilt / 24))
       }
-      // beta is ~90° when a portrait phone is upright, ~0° when it is
-      // face-up and flat, and ~-90° when it is inverted. Projecting earth
-      // gravity with sin(beta) gives exactly the requested 1g → 0g → -1g.
+      // beta is ~90° when a portrait phone is upright, ~0° when it is face-up
+      // and flat. Treat it as the table's pitch and split gravity by it, the
+      // same way the fixed 6-degree slope is split. Vertical therefore means
+      // planar = 1g and normal = 0: a frictionless free fall. cos is clamped
+      // at 0 so tipping past vertical never produces a negative normal force.
       if (event.beta != null) {
-        const projectedGravity = Math.sin(event.beta * Math.PI / 180)
-        verticalGravityRef.current = Math.abs(projectedGravity) < 0.025 ? 0 : projectedGravity
+        const pitch = event.beta * Math.PI / 180
+        verticalGravityRef.current = Math.sin(pitch)
+        const normal = Math.cos(pitch)
+        playfieldGravity.planar = PLAYFIELD_TOTAL_GRAVITY * Math.sin(pitch)
+        // Snap a near-vertical phone to exactly zero: Math.cos(PI/2) is 6e-17,
+        // not 0, which would keep applyVpxPlayfieldFriction's early-out from
+        // firing and leave a nominally frictionless fall running the friction
+        // solver every substep.
+        playfieldGravity.normal = normal > 0.001 ? PLAYFIELD_TOTAL_GRAVITY * normal : 0
       }
     }
 
@@ -1690,7 +1715,8 @@ export function VenuePinballPicker() {
           }
         }
       })
-      showMotionNotice('NUDGE')
+      // Two warnings, then the tilt: DANGER, DANGER, TILT.
+      showMotionNotice('DANGER')
     }
 
     window.addEventListener('deviceorientation', handleOrientation)
@@ -1700,6 +1726,8 @@ export function VenuePinballPicker() {
       window.removeEventListener('devicemotion', handleMotion)
       tiltRef.current = 0
       verticalGravityRef.current = 1
+      playfieldGravity.planar = PLAYFIELD_PLANAR_GRAVITY
+      playfieldGravity.normal = PLAYFIELD_NORMAL_GRAVITY
     }
   }, [motionEnabled, showMotionNotice, tilted])
 
@@ -1713,7 +1741,7 @@ export function VenuePinballPicker() {
     flipperPressedRef.current[side] = pressed
     // The 2-0-9 lanes are a rotating bank on the machine: every flip shifts
     // which of them are lit. Rotate on the press edge only, not on release.
-    if (pressed) {
+    if (pressed && !tiltedRef.current) {
       const seen = new Set<RoboCopRulesState>()
       ballsRef.current.forEach((ball) => {
         if (ball.finished || seen.has(ball.rules)) return
@@ -1776,11 +1804,12 @@ export function VenuePinballPicker() {
     ctx.clearRect(0, 0, WIDTH, HEIGHT)
 
     const flippers = getFlipperRails(
-      predictedFlipperAngle(flipperMoversRef.current.left, flipperPressedRef.current.left, runningRef.current),
-      predictedFlipperAngle(flipperMoversRef.current.right, flipperPressedRef.current.right, runningRef.current),
+      predictedFlipperAngle(flipperMoversRef.current.left, flipperHeld(flipperPressedRef.current, 'left', tiltedRef.current), runningRef.current),
+      predictedFlipperAngle(flipperMoversRef.current.right, flipperHeld(flipperPressedRef.current, 'right', tiltedRef.current), runningRef.current),
     )
     ;([flippers.left, flippers.right] as Rail[]).forEach((flipper, index) => {
-      drawFlipper(ctx, flipper, flipperPressedRef.current[index === 0 ? 'left' : 'right'] ? '#fff36a' : '#ffd92f')
+      const side = index === 0 ? 'left' : 'right'
+      drawFlipper(ctx, flipper, flipperHeld(flipperPressedRef.current, side, tiltedRef.current) ? '#fff36a' : '#ffd92f')
     })
 
     ballsRef.current.forEach((ball, index) => {
@@ -1924,19 +1953,32 @@ export function VenuePinballPicker() {
     clearRoulette()
     rulesPickerRef.current.phase = 'selected'
     setRulesPhase('selected')
-    const sequence = Array.from({ length: 10 }, () => machineKeys[Math.floor(Math.random() * machineKeys.length)])
+    // Never show the same backglass twice in a row, so the cycle always reads
+    // as moving.
+    const steps = Math.max(12, Math.min(22, machineKeys.length * 3))
+    const sequence: string[] = []
+    for (let index = 0; index < steps; index += 1) {
+      let pick = machineKeys[Math.floor(Math.random() * machineKeys.length)]
+      if (machineKeys.length > 1) {
+        while (pick === sequence[sequence.length - 1]) {
+          pick = machineKeys[Math.floor(Math.random() * machineKeys.length)]
+        }
+      }
+      sequence.push(pick)
+    }
+    // Ease out, so the wheel visibly slows into its answer instead of
+    // stopping dead.
+    let delay = 0
     sequence.forEach((machineKey, index) => {
       const timer = window.setTimeout(() => {
         setRouletteBackglass(machineKey)
-        if (index === sequence.length - 1) {
-          const finalTimer = window.setTimeout(() => {
-            setRouletteBackglass(null)
-            setRanking([machineKey])
-          }, 70)
-          rouletteTimersRef.current.push(finalTimer)
-        }
-      }, index * 55)
+        // The winner is the frame the wheel stops on. Hand it straight to
+        // `ranking` while the same image is still on screen -- blanking the
+        // overlay first is what made the pick flash away and come back.
+        if (index === sequence.length - 1) setRanking([machineKey])
+      }, delay)
       rouletteTimersRef.current.push(timer)
+      delay += 45 + ((index + 1) / steps) ** 2.4 * 300
     })
   }, [clearRoulette, machineKeys, stop])
 
@@ -2040,14 +2082,6 @@ export function VenuePinballPicker() {
   const consumeRulesPickerEvents = useCallback((ball: Ball, time: number) => {
     if (modeId !== 'rules-picker' || rulesPickerRef.current.phase === 'selected') return
 
-    if (rulesPickerRef.current.phase === 'standard-multiball') {
-      ball.rules.multiballActive = false
-      ball.rules.jackpotLit = false
-      ball.rules.jackpotCollected = false
-      ball.pendingRuleLock = false
-      ball.pendingJackpot = false
-    }
-
     const candidateSteps = ball.pendingCandidateSteps
     ball.pendingCandidateSteps = 0
     if (candidateSteps > 0 && ball.isRegularBall && rulesPickerRef.current.phase === 'normal') {
@@ -2121,8 +2155,11 @@ export function VenuePinballPicker() {
     if (!randomMachine) return true
 
     const sharedRules = rulesPickerRef.current.sharedRules
-    sharedRules.multiballActive = false
-    sharedRules.jackpotLit = false
+    // Three named balls go out, so this is a multiball proper: the jackpot is
+    // lit and collecting it picks the ball that shot it. Draining first still
+    // wins otherwise.
+    sharedRules.multiballActive = true
+    sharedRules.jackpotLit = true
     sharedRules.jackpotCollected = false
     rulesPickerRef.current.phase = 'standard-multiball'
     rulesPickerRef.current.awaitingPlunge = true
@@ -2153,8 +2190,8 @@ export function VenuePinballPicker() {
     const step = elapsed / substeps
     for (let substep = 0; substep < substeps; substep += 1) {
       const vpxStep = step / BALL_TO_VPX_VELOCITY_SCALE
-      stepVpxFlipperMover(flipperMoversRef.current.left, FLIPPER_PARAMETERS, flipperPressedRef.current.left, vpxStep)
-      stepVpxFlipperMover(flipperMoversRef.current.right, FLIPPER_PARAMETERS, flipperPressedRef.current.right, vpxStep)
+      stepVpxFlipperMover(flipperMoversRef.current.left, FLIPPER_PARAMETERS, flipperHeld(flipperPressedRef.current, 'left', tiltedRef.current), vpxStep)
+      stepVpxFlipperMover(flipperMoversRef.current.right, FLIPPER_PARAMETERS, flipperHeld(flipperPressedRef.current, 'right', tiltedRef.current), vpxStep)
       VPX_TABLE.gates.forEach((gate) => stepVpxGateMover(gateMoversRef.current[gate.name], gate, vpxStep))
       VPX_TABLE.spinners.forEach((spinner) => {
         const mover = spinnerMoversRef.current[spinner.name]
@@ -2183,7 +2220,7 @@ export function VenuePinballPicker() {
           ball.active = true
         }
         if (updateCapturedVpxKicker(ball, time)) return
-        const gravityAccelerationY = PLAYFIELD_PLANAR_GRAVITY * (motionEnabled ? verticalGravityRef.current : 1)
+        const gravityAccelerationY = playfieldGravity.planar
         const tiltAccelerationX = motionEnabled && !tiltedRef.current ? tiltRef.current * 0.035 : 0
         const gravityDeltaY = gravityAccelerationY * step
         const tiltDeltaX = tiltAccelerationX * step
@@ -2199,7 +2236,7 @@ export function VenuePinballPicker() {
           applyVpxPlayfieldFriction(ball, {
             deltaTime: vpxStep,
             friction: VPX_TABLE.playfield.friction,
-            normalAcceleration: PLAYFIELD_NORMAL_GRAVITY,
+            normalAcceleration: playfieldGravity.normal,
             planarAccelerationX: tiltAccelerationX,
             planarAccelerationY: gravityAccelerationY,
           })
@@ -2364,9 +2401,24 @@ export function VenuePinballPicker() {
   useEffect(() => {
     if (!winner) return
     setCelebration(winner)
-    const timer = window.setTimeout(() => setCelebration(null), 1000)
-    return () => window.clearTimeout(timer)
   }, [winner])
+
+  const dismissWinner = useCallback(() => {
+    setCelebration(null)
+    setRouletteBackglass(null)
+  }, [])
+
+  useEffect(() => {
+    if (!celebration) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        dismissWinner()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [celebration, dismissWinner])
 
   const plungerSpringTop = 52
   const plungerSpringBottom = 142 + plungerPull * 92
@@ -2380,7 +2432,14 @@ export function VenuePinballPicker() {
   return (
     <div className="container flex h-[calc(100dvh-3.5rem)] flex-col overflow-hidden px-2 py-2 pb-20 md:px-4 xl:block xl:h-auto xl:overflow-visible xl:px-6 xl:py-8">
       {(celebration || rouletteBackglass) && (
-        <div className="winner-backglass-overlay" aria-hidden="true">
+        <div
+          className={`winner-backglass-overlay ${celebration ? 'winner-backglass-overlay--winner' : 'winner-backglass-overlay--spinning'}`}
+          role={celebration ? 'button' : undefined}
+          tabIndex={celebration ? 0 : undefined}
+          aria-label={celebration ? `${display(celebration)} selected. Tap to continue.` : undefined}
+          aria-hidden={celebration ? undefined : true}
+          onClick={celebration ? dismissWinner : undefined}
+        >
           <Image
             src={getMachineImagePath(celebration || rouletteBackglass || '')}
             alt=""
@@ -2388,8 +2447,9 @@ export function VenuePinballPicker() {
             priority
             className="object-contain"
             unoptimized
-            onError={() => { setCelebration(null); setRouletteBackglass(null) }}
+            onError={dismissWinner}
           />
+          {celebration && <div className="winner-backglass-dismiss">Tap to continue</div>}
         </div>
       )}
       {plungerOpen && awaitingPlunge && (
@@ -2504,7 +2564,7 @@ export function VenuePinballPicker() {
               <VpxTableLamps className="absolute inset-0 h-full w-full" width={WIDTH} height={HEIGHT} getRulesStates={getActiveRulesStates} />
               <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="relative z-10 block h-full w-full" aria-label="Virtual pinball machine race" />
               {motionNotice && (
-                <div className={`pointer-events-none absolute z-20 rounded-lg border px-5 py-2 text-lg font-black tracking-[.18em] shadow-2xl ${motionNotice === 'TILT' ? 'border-red-400 bg-red-600 text-white' : 'border-neon-blue/60 bg-slate-950/90 text-neon-blue'}`}>
+                <div className={`pointer-events-none absolute z-20 rounded-lg border px-5 py-2 text-lg font-black tracking-[.18em] shadow-2xl ${motionNotice === 'TILT' ? 'border-red-400 bg-red-600 text-white' : motionNotice === 'DANGER' ? 'border-amber-300 bg-amber-500 text-slate-950' : 'border-neon-blue/60 bg-slate-950/90 text-neon-blue'}`}>
                   {motionNotice}
                 </div>
               )}
@@ -2587,7 +2647,7 @@ export function VenuePinballPicker() {
                 <CardTitle className="text-base">Rules picker</CardTitle>
                 <CardDescription>
                   {rulesPhase === 'multiball' ? 'Jackpot or drain chooses the named ball.'
-                    : rulesPhase === 'standard-multiball' ? 'Standard play: the first named ball to drain is chosen.'
+                    : rulesPhase === 'standard-multiball' ? 'Jackpot or first drain chooses the named ball.'
                       : awaitingPlunge ? 'Ball ready in the shooter lane.'
                         : 'Pops and spinner spins scroll the live choice.'}
                 </CardDescription>

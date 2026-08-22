@@ -92,36 +92,62 @@
   z-index: 100;
   background: rgb(2 6 23 / 92%);
   pointer-events: none;
-  animation: winner-backglass-reveal 1s ease-in-out both;
 }
 
-@keyframes winner-backglass-reveal {
+/* While the roulette is cycling the image swaps in place, so the overlay
+   itself must not re-animate on every frame. */
+.winner-backglass-overlay--spinning {
+  opacity: 1;
+}
+
+/* The winner lands and stays put until it is dismissed. */
+.winner-backglass-overlay--winner {
+  pointer-events: auto;
+  cursor: pointer;
+  animation: winner-backglass-land 420ms cubic-bezier(.16, .84, .44, 1) both;
+}
+
+@keyframes winner-backglass-land {
   0% {
-    opacity: 0;
-    transform: scale(0.12);
-  }
-  45% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  68% {
-    opacity: 1;
-    transform: scale(1);
+    transform: scale(1.09);
+    filter: brightness(1.7);
   }
   100% {
-    opacity: 0;
-    transform: scale(1.04);
+    transform: scale(1);
+    filter: brightness(1);
   }
+}
+
+.winner-backglass-dismiss {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  transform: translateX(-50%);
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(148 163 184 / 60%);
+  background: rgb(2 6 23 / 80%);
+  color: rgb(226 232 240);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  animation: winner-dismiss-pulse 1.6s ease-in-out 420ms infinite both;
+}
+
+@keyframes winner-dismiss-pulse {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .winner-backglass-overlay {
-    animation: winner-backglass-fade 1s linear both;
+  .winner-backglass-overlay--winner {
+    animation: none;
   }
 
-  @keyframes winner-backglass-fade {
-    0%, 100% { opacity: 0; }
-    30%, 65% { opacity: 1; }
+  .winner-backglass-dismiss {
+    animation: none;
+    opacity: 1;
   }
 }
 
