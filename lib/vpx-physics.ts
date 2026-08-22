@@ -22,6 +22,24 @@ export type VpxSurfaceContact = {
   frictionUsesCollisionImpulse?: boolean
 }
 
+export type VpxSpatialSurfaceContact = {
+  normalX: number
+  normalY: number
+  normalZ: number
+  elasticity: number
+  elasticityFalloff: number
+  friction: number
+}
+
+export type VpxKickerBevelContact = {
+  meshNormalX: number
+  meshNormalY: number
+  meshNormalZ: number
+  hitNormalX: number
+  hitNormalY: number
+  hitNormalZ: number
+}
+
 export type VpxContactResult = {
   normalSpeed: number
   normalImpulse: number
@@ -30,6 +48,40 @@ export type VpxContactResult = {
 export type VpxPlanarBall = VpxPhysicsBall & {
   x: number
   y: number
+}
+
+export type VpxPlayfieldBall = VpxPhysicsBall & {
+  angularVelocityX: number
+  angularVelocityY: number
+}
+
+export type VpxSpatialBall = VpxPlayfieldBall & {
+  vz: number
+}
+
+export type VpxPlayfieldFriction = {
+  deltaTime: number
+  friction: number
+  normalAcceleration: number
+  planarAccelerationX: number
+  planarAccelerationY: number
+}
+
+export type VpxSurfaceFriction = {
+  deltaTime: number
+  friction: number
+  normalAcceleration: number
+  tangentAcceleration: number
+  lateralAcceleration: number
+  tangentX: number
+  tangentY: number
+  tangentZ: number
+  lateralX: number
+  lateralY: number
+  lateralZ: number
+  normalX: number
+  normalY: number
+  normalZ: number
 }
 
 export type VpxLineSegment = {
@@ -91,6 +143,32 @@ export type VpxFlipperContact = {
   radiusY: number
   worldAngularDirection: 1 | -1
   ballVelocityScale?: number
+}
+
+export type VpxGateMover = {
+  angle: number
+  angularVelocity: number
+}
+
+export type VpxGateParameters = {
+  angleMin: number
+  angleMax: number
+  damping: number
+  gravityFactor: number
+  twoWay: boolean
+  height: number
+}
+
+export type VpxSpinnerMover = {
+  angle: number
+  angularVelocity: number
+}
+
+export type VpxSpinnerParameters = {
+  angleMin: number
+  angleMax: number
+  damping: number
+  height: number
 }
 
 const VPX_ONE_METER_IN_SPEED_UNITS = 18.53
@@ -263,6 +341,124 @@ export function resolveVpxStaticContact(ball: VpxPhysicsBall, contact: VpxStatic
   return { normalSpeed, normalImpulse } satisfies VpxContactResult
 }
 
+/**
+ * Port of HitBall::ApplyFriction for the implicit playfield plane.
+ *
+ * VPX evaluates the velocity of the ball at the bottom contact point, then
+ * applies a Coulomb-limited impulse to both linear and angular motion. This is
+ * what turns sliding into rolling; generic velocity damping cannot reproduce
+ * that transition and also removes energy from a ball that is already rolling.
+ */
+export function applyVpxPlayfieldFriction(
+  ball: VpxPlayfieldBall,
+  contact: VpxPlayfieldFriction,
+) {
+  const {
+    deltaTime,
+    friction,
+    normalAcceleration,
+    planarAccelerationX,
+    planarAccelerationY,
+  } = contact
+  if (deltaTime <= 0 || friction <= 0 || normalAcceleration <= 0) return false
+
+  const radius = ball.radius
+  const inertia = SOLID_SPHERE_INERTIA_FACTOR * radius * radius
+  // omega x (0, 0, -radius), added to center-of-mass velocity.
+  const surfaceVelocityX = ball.vx - ball.angularVelocityY * radius
+  const surfaceVelocityY = ball.vy + ball.angularVelocityX * radius
+  const slipSpeed = Math.hypot(surfaceVelocityX, surfaceVelocityY)
+
+  let tangentX: number
+  let tangentY: number
+  let numerator: number
+  if (slipSpeed < 1e-4) {
+    // VPX's static-friction branch uses acceleration at the contact point,
+    // including the centripetal term from the full angular velocity vector.
+    const surfaceAccelerationX = planarAccelerationX
+      - radius * ball.angularVelocity * ball.angularVelocityX
+    const surfaceAccelerationY = planarAccelerationY
+      - radius * ball.angularVelocity * ball.angularVelocityY
+    const accelerationLength = Math.hypot(surfaceAccelerationX, surfaceAccelerationY)
+    if (accelerationLength < 1e-6) return false
+    tangentX = surfaceAccelerationX / accelerationLength
+    tangentY = surfaceAccelerationY / accelerationLength
+    numerator = -accelerationLength
+  } else {
+    tangentX = surfaceVelocityX / slipSpeed
+    tangentY = surfaceVelocityY / slipSpeed
+    numerator = -slipSpeed
+  }
+
+  // Cross((0, 0, -radius), tangent).
+  const torqueDirectionX = radius * tangentY
+  const torqueDirectionY = -radius * tangentX
+  const effectiveMass = 1
+    + (torqueDirectionX * torqueDirectionX + torqueDirectionY * torqueDirectionY) / inertia
+  const maximumFrictionForce = friction * normalAcceleration
+  const frictionForce = Math.max(
+    -maximumFrictionForce,
+    Math.min(maximumFrictionForce, numerator / effectiveMass),
+  )
+  const impulse = deltaTime * frictionForce
+  if (!Number.isFinite(impulse)) return false
+
+  ball.vx += impulse * tangentX
+  ball.vy += impulse * tangentY
+  ball.angularVelocityX += impulse * torqueDirectionX / inertia
+  ball.angularVelocityY += impulse * torqueDirectionY / inertia
+  return true
+}
+
+/**
+ * Applies HitBall::ApplyFriction in an arbitrary 3D surface basis.
+ *
+ * VPX uses the same ball/contact calculation on ramps as it does on the
+ * playfield. Rotating the ball into ramp-local coordinates lets the exact
+ * Coulomb rolling/sliding transition above remain the single source of truth.
+ */
+export function applyVpxSurfaceFriction(
+  ball: VpxSpatialBall,
+  contact: VpxSurfaceFriction,
+) {
+  const localBall: VpxPlayfieldBall = {
+    vx: ball.vx * contact.tangentX + ball.vy * contact.tangentY + ball.vz * contact.tangentZ,
+    vy: ball.vx * contact.lateralX + ball.vy * contact.lateralY + ball.vz * contact.lateralZ,
+    angularVelocityX: ball.angularVelocityX * contact.tangentX
+      + ball.angularVelocityY * contact.tangentY
+      + ball.angularVelocity * contact.tangentZ,
+    angularVelocityY: ball.angularVelocityX * contact.lateralX
+      + ball.angularVelocityY * contact.lateralY
+      + ball.angularVelocity * contact.lateralZ,
+    angularVelocity: ball.angularVelocityX * contact.normalX
+      + ball.angularVelocityY * contact.normalY
+      + ball.angularVelocity * contact.normalZ,
+    radius: ball.radius,
+  }
+  const applied = applyVpxPlayfieldFriction(localBall, {
+    deltaTime: contact.deltaTime,
+    friction: contact.friction,
+    normalAcceleration: contact.normalAcceleration,
+    planarAccelerationX: contact.tangentAcceleration,
+    planarAccelerationY: contact.lateralAcceleration,
+  })
+  if (!applied) return false
+
+  ball.vx = localBall.vx * contact.tangentX + localBall.vy * contact.lateralX
+  ball.vy = localBall.vx * contact.tangentY + localBall.vy * contact.lateralY
+  ball.vz = localBall.vx * contact.tangentZ + localBall.vy * contact.lateralZ
+  ball.angularVelocityX = localBall.angularVelocityX * contact.tangentX
+    + localBall.angularVelocityY * contact.lateralX
+    + localBall.angularVelocity * contact.normalX
+  ball.angularVelocityY = localBall.angularVelocityX * contact.tangentY
+    + localBall.angularVelocityY * contact.lateralY
+    + localBall.angularVelocity * contact.normalY
+  ball.angularVelocity = localBall.angularVelocityX * contact.tangentZ
+    + localBall.angularVelocityY * contact.lateralZ
+    + localBall.angularVelocity * contact.normalZ
+  return true
+}
+
 export function createVpxFlipperMover(parameters: VpxFlipperParameters): VpxFlipperMover {
   return {
     angle: parameters.startAngle,
@@ -274,6 +470,80 @@ export function createVpxFlipperMover(parameters: VpxFlipperParameters): VpxFlip
     inertia: parameters.mass * parameters.length * parameters.length / 3,
     isInContact: false,
   }
+}
+
+export function createVpxGateMover(parameters: VpxGateParameters): VpxGateMover {
+  return { angle: parameters.angleMin, angularVelocity: 0 }
+}
+
+/** Port of GateMoverObject::UpdateVelocities/UpdateDisplacements. */
+export function stepVpxGateMover(
+  mover: VpxGateMover,
+  parameters: VpxGateParameters,
+  deltaTime: number,
+) {
+  mover.angularVelocity -= Math.sin(mover.angle) * parameters.gravityFactor * 0.1 * deltaTime
+  mover.angularVelocity *= Math.pow(parameters.damping, deltaTime)
+  mover.angle += mover.angularVelocity * deltaTime
+
+  if (mover.angle > parameters.angleMax) {
+    mover.angle = parameters.angleMax
+    if (mover.angularVelocity > 0) mover.angularVelocity *= -parameters.damping * 0.8
+  } else if (mover.angle < parameters.angleMin) {
+    mover.angle = parameters.angleMin
+    if (mover.angularVelocity < 0) mover.angularVelocity *= -parameters.damping * 0.8
+  }
+}
+
+/** Port of Gate::Collide. Gates react to the ball but do not add an artificial rigid-wall bounce. */
+export function hitVpxGateMover(
+  mover: VpxGateMover,
+  parameters: VpxGateParameters,
+  normalSpeed: number,
+  fromBack: boolean,
+) {
+  let angularVelocity = Math.abs(normalSpeed) / Math.max(parameters.height / 2, 1e-6)
+  if (fromBack && !parameters.twoWay) angularVelocity /= 50
+  mover.angularVelocity = fromBack ? -angularVelocity : angularVelocity
+}
+
+export function createVpxSpinnerMover(): VpxSpinnerMover {
+  return { angle: 0, angularVelocity: 0 }
+}
+
+/** Port of SpinnerMoverObject::UpdateVelocities/UpdateDisplacements. */
+export function stepVpxSpinnerMover(
+  mover: VpxSpinnerMover,
+  parameters: VpxSpinnerParameters,
+  deltaTime: number,
+) {
+  mover.angularVelocity -= Math.sin(mover.angle) * 0.025 * deltaTime
+  mover.angularVelocity *= Math.pow(parameters.damping, deltaTime)
+  mover.angle += mover.angularVelocity * deltaTime
+
+  if (parameters.angleMin === parameters.angleMax) {
+    const fullTurn = Math.PI * 2
+    mover.angle = ((mover.angle % fullTurn) + fullTurn) % fullTurn
+    return
+  }
+  if (mover.angle > parameters.angleMax) {
+    mover.angle = parameters.angleMax
+    if (mover.angularVelocity > 0) mover.angularVelocity *= -parameters.damping * 0.8
+  } else if (mover.angle < parameters.angleMin) {
+    mover.angle = parameters.angleMin
+    if (mover.angularVelocity < 0) mover.angularVelocity *= -parameters.damping * 0.8
+  }
+}
+
+/** Port of Spinner::Collide. The sign records which face of the blade was struck. */
+export function hitVpxSpinnerMover(
+  mover: VpxSpinnerMover,
+  parameters: VpxSpinnerParameters,
+  normalSpeed: number,
+  fromBack: boolean,
+) {
+  const angularVelocity = Math.abs(normalSpeed) / Math.max(parameters.height / 2, 1e-6) * parameters.damping
+  mover.angularVelocity = fromBack ? -angularVelocity : angularVelocity
 }
 
 /** Port of FlipperMoverObject::UpdateVelocities/UpdateDisplacements. */
@@ -390,6 +660,127 @@ export function resolveVpxSurfaceContact(ball: VpxPhysicsBall, contact: VpxSurfa
   ball.vy += tangentImpulse * tangentY
   ball.angularVelocity += radiusCrossTangent * tangentImpulse / ballInertia
   return { normalSpeed, normalImpulse } satisfies VpxContactResult
+}
+
+/** Direct 3D port of HitBall::Collide3DWall for a unit-mass solid sphere. */
+export function resolveVpxSpatialSurfaceContact(
+  ball: VpxSpatialBall,
+  contact: VpxSpatialSurfaceContact,
+) {
+  const normalSpeed = ball.vx * contact.normalX
+    + ball.vy * contact.normalY
+    + ball.vz * contact.normalZ
+  if (normalSpeed >= 0) return null
+
+  const effectiveElasticity = contact.elasticity
+    / (1 + contact.elasticityFalloff * Math.abs(normalSpeed) / VPX_ONE_METER_IN_SPEED_UNITS)
+  const normalImpulse = -(1 + effectiveElasticity) * normalSpeed
+  ball.vx += normalImpulse * contact.normalX
+  ball.vy += normalImpulse * contact.normalY
+  ball.vz += normalImpulse * contact.normalZ
+
+  const radiusX = -ball.radius * contact.normalX
+  const radiusY = -ball.radius * contact.normalY
+  const radiusZ = -ball.radius * contact.normalZ
+  const angularSurfaceX = ball.angularVelocityY * radiusZ - ball.angularVelocity * radiusY
+  const angularSurfaceY = ball.angularVelocity * radiusX - ball.angularVelocityX * radiusZ
+  const angularSurfaceZ = ball.angularVelocityX * radiusY - ball.angularVelocityY * radiusX
+  const surfaceVelocityX = ball.vx + angularSurfaceX
+  const surfaceVelocityY = ball.vy + angularSurfaceY
+  const surfaceVelocityZ = ball.vz + angularSurfaceZ
+  const postNormalSpeed = surfaceVelocityX * contact.normalX
+    + surfaceVelocityY * contact.normalY
+    + surfaceVelocityZ * contact.normalZ
+  let tangentX = surfaceVelocityX - postNormalSpeed * contact.normalX
+  let tangentY = surfaceVelocityY - postNormalSpeed * contact.normalY
+  let tangentZ = surfaceVelocityZ - postNormalSpeed * contact.normalZ
+  const tangentSpeed = Math.hypot(tangentX, tangentY, tangentZ)
+  if (tangentSpeed > 1e-6) {
+    tangentX /= tangentSpeed
+    tangentY /= tangentSpeed
+    tangentZ /= tangentSpeed
+    const crossX = radiusY * tangentZ - radiusZ * tangentY
+    const crossY = radiusZ * tangentX - radiusX * tangentZ
+    const crossZ = radiusX * tangentY - radiusY * tangentX
+    const inertia = SOLID_SPHERE_INERTIA_FACTOR * ball.radius * ball.radius
+    const effectiveMass = 1 + (crossX * crossX + crossY * crossY + crossZ * crossZ) / inertia
+    const maximumFrictionImpulse = contact.friction * Math.abs(normalSpeed)
+    const tangentImpulse = Math.max(
+      -maximumFrictionImpulse,
+      Math.min(maximumFrictionImpulse, -tangentSpeed / effectiveMass),
+    )
+    ball.vx += tangentImpulse * tangentX
+    ball.vy += tangentImpulse * tangentY
+    ball.vz += tangentImpulse * tangentZ
+    ball.angularVelocityX += tangentImpulse * crossX / inertia
+    ball.angularVelocityY += tangentImpulse * crossY / inertia
+    ball.angularVelocity += tangentImpulse * crossZ / inertia
+  }
+  return { normalSpeed, normalImpulse } satisfies VpxContactResult
+}
+
+/**
+ * Port of KickerHitCircle::DoChangeBallVelocity for a non-legacy kicker.
+ * VPX uses a normal from its kickerHitMesh for the reaction impulse and the
+ * circular hit-volume normal for the ball contact point/friction tangent.
+ */
+export function resolveVpxKickerBevelContact(
+  ball: VpxSpatialBall,
+  contact: VpxKickerBevelContact,
+) {
+  const surfacePointX = -ball.radius * contact.hitNormalX
+  const surfacePointY = -ball.radius * contact.hitNormalY
+  const surfacePointZ = -ball.radius * contact.hitNormalZ
+  const angularSurfaceX = ball.angularVelocityY * surfacePointZ - ball.angularVelocity * surfacePointY
+  const angularSurfaceY = ball.angularVelocity * surfacePointX - ball.angularVelocityX * surfacePointZ
+  const angularSurfaceZ = ball.angularVelocityX * surfacePointY - ball.angularVelocityY * surfacePointX
+  const surfaceVelocityX = ball.vx + angularSurfaceX
+  const surfaceVelocityY = ball.vy + angularSurfaceY
+  const surfaceVelocityZ = ball.vz + angularSurfaceZ
+
+  const meshSpeed = ball.vx * contact.meshNormalX
+    + ball.vy * contact.meshNormalY
+    + ball.vz * contact.meshNormalZ
+  const normalImpulse = -meshSpeed
+  const reactionImpulse = Math.abs(normalImpulse)
+
+  const hitNormalSurfaceSpeed = surfaceVelocityX * contact.hitNormalX
+    + surfaceVelocityY * contact.hitNormalY
+    + surfaceVelocityZ * contact.hitNormalZ
+  let tangentX = surfaceVelocityX - hitNormalSurfaceSpeed * contact.meshNormalX
+  let tangentY = surfaceVelocityY - hitNormalSurfaceSpeed * contact.meshNormalY
+  let tangentZ = surfaceVelocityZ - hitNormalSurfaceSpeed * contact.meshNormalZ
+
+  ball.vx += normalImpulse * contact.meshNormalX
+  ball.vy += normalImpulse * contact.meshNormalY
+  ball.vz += normalImpulse * contact.meshNormalZ
+
+  const tangentLength = Math.hypot(tangentX, tangentY, tangentZ)
+  if (tangentLength > 1e-6) {
+    tangentX /= tangentLength
+    tangentY /= tangentLength
+    tangentZ /= tangentLength
+    const tangentSpeed = surfaceVelocityX * tangentX
+      + surfaceVelocityY * tangentY
+      + surfaceVelocityZ * tangentZ
+    const crossX = surfacePointY * tangentZ - surfacePointZ * tangentY
+    const crossY = surfacePointZ * tangentX - surfacePointX * tangentZ
+    const crossZ = surfacePointX * tangentY - surfacePointY * tangentX
+    const inertia = SOLID_SPHERE_INERTIA_FACTOR * ball.radius * ball.radius
+    const effectiveMass = 1 + (crossX * crossX + crossY * crossY + crossZ * crossZ) / inertia
+    const maximumFrictionImpulse = 0.3 * reactionImpulse
+    const tangentImpulse = Math.max(
+      -maximumFrictionImpulse,
+      Math.min(maximumFrictionImpulse, -tangentSpeed / effectiveMass),
+    )
+    ball.vx += tangentImpulse * tangentX
+    ball.vy += tangentImpulse * tangentY
+    ball.vz += tangentImpulse * tangentZ
+    ball.angularVelocityX += tangentImpulse * crossX / inertia
+    ball.angularVelocityY += tangentImpulse * crossY / inertia
+    ball.angularVelocity += tangentImpulse * crossZ / inertia
+  }
+  return { normalSpeed: meshSpeed, normalImpulse: reactionImpulse } satisfies VpxContactResult
 }
 
 /** Port of HitFlipper::Collide, including flipper recoil and tangential impulse. */

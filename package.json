@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-thumbnails": "node scripts/generate-thumbnails.js"
+    "generate-thumbnails": "node scripts/generate-thumbnails.js",
+    "bake-vpx-table": "node scripts/bake-vpx-table.mjs"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",

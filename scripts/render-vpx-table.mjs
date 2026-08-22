@@ -1,7 +1,20 @@
+// Bakes the VPX table's fixed top-down view to a still image.
+//
+// The picker no longer loads the 30 MB glTF at runtime; it draws this image
+// and overlays the animated lamp inserts in 2D (components/vpx-table-lamps.tsx,
+// scripts/extract-vpx-lamps.mjs). That means this bake IS the table now, so it
+// has to reproduce what components/vpx-table-scene.tsx rendered -- including
+// the depth and render-order handling VPX's coplanar layers need. An earlier
+// version of this script flattened every material to MeshBasicMaterial and
+// silently lost every ramp, plastic, slingshot and pop bumper.
+//
+// Usage: node scripts/render-vpx-table.mjs <table.glb> <output.webp>
+// Then open the printed URL in a browser with WebGL; it POSTs the result back.
+
 import { createReadStream, createWriteStream } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { createServer } from 'node:http'
-import { resolve } from 'node:path'
+import { extname, resolve } from 'node:path'
 
 const [, , glbArgument, outputArgument] = process.argv
 if (!glbArgument || !outputArgument) {
@@ -19,22 +32,24 @@ const page = String.raw`<!doctype html>
   <meta charset="utf-8">
   <title>VPX table renderer</title>
   <script type="importmap">
-    {"imports":{"three":"https://unpkg.com/three@0.180.0/build/three.module.js"}}
+    {"imports":{"three":"/three/build/three.module.js","three/":"/three/"}}
   </script>
 </head>
-<body style="margin:0;background:#000"><div id="status">loading</div>
+<body style="margin:0;background:#000"><div id="status" style="position:fixed;top:0;left:0;color:#0f0;font:14px monospace;z-index:9">loading</div>
 <script type="module">
   import * as THREE from 'three'
-  import { GLTFLoader } from 'https://unpkg.com/three@0.180.0/examples/jsm/loaders/GLTFLoader.js'
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
+  const status = document.querySelector('#status')
   const width = 1536
   const height = Math.round(width * 2256 / 952)
   const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true })
   renderer.setPixelRatio(1)
   renderer.setSize(width, height, false)
   renderer.outputColorSpace = THREE.SRGBColorSpace
-  renderer.setClearColor(0x000000, 1)
-  document.body.replaceChildren(renderer.domElement, document.querySelector('#status'))
+  // Match the picker's backdrop so the baked edges blend into the card.
+  renderer.setClearColor(0x020617, 1)
+  document.body.replaceChildren(renderer.domElement, status)
 
   const scene = new THREE.Scene()
   // vpxtool's glTF export maps VPX x/y/z to glTF x/z/y. Look straight down
@@ -45,46 +60,115 @@ const page = String.raw`<!doctype html>
   camera.lookAt(476, 0, 1128)
   camera.updateProjectionMatrix()
 
-  const basicMaterial = (source) => new THREE.MeshBasicMaterial({
-    color: source.color ?? new THREE.Color(0xffffff),
-    map: source.map ?? null,
-    alphaMap: source.alphaMap ?? null,
-    transparent: source.transparent || source.opacity < 1,
-    opacity: source.opacity,
-    alphaTest: source.alphaTest,
-    side: THREE.DoubleSide,
-    depthTest: true,
-    depthWrite: source.opacity >= 1,
-  })
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x334155, 2.4))
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.8)
+  keyLight.position.set(250, 1800, 700)
+  scene.add(keyLight)
+
+  // --- kept in sync with components/vpx-table-scene.tsx ---------------------
+  const ARTWORK_PATTERN = /(?:logo|decal|texture|targett1round|image_spinner|image_emkicker|deflipper|flipper-[lr]2|ramp[_ ]floor|left ramp|bridge-sidepart|smallwalldecal|scoop_decal|ed209map|gunbulbmap)/i
+
+  function configureVisualLayers(mesh) {
+    const sourceMaterials = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
+    const materialNames = sourceMaterials.map((material) => material.name).join(' ')
+    const artwork = ARTWORK_PATTERN.test(mesh.name + ' ' + materialNames)
+    const playfieldArtwork = mesh.name === 'playfield_mesh' || /(?:^|\s)Playfield_pf(?:\s|$)/i.test(materialNames)
+
+    const materials = sourceMaterials.map((sourceMaterial) => {
+      const material = sourceMaterial.clone()
+      if (material.transparent) material.depthWrite = false
+      if (artwork) {
+        material.depthWrite = false
+        material.polygonOffset = true
+        material.polygonOffsetFactor = -4
+        material.polygonOffsetUnits = -4
+        material.depthTest = false
+      }
+      if (playfieldArtwork) {
+        material.transparent = false
+        material.opacity = 1
+        material.depthWrite = true
+        material.depthTest = true
+        material.polygonOffset = true
+        material.polygonOffsetFactor = -8
+        material.polygonOffsetUnits = -8
+      }
+      return material
+    })
+
+    mesh.material = Array.isArray(mesh.material) ? materials : materials[0]
+    if (artwork) mesh.renderOrder = 500
+    else if (playfieldArtwork) mesh.renderOrder = 100
+    else if (materials.some((material) => material.transparent)) mesh.renderOrder = 200
+  }
+
+  // Inserts are baked dark; the runtime overlay draws the lit state.
+  function darkenLampInsert(mesh) {
+    const materials = (Array.isArray(mesh.material) ? mesh.material : [mesh.material])
+      .filter((material) => material.isMeshStandardMaterial)
+    materials.forEach((material) => {
+      material.transparent = true
+      material.opacity = 0
+      material.depthWrite = false
+      material.emissiveIntensity = 0
+    })
+    mesh.renderOrder = 400
+  }
+  // -------------------------------------------------------------------------
+
+  // Bulbs and flashers are drawn by the runtime lamp overlay instead. The
+  // *Kicker meshes are the hole cylinders VPX never draws during play, and the
+  // Drain* meshes sit under the apron where the ball disappears -- DrainPlate
+  // in particular is a flat 46.7-unit disc that baked as an opaque grey circle
+  // over the ROBOCOP apron logo. The other *Plate meshes are the visible scoop
+  // plates out on the playfield and are kept.
+  const HIDDEN = /(?:light|bulb|flasher)|kicker$|^drain/i
 
   new GLTFLoader().load('/table.glb', async ({ scene: table }) => {
+    let meshes = 0
+    let hidden = 0
     table.traverse((object) => {
+      const insert = object.isMesh && /_insert$/i.test(object.name)
+      if (!insert && HIDDEN.test(object.name)) { object.visible = false; hidden += 1 }
       if (!object.isMesh) return
-      object.material = Array.isArray(object.material)
-        ? object.material.map(basicMaterial)
-        : basicMaterial(object.material)
+      meshes += 1
+      configureVisualLayers(object)
+      if (insert) darkenLampInsert(object)
     })
     scene.add(table)
+    table.updateMatrixWorld(true)
+    status.textContent = 'rendering ' + meshes + ' meshes (' + hidden + ' hidden)'
+
+    // Render twice so any texture that only finished decoding during the first
+    // pass is present in the second. Deliberately NOT gated on
+    // requestAnimationFrame: rAF never fires in a backgrounded tab, which
+    // silently hangs the bake forever.
     renderer.render(scene, camera)
-    await new Promise((resolveFrame) => requestAnimationFrame(resolveFrame))
+    await new Promise((done) => setTimeout(done, 250))
     renderer.render(scene, camera)
-    const blob = await new Promise((resolveBlob) => renderer.domElement.toBlob(resolveBlob, 'image/webp', 0.94))
+
+    const blob = await new Promise((toBlob) => renderer.domElement.toBlob(toBlob, 'image/webp', 0.94))
     const response = await fetch('/save', { method: 'POST', body: blob })
-    document.querySelector('#status').textContent = response.ok ? 'saved' : 'failed'
-  }, undefined, (error) => {
-    document.querySelector('#status').textContent = 'failed: ' + error.message
+    status.textContent = response.ok ? 'saved ' + meshes + ' meshes' : 'failed'
+  }, (progress) => {
+    status.textContent = 'loading ' + Math.round(progress.loaded / 1048576) + 'MB'
+  }, (error) => {
+    status.textContent = 'failed: ' + error.message
   })
 </script>
 </body>
 </html>`
 
+const MIME = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json' }
+
 const server = createServer((request, response) => {
-  if (request.url === '/') {
+  const url = decodeURIComponent((request.url ?? '').split('?')[0])
+  if (url === '/') {
     response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
     response.end(page)
     return
   }
-  if (request.url === '/table.glb') {
+  if (url === '/table.glb') {
     response.writeHead(200, {
       'content-type': 'model/gltf-binary',
       'content-length': glbSize,
@@ -93,7 +177,16 @@ const server = createServer((request, response) => {
     createReadStream(glbPath).pipe(response)
     return
   }
-  if (request.url === '/save' && request.method === 'POST') {
+  // Serve three from node_modules so the bake does not depend on a CDN.
+  if (url.startsWith('/three/') && !url.includes('..')) {
+    const file = resolve('node_modules/three', url.slice('/three/'.length))
+    response.writeHead(200, { 'content-type': MIME[extname(file)] ?? 'application/octet-stream' })
+    createReadStream(file).on('error', () => {
+      response.destroy()
+    }).pipe(response)
+    return
+  }
+  if (url === '/save' && request.method === 'POST') {
     const output = createWriteStream(outputPath)
     request.pipe(output)
     output.on('finish', () => {

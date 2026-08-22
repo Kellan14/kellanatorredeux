@@ -30,8 +30,80 @@ export type VpxRamp = {
   points: readonly VpxPoint[]
   heightBottom: number
   heightTop: number
-  width: number
+  widthBottom: number
+  widthTop: number
+  friction: number
+  elasticity: number
+  leftWallHeight: number
+  rightWallHeight: number
   reverse?: boolean
+}
+
+export type VpxRampTrack = {
+  name: string
+  smooth: boolean
+  parts: readonly VpxRamp[]
+}
+
+export type VpxWireGuide = {
+  name: string
+  points: readonly VpxPoint[]
+  height: number
+  diameter: number
+  friction: number
+  elasticity: number
+}
+
+export type VpxGate = {
+  name: string
+  center: VpxPoint
+  length: number
+  height: number
+  rotation: number
+  elasticity: number
+  friction: number
+  damping: number
+  gravityFactor: number
+  angleMin: number
+  angleMax: number
+  twoWay: boolean
+}
+
+export type VpxSpinner = {
+  name: string
+  center: VpxPoint
+  length: number
+  height: number
+  rotation: number
+  elasticity: number
+  damping: number
+  angleMin: number
+  angleMax: number
+}
+
+export type VpxKicker = {
+  name: string
+  center: VpxPoint
+  radius: number
+  hitAccuracy: number
+  hitHeight: number
+  legacy: boolean
+  ejectAngle: number
+  ejectSpeed: number
+  ejectAngleVariance?: number
+  ejectSpeedVariance?: number
+  ejectCenter?: VpxPoint
+  holdMilliseconds: number
+}
+
+export type VpxRuleTrigger = {
+  name: string
+  switchNumber: number
+  center: VpxPoint
+  radius: number
+  hitHeight: number
+  points?: readonly VpxPoint[]
+  rampTrack?: string
 }
 
 export const VPX_TABLE = {
@@ -39,8 +111,57 @@ export const VPX_TABLE = {
   modelPath: '/vpx/robocop/Robocop%20(Data%20East%201989)_drakkon(mod_1.2).glb',
   playableWidth: 952,
   height: 2256,
-  playfield: { gravity: 1.7629848, friction: 0.15, elasticity: 0.25, elasticityFalloff: 0, scatter: 2 },
+  // GameData GAVT/SLOP/FRCT/ELAS/ELFA/SCAT, verified by scripts/audit-vpx-physics.mjs.
+  playfield: { gravity: 1.7629848, slope: 6, friction: 0.15, elasticity: 0.25, elasticityFalloff: 0, scatter: 2 },
   drain: { center: [448, 2156], radius: 25 },
+  // Mechanical objects and ROM-scripted eject settings copied from the
+  // RoboCop VPX. Angles are VPX angles: 0 degrees points toward the top.
+  // Plunger item from the VPX (VCEN/WDTH/HPSL/SPDF/MEST/MPRK). center is the
+  // fully-pulled-back marker; the rod fires up-table (-y). The tip at rest is
+  // center.y - stroke * (1 - parkPosition), and the ball parks one ball radius
+  // up-lane of the tip.
+  plunger: { center: [908.9375, 2204.875], width: 25, stroke: 180, speedFire: 110, mechStrength: 85, parkPosition: 0.16666667 },
+  // Shooter lane clear width, taken from the walls that bound it: Wall212's
+  // right edge and Wall44's left edge.
+  shooterLane: { left: 879.4, right: 933.3, top: 1940 },
+  gates: [
+    { name: 'BallReleaseGate', center: [878.96875, 1962.3594], length: 100, height: 50, rotation: 90, elasticity: 0.7, friction: 0.04, damping: 0.985, gravityFactor: 0.25, angleMin: 0, angleMax: Math.PI / 2, twoWay: false },
+    { name: 'Gate1', center: [332, 211.75], length: 100, height: 65, rotation: 123, elasticity: 0.3, friction: 0.02, damping: 0.985, gravityFactor: 0.25, angleMin: 0, angleMax: Math.PI / 2, twoWay: false },
+    { name: 'Gate2', center: [317, 316.25], length: 100, height: 65, rotation: 73, elasticity: 0.3, friction: 0.02, damping: 0.985, gravityFactor: 0.25, angleMin: 0, angleMax: Math.PI / 2, twoWay: false },
+  ] as const satisfies readonly VpxGate[],
+  spinners: [
+    { name: 'sw44', center: [218.5, 777.75], length: 90, height: 65, rotation: -17, elasticity: 0.3, damping: 0.99, angleMin: 0, angleMax: 0 },
+  ] as const satisfies readonly VpxSpinner[],
+  // Script LR1_Hit: a ball reaching the foot of the upper left ramp is
+  // destroyed at the LR1 trigger (60.4, 586.2) and recreated at the LR2
+  // helper kicker (64, 617) with `LR2.Kick 0, 10`, faking the bounce off the
+  // end of the wireform. LR2 is a TYPE=0 kicker -- no physical hole -- so it
+  // must not capture balls rolling past it on the playfield.
+  rampHandoffs: [
+    { rampTrack: 'Upper left ramp', atTrackStart: true, center: [64, 617], ejectAngle: 0, ejectSpeed: 10 },
+  ],
+  // The drain remains the race finish and is intentionally not a capturing
+  // kicker. Rapid-fire balls temporarily bypass BallRelease at game start.
+  kickers: [
+    { name: 'BallRelease', center: [837.125, 1973.625], radius: 25, hitAccuracy: 0.7, hitHeight: 40, legacy: true, ejectAngle: 80, ejectSpeed: 6, holdMilliseconds: 180 },
+    { name: 'sw28', center: [62.75, 447.625], radius: 27, hitAccuracy: 0.7, hitHeight: 40, legacy: false, ejectAngle: 0, ejectSpeed: 22, holdMilliseconds: 520 },
+    { name: 'sw29', center: [300.75, 201.125], radius: 30, hitAccuracy: 0.7, hitHeight: 40, legacy: false, ejectAngle: 115, ejectSpeed: 4, ejectAngleVariance: 1, ejectSpeedVariance: 1, holdMilliseconds: 620 },
+    { name: 'sw30', center: [849.75, 222.125], radius: 27, hitAccuracy: 0.7, hitHeight: 40, legacy: false, ejectAngle: 225, ejectSpeed: 4, ejectAngleVariance: 1, ejectSpeedVariance: 1, holdMilliseconds: 620 },
+    { name: 'sw45', center: [95, 906.5], radius: 25, hitAccuracy: 0.7, hitHeight: 40, legacy: true, ejectCenter: [91.5, 903.25], ejectAngle: 140, ejectSpeed: 10, holdMilliseconds: 760 },
+  ] as const satisfies readonly VpxKicker[],
+  // Non-rigid switch volumes from the VPX geometry, numbered against the
+  // machine's documented switch matrix rather than inferred display names.
+  ruleTriggers: [
+    { name: 'Left outlane', switchNumber: 17, center: [58.5, 1831], radius: 25, hitHeight: 50, points: [[37.305546, 1782.7235], [36.870365, 1864.4612], [78.35185, 1864.4612], [78.35184, 1782.7236]] },
+    { name: 'Left return lane', switchNumber: 18, center: [128, 1673.5], radius: 25, hitHeight: 50, points: [[119.25, 1627.0015], [120, 1719.9985], [136, 1719.9985], [136, 1627.0015]] },
+    { name: 'Right outlane', switchNumber: 19, center: [821.75, 1727.875], radius: 25, hitHeight: 50, points: [[813.75, 1681.3765], [813.75, 1774.3735], [829.75, 1774.3735], [829.75, 1681.3765]] },
+    { name: 'Right return lane', switchNumber: 20, center: [758, 1669.5], radius: 25, hitHeight: 50, points: [[750, 1623.0015], [750, 1715.9985], [766, 1715.9985], [766, 1623.0015]] },
+    { name: '2 lane', switchNumber: 25, center: [388.75, 410.75], radius: 25, hitHeight: 50, points: [[380.75, 364.25146], [380.75, 457.24854], [396.75, 457.24854], [396.75, 364.25146]] },
+    { name: '0 lane', switchNumber: 26, center: [490.75, 401.75], radius: 25, hitHeight: 50, points: [[482.75, 355.25146], [482.75, 448.24854], [498.75, 448.24854], [498.75, 355.25146]] },
+    { name: '9 lane', switchNumber: 27, center: [591.25, 397.25], radius: 25, hitHeight: 50, points: [[583.25, 350.75146], [583.25, 443.74854], [599.25, 443.74854], [599.25, 350.75146]] },
+    { name: 'Left ramp', switchNumber: 31, center: [107, 372.5], radius: 35, hitHeight: 50, rampTrack: 'Upper left ramp' },
+    { name: 'Right ramp', switchNumber: 32, center: [576, 209], radius: 35, hitHeight: 50, rampTrack: 'Right jump ramp' },
+  ] as const satisfies readonly VpxRuleTrigger[],
   // Every ground-level collidable VPX wall whose vertical span intersects a
   // standard ball. This covers the full playfield rather than only its apron.
   walls: [
@@ -374,8 +495,8 @@ export const VPX_TABLE = {
     },
   ] as const satisfies readonly VpxWall[],
   slingFaces: [
-    { name: 'LeftSlingShot', from: [265.54022, 1761.9426], to: [189.5995, 1539.9569], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, force: 70 },
-    { name: 'RightSlingShot', from: [692.2999, 1532.1024], to: [623.92847, 1753.572], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, force: 65 },
+    { name: 'LeftSlingShot', from: [265.54022, 1761.9426], to: [189.5995, 1539.9569], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, force: 70, threshold: 2.5 },
+    { name: 'RightSlingShot', from: [692.2999, 1532.1024], to: [623.92847, 1753.572], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, force: 65, threshold: 2.5 },
   ] as const,
   bumpers: [
     { name: 'Bumper1', center: [425, 621.5], radius: 45, force: 10, scatter: 2, threshold: 2 },
@@ -391,20 +512,68 @@ export const VPX_TABLE = {
     { name: 'sw41', from: [414.7401481527853, 919.3282438960564], to: [450.08615184721464, 935.8103561039436], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false },
     { name: 'sw42', from: [466.01574815278536, 944.5179438960564], to: [501.3617518472147, 961.0000561039436], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false },
     { name: 'sw43', from: [517.4496981527853, 968.6272938960564], to: [552.7957018472147, 985.1094061039436], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false },
-    { name: 'BallReleaseGate', from: [878.96875, 1912.3594], to: [878.96875, 2012.3594], elasticity: 0.7, elasticityFalloff: 0, friction: 0.04, scatter: 0, oneWay: true },
-    { name: 'Gate1', from: [359.23195175075136, 169.8164716027288], to: [304.76804824924864, 253.6835283972712], elasticity: 0.3, elasticityFalloff: 0, friction: 0.02, scatter: 0, oneWay: true },
-    { name: 'Gate2', from: [302.3814147638632, 268.43476220184823], to: [331.6185852361368, 364.06523779815177], elasticity: 0.3, elasticityFalloff: 0, friction: 0.02, scatter: 0, oneWay: true },
   ] as const satisfies readonly VpxSegment[],
-  // Connected shooter-lane wireform, ordered in the direction of launch.
-  // Ramp10 is reversed because its VPX control points run from exit to entry.
-  shooterWireform: [
-    { name: 'Ramp93', reverse: false, points: [[904.25, 1571.125], [904.25, 1152.375]], heightBottom: 0, heightTop: 70, width: 60 },
-    { name: 'Ramp91', reverse: false, points: [[904.25, 1152.25], [904.25, 159.25]], heightBottom: 70, heightTop: 70, width: 60 },
+  // Every collidable flat ramp in the original table. VPX keeps these
+  // surfaces invisible and renders decorative plastics/primitives above them.
+  // Parts are connected in traversal order; reverse swaps both endpoints and
+  // the corresponding top/bottom properties.
+  rampTracks: [
     {
-      name: 'Ramp10', reverse: true, heightBottom: 55, heightTop: 70, width: 60,
-      points: [[516.75, 210.625], [477.24423, 192.12956], [445.66656, 154.66643], [437.61816, 100.34891], [441.91522, 79.68387], [450.97348, 61.872993], [466.92252, 48.357872], [485.21844, 38.607098], [521.03125, 34.177017], [800.62573, 36.449387], [862.63727, 42.20411], [895.19073, 73.38744], [904.2679, 124.120544], [904.66864, 153.37894], [904.75, 160.875]],
+      name: 'Shooter wireform', smooth: false,
+      parts: [
+        { name: 'Ramp93', points: [[904.25, 1571.125], [904.25, 1152.375]], heightBottom: 0, heightTop: 70, widthBottom: 60, widthTop: 60, friction: 0.15, elasticity: 0.4, leftWallHeight: 50, rightWallHeight: 50 },
+        { name: 'Ramp91', points: [[904.25, 1152.25], [904.25, 159.25]], heightBottom: 70, heightTop: 70, widthBottom: 60, widthTop: 60, friction: 0.15, elasticity: 0.4, leftWallHeight: 50, rightWallHeight: 50 },
+        {
+          name: 'Ramp10', reverse: true, heightBottom: 55, heightTop: 70, widthBottom: 60, widthTop: 60,
+          friction: 0.15, elasticity: 0.4, leftWallHeight: 60, rightWallHeight: 60,
+          points: [[516.75, 210.625], [477.24423, 192.12956], [445.66656, 154.66643], [437.61816, 100.34891], [441.91522, 79.68387], [450.97348, 61.872993], [466.92252, 48.357872], [485.21844, 38.607098], [521.03125, 34.177017], [800.62573, 36.449387], [862.63727, 42.20411], [895.19073, 73.38744], [904.2679, 124.120544], [904.66864, 153.37894], [904.75, 160.875]],
+        },
+      ],
     },
-  ] as const satisfies readonly VpxRamp[],
+    {
+      name: 'Right jump ramp', smooth: true,
+      parts: [
+        {
+          name: 'Ramp11', points: [[741, 831], [769.0935, 759.7157], [789.48865, 689.87427], [804.3565, 614.8424]],
+          heightBottom: 0, heightTop: 85, widthBottom: 120, widthTop: 120,
+          friction: 0.015, elasticity: 0.5, leftWallHeight: 200, rightWallHeight: 200,
+        },
+        {
+          name: 'Ramp12', points: [[804.3565, 614.8424], [808.26294, 591.0014], [814.5547, 534.8799], [812.723, 433.03574], [795.9489, 326.6045], [763.43506, 275.88666], [691.3583, 228.35721], [620.53784, 211.85242], [561.82135, 211.46967], [516.9247, 219.41049], [447.5, 244]],
+          heightBottom: 85, heightTop: 120, widthBottom: 120, widthTop: 80,
+          friction: 0.015, elasticity: 0.5, leftWallHeight: 200, rightWallHeight: 200,
+        },
+      ],
+    },
+    {
+      name: 'Left return ramp', smooth: true,
+      parts: [{
+        name: 'Ramp13', points: [[127.75, 1571], [125.92115, 1469.6392], [117.69702, 1346.798], [74.87393, 1205.7789], [145.12193, 1117.1334], [174.15926, 1063.2694], [169.82646, 1011.8103], [116, 935]],
+        heightBottom: 71, heightTop: 71, widthBottom: 55, widthTop: 55,
+        friction: 0.15, elasticity: 0.4, leftWallHeight: 50, rightWallHeight: 50,
+      }],
+    },
+    {
+      name: 'Upper left ramp', smooth: true,
+      parts: [{
+        name: 'Ramp14', points: [[59, 589], [58, 498], [60.38401, 450.1156], [75.99831, 405.0149], [108.58286, 373.7809], [149.6301, 351.5504], [225.98468, 320.77673], [322.25, 289.5]],
+        heightBottom: 70, heightTop: 100, widthBottom: 80, widthTop: 125,
+        friction: 0.015, elasticity: 0.5, leftWallHeight: 50, rightWallHeight: 50,
+      }],
+    },
+  ] as const satisfies readonly VpxRampTrack[],
+  // VPX one-wire ramps are not rolling surfaces. They are elevated metal
+  // guide rails, so they remain ordinary cylindrical collision objects.
+  wireGuides: [
+    { name: 'Ramp1', points: [[788.6825, 1702.3744], [788.8175, 1570.1256]], height: 27, diameter: 6, friction: 0.2, elasticity: 0.4 },
+    { name: 'Ramp2', points: [[269.9325, 745.1244], [209.36198, 478.10956], [233.74432, 406.2768], [273.99005, 375.37067], [317.3175, 360.6256]], height: 27, diameter: 6, friction: 0.2, elasticity: 0.4 },
+    { name: 'Ramp3', points: [[838.9325, 1272.9994], [944.5675, 981.0006]], height: 27, diameter: 6, friction: 0.2, elasticity: 0.4 },
+    { name: 'Ramp4', points: [[664.6825, 404.9994], [809.8175, 208.00061]], height: 27, diameter: 6, friction: 0.2, elasticity: 0.4 },
+    { name: 'Ramp5', points: [[804.9325, 864.8744], [855.0675, 694.3756]], height: 27, diameter: 6, friction: 0.2, elasticity: 0.4 },
+    { name: 'Ramp6', points: [[713.6825, 469.8744], [831.3175, 313.1256]], height: 27, diameter: 6, friction: 0.2, elasticity: 0.4 },
+    { name: 'Ramp7', points: [[857.6825, 683.3744], [864.3175, 399.8756]], height: 27, diameter: 6, friction: 0.2, elasticity: 0.4 },
+    { name: 'Ramp8', points: [[863.1825, 389.3744], [839.3175, 315.3756]], height: 27, diameter: 6, friction: 0.2, elasticity: 0.4 },
+  ] as const satisfies readonly VpxWireGuide[],
   flippers: {
     left: { center: [281.5, 1922.75], baseRadius: 21.5, endRadius: 11.5, length: 122, rubberThickness: 7, startAngle: 121, endAngle: 70, returnStrength: 0.065, mass: 1, strength: 3100, elasticity: 0.88, elasticityFalloff: 0.15, friction: 0.9, rampUp: 2.5, scatter: 0, torqueDamping: 0.275, torqueDampingAngle: 6 },
     right: { center: [597.5, 1923], baseRadius: 21.5, endRadius: 11.5, length: 122, rubberThickness: 7, startAngle: -121, endAngle: -70, returnStrength: 0.065, mass: 1, strength: 3100, elasticity: 0.88, elasticityFalloff: 0.15, friction: 0.9, rampUp: 2.5, scatter: 0, torqueDamping: 0.275, torqueDampingAngle: 6 },
