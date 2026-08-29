@@ -6,13 +6,23 @@ import { fetchMNPData } from '@/lib/fetch-mnp-data';
 import { supabase, fetchAllRecords } from '@/lib/supabase';
 import { standardizeVenueName } from '@/lib/venue-mappings';
 import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists';
+import bundledVenues from '@/mnp-data-archive/venues.json';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const season = searchParams.get('season');
 
-    const venuesObj = await fetchMNPData('venues.json');
+    // Local development, venue play, and the picker must not become unusable
+    // just because GitHub is unavailable. The repository snapshot is the same
+    // shape as the remote archive and is refreshed with the rest of MNP data.
+    let venuesObj: typeof bundledVenues
+    try {
+      venuesObj = await fetchMNPData('venues.json') as typeof bundledVenues
+    } catch (error) {
+      console.warn('Remote venues unavailable; using bundled MNP snapshot:', error)
+      venuesObj = bundledVenues
+    }
 
     // Convert to array and sort by name
     const venueArray = Object.values(venuesObj)

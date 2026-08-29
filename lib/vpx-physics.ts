@@ -3,6 +3,8 @@
 // https://github.com/vpinball/vpinball/blob/master/src/physics/hitflipper.cpp
 // https://github.com/vpinball/vpinball/blob/master/src/physics/hitball.cpp
 // https://github.com/vpinball/vpinball/blob/master/src/physics/collide.cpp
+// https://github.com/vpinball/vpinball/blob/master/src/physics/collideex.cpp
+// https://github.com/vpinball/vpinball/blob/master/src/physics/hitplunger.cpp
 
 export type VpxPhysicsBall = {
   vx: number
@@ -20,6 +22,8 @@ export type VpxSurfaceContact = {
   surfaceVelocityX?: number
   surfaceVelocityY?: number
   frictionUsesCollisionImpulse?: boolean
+  /** Converts the caller's velocity units to VPX velocity units. */
+  velocityScale?: number
 }
 
 export type VpxSpatialSurfaceContact = {
@@ -29,6 +33,8 @@ export type VpxSpatialSurfaceContact = {
   elasticity: number
   elasticityFalloff: number
   friction: number
+  /** Converts the caller's velocity units to VPX velocity units. */
+  velocityScale?: number
 }
 
 export type VpxKickerBevelContact = {
@@ -90,6 +96,8 @@ export type VpxLineSegment = {
   x2: number
   y2: number
   thickness?: number
+  /** Surface edges add a round v1 joint; standalone VPX LineSegs do not. */
+  joint?: boolean
 }
 
 export type VpxLineContact = {
@@ -102,12 +110,25 @@ export type VpxLineHit = VpxLineContact & {
   time: number
 }
 
+export type VpxCoilHit = {
+  normalX: number
+  normalY: number
+  threshold: number
+  force: number
+  /** Converts the caller's velocity units to VPX velocity units. */
+  velocityScale?: number
+}
+
+export type VpxSlingshotHit = VpxCoilHit & VpxLineSegment
+
 export type VpxStaticContact = {
   normalX: number
   normalY: number
   friction: number
   externalVelocityDeltaX?: number
   externalVelocityDeltaY?: number
+  /** Converts the caller's velocity units to VPX velocity units. */
+  velocityScale?: number
 }
 
 export type VpxFlipperParameters = {
@@ -136,6 +157,38 @@ export type VpxFlipperMover = {
   isInContact: boolean
 }
 
+export type VpxPlungerParameters = {
+  stroke: number
+  speedFire: number
+  parkPosition: number
+  momentumTransfer?: number
+}
+
+/**
+ * Ball speed from PlungerMoverObject::Fire followed by HitPlunger::Collide.
+ *
+ * This is the ideal stationary-ball case used by RoboCop's shooter lane and
+ * scripted kickback. The returned speed is a positive magnitude in VPX
+ * velocity units; callers choose direction from the plunger orientation.
+ */
+export function vpxPlungerLaunchSpeed(
+  parameters: VpxPlungerParameters,
+  startPosition: number,
+  ballMass = 1,
+) {
+  const plungerMass = 30
+  const restPosition = Math.max(0, Math.min(1, parameters.parkPosition))
+  const start = Math.max(restPosition, Math.min(1, startPosition))
+  const pullDistance = start - restPosition
+  const moverSpeed = (parameters.speedFire / 100)
+    * parameters.stroke * (pullDistance * (100 / 13)) / plungerMass
+  const safeBallMass = Math.max(0.05, ballMass)
+  const movingTipSpeed = moverSpeed * (parameters.momentumTransfer ?? 1) / safeBallMass
+  // HitPlunger uses a 1.45 collision coefficient and then applies its fixed
+  // all-axis 0.999 post-hit friction.
+  return movingTipSpeed * 1.45 / (1 + 1 / plungerMass) * 0.999
+}
+
 export type VpxFlipperContact = {
   normalX: number
   normalY: number
@@ -143,6 +196,13 @@ export type VpxFlipperContact = {
   radiusY: number
   worldAngularDirection: 1 | -1
   ballVelocityScale?: number
+}
+
+export type VpxFlipperProfileContact = {
+  normalX: number
+  normalY: number
+  penetration: number
+  part: 'face' | 'tip' | 'base'
 }
 
 export type VpxGateMover = {
@@ -174,6 +234,56 @@ export type VpxSpinnerParameters = {
 const VPX_ONE_METER_IN_SPEED_UNITS = 18.53
 const SOLID_SPHERE_INERTIA_FACTOR = 2 / 5
 export const VPX_CONTACT_VELOCITY = 0.099
+
+/**
+ * Port of BumperHitCircle::Collide's switched coil response.
+ *
+ * The ordinary rigid-circle bounce happens before this function. VPX then
+ * adds the bumper's full FORC value along the collision normal, but only when
+ * the incoming normal velocity crossed THRS.
+ */
+export function applyVpxBumperCoil(
+  ball: Pick<VpxPhysicsBall, 'vx' | 'vy'>,
+  incomingNormalSpeed: number,
+  hit: VpxCoilHit,
+) {
+  const velocityScale = hit.velocityScale ?? 1
+  if (incomingNormalSpeed * velocityScale > -hit.threshold) return false
+  const kick = hit.force / velocityScale
+  ball.vx += hit.normalX * kick
+  ball.vy += hit.normalY * kick
+  return true
+}
+
+/**
+ * Port of LineSegSlingshot::Collide's pre-bounce impulse.
+ *
+ * VPX does not kick uniformly along a sling. Its parabolic force curve is
+ * zero at both endpoints and reaches half SLGF at the segment midpoint. The
+ * impulse is driven into the rubber before Collide3DWall reflects the ball.
+ */
+export function applyVpxSlingshotImpulse(
+  ball: Pick<VpxPlanarBall, 'x' | 'y' | 'vx' | 'vy' | 'radius'>,
+  hit: VpxSlingshotHit,
+) {
+  const velocityScale = hit.velocityScale ?? 1
+  const incomingNormalSpeed = ball.vx * hit.normalX + ball.vy * hit.normalY
+  if (incomingNormalSpeed * velocityScale > -hit.threshold) return false
+
+  const dx = hit.x2 - hit.x1
+  const dy = hit.y2 - hit.y1
+  const length = dx * hit.normalY - dy * hit.normalX
+  if (Math.abs(length) <= 1e-6) return false
+  const hitPointX = ball.x - hit.normalX * ball.radius
+  const hitPointY = ball.y - hit.normalY * ball.radius
+  const distance = (hitPointX - hit.x1) * hit.normalY
+    - (hitPointY - hit.y1) * hit.normalX
+  const position = (2 * distance) / length - 1
+  const force = Math.max(0, 0.5 * (1 - position * position) * hit.force) / velocityScale
+  ball.vx -= hit.normalX * force
+  ball.vy -= hit.normalY * force
+  return true
+}
 
 /**
  * Discrete counterpart of VPX LineSeg + HitLineZ collision geometry.
@@ -212,9 +322,10 @@ export function getVpxLineSegmentContact(
     }
   }
 
-  // VPX adds a HitLineZ at v1 for the round vertical polygon joint.
+  // Surface::AddLine adds a HitLineZ at v1 for the round vertical polygon
+  // joint. Standalone LineSegs (including one-way gate blockers) do not.
   const jointDistance = Math.hypot(relativeX, relativeY)
-  if (jointDistance > 1e-8 && jointDistance < contactRadius) {
+  if (segment.joint !== false && jointDistance > 1e-8 && jointDistance < contactRadius) {
     const jointContact = {
       normalX: relativeX / jointDistance,
       normalY: relativeY / jointDistance,
@@ -269,6 +380,8 @@ export function getVpxLineSegmentHit(
 
   // Surface::AddLine creates a vertical HitLineZ at v1. In the playfield
   // plane this is a swept circle-versus-point test for the round joint.
+  // A gate's standalone blocker is just the directional face.
+  if (segment.joint === false) return earliest
   const speedSquared = ball.vx * ball.vx + ball.vy * ball.vy
   const approach = relativeX * ball.vx + relativeY * ball.vy
   const jointSeparationSquared = relativeX * relativeX + relativeY * relativeY - contactRadius * contactRadius
@@ -296,6 +409,52 @@ export function getVpxLineSegmentHit(
   return earliest
 }
 
+/** Port of HitCircle::HitTestBasicRadius for a rigid vertical circle. */
+export function getVpxCircleHit(
+  ball: VpxPlanarBall,
+  centerX: number,
+  centerY: number,
+  objectRadius: number,
+  maximumTime: number,
+  velocityScale = 1,
+): VpxLineHit | null {
+  if (maximumTime < 0) return null
+  const relativeX = ball.x - centerX
+  const relativeY = ball.y - centerY
+  const distanceSquared = relativeX * relativeX + relativeY * relativeY
+  const distance = Math.sqrt(distanceSquared)
+  if (distance <= 1e-8) return null
+
+  const targetRadius = ball.radius + objectRadius
+  const radialSpeed = (relativeX * ball.vx + relativeY * ball.vy) / distance
+  // C_LOWNORMVEL is expressed in VPX velocity units.
+  if (radialSpeed * velocityScale > 0.01) return null
+
+  const separation = distance - targetRadius
+  let hitTime = 0
+  if (separation > 0) {
+    const speedSquared = ball.vx * ball.vx + ball.vy * ball.vy
+    if (speedSquared <= 1e-8) return null
+    const approach = relativeX * ball.vx + relativeY * ball.vy
+    const discriminant = approach * approach
+      - speedSquared * (distanceSquared - targetRadius * targetRadius)
+    if (discriminant < 0) return null
+    hitTime = (-approach - Math.sqrt(discriminant)) / speedSquared
+  }
+  if (!Number.isFinite(hitTime) || hitTime < 0 || hitTime > maximumTime) return null
+
+  const hitRelativeX = relativeX + ball.vx * hitTime
+  const hitRelativeY = relativeY + ball.vy * hitTime
+  const hitDistance = Math.hypot(hitRelativeX, hitRelativeY)
+  if (hitDistance <= 1e-8) return null
+  return {
+    time: hitTime,
+    normalX: hitRelativeX / hitDistance,
+    normalY: hitRelativeY / hitDistance,
+    penetration: Math.max(0, -separation),
+  }
+}
+
 /**
  * Planar port of HitBall::HandleStaticContact/ApplyFriction. Gravity has
  * already been integrated by the caller, so killing the remaining inward
@@ -308,9 +467,10 @@ export function resolveVpxStaticContact(ball: VpxPhysicsBall, contact: VpxStatic
     friction,
     externalVelocityDeltaX = 0,
     externalVelocityDeltaY = 0,
+    velocityScale = 1,
   } = contact
   const normalSpeed = ball.vx * normalX + ball.vy * normalY
-  if (normalSpeed > VPX_CONTACT_VELOCITY) return null
+  if (normalSpeed * velocityScale > VPX_CONTACT_VELOCITY) return null
 
   const normalImpulse = Math.max(0, -normalSpeed)
   ball.vx += normalImpulse * normalX
@@ -472,6 +632,130 @@ export function createVpxFlipperMover(parameters: VpxFlipperParameters): VpxFlip
   }
 }
 
+/**
+ * Exact 2D contact against the VPX flipper outline created by
+ * Flipper::SetVertices: two common tangent faces, a base arc, and a tip arc.
+ */
+export function getVpxFlipperProfileContact(
+  ball: VpxPlanarBall,
+  baseX: number,
+  baseY: number,
+  tipX: number,
+  tipY: number,
+  baseRadius: number,
+  endRadius: number,
+): VpxFlipperProfileContact | null {
+  const axisX = tipX - baseX
+  const axisY = tipY - baseY
+  const length = Math.hypot(axisX, axisY)
+  if (length <= 1e-8 || baseRadius <= 0 || endRadius <= 0) return null
+
+  const tangentX = axisX / length
+  const tangentY = axisY / length
+  const lateralX = -tangentY
+  const lateralY = tangentX
+  const relativeX = ball.x - baseX
+  const relativeY = ball.y - baseY
+  const localX = relativeX * tangentX + relativeY * tangentY
+  const localY = relativeX * lateralX + relativeY * lateralY
+  const radiusDifference = Math.max(-length, Math.min(length, baseRadius - endRadius))
+  const normalAlong = radiusDifference / length
+  const normalAcross = Math.sqrt(Math.max(0, 1 - normalAlong * normalAlong))
+  const capLimit = Math.PI / 2 - Math.asin(normalAlong)
+
+  const baseUpper = { x: baseRadius * normalAlong, y: -baseRadius * normalAcross }
+  const tipUpper = { x: length + endRadius * normalAlong, y: -endRadius * normalAcross }
+  const baseLower = { x: baseRadius * normalAlong, y: baseRadius * normalAcross }
+  const tipLower = { x: length + endRadius * normalAlong, y: endRadius * normalAcross }
+
+  type Candidate = {
+    x: number
+    y: number
+    normalX: number
+    normalY: number
+    distance: number
+    part: VpxFlipperProfileContact['part']
+  }
+  let closest: Candidate | null = null
+  const consider = (
+    x: number,
+    y: number,
+    normalX: number,
+    normalY: number,
+    part: VpxFlipperProfileContact['part'],
+  ) => {
+    const distance = Math.hypot(localX - x, localY - y)
+    if (!closest || distance < closest.distance) closest = { x, y, normalX, normalY, distance, part }
+  }
+  const considerSegment = (
+    from: { x: number; y: number },
+    to: { x: number; y: number },
+    normalX: number,
+    normalY: number,
+    part: VpxFlipperProfileContact['part'],
+  ) => {
+    const dx = to.x - from.x
+    const dy = to.y - from.y
+    const lengthSquared = dx * dx + dy * dy
+    const progress = lengthSquared > 1e-8
+      ? Math.max(0, Math.min(1, ((localX - from.x) * dx + (localY - from.y) * dy) / lengthSquared))
+      : 0
+    consider(from.x + dx * progress, from.y + dy * progress, normalX, normalY, part)
+  }
+
+  considerSegment(baseUpper, tipUpper, normalAlong, -normalAcross, 'face')
+  considerSegment(baseLower, tipLower, normalAlong, normalAcross, 'face')
+
+  const tipAngle = Math.atan2(localY, localX - length)
+  if (Math.abs(tipAngle) <= capLimit) {
+    consider(
+      length + Math.cos(tipAngle) * endRadius,
+      Math.sin(tipAngle) * endRadius,
+      Math.cos(tipAngle),
+      Math.sin(tipAngle),
+      'tip',
+    )
+  }
+  const baseAngle = Math.atan2(localY, localX)
+  if (Math.abs(baseAngle) >= capLimit) {
+    consider(
+      Math.cos(baseAngle) * baseRadius,
+      Math.sin(baseAngle) * baseRadius,
+      Math.cos(baseAngle),
+      Math.sin(baseAngle),
+      'base',
+    )
+  }
+  const selected = closest as Candidate | null
+  if (!selected) return null
+
+  const cross = (a: { x: number; y: number }, b: { x: number; y: number }) => (
+    (b.x - a.x) * (localY - a.y) - (b.y - a.y) * (localX - a.x)
+  )
+  const quad = [baseUpper, baseLower, tipLower, tipUpper]
+  const crosses = quad.map((point, index) => cross(point, quad[(index + 1) % quad.length]))
+  const insideQuad = crosses.every((value) => value >= -1e-7)
+    || crosses.every((value) => value <= 1e-7)
+  const insideBase = localX * localX + localY * localY <= baseRadius * baseRadius
+  const tipRelativeX = localX - length
+  const insideTip = tipRelativeX * tipRelativeX + localY * localY <= endRadius * endRadius
+  const inside = insideQuad || insideBase || insideTip
+  if (!inside && selected.distance >= ball.radius) return null
+
+  let localNormalX = selected.normalX
+  let localNormalY = selected.normalY
+  if (!inside && selected.distance > 1e-8) {
+    localNormalX = (localX - selected.x) / selected.distance
+    localNormalY = (localY - selected.y) / selected.distance
+  }
+  return {
+    normalX: localNormalX * tangentX + localNormalY * lateralX,
+    normalY: localNormalX * tangentY + localNormalY * lateralY,
+    penetration: inside ? ball.radius + selected.distance : ball.radius - selected.distance,
+    part: selected.part,
+  }
+}
+
 export function createVpxGateMover(parameters: VpxGateParameters): VpxGateMover {
   return { angle: parameters.angleMin, angularVelocity: 0 }
 }
@@ -625,6 +909,7 @@ export function resolveVpxSurfaceContact(ball: VpxPhysicsBall, contact: VpxSurfa
     surfaceVelocityX = 0,
     surfaceVelocityY = 0,
     frictionUsesCollisionImpulse = false,
+    velocityScale = 1,
   } = contact
   const relativeVelocityX = ball.vx - surfaceVelocityX
   const relativeVelocityY = ball.vy - surfaceVelocityY
@@ -632,7 +917,7 @@ export function resolveVpxSurfaceContact(ball: VpxPhysicsBall, contact: VpxSurfa
   if (normalSpeed >= 0) return null
 
   const effectiveElasticity = elasticity
-    / (1 + elasticityFalloff * Math.abs(normalSpeed) / VPX_ONE_METER_IN_SPEED_UNITS)
+    / (1 + elasticityFalloff * Math.abs(normalSpeed) * velocityScale / VPX_ONE_METER_IN_SPEED_UNITS)
   const normalImpulse = -(1 + effectiveElasticity) * normalSpeed
   ball.vx += normalImpulse * normalX
   ball.vy += normalImpulse * normalY
@@ -673,7 +958,8 @@ export function resolveVpxSpatialSurfaceContact(
   if (normalSpeed >= 0) return null
 
   const effectiveElasticity = contact.elasticity
-    / (1 + contact.elasticityFalloff * Math.abs(normalSpeed) / VPX_ONE_METER_IN_SPEED_UNITS)
+    / (1 + contact.elasticityFalloff * Math.abs(normalSpeed) * (contact.velocityScale ?? 1)
+      / VPX_ONE_METER_IN_SPEED_UNITS)
   const normalImpulse = -(1 + effectiveElasticity) * normalSpeed
   ball.vx += normalImpulse * contact.normalX
   ball.vy += normalImpulse * contact.normalY
@@ -879,9 +1165,14 @@ export function resolveVpxFlipperContact(
 }
 
 /** Applies VPX's shaped, post-collision scatter distribution. */
-export function applyVpxScatter(ball: VpxPhysicsBall, scatterDegrees: number, normalImpulse: number) {
+export function applyVpxScatter(
+  ball: VpxPhysicsBall,
+  scatterDegrees: number,
+  normalImpulse: number,
+  velocityScale = 1,
+) {
   const scatterRadians = scatterDegrees * Math.PI / 180
-  if (normalImpulse <= 1 || scatterRadians <= 1e-5) return
+  if (normalImpulse * velocityScale <= 1 || scatterRadians <= 1e-5) return
 
   let scatter = Math.random() * 2 - 1
   scatter *= (1 - scatter * scatter) * 2.59808 * scatterRadians

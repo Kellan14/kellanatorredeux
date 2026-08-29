@@ -122,7 +122,7 @@ export async function readCompoundFile(path) {
  * Splits a VPX BIFF stream into records. Tags repeat (drag points, for
  * example), so this returns an ordered list rather than an object.
  */
-export function parseBiff(buffer, startOffset = 0) {
+export function parseBiff(buffer, startOffset = 0, stopAtEnd = true) {
   const records = []
   let offset = startOffset
   while (offset + 4 <= buffer.length) {
@@ -133,7 +133,7 @@ export function parseBiff(buffer, startOffset = 0) {
     const data = buffer.subarray(offset + 4, offset + size)
     offset += size
     records.push({ tag, data })
-    if (tag === 'ENDB') break
+    if (stopAtEnd && tag === 'ENDB') break
   }
   return records
 }
@@ -147,7 +147,10 @@ const asString = (record) => (record.data.length >= 4
 /** Convenience view over one game item: name, type, and first-value-per-tag. */
 export function readGameItem(buffer) {
   const type = buffer.readInt32LE(0)
-  const records = parseBiff(buffer, 4)
+  // Drag points are nested BIFF blocks whose own ENDB records appear before
+  // the parent item's ENDB. Read the complete stream so geometry extractors
+  // can see every DPNT rather than stopping after the first point.
+  const records = parseBiff(buffer, 4, false)
   const item = { type, records, name: '' }
   for (const record of records) {
     if (record.tag === 'NAME') {
@@ -161,6 +164,21 @@ export function readGameItem(buffer) {
     }
   }
   return item
+}
+
+/** Returns the table's embedded VBScript from the GameData CODE payload. */
+export function readTableScript(streams) {
+  const gameData = streams.get('GameStg/GameData')
+  if (!gameData) throw new Error('GameStg/GameData is missing')
+  // VPX stores CODE as a zero-length BIFF marker followed by one raw,
+  // length-prefixed script payload. parseBiff sees that payload as a single
+  // large pseudo-record whose four-character tag is the script's first four
+  // bytes, so restore those bytes before decoding it.
+  const scriptRecord = parseBiff(gameData, 0, false)
+    .find((record) => record.data.length > 1000
+      && (record.tag + record.data.subarray(0, 256).toString('latin1')).includes('==='))
+  if (!scriptRecord) throw new Error('embedded table script is missing')
+  return scriptRecord.tag + scriptRecord.data.toString('latin1')
 }
 
 export const biff = { asFloat, asInt, asString }

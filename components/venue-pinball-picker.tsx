@@ -2,19 +2,28 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import Image from 'next/image'
-import { MapPin, Play, RotateCcw, Smartphone, Trophy } from 'lucide-react'
+import { Play, RotateCcw, Smartphone, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { VpxTableLamps } from '@/components/vpx-table-lamps'
 import { getMachineImagePath, getMachineThumbnailPath } from '@/lib/machine-images'
 import { VPX_TABLE, type VpxGate, type VpxKicker, type VpxPoint, type VpxRamp, type VpxRuleTrigger, type VpxSegment, type VpxSpinner, type VpxWall } from '@/lib/vpx-robocop-table'
+import { VPX_COLLISION_PRIMITIVES, type VpxCollisionPrimitive } from '@/lib/vpx-robocop-primitives'
+import { VPX_COLLISION_WALLS } from '@/lib/vpx-robocop-walls'
+import { VPX_TRIGGER_VOLUMES, type VpxTriggerVolume } from '@/lib/vpx-robocop-triggers'
+import { VPX_COLLECTIONS } from '@/lib/vpx-robocop-collections'
+import { VPX_ROBOCOP_SCRIPT_PHYSICS } from '@/lib/vpx-robocop-script-physics'
 import {
+  applyVpxBumperCoil,
   applyVpxPlayfieldFriction,
   applyVpxScatter,
+  applyVpxSlingshotImpulse,
   applyVpxSurfaceFriction,
   createVpxGateMover,
   createVpxFlipperMover,
   createVpxSpinnerMover,
+  getVpxCircleHit,
+  getVpxFlipperProfileContact,
   getVpxLineSegmentHit,
   hitVpxGateMover,
   hitVpxSpinnerMover,
@@ -26,6 +35,7 @@ import {
   stepVpxFlipperMover,
   stepVpxGateMover,
   stepVpxSpinnerMover,
+  vpxPlungerLaunchSpeed,
   VPX_CONTACT_VELOCITY,
   type VpxFlipperMover,
   type VpxFlipperParameters,
@@ -34,10 +44,15 @@ import {
 } from '@/lib/vpx-physics'
 import { useMachineCanon } from '@/hooks/use-machine-canon'
 import {
+  consumeRoboCopLaserKick,
   createRoboCopRulesState,
+  endRoboCopBall,
+  endRoboCopMultiball,
   formatRoboCopScore,
   pulseRoboCopSwitch,
   rotateRoboCopTopLanes,
+  startRoboCopBall,
+  tiltRoboCopBall,
   type RoboCopRulesState,
 } from '@/lib/robocop-rules'
 
@@ -45,6 +60,7 @@ type Venue = { key: string; name: string; machines: string[] }
 type Peg = {
   x: number; y: number; r?: number; kind?: 'post' | 'bumper'
   elasticity?: number; elasticityFalloff?: number; friction?: number; scatter?: number; force?: number
+  threshold?: number
   switchNumber?: number
 }
 type Rail = {
@@ -55,6 +71,8 @@ type Rail = {
   /** Slingshot trigger threshold, in VPX velocity units (Surface SLTH). */
   threshold?: number
   vpxWall?: boolean
+  wallName?: string
+  joint?: boolean
   allowsInvertedEscape?: boolean
   switchNumber?: number
 }
@@ -64,6 +82,8 @@ type Mode = {
   description: string
   accent: string
 }
+type FlipperSide = 'left' | 'right'
+type FlipperCorrectionSample = { x: number; y: number }
 type Ball = {
   machineKey: string
   label: string
@@ -91,22 +111,32 @@ type Ball = {
   releaseAt: number
   objectCooldowns: Record<string, number>
   activeRuleVolumes: Record<string, boolean>
+  flipperCorrectionSamples: Partial<Record<FlipperSide, FlipperCorrectionSample>>
+  corSpeed: number
+  corVelocityX: number
+  corVelocityY: number
+  corElapsedMilliseconds: number
   rules: RoboCopRulesState
   isRegularBall: boolean
   parked: boolean
+  /** Physical eject occupied by a logically locked ball. */
+  parkedAt: string | null
   heldInShooterLane: boolean
   pendingCandidateSteps: number
   pendingRuleLock: boolean
   pendingJackpot: boolean
+  lastRuleSwitch: number | null
   finished: boolean
 }
 
 type RulesPickerPhase = 'idle' | 'normal' | 'multiball' | 'standard-multiball' | 'selected'
+type FullGamePhase = 'idle' | 'ready' | 'playing' | 'game-over'
 type RulesBallOptions = {
   x?: number
   y?: number
   active?: boolean
   parked?: boolean
+  parkedAt?: string | null
   heldInShooterLane?: boolean
   colorIndex?: number
 }
@@ -143,10 +173,41 @@ function getBallGlowSprite(color: string) {
   return sprite
 }
 
-const scaleVpxPoint = ([x, y]: VpxPoint) => ({
+const scaleVpxPoint = ([x, y]: readonly number[]) => ({
   x: x * WIDTH / VPX_TABLE.playableWidth,
   y: y * HEIGHT / VPX_TABLE.height,
 })
+
+const VPX_TRIGGER_BY_NAME = new Map<string, VpxTriggerVolume>(
+  VPX_TRIGGER_VOLUMES.map((trigger) => [trigger.name, trigger]),
+)
+const VPX_COLLECTION_BY_NAME = new Map(
+  VPX_COLLECTIONS.map((collection) => [collection.name, collection]),
+)
+const VPX_DAMPENED_POSTS = new Set<string>(VPX_COLLECTION_BY_NAME.get('dPosts')?.items ?? [])
+const VPX_DAMPENED_SLEEVES = new Set<string>(VPX_COLLECTION_BY_NAME.get('dSleeves')?.items ?? [])
+
+const VPX_STATIC_COLLISION_WALLS = VPX_COLLISION_WALLS.filter(
+  (wall) => wall.name !== 'LeftSlingShot' && wall.name !== 'RightSlingShot',
+)
+const VPX_COLLISION_WALL_BY_NAME = new Map<string, (typeof VPX_COLLISION_WALLS)[number]>(
+  VPX_COLLISION_WALLS.map((wall) => [wall.name, wall]),
+)
+
+function vpxWallHeightBand(wall: VpxWall): readonly [number, number] {
+  if (wall.heightBottom != null && wall.heightTop != null) return [wall.heightBottom, wall.heightTop]
+  return VPX_TABLE.collisionHeightBands[
+    wall.name as keyof typeof VPX_TABLE.collisionHeightBands
+  ] ?? [0, 50]
+}
+
+function vpxWallHasSolidBottom(wall: VpxWall | string) {
+  const name = typeof wall === 'string' ? wall : wall.name
+  const generated = VPX_COLLISION_WALL_BY_NAME.get(name)
+  if (generated) return generated.solidBottom
+  if (typeof wall !== 'string' && wall.solidBottom != null) return wall.solidBottom
+  return (VPX_TABLE.solidBottomWalls as readonly string[]).includes(name)
+}
 
 const VPX_DRAIN_CENTER = scaleVpxPoint(VPX_TABLE.drain.center)
 const VPX_DRAIN_RADIUS = VPX_TABLE.drain.radius * WIDTH / VPX_TABLE.playableWidth
@@ -184,24 +245,12 @@ const VPX_BALL_RADIUS_UNITS = 25
 // enough energy to pass angle = PI: 0.5 * w^2 > 2 * g, with the g = 0.025
 // restoring term stepVpxSpinnerMover applies.
 const SPINNER_TURN_MIN_SPEED = Math.sqrt(4 * 0.025)
-// Kick strength calibration. VPX bumper FORC and surface SLGF are different
-// scales -- this table is FORC 10 for the pops and SLGF 65-70 for the slings --
-// so they get separate factors. Turn these two numbers to change how hard the
-// pops and slings hit; everything else about them comes from the VPX.
-//   pops:   FORC 10 * 0.38  = 3.80 canvas units/frame
-//   slings: SLGF 70 * 0.115 = 8.05
 // Global pace of the simulation. 1 runs at the VPX-derived rate; higher makes
 // the whole table quicker without touching any value taken from the .vpx --
 // the ball, flippers, gates and spinner all scale together, and the substep
 // count scales with it so collision accuracy is unchanged. Real-time holds
 // (kicker dwell, award flashes) are deliberately not scaled.
 const GAME_SPEED = 1.2
-const BUMPER_FORCE_SCALE = 0.38
-const SLINGSHOT_FORCE_SCALE = 0.115
-// Fraction of the VPX SLTH value to enforce: 1 is the literal table value,
-// 0 disables the gate. Lower this if glancing inlane hits feel like they
-// should be firing the sling and are not.
-const SLINGSHOT_THRESHOLD_ENFORCEMENT = 1
 // Tip of the rod at its park position, then back off one ball radius so the
 // ball sits against the tip rather than over the plunger body.
 const VPX_PLUNGER_TIP_Y = VPX_TABLE.plunger.center[1]
@@ -216,6 +265,191 @@ const VPX_PLUNGER_REST = scaleVpxPoint([
   VPX_TABLE.plunger.center[0],
   VPX_PLUNGER_TIP_Y - VPX_BALL_RADIUS_UNITS,
 ])
+
+type CaptiveBallState = {
+  distance: number
+  speed: number
+  sourceRules: RoboCopRulesState | null
+  targetCooldownUntil: number
+}
+
+function getCircularWallGeometry(name: string) {
+  const wall = VPX_COLLISION_WALL_BY_NAME.get(name)
+  if (!wall) return null
+  const points = wall.points.map(scaleVpxPoint)
+  const center = points.reduce((sum, point) => ({
+    x: sum.x + point.x / points.length,
+    y: sum.y + point.y / points.length,
+  }), { x: 0, y: 0 })
+  const radius = points.reduce((sum, point) => (
+    sum + Math.hypot(point.x - center.x, point.y - center.y) / points.length
+  ), 0)
+  return { center, radius }
+}
+
+function getCaptiveBallRest() {
+  const [firstName, secondName] = VPX_TABLE.captiveBall.restWalls
+  const first = getCircularWallGeometry(firstName)
+  const second = getCircularWallGeometry(secondName)
+  if (!first || !second) return scaleVpxPoint(VPX_TABLE.captiveBall.spawnCenter)
+
+  // Circle-circle intersection: the captive ball's centre must be one captive
+  // radius beyond each stop's perimeter. Of the two solutions, the up-table
+  // one is the stable pocket above Wall173 and Wall76.
+  const radius1 = first.radius + VPX_BALL_RADIUS
+  const radius2 = second.radius + VPX_BALL_RADIUS
+  const dx = second.center.x - first.center.x
+  const dy = second.center.y - first.center.y
+  const separation = Math.hypot(dx, dy)
+  if (separation < 1e-6) return scaleVpxPoint(VPX_TABLE.captiveBall.spawnCenter)
+  const along = (radius1 * radius1 - radius2 * radius2 + separation * separation) / (2 * separation)
+  const perpendicular = Math.sqrt(Math.max(0, radius1 * radius1 - along * along))
+  const baseX = first.center.x + dx * along / separation
+  const baseY = first.center.y + dy * along / separation
+  const offsetX = -dy * perpendicular / separation
+  const offsetY = dx * perpendicular / separation
+  const optionA = { x: baseX + offsetX, y: baseY + offsetY }
+  const optionB = { x: baseX - offsetX, y: baseY - offsetY }
+  return optionA.y < optionB.y ? optionA : optionB
+}
+
+const CAPTIVE_BALL_REST = getCaptiveBallRest()
+const CAPTIVE_BALL_TARGET = scaleVpxPoint(VPX_TABLE.captiveBall.targetCenter)
+const CAPTIVE_BALL_VECTOR = {
+  x: CAPTIVE_BALL_TARGET.x - CAPTIVE_BALL_REST.x,
+  y: CAPTIVE_BALL_TARGET.y - CAPTIVE_BALL_REST.y,
+}
+const CAPTIVE_BALL_AXIS_LENGTH = Math.hypot(CAPTIVE_BALL_VECTOR.x, CAPTIVE_BALL_VECTOR.y)
+const CAPTIVE_BALL_AXIS = {
+  x: CAPTIVE_BALL_VECTOR.x / CAPTIVE_BALL_AXIS_LENGTH,
+  y: CAPTIVE_BALL_VECTOR.y / CAPTIVE_BALL_AXIS_LENGTH,
+}
+const CAPTIVE_TARGET_DEPTH = VPX_TABLE.captiveBall.targetDepth * HEIGHT / VPX_TABLE.height
+const CAPTIVE_BALL_TRAVEL = CAPTIVE_BALL_AXIS_LENGTH - VPX_BALL_RADIUS - CAPTIVE_TARGET_DEPTH / 2
+const KICKBACK_CENTER = scaleVpxPoint(VPX_TABLE.kickback.center)
+const KICKBACK_TIP_Y = KICKBACK_CENTER.y
+  - VPX_TABLE.kickback.stroke * (1 - VPX_TABLE.kickback.parkPosition) * HEIGHT / VPX_TABLE.height
+const KICKBACK_HALF_WIDTH = VPX_TABLE.kickback.width * VPX_PLAYFIELD_SCALE / 2
+// PlungerMoverObject::Fire and HitPlunger::Collide from VPX. The kickback is
+// scripted with PullBack at startup, so its solenoid Fire uses a full pull.
+const KICKBACK_LAUNCH_SPEED = vpxPlungerLaunchSpeed(VPX_TABLE.kickback, 1)
+  / BALL_TO_VPX_VELOCITY_SCALE
+
+function captiveBallPosition(state: CaptiveBallState) {
+  return {
+    x: CAPTIVE_BALL_REST.x + CAPTIVE_BALL_AXIS.x * state.distance,
+    y: CAPTIVE_BALL_REST.y + CAPTIVE_BALL_AXIS.y * state.distance,
+  }
+}
+
+function collideCaptiveBall(ball: Ball, state: CaptiveBallState) {
+  if (ball.rampTrackIndex != null || ball.capturedBy || ball.z > ball.radius * 0.5) return false
+  const captive = captiveBallPosition(state)
+  const dx = ball.x - captive.x
+  const dy = ball.y - captive.y
+  const minimumDistance = ball.radius + VPX_BALL_RADIUS
+  const distanceSquared = dx * dx + dy * dy
+  if (distanceSquared >= minimumDistance * minimumDistance) return false
+  const distance = Math.sqrt(distanceSquared)
+  const normalX = distance > 1e-6 ? dx / distance : -CAPTIVE_BALL_AXIS.x
+  const normalY = distance > 1e-6 ? dy / distance : -CAPTIVE_BALL_AXIS.y
+  const captiveVelocityX = CAPTIVE_BALL_AXIS.x * state.speed
+  const captiveVelocityY = CAPTIVE_BALL_AXIS.y * state.speed
+  const relativeNormalSpeed = (ball.vx - captiveVelocityX) * normalX
+    + (ball.vy - captiveVelocityY) * normalY
+
+  // The captive ball is constrained to its guide, so the normal impulse is
+  // projected onto that guide while the transverse component is absorbed by
+  // its rails. Equal pinballs use the usual two-body denominator of two.
+  if (relativeNormalSpeed < 0) {
+    const impulse = -(1 + 0.9) * relativeNormalSpeed / 2
+    ball.vx += impulse * normalX
+    ball.vy += impulse * normalY
+    state.speed -= impulse * (normalX * CAPTIVE_BALL_AXIS.x + normalY * CAPTIVE_BALL_AXIS.y)
+    state.speed = Math.max(-32, Math.min(32, state.speed))
+    state.sourceRules = ball.rules
+  }
+
+  const overlap = minimumDistance - Math.max(distance, 1e-6)
+  ball.x += normalX * overlap
+  ball.y += normalY * overlap
+  return true
+}
+
+function stepCaptiveBall(state: CaptiveBallState, step: number, time: number) {
+  // Project playfield gravity onto the captive guide. The target is up-table,
+  // so this naturally rolls the captive ball back to its lower stop.
+  state.speed += CAPTIVE_BALL_AXIS.y * playfieldGravity.planar * step
+  state.speed *= Math.pow(0.998, step)
+  state.distance += state.speed * step
+
+  if (state.distance <= 0) {
+    state.distance = 0
+    if (state.speed < 0) state.speed = Math.abs(state.speed) > 0.45 ? -state.speed * 0.12 : 0
+    return
+  }
+  if (state.distance < CAPTIVE_BALL_TRAVEL) return
+
+  state.distance = CAPTIVE_BALL_TRAVEL
+  if (state.speed > 0) {
+    state.speed = -state.speed * VPX_TABLE.captiveBall.elasticity
+    if (state.sourceRules && time >= state.targetCooldownUntil) {
+      pulseRoboCopSwitch(state.sourceRules, VPX_TABLE.captiveBall.switchNumber, time)
+      state.targetCooldownUntil = time + 100
+    }
+  }
+}
+
+function tryFireLaserKick(ball: Ball, time: number) {
+  if (ball.rules.tilted
+    || !ball.rules.laserKickLit
+    || ball.rampTrackIndex != null
+    || ball.capturedBy
+    || ball.z > ball.radius * 0.5
+    || (ball.objectCooldowns.LaserKick ?? 0) > time
+    || Math.abs(ball.x - KICKBACK_CENTER.x) > KICKBACK_HALF_WIDTH + ball.radius
+    || ball.y < KICKBACK_TIP_Y - ball.radius
+    || ball.y > KICKBACK_CENTER.y + ball.radius) return false
+
+  ball.x = KICKBACK_CENTER.x
+  ball.y = KICKBACK_TIP_Y - ball.radius
+  ball.vx = 0
+  ball.vy = -KICKBACK_LAUNCH_SPEED
+  ball.vz = 0
+  ball.angularVelocity = 0
+  ball.angularVelocityX = 0
+  ball.angularVelocityY = 0
+  ball.rampTrackIndex = null
+  ball.activeRuleVolumes = {}
+  ball.flipperCorrectionSamples = {}
+  ball.objectCooldowns.LaserKick = time + 900
+  return consumeRoboCopLaserKick(ball.rules, time)
+}
+
+function drawCaptiveBall(ctx: CanvasRenderingContext2D, state: CaptiveBallState) {
+  const position = captiveBallPosition(state)
+  const radius = VPX_BALL_RADIUS
+  const shine = ctx.createRadialGradient(
+    position.x - radius * 0.35,
+    position.y - radius * 0.42,
+    radius * 0.08,
+    position.x,
+    position.y,
+    radius,
+  )
+  shine.addColorStop(0, '#ffffff')
+  shine.addColorStop(0.2, '#dbe4ea')
+  shine.addColorStop(0.58, '#717b84')
+  shine.addColorStop(0.82, '#252b31')
+  shine.addColorStop(1, '#090b0d')
+  ctx.beginPath()
+  ctx.arc(position.x, position.y, radius, 0, Math.PI * 2)
+  ctx.fillStyle = shine
+  ctx.fill()
+  ctx.strokeStyle = 'rgba(255,255,255,.72)'
+  ctx.lineWidth = 1.4
+  ctx.stroke()
+}
 
 type MechanicalLine<T extends VpxGate | VpxSpinner = VpxGate | VpxSpinner> = {
   source: T
@@ -241,8 +475,8 @@ const VPX_KICKERS = (VPX_TABLE.kickers as readonly VpxKicker[]).map((source) => 
   hitHeight: source.hitHeight * VPX_PLAYFIELD_SCALE,
 }))
 
-function railsFromVpxWall(wall: VpxWall, excludedEdge?: number): Rail[] {
-  const isSlingBody = wall.name === 'LeftSlingShot' || wall.name === 'RightSlingShot'
+function railsFromVpxWall(wall: VpxWall, excludedEdge?: number, horizontalEdges = true): Rail[] {
+  const heightBand = vpxWallHeightBand(wall)
   return wall.points.flatMap((point, index) => {
     if (index === excludedEdge) return []
     const start = scaleVpxPoint(point)
@@ -254,9 +488,10 @@ function railsFromVpxWall(wall: VpxWall, excludedEdge?: number): Rail[] {
       friction: wall.friction,
       scatter: wall.scatter,
       thickness: (wall.thickness ?? 0) * VPX_PLAYFIELD_SCALE,
-      heightBottom: (isSlingBody ? 26 : 0) * VPX_PLAYFIELD_SCALE,
-      heightTop: (isSlingBody ? 36 : 55) * VPX_PLAYFIELD_SCALE,
+      heightBottom: heightBand[0] * VPX_PLAYFIELD_SCALE,
+      heightTop: heightBand[1] * VPX_PLAYFIELD_SCALE,
       vpxWall: true,
+      wallName: horizontalEdges ? wall.name : undefined,
       allowsInvertedEscape: wall.name === 'Wall4',
     }]
   })
@@ -270,16 +505,46 @@ function railsFromVpxSegment(segment: VpxSegment): Rail[] {
     elasticity: segment.elasticity, elasticityFalloff: segment.elasticityFalloff,
     friction: segment.friction, scatter: segment.scatter, thickness: 0,
     heightBottom: 0, heightTop: 65 * VPX_PLAYFIELD_SCALE, vpxWall: true,
+    wallName: segment.name,
     switchNumber: /^sw\d+$/.test(segment.name) ? Number(segment.name.slice(2)) : undefined,
   }
   return segment.oneWay ? [rail] : [rail, { ...rail, x1: end.x, y1: end.y, x2: start.x, y2: start.y }]
 }
 
+function railFromVpxOneWayGate(gate: MechanicalLine<VpxGate>): Rail {
+  const center = scaleVpxPoint(gate.source.center)
+  const dx = gate.x2 - gate.x1
+  const dy = gate.y2 - gate.y1
+  const length = Math.hypot(dx, dy)
+  const tangentX = dx / length
+  const tangentY = dy / length
+  // Gate::PhysicSetup winds this opposite the visible HitGate and extends it
+  // by PHYS_SKIN (one ball radius) at both ends to prevent clipping around it.
+  const halfLength = length / 2 + VPX_BALL_RADIUS
+  return {
+    x1: center.x + tangentX * halfLength,
+    y1: center.y + tangentY * halfLength,
+    x2: center.x - tangentX * halfLength,
+    y2: center.y - tangentY * halfLength,
+    kind: 'wall',
+    elasticity: gate.source.elasticity,
+    elasticityFalloff: 0,
+    friction: gate.source.friction,
+    scatter: 0,
+    thickness: 0,
+    heightBottom: 0,
+    heightTop: VPX_BALL_RADIUS * 2,
+    vpxWall: true,
+    joint: false,
+  }
+}
+
 const VPX_PLAYFIELD_RAILS: Rail[] = [
-  ...VPX_TABLE.walls.flatMap(railsFromVpxWall),
-  ...VPX_TABLE.rubbers.flatMap(railsFromVpxWall),
+  ...VPX_STATIC_COLLISION_WALLS.flatMap((wall) => railsFromVpxWall(wall)),
+  ...VPX_TABLE.rubbers.flatMap((wall) => railsFromVpxWall(wall, undefined, false)),
   ...VPX_TABLE.slingBodies.flatMap((wall) => railsFromVpxWall(wall, wall.slingshotEdge)),
   ...VPX_TABLE.contacts.flatMap(railsFromVpxSegment),
+  ...VPX_GATES.filter((gate) => !gate.source.twoWay).map(railFromVpxOneWayGate),
   ...VPX_TABLE.wireGuides.flatMap((guide) => guide.points.slice(0, -1).map((point, index) => {
     const start = scaleVpxPoint(point)
     const end = scaleVpxPoint(guide.points[index + 1])
@@ -299,13 +564,14 @@ const VPX_PLAYFIELD_RAILS: Rail[] = [
     return {
       x1: start.x, y1: start.y, x2: end.x, y2: end.y, kind: 'slingshot' as const,
       elasticity: face.elasticity, elasticityFalloff: face.elasticityFalloff,
-      friction: face.friction, scatter: face.scatter, force: face.force, thickness: 4,
+      friction: face.friction, scatter: face.scatter, force: face.force, thickness: 0,
       threshold: face.threshold,
       // The face is the missing edge of the sling body polygon (railsFromVpxWall
       // excludes it via slingshotEdge). It has to be swept in the same
       // continuous pass as the body, or a ball can be pushed through the gap
       // into the body's interior and wedge against Wall004 with no way out.
       vpxWall: true,
+      wallName: face.name,
       heightBottom: 26 * VPX_PLAYFIELD_SCALE, heightTop: 36 * VPX_PLAYFIELD_SCALE,
       switchNumber: face.name === 'LeftSlingShot' ? 21 : 22,
     }
@@ -391,6 +657,100 @@ function clampRow(y: number) {
   return row < 0 ? 0 : row > RAIL_GRID_ROWS - 1 ? RAIL_GRID_ROWS - 1 : row
 }
 
+type VpxPrimitiveTriangle = {
+  ax: number; ay: number; az: number
+  bx: number; by: number; bz: number
+  cx: number; cy: number; cz: number
+  normalX: number; normalY: number; normalZ: number
+  minX: number; minY: number; minZ: number
+  maxX: number; maxY: number; maxZ: number
+  material: Pick<VpxCollisionPrimitive, 'name' | 'elasticity' | 'elasticityFalloff' | 'friction' | 'scatter'>
+}
+
+const VPX_PRIMITIVE_TRIANGLES: readonly VpxPrimitiveTriangle[] = VPX_COLLISION_PRIMITIVES.flatMap((primitive) => {
+  const vertices: number[] = []
+  for (let index = 0; index < primitive.vertices.length; index += 3) {
+    vertices.push(
+      primitive.vertices[index] * WIDTH / VPX_TABLE.playableWidth,
+      primitive.vertices[index + 1] * HEIGHT / VPX_TABLE.height,
+      primitive.vertices[index + 2] * VPX_PLAYFIELD_SCALE,
+    )
+  }
+  const triangles: VpxPrimitiveTriangle[] = []
+  for (let index = 0; index < primitive.indices.length; index += 3) {
+    const a = primitive.indices[index] * 3
+    const b = primitive.indices[index + 1] * 3
+    const c = primitive.indices[index + 2] * 3
+    const ax = vertices[a]; const ay = vertices[a + 1]; const az = vertices[a + 2]
+    const bx = vertices[b]; const by = vertices[b + 1]; const bz = vertices[b + 2]
+    const cx = vertices[c]; const cy = vertices[c + 1]; const cz = vertices[c + 2]
+    const abx = bx - ax; const aby = by - ay; const abz = bz - az
+    const acx = cx - ax; const acy = cy - ay; const acz = cz - az
+    let normalX = aby * acz - abz * acy
+    let normalY = abz * acx - abx * acz
+    let normalZ = abx * acy - aby * acx
+    const normalLength = Math.hypot(normalX, normalY, normalZ)
+    if (normalLength < 1e-7) continue
+    normalX /= normalLength; normalY /= normalLength; normalZ /= normalLength
+    triangles.push({
+      ax, ay, az, bx, by, bz, cx, cy, cz,
+      normalX, normalY, normalZ,
+      minX: Math.min(ax, bx, cx), minY: Math.min(ay, by, cy), minZ: Math.min(az, bz, cz),
+      maxX: Math.max(ax, bx, cx), maxY: Math.max(ay, by, cy), maxZ: Math.max(az, bz, cz),
+      material: primitive,
+    })
+  }
+  return triangles
+})
+
+class PrimitiveTriangleGrid {
+  readonly triangles: readonly VpxPrimitiveTriangle[]
+  private readonly cells: Int32Array[]
+  private readonly stamps: Int32Array
+  private readonly scratch: Int32Array
+  private stamp = 0
+
+  constructor(triangles: readonly VpxPrimitiveTriangle[]) {
+    this.triangles = triangles
+    this.stamps = new Int32Array(triangles.length)
+    this.scratch = new Int32Array(triangles.length)
+    const buckets: number[][] = Array.from(
+      { length: RAIL_GRID_COLUMNS * RAIL_GRID_ROWS },
+      () => [],
+    )
+    triangles.forEach((triangle, index) => {
+      const pad = VPX_BALL_RADIUS + 1
+      const minColumn = clampColumn(triangle.minX - pad)
+      const maxColumn = clampColumn(triangle.maxX + pad)
+      const minRow = clampRow(triangle.minY - pad)
+      const maxRow = clampRow(triangle.maxY + pad)
+      for (let row = minRow; row <= maxRow; row += 1) {
+        for (let column = minColumn; column <= maxColumn; column += 1) {
+          buckets[row * RAIL_GRID_COLUMNS + column].push(index)
+        }
+      }
+    })
+    this.cells = buckets.map((bucket) => Int32Array.from(bucket))
+  }
+
+  query(x: number, y: number) {
+    const cell = this.cells[clampRow(y) * RAIL_GRID_COLUMNS + clampColumn(x)]
+    this.stamp += 1
+    const stamp = this.stamp
+    let count = 0
+    for (let index = 0; index < cell.length; index += 1) {
+      const triangle = cell[index]
+      if (this.stamps[triangle] === stamp) continue
+      this.stamps[triangle] = stamp
+      this.scratch[count] = triangle
+      count += 1
+    }
+    return this.scratch.subarray(0, count)
+  }
+}
+
+const VPX_PRIMITIVE_TRIANGLE_GRID = new PrimitiveTriangleGrid(VPX_PRIMITIVE_TRIANGLES)
+
 // advanceThroughVpxWalls only ever looks at VPX walls and the post-collision
 // sweep only ever looks at the handful of non-wall rails (the slingshot
 // faces). Split them once rather than re-filtering ~1600 entries per substep.
@@ -398,11 +758,130 @@ const VPX_WALL_RAILS = VPX_PLAYFIELD_RAILS.filter((rail) => rail.vpxWall)
 const VPX_WALL_RAIL_GRID = new RailGrid(VPX_WALL_RAILS)
 const VPX_LOOSE_RAILS = VPX_PLAYFIELD_RAILS.filter((rail) => !rail.vpxWall)
 
+type VpxWallHorizontalSurface = {
+  points: readonly { x: number; y: number }[]
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
+  height: number
+  normalZ: 1 | -1
+  elasticity: number
+  elasticityFalloff: number
+  friction: number
+  scatter: number
+}
+
+// Surface::PhysicSetup always creates an upward-facing Hit3DPoly at m_heighttop.
+// Side rails alone let airborne balls fall through these authored wall tops.
+const VPX_WALL_TOP_SURFACES: readonly VpxWallHorizontalSurface[] = [
+  ...VPX_STATIC_COLLISION_WALLS,
+  ...VPX_TABLE.slingBodies,
+].map((wall) => {
+  const heightBand = vpxWallHeightBand(wall)
+  const points = wall.points.map(scaleVpxPoint)
+  return {
+    points,
+    minX: Math.min(...points.map((point) => point.x)),
+    minY: Math.min(...points.map((point) => point.y)),
+    maxX: Math.max(...points.map((point) => point.x)),
+    maxY: Math.max(...points.map((point) => point.y)),
+    height: heightBand[1] * VPX_PLAYFIELD_SCALE,
+    normalZ: 1 as const,
+    elasticity: wall.elasticity,
+    elasticityFalloff: wall.elasticityFalloff,
+    friction: wall.friction,
+    scatter: wall.scatter,
+  }
+})
+
+// Surface::PhysicSetup adds the downward-facing polygon only when ISBS is set.
+const VPX_WALL_BOTTOM_SURFACES: readonly VpxWallHorizontalSurface[] = [
+  ...VPX_STATIC_COLLISION_WALLS,
+  ...VPX_TABLE.slingBodies,
+].filter(vpxWallHasSolidBottom)
+  .map((wall) => {
+    const heightBand = vpxWallHeightBand(wall)
+    const points = wall.points.map(scaleVpxPoint)
+    return {
+      points,
+      minX: Math.min(...points.map((point) => point.x)),
+      minY: Math.min(...points.map((point) => point.y)),
+      maxX: Math.max(...points.map((point) => point.x)),
+      maxY: Math.max(...points.map((point) => point.y)),
+      height: heightBand[0] * VPX_PLAYFIELD_SCALE,
+      normalZ: -1 as const,
+      elasticity: wall.elasticity,
+      elasticityFalloff: wall.elasticityFalloff,
+      friction: wall.friction,
+      scatter: wall.scatter,
+    }
+  })
+
+class WallHorizontalSurfaceGrid {
+  readonly surfaces: readonly VpxWallHorizontalSurface[]
+  private readonly cells: Int32Array[]
+  private readonly stamps: Int32Array
+  private readonly scratch: Int32Array
+  private stamp = 0
+
+  constructor(surfaces: readonly VpxWallHorizontalSurface[]) {
+    this.surfaces = surfaces
+    this.stamps = new Int32Array(surfaces.length)
+    this.scratch = new Int32Array(surfaces.length)
+    const buckets: number[][] = Array.from(
+      { length: RAIL_GRID_COLUMNS * RAIL_GRID_ROWS },
+      () => [],
+    )
+    surfaces.forEach((surface, index) => {
+      const minColumn = clampColumn(surface.minX)
+      const maxColumn = clampColumn(surface.maxX)
+      const minRow = clampRow(surface.minY)
+      const maxRow = clampRow(surface.maxY)
+      for (let row = minRow; row <= maxRow; row += 1) {
+        for (let column = minColumn; column <= maxColumn; column += 1) {
+          buckets[row * RAIL_GRID_COLUMNS + column].push(index)
+        }
+      }
+    })
+    this.cells = buckets.map((bucket) => Int32Array.from(bucket))
+  }
+
+  query(minX: number, minY: number, maxX: number, maxY: number) {
+    const minColumn = clampColumn(minX)
+    const maxColumn = clampColumn(maxX)
+    const minRow = clampRow(minY)
+    const maxRow = clampRow(maxY)
+    this.stamp += 1
+    const stamp = this.stamp
+    let count = 0
+    for (let row = minRow; row <= maxRow; row += 1) {
+      for (let column = minColumn; column <= maxColumn; column += 1) {
+        const cell = this.cells[row * RAIL_GRID_COLUMNS + column]
+        for (let index = 0; index < cell.length; index += 1) {
+          const surface = cell[index]
+          if (this.stamps[surface] === stamp) continue
+          this.stamps[surface] = stamp
+          this.scratch[count] = surface
+          count += 1
+        }
+      }
+    }
+    return this.scratch.subarray(0, count)
+  }
+}
+
+const VPX_WALL_TOP_SURFACE_GRID = new WallHorizontalSurfaceGrid(VPX_WALL_TOP_SURFACES)
+const VPX_WALL_BOTTOM_SURFACE_GRID = new WallHorizontalSurfaceGrid(VPX_WALL_BOTTOM_SURFACES)
+
 const VPX_BUMPERS: Peg[] = VPX_TABLE.bumpers.map((bumper, index) => {
   const center = scaleVpxPoint(bumper.center)
   return {
     x: center.x, y: center.y, r: bumper.radius * VPX_PLAYFIELD_SCALE, kind: 'bumper',
-    elasticity: 1, elasticityFalloff: 0, friction: 0, scatter: bumper.scatter, force: bumper.force,
+    // BumperHitCircle inherits HitObject's material defaults in VPX; bumper
+    // objects only author their scatter, threshold, and coil force.
+    elasticity: 0.3, elasticityFalloff: 0, friction: 0.3,
+    scatter: bumper.scatter, force: bumper.force, threshold: bumper.threshold,
     switchNumber: [46, 47, 48][index],
   }
 })
@@ -426,6 +905,31 @@ function catmullRom(value0: number, value1: number, value2: number, value3: numb
   return 0.5 * ((2 * value1) + (-value0 + value2) * t
     + (2 * value0 - 5 * value1 + 4 * value2 - value3) * t2
     + (-value0 + 3 * value1 - 3 * value2 + value3) * t3)
+}
+
+function sampleClosedVpxTrigger(source: VpxTriggerVolume) {
+  const controls = source.points.map(scaleVpxPoint)
+  if (controls.length < 3 || !source.smooth.some(Boolean)) return controls
+  const sampled: { x: number; y: number }[] = []
+  for (let index = 0; index < controls.length; index += 1) {
+    const p0 = controls[(index - 1 + controls.length) % controls.length]
+    const p1 = controls[index]
+    const p2 = controls[(index + 1) % controls.length]
+    const p3 = controls[(index + 2) % controls.length]
+    const subdivisions = Math.max(2, Math.ceil(Math.hypot(p2.x - p1.x, p2.y - p1.y) / 8))
+    const curved = source.smooth[index] || source.smooth[(index + 1) % controls.length]
+    for (let subdivision = 0; subdivision < subdivisions; subdivision += 1) {
+      const progress = subdivision / subdivisions
+      sampled.push(curved ? {
+        x: catmullRom(p0.x, p1.x, p2.x, p3.x, progress),
+        y: catmullRom(p0.y, p1.y, p2.y, p3.y, progress),
+      } : {
+        x: p1.x + (p2.x - p1.x) * progress,
+        y: p1.y + (p2.y - p1.y) * progress,
+      })
+    }
+  }
+  return sampled
 }
 
 /**
@@ -549,16 +1053,19 @@ const VPX_RAMP_TRACKS: readonly RampTrack[] = VPX_TABLE.rampTracks.map((track) =
   }
 })
 
-const VPX_RULE_TRIGGERS = (VPX_TABLE.ruleTriggers as readonly VpxRuleTrigger[]).map((trigger) => ({
-  source: trigger,
-  center: scaleVpxPoint(trigger.center),
-  radius: trigger.radius * VPX_PLAYFIELD_SCALE,
-  hitHeight: trigger.hitHeight * VPX_PLAYFIELD_SCALE,
-  points: trigger.points?.map(scaleVpxPoint),
-  rampTrackIndex: trigger.rampTrack
-    ? VPX_RAMP_TRACKS.findIndex((track) => track.name === trigger.rampTrack)
-    : null,
-}))
+const VPX_RULE_TRIGGERS = (VPX_TABLE.ruleTriggers as readonly VpxRuleTrigger[]).map((trigger) => {
+  const exact = VPX_TRIGGER_BY_NAME.get(trigger.name)
+  return {
+    source: trigger,
+    center: scaleVpxPoint(exact?.center ?? trigger.center),
+    radius: (exact?.radius ?? trigger.radius) * VPX_PLAYFIELD_SCALE,
+    hitHeight: (exact?.hitHeight ?? trigger.hitHeight) * VPX_PLAYFIELD_SCALE,
+    points: exact?.points.length ? sampleClosedVpxTrigger(exact) : trigger.points?.map(scaleVpxPoint),
+    rampTrackIndex: trigger.rampTrack
+      ? VPX_RAMP_TRACKS.findIndex((track) => track.name === trigger.rampTrack)
+      : null,
+  }
+})
 
 function sampleRamp(track: RampTrack, distance: number) {
   const clamped = Math.max(0, Math.min(track.length, distance))
@@ -621,17 +1128,438 @@ const FLIPPER_PARAMETERS: VpxFlipperParameters = {
   friction: VPX_FLIPPER.friction,
 }
 
+type FlipperPolarityState = {
+  fireAt: number
+  partialFlipCoefficient: number
+  pressed: boolean
+}
+
+type FlipperScriptState = {
+  parameters: VpxFlipperParameters
+  phase: 0 | 1 | 2 | 3
+  endReachedAt: number
+  eosNudge: boolean
+  lastCollisionEventAt: number
+  pressed: boolean
+}
+
+// Exact values from RoboCop's active "Flipper Tricks" script. These are
+// deliberately separate from the authored table properties above: the table
+// rewrites these properties every millisecond while a game is running.
+const FLIPPER_TRICKS = {
+  endOfStrokeTorque: VPX_ROBOCOP_SCRIPT_PHYSICS.flipper.endOfStrokeTorque,
+  endOfStrokeAngle: VPX_ROBOCOP_SCRIPT_PHYSICS.flipper.endOfStrokeAngleDegrees * Math.PI / 180,
+  endOfStrokeRampUp: VPX_ROBOCOP_SCRIPT_PHYSICS.flipper.endOfStrokeRampUp,
+  startOfStrokeRampUp: VPX_ROBOCOP_SCRIPT_PHYSICS.flipper.startOfStrokeRampUp,
+  restElasticityMultiplier: VPX_ROBOCOP_SCRIPT_PHYSICS.flipper.restElasticityMultiplier,
+  returnTorqueRatio: VPX_ROBOCOP_SCRIPT_PHYSICS.flipper.returnTorqueRatio,
+  restEndAngleOffset: VPX_ROBOCOP_SCRIPT_PHYSICS.flipper.restEndAngleOffsetDegrees * Math.PI / 180,
+  liveCatchMilliseconds: VPX_ROBOCOP_SCRIPT_PHYSICS.flipper.liveCatchMilliseconds,
+  liveCatchDistanceMin: VPX_ROBOCOP_SCRIPT_PHYSICS.flipper.liveCatchDistanceMin,
+  liveCatchDistanceMax: VPX_ROBOCOP_SCRIPT_PHYSICS.flipper.liveCatchDistanceMax,
+} as const
+
+const FLIPPER_DAMPENER_CURVE = VPX_ROBOCOP_SCRIPT_PHYSICS.flipper.dampenerCurve
+
+const createFlipperScriptState = (): FlipperScriptState => ({
+  parameters: { ...FLIPPER_PARAMETERS },
+  phase: 0,
+  endReachedAt: Number.NEGATIVE_INFINITY,
+  eosNudge: false,
+  lastCollisionEventAt: Number.NEGATIVE_INFINITY,
+  pressed: false,
+})
+
+const FLIPPER_CORRECTION_TIME_MS = 60
+const FLIPPER_CORRECTION_ENDPOINT_X: Record<FlipperSide, number> = {
+  // EndPointLp / EndPointRp primitive VPOS values used by the VPX script.
+  left: 385.1876525878906,
+  right: 493.1711730957031,
+}
+const FLIPPER_CORRECTION_POLARITY = [
+  [0, 0], [0.05, -5], [0.4, -5], [0.6, -4.5], [0.65, -4],
+  [0.7, -3.5], [0.75, -3], [0.8, -2.5], [0.85, -2], [0.9, -1.5],
+  [0.95, -1], [1, -0.5], [1.1, 0], [1.3, 0],
+] as const
+const FLIPPER_CORRECTION_VELOCITY = [
+  [0, 1], [0.16, 1.06], [0.41, 1.05], [0.53, 1],
+  [0.702, 0.968], [0.95, 0.968], [1.03, 0.945],
+] as const
+const FLIPPER_CORRECTION_TRIGGERS = {
+  left: (() => {
+    const source = VPX_TRIGGER_BY_NAME.get('TriggerLF')
+    return source ? {
+      source,
+      center: scaleVpxPoint(source.center),
+      points: sampleClosedVpxTrigger(source),
+      radius: source.radius * VPX_PLAYFIELD_SCALE,
+      hitHeight: source.hitHeight * VPX_PLAYFIELD_SCALE,
+    } : null
+  })(),
+  right: (() => {
+    const source = VPX_TRIGGER_BY_NAME.get('TriggerRF')
+    return source ? {
+      source,
+      center: scaleVpxPoint(source.center),
+      points: sampleClosedVpxTrigger(source),
+      radius: source.radius * VPX_PLAYFIELD_SCALE,
+      hitHeight: source.hitHeight * VPX_PLAYFIELD_SCALE,
+    } : null
+  })(),
+} as const
+
+const createFlipperPolarityState = (): FlipperPolarityState => ({
+  fireAt: Number.NEGATIVE_INFINITY,
+  partialFlipCoefficient: 1,
+  pressed: false,
+})
+
+function linearEnvelope(value: number, points: readonly (readonly [number, number])[]) {
+  if (value <= points[0][0]) return points[0][1]
+  for (let index = 1; index < points.length; index += 1) {
+    const previous = points[index - 1]
+    const current = points[index]
+    if (value <= current[0]) {
+      const progress = (value - previous[0]) / Math.max(1e-9, current[0] - previous[0])
+      return previous[1] + (current[1] - previous[1]) * progress
+    }
+  }
+  return points[points.length - 1][1]
+}
+
+function activateScriptedFlipper(state: FlipperScriptState) {
+  state.pressed = true
+  state.parameters.elasticity = FLIPPER_PARAMETERS.elasticity
+  state.parameters.torqueDamping = FLIPPER_PARAMETERS.torqueDamping
+  state.parameters.torqueDampingAngle = FLIPPER_PARAMETERS.torqueDampingAngle
+}
+
+function deactivateScriptedFlipper(
+  state: FlipperScriptState,
+  mover: VpxFlipperMover,
+  balls: Ball[],
+  center: { x: number; y: number },
+) {
+  state.pressed = false
+  state.parameters.torqueDampingAngle = FLIPPER_PARAMETERS.torqueDampingAngle
+  state.parameters.torqueDamping = FLIPPER_PARAMETERS.torqueDamping
+    * FLIPPER_TRICKS.returnTorqueRatio / FLIPPER_PARAMETERS.returnRatio
+
+  // The source table gives a cradled ball a tiny upward velocity when a held
+  // flipper is released, preventing the ball from sticking to the bat.
+  if (Math.abs(mover.angle - state.parameters.endAngle) > 0.1 * Math.PI / 180) return
+  for (const ball of balls) {
+    if (!ball.active || ball.finished || ball.parked || ball.heldInShooterLane) continue
+    if (Math.hypot(ball.x - center.x, ball.y - center.y) >= 55 * VPX_PLAYFIELD_SCALE) continue
+    if (ball.vy * BALL_TO_VPX_VELOCITY_SCALE >= -0.4) {
+      ball.vy = -0.4 / BALL_TO_VPX_VELOCITY_SCALE
+    }
+  }
+}
+
+function updateScriptedFlipper(
+  state: FlipperScriptState,
+  mover: VpxFlipperMover,
+  pressed: boolean,
+  time: number,
+) {
+  const atRest = Math.abs(mover.angle - FLIPPER_PARAMETERS.startAngle) < 0.05 * Math.PI / 180
+  const atEnd = Math.abs(mover.angle - FLIPPER_PARAMETERS.endAngle) < 0.02 * Math.PI / 180
+
+  if (atRest) {
+    if (state.phase !== 1) {
+      state.parameters.rampUp = FLIPPER_TRICKS.startOfStrokeRampUp
+      state.parameters.endAngle = FLIPPER_PARAMETERS.endAngle - FLIPPER_TRICKS.restEndAngleOffset
+      state.parameters.elasticity = FLIPPER_PARAMETERS.elasticity * FLIPPER_TRICKS.restElasticityMultiplier
+      state.endReachedAt = Number.NEGATIVE_INFINITY
+      state.phase = 1
+    }
+  } else if (atEnd && pressed) {
+    if (!Number.isFinite(state.endReachedAt)) state.endReachedAt = time
+    if (state.phase !== 2) {
+      state.parameters.torqueDampingAngle = FLIPPER_TRICKS.endOfStrokeAngle
+      state.parameters.torqueDamping = FLIPPER_TRICKS.endOfStrokeTorque
+      state.parameters.rampUp = FLIPPER_TRICKS.endOfStrokeRampUp
+      state.parameters.endAngle = FLIPPER_PARAMETERS.endAngle
+      state.phase = 2
+    }
+  } else if (pressed && state.phase !== 3) {
+    state.parameters.torqueDamping = FLIPPER_PARAMETERS.torqueDamping
+    state.parameters.torqueDampingAngle = FLIPPER_PARAMETERS.torqueDampingAngle
+    state.parameters.rampUp = FLIPPER_PARAMETERS.rampUp
+    state.parameters.elasticity = FLIPPER_PARAMETERS.elasticity
+    state.parameters.endAngle = FLIPPER_PARAMETERS.endAngle
+    state.phase = 3
+  }
+}
+
+function applyScriptedFlipperContact(
+  ball: Ball,
+  side: FlipperSide,
+  state: FlipperScriptState,
+  mover: VpxFlipperMover,
+  impactSpeed: number,
+  time: number,
+  dispatchCollide: boolean,
+) {
+  // HitFlipper only dispatches the scripted Collide event for a meaningful
+  // impact and throttles that event to once per flipper every 250 ms.
+  if (impactSpeed <= 0.25 || time - state.lastCollisionEventAt <= 250) return
+  state.lastCollisionEventAt = time
+  if (!dispatchCollide) return
+  const center = side === 'left' ? FLIPPER_LEFT_CENTER : FLIPPER_RIGHT_CENTER
+  const catchTime = time - state.endReachedAt
+  const horizontalDistance = Math.abs(ball.x - center.x) / VPX_PLAYFIELD_SCALE
+  if (
+    catchTime >= 0
+    && catchTime <= FLIPPER_TRICKS.liveCatchMilliseconds
+    && impactSpeed > 6
+    && horizontalDistance > FLIPPER_TRICKS.liveCatchDistanceMin
+    && horizontalDistance < FLIPPER_TRICKS.liveCatchDistanceMax
+  ) {
+    const catchBounce = catchTime <= FLIPPER_TRICKS.liveCatchMilliseconds * 0.5
+      ? 0
+      : Math.abs(FLIPPER_TRICKS.liveCatchMilliseconds * 0.5 - catchTime)
+    const direction = side === 'left' ? 1 : -1
+    if (catchBounce === 0 && ball.vx * direction > 0) ball.vx = 0
+    ball.vy = catchBounce * (32 / FLIPPER_TRICKS.liveCatchMilliseconds)
+      / BALL_TO_VPX_VELOCITY_SCALE
+    ball.angularVelocity = 0
+    ball.angularVelocityX = 0
+    ball.angularVelocityY = 0
+    return
+  }
+
+  // FlippersD.Dampenf: the table only rubberizes gentle upward contacts at
+  // end-of-stroke. corSpeed is the same 10 ms pre-impact sample used by VPX.
+  if (Math.abs(mover.angle - FLIPPER_PARAMETERS.endAngle) > Math.PI / 180) return
+  const velocityX = ball.vx * BALL_TO_VPX_VELOCITY_SCALE
+  const velocityY = ball.vy * BALL_TO_VPX_VELOCITY_SCALE
+  if (Math.abs(velocityX) >= 2 || velocityY >= 0 || velocityY <= -3.75) return
+  const outgoingSpeed = Math.hypot(velocityX, velocityY)
+  const desiredCor = linearEnvelope(ball.corSpeed, FLIPPER_DAMPENER_CURVE)
+  const realCor = outgoingSpeed / (ball.corSpeed + 0.0001)
+  const coefficient = desiredCor / Math.max(realCor, 0.0001)
+  ball.vx *= coefficient
+  ball.vy *= coefficient
+}
+
+function ballInFlipperNudgeTrigger(ball: Ball, rail: Rail) {
+  if (!ball.active || ball.finished || ball.parked || ball.heldInShooterLane) return false
+  const axisX = rail.x2 - rail.x1
+  const axisY = rail.y2 - rail.y1
+  const lengthSquared = axisX * axisX + axisY * axisY
+  if (lengthSquared <= 1e-6) return false
+  const offsetX = ball.x - rail.x1
+  const offsetY = ball.y - rail.y1
+  const projection = (offsetX * axisX + offsetY * axisY) / lengthSquared
+  if (projection < 0 || projection > 1) return false
+  const perpendicularDistance = Math.abs(offsetX * axisY - offsetY * axisX) / Math.sqrt(lengthSquared)
+  return perpendicularDistance < 48 * VPX_PLAYFIELD_SCALE
+}
+
+function applyScriptedFlipperNudge(
+  primaryState: FlipperScriptState,
+  primaryMover: VpxFlipperMover,
+  primaryRail: Rail,
+  otherMover: VpxFlipperMover,
+  otherRail: Rail,
+  balls: Ball[],
+) {
+  const atEnd = Math.abs(primaryMover.angle - FLIPPER_PARAMETERS.endAngle) < 0.001
+  if (atEnd && !primaryState.eosNudge) {
+    primaryState.eosNudge = true
+    if (Math.abs(otherMover.angle - FLIPPER_PARAMETERS.endAngle) >= 0.001) return
+    if (balls.some((ball) => ballInFlipperNudgeTrigger(ball, primaryRail))) return
+    for (const ball of balls) {
+      if (!ballInFlipperNudgeTrigger(ball, otherRail)) continue
+      ball.vx /= 1.3
+      ball.vy -= 0.5 / BALL_TO_VPX_VELOCITY_SCALE
+    }
+  } else if (Math.abs(primaryMover.angle - FLIPPER_PARAMETERS.endAngle) > 30 * Math.PI / 180) {
+    primaryState.eosNudge = false
+  }
+}
+
+const RUBBER_DAMPENER_CURVE = VPX_ROBOCOP_SCRIPT_PHYSICS.rubber.dampenerCurve
+
+function applyVpxTargetBouncer(ball: Ball, objectFactor: number) {
+  if (!VPX_ROBOCOP_SCRIPT_PHYSICS.targetBouncer.enabled) return
+  // VPX Ball.Z is its centre height; this port stores the lower contact
+  // height, so add the radius before applying the script's Z < 30 guard.
+  if ((ball.z + ball.radius) / VPX_PLAYFIELD_SCALE >= 30) return
+  const speed = Math.hypot(ball.vx, ball.vy, ball.vz)
+  if (speed <= 1e-7) return
+  const multipliers = [0.2, 0.25, 0.3, 0.4, 0.45, 0.5] as const
+  const zMultiplier = multipliers[Math.floor(Math.random() * multipliers.length)]
+    * objectFactor * VPX_ROBOCOP_SCRIPT_PHYSICS.targetBouncer.factor
+  const velocityRatio = ball.vx === 0 ? 1 : ball.vy / ball.vx
+  ball.vz = Math.abs(speed * zMultiplier)
+  ball.vx = Math.sign(ball.vx) * Math.sqrt(Math.abs(
+    (speed * speed - ball.vz * ball.vz) / (1 + velocityRatio * velocityRatio),
+  ))
+  ball.vy = ball.vx * velocityRatio
+}
+
+function applyVpxCollectionHit(ball: Ball, objectName: string, time: number) {
+  const isPost = VPX_DAMPENED_POSTS.has(objectName)
+  const isSleeve = VPX_DAMPENED_SLEEVES.has(objectName)
+  if (!isPost && !isSleeve) return
+  const cooldownKey = `collection-hit-${objectName}`
+  if ((ball.objectCooldowns[cooldownKey] ?? 0) > time) return
+  ball.objectCooldowns[cooldownKey] = time + 20
+
+  // dPosts_Hit / dSleeves_Hit run after native collision. Their Dampener
+  // compares the resulting speed with CoRTracker's latest 10 ms sample and
+  // scales planar velocity to the authored data-mined coefficient of return.
+  const currentSpeedVpx = Math.hypot(ball.vx, ball.vy, ball.vz)
+    * BALL_TO_VPX_VELOCITY_SCALE
+  const desiredCor = linearEnvelope(ball.corSpeed, RUBBER_DAMPENER_CURVE)
+    * (isSleeve ? VPX_ROBOCOP_SCRIPT_PHYSICS.rubber.sleeveMultiplier : 1)
+  const realCor = currentSpeedVpx / (ball.corSpeed + 0.0001)
+  if (realCor > 1e-7) {
+    const coefficient = desiredCor / realCor
+    ball.vx *= coefficient
+    ball.vy *= coefficient
+  }
+  applyVpxTargetBouncer(ball, isSleeve ? 0.7 : 1)
+}
+
+const VPX_STANDUP_TARGETS = new Set<string>(VPX_ROBOCOP_SCRIPT_PHYSICS.standup.names)
+const VPX_STANDUP_TARGET_SEGMENTS = new Map<string, VpxSegment>(
+  VPX_TABLE.contacts
+    .filter((contact) => VPX_STANDUP_TARGETS.has(contact.name))
+    .map((contact) => [contact.name, contact]),
+)
+const VPX_STANDUP_TARGET_MASS = VPX_ROBOCOP_SCRIPT_PHYSICS.standup.mass
+const VPX_STANDUP_DISABLED_MILLISECONDS = VPX_ROBOCOP_SCRIPT_PHYSICS.standup.disabledMilliseconds
+
+/** Port of RoboCop's STCheckHit followed by DTBallPhysics. */
+function applyVpxStandupTargetPhysics(ball: Ball, rail: Rail, incomingNormalSpeed: number) {
+  if (!rail.wallName || !VPX_STANDUP_TARGETS.has(rail.wallName)) return null
+  const source = VPX_STANDUP_TARGET_SEGMENTS.get(rail.wallName)
+  if (!source) return null
+  if (Math.abs(incomingNormalSpeed) * BALL_TO_VPX_VELOCITY_SCALE <= (source.threshold ?? 0)) return false
+  const faceAngle = Math.atan2(source.to[1] - source.from[1], source.to[0] - source.from[0])
+  // The VPX target orientation follows its face. The table script subtracts
+  // 90 degrees to obtain the direction normal to that face.
+  const responseAngle = faceAngle - Math.PI / 2
+  const incomingX = ball.corVelocityX * BALL_TO_VPX_VELOCITY_SCALE
+  const incomingY = ball.corVelocityY * BALL_TO_VPX_VELOCITY_SCALE
+  const outgoingX = ball.vx * BALL_TO_VPX_VELOCITY_SCALE
+  const outgoingY = ball.vy * BALL_TO_VPX_VELOCITY_SCALE
+  const incomingAngle = Math.atan2(incomingY, incomingX)
+  const outgoingAngle = Math.atan2(outgoingY, outgoingX)
+  const outgoingSpeed = Math.hypot(ball.vx, ball.vy, ball.vz) * BALL_TO_VPX_VELOCITY_SCALE
+  const normalX = Math.cos(responseAngle)
+  const normalY = Math.sin(responseAngle)
+  const parallelX = Math.cos(responseAngle + Math.PI / 2)
+  const parallelY = Math.sin(responseAngle + Math.PI / 2)
+  const perpendicularBefore = ball.corSpeed * Math.cos(incomingAngle - responseAngle)
+  const parallelBefore = ball.corSpeed * Math.sin(incomingAngle - responseAngle)
+  const perpendicularAfter = outgoingSpeed * Math.cos(outgoingAngle - responseAngle)
+  const parallelAfter = outgoingSpeed * Math.sin(outgoingAngle - responseAngle)
+  const struckFace = perpendicularBefore > 0 && (
+    perpendicularAfter <= 0
+    || (parallelBefore > 0 && parallelAfter > 0)
+    || (parallelBefore < 0 && parallelAfter < 0)
+  )
+  if (!struckFace) return false
+
+  const normalAfter = perpendicularBefore
+    * (1 - VPX_STANDUP_TARGET_MASS) / (1 + VPX_STANDUP_TARGET_MASS)
+  ball.vx = (normalAfter * normalX + parallelBefore * parallelX)
+    / BALL_TO_VPX_VELOCITY_SCALE
+  ball.vy = (normalAfter * normalY + parallelBefore * parallelY)
+    / BALL_TO_VPX_VELOCITY_SCALE
+  return true
+}
+
+function ballInsideFlipperCorrectionTrigger(ball: Ball, side: FlipperSide) {
+  const trigger = FLIPPER_CORRECTION_TRIGGERS[side]
+  if (!trigger || !trigger.source.enabled || ball.z > trigger.hitHeight) return false
+  if (trigger.points.length > 2) {
+    return pointInPolygon(ball.x, ball.y, trigger.points)
+  }
+  return Math.hypot(ball.x - trigger.center.x, ball.y - trigger.center.y) <= trigger.radius
+}
+
+function beginFlipperPolarityCorrection(
+  side: FlipperSide,
+  balls: Ball[],
+  mover: VpxFlipperMover,
+  state: FlipperPolarityState,
+  time: number,
+) {
+  state.fireAt = time
+  state.partialFlipCoefficient = Math.max(0, Math.min(1, Math.abs(
+    (FLIPPER_PARAMETERS.startAngle - mover.angle)
+      / (FLIPPER_PARAMETERS.startAngle - FLIPPER_PARAMETERS.endAngle) - 1,
+  )))
+  const volumeKey = `flipper-correction-${side}`
+  balls.forEach((ball) => {
+    if (ball.activeRuleVolumes[volumeKey]) {
+      ball.flipperCorrectionSamples[side] = { x: ball.x, y: ball.y }
+    }
+  })
+}
+
+function applyFlipperPolarityCorrection(
+  ball: Ball,
+  side: FlipperSide,
+  state: FlipperPolarityState,
+  time: number,
+) {
+  const sample = ball.flipperCorrectionSamples[side] ?? { x: ball.x, y: ball.y }
+  delete ball.flipperCorrectionSamples[side]
+  if (time >= state.fireAt + FLIPPER_CORRECTION_TIME_MS
+    || ball.vy * BALL_TO_VPX_VELOCITY_SCALE > -8) return
+
+  const startX = side === 'left' ? VPX_TABLE.flippers.left.center[0] : VPX_TABLE.flippers.right.center[0]
+  const sampleX = sample.x / VPX_PLAYFIELD_SCALE
+  const ballPosition = (sampleX - startX) / (FLIPPER_CORRECTION_ENDPOINT_X[side] - startX)
+  const rawVelocityCoefficient = linearEnvelope(ballPosition, FLIPPER_CORRECTION_VELOCITY)
+  const velocityCoefficient = 1
+    + state.partialFlipCoefficient * (rawVelocityCoefficient - 1)
+  ball.vx *= velocityCoefficient
+  ball.vy *= velocityCoefficient
+
+  const handedness = startX > FLIPPER_CORRECTION_ENDPOINT_X[side] ? -1 : 1
+  const polarityVpx = linearEnvelope(ballPosition, FLIPPER_CORRECTION_POLARITY)
+    * handedness * state.partialFlipCoefficient
+  ball.vx += polarityVpx / BALL_TO_VPX_VELOCITY_SCALE
+}
+
+function processFlipperPolarityVolumes(
+  ball: Ball,
+  time: number,
+  states: Record<FlipperSide, FlipperPolarityState>,
+) {
+  ;(['left', 'right'] as const).forEach((side) => {
+    const volumeKey = `flipper-correction-${side}`
+    const wasInside = Boolean(ball.activeRuleVolumes[volumeKey])
+    const isInside = ballInsideFlipperCorrectionTrigger(ball, side)
+    if (wasInside && !isInside) applyFlipperPolarityCorrection(ball, side, states[side], time)
+    ball.activeRuleVolumes[volumeKey] = isInside
+  })
+}
+
 // VPX renders moving objects slightly ahead of the last completed physics
 // state to keep input-to-photon latency from adding a whole display frame.
 // Keep the real mover/collision state untouched and advance a copy in 1 ms
 // increments so this uses the same coil, inertia, damping, and stop model.
 const FLIPPER_RENDER_PREDICTION_MS = 8
 
-function predictedFlipperAngle(mover: VpxFlipperMover, pressed: boolean, enabled: boolean) {
+function predictedFlipperAngle(
+  mover: VpxFlipperMover,
+  parameters: VpxFlipperParameters,
+  pressed: boolean,
+  enabled: boolean,
+) {
   if (!enabled) return mover.angle
   const predicted = { ...mover }
   for (let millisecond = 0; millisecond < FLIPPER_RENDER_PREDICTION_MS; millisecond += 1) {
-    stepVpxFlipperMover(predicted, FLIPPER_PARAMETERS, pressed, 0.1)
+    stepVpxFlipperMover(predicted, parameters, pressed, 0.1)
   }
   return predicted.angle
 }
@@ -661,6 +1589,12 @@ const MODES: Mode[] = [
     description: 'Use RoboCop rules to lock three named games, then let a drain or jackpot make the pick.',
     accent: '#06d6a0',
   },
+  {
+    id: 'full-game',
+    name: 'Full Game',
+    description: 'Play a normal three-ball game of RoboCop with scoring, locks, multiball, and extra balls.',
+    accent: '#f59e0b',
+  },
 ]
 
 /**
@@ -674,8 +1608,12 @@ const MODES: Mode[] = [
  * 17.48 where the slingshot band begins, so the slingshots never collided.
  */
 function ballOverlapsHeightBand(ball: Ball, heightBottom?: number, heightTop?: number) {
-  if (ball.z > (heightTop ?? Number.POSITIVE_INFINITY)) return false
-  if (ball.z + ball.radius * 2 < (heightBottom ?? 0)) return false
+  // VPX builds the horizontal top/bottom polygons and the vertical side as
+  // separate colliders. Keep the side's endpoints open here: when a ball is
+  // exactly tangent to a horizontal face it must not also be trapped by the
+  // 2D side approximation.
+  if (ball.z >= (heightTop ?? Number.POSITIVE_INFINITY) - 1e-4) return false
+  if (ball.z + ball.radius * 2 <= (heightBottom ?? 0) + 1e-4) return false
   return true
 }
 
@@ -690,14 +1628,15 @@ function ballOverlapsHeightBand(ball: Ball, heightBottom?: number, heightTop?: n
 /**
  * Scatter angle for a collision, in degrees.
  *
- * A zero on a VPX object does not mean "no scatter" -- Collide3DWall
- * substitutes the table's global scatter (GameData SCAT, 2 degrees here).
- * Both RoboCop slingshot faces are authored with 0, so treating that as
- * "skip scatter" made every sling bounce perfectly deterministic and let a
- * sling-to-sling rally retrace the same path forever. applyVpxScatter
- * self-guards on weak impacts, so this is safe to call unconditionally.
+ * VPX preserves an object's authored zero as "no scatter". Only a negative
+ * value requests the table's DefaultScatter override, which is distinct from
+ * the implicit playfield plane's own scatter. VPX then scales the selected
+ * angle by the table difficulty before shaping the random distribution.
  */
-const scatterDegrees = (scatter?: number) => (scatter && scatter > 0 ? scatter : VPX_TABLE.playfield.scatter)
+const scatterDegrees = (scatter?: number) => (
+  (scatter == null || scatter < 0 ? VPX_TABLE.playfield.defaultScatter : scatter)
+  * VPX_TABLE.playfield.difficulty
+)
 
 const vpxVelocityToCanvas = (velocity: number) => velocity / BALL_TO_VPX_VELOCITY_SCALE
 
@@ -725,43 +1664,51 @@ function collideRail(ball: Ball, rail: Rail) {
   ball.x += nx * overlap
   ball.y += ny * overlap
   const rubber = rail.kind !== 'wall'
+  const firesSlingshot = !ball.rules.tilted && rail.kind === 'slingshot' && applyVpxSlingshotImpulse(ball, {
+    x1: rail.x1,
+    y1: rail.y1,
+    x2: rail.x2,
+    y2: rail.y2,
+    normalX: nx,
+    normalY: ny,
+    threshold: rail.threshold ?? 0,
+    force: rail.force ?? 0,
+    velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
+  })
   const contact = resolveVpxSurfaceContact(ball, {
     normalX: nx,
     normalY: ny,
     elasticity: rail.elasticity ?? (rubber ? 0.62 : 0.48),
     elasticityFalloff: rail.elasticityFalloff ?? 0,
     friction: rail.friction ?? (rubber ? 0.04 : 0.1),
+    velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
   })
-  if (contact) applyVpxScatter(ball, scatterDegrees(rail.scatter), contact.normalImpulse)
-  // VPX gates a slingshot on impact speed (Surface SLTH, 2.5 on both of
-  // RoboCop's): a hit under the threshold bounces off the rubber without
-  // firing. Together with scatter and the elasticity loss, this is what stops
-  // a sling-to-sling rally sustaining itself -- VPX has no other brake.
-  const triggersSlingshot = rail.kind === 'slingshot'
-    && Math.abs(contact?.normalSpeed ?? 0) * BALL_TO_VPX_VELOCITY_SCALE
-      >= (rail.threshold ?? 0) * SLINGSHOT_THRESHOLD_ENFORCEMENT
-  if (contact && triggersSlingshot) {
-    const kick = (rail.force ?? 40) * SLINGSHOT_FORCE_SCALE
-    ball.vx += nx * kick
-    ball.vy += ny * kick
-  }
+  if (contact) applyVpxScatter(
+    ball,
+    scatterDegrees(rail.scatter),
+    contact.normalImpulse,
+    BALL_TO_VPX_VELOCITY_SCALE,
+  )
   // The caller uses this to decide whether the rail's switch closed. A
   // slingshot that did not reach its threshold bounced the ball but did not
   // fire, so it must not register a switch hit either.
-  return rail.kind !== 'slingshot' || triggersSlingshot
+  return contact != null && (rail.kind !== 'slingshot' || firesSlingshot)
 }
 
 function advanceThroughVpxWalls(
   ball: Ball,
   grid: RailGrid,
+  pegs: readonly Peg[],
   step: number,
   externalVelocityDeltaX: number,
   externalVelocityDeltaY: number,
   time: number,
+  standupDisabledUntil: Map<string, number>,
 ) {
   let remainingTime = step
   for (let iteration = 0; iteration < 4 && remainingTime > 1e-6; iteration += 1) {
     let earliest: { rail: Rail; time: number; normalX: number; normalY: number; penetration: number } | null = null
+    let earliestPeg: { peg: Peg; time: number; normalX: number; normalY: number; penetration: number } | null = null
     // Box the ball's centre path for this slice of the step; the grid already
     // padded each rail by the ball radius when it was built.
     const sweptX = ball.x + ball.vx * remainingTime
@@ -773,9 +1720,41 @@ function advanceThroughVpxWalls(
     for (let index = 0; index < candidates.length; index += 1) {
       const rail = grid.rails[candidates[index]]
       if (!ballOverlapsHeightBand(ball, rail.heightBottom, rail.heightTop)) continue
+      if (rail.wallName && (standupDisabledUntil.get(rail.wallName) ?? 0) > time) continue
       if (rail.allowsInvertedEscape && externalVelocityDeltaY < 0) continue
       const hit = getVpxLineSegmentHit(ball, rail, remainingTime)
       if (hit && (!earliest || hit.time < earliest.time)) earliest = { rail, ...hit }
+    }
+    for (let index = 0; index < pegs.length; index += 1) {
+      const peg = pegs[index]
+      if (!ballOverlapsHeightBand(ball, 0, 90 * VPX_PLAYFIELD_SCALE)) continue
+      const hit = getVpxCircleHit(
+        ball,
+        peg.x,
+        peg.y,
+        peg.r ?? 10,
+        remainingTime,
+        BALL_TO_VPX_VELOCITY_SCALE,
+      )
+      if (hit && (!earliestPeg || hit.time < earliestPeg.time)) earliestPeg = { peg, ...hit }
+    }
+    if (!earliest && !earliestPeg) break
+
+    if (earliestPeg && (!earliest || earliestPeg.time < earliest.time)) {
+      ball.x += ball.vx * earliestPeg.time
+      ball.y += ball.vy * earliestPeg.time
+      remainingTime -= earliestPeg.time
+      const registersSwitch = resolvePegContact(
+        ball,
+        earliestPeg.peg,
+        earliestPeg.normalX,
+        earliestPeg.normalY,
+        earliestPeg.penetration,
+      )
+      if (registersSwitch && earliestPeg.peg.switchNumber) {
+        pulseBallRuleSwitch(ball, earliestPeg.peg.switchNumber, time)
+      }
+      continue
     }
     if (!earliest) break
 
@@ -788,6 +1767,21 @@ function advanceThroughVpxWalls(
     }
 
     const normalSpeed = ball.vx * earliest.normalX + ball.vy * earliest.normalY
+    // LineSegSlingshot drives the ball into its rubber before the ordinary
+    // wall response. Its parabolic force is strongest at the face midpoint.
+    const firesSlingshot = !ball.rules.tilted
+      && earliest.rail.kind === 'slingshot'
+      && applyVpxSlingshotImpulse(ball, {
+      x1: earliest.rail.x1,
+      y1: earliest.rail.y1,
+      x2: earliest.rail.x2,
+      y2: earliest.rail.y2,
+      normalX: earliest.normalX,
+      normalY: earliest.normalY,
+      threshold: earliest.rail.threshold ?? 0,
+      force: earliest.rail.force ?? 0,
+      velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
+    })
     const isStaticContact = Math.abs(normalSpeed * BALL_TO_VPX_VELOCITY_SCALE) <= VPX_CONTACT_VELOCITY
     const contact = isStaticContact
       ? resolveVpxStaticContact(ball, {
@@ -796,6 +1790,7 @@ function advanceThroughVpxWalls(
           friction: earliest.rail.friction ?? 0.1,
           externalVelocityDeltaX,
           externalVelocityDeltaY,
+          velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
         })
       : resolveVpxSurfaceContact(ball, {
           normalX: earliest.normalX,
@@ -803,24 +1798,27 @@ function advanceThroughVpxWalls(
           elasticity: earliest.rail.elasticity ?? 0.48,
           elasticityFalloff: earliest.rail.elasticityFalloff ?? 0,
           friction: earliest.rail.friction ?? 0.1,
+          velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
         })
-    if (contact && !isStaticContact) {
-      applyVpxScatter(ball, scatterDegrees(earliest.rail.scatter), contact.normalImpulse)
+    const standupHit = contact && !isStaticContact
+      ? applyVpxStandupTargetPhysics(ball, earliest.rail, normalSpeed)
+      : null
+    if (standupHit && earliest.rail.wallName) {
+      standupDisabledUntil.set(earliest.rail.wallName, time + VPX_STANDUP_DISABLED_MILLISECONDS)
     }
-    // A slingshot only fires on a real impact above its SLTH threshold; a
-    // resting contact never does.
-    const firesSlingshot = earliest.rail.kind === 'slingshot'
-      && contact != null
-      && !isStaticContact
-      && Math.abs(contact.normalSpeed) * BALL_TO_VPX_VELOCITY_SCALE
-        >= (earliest.rail.threshold ?? 0) * SLINGSHOT_THRESHOLD_ENFORCEMENT
-    if (firesSlingshot) {
-      const kick = (earliest.rail.force ?? 40) * SLINGSHOT_FORCE_SCALE
-      ball.vx += earliest.normalX * kick
-      ball.vy += earliest.normalY * kick
+    if (contact && !isStaticContact) {
+      applyVpxScatter(
+        ball,
+        scatterDegrees(earliest.rail.scatter),
+        contact.normalImpulse,
+        BALL_TO_VPX_VELOCITY_SCALE,
+      )
+      if (earliest.rail.wallName) applyVpxCollectionHit(ball, earliest.rail.wallName, time)
     }
     // A sling that did not fire bounced the ball but closed no switch.
-    const registersSwitch = earliest.rail.kind !== 'slingshot' || firesSlingshot
+    const isStandup = Boolean(earliest.rail.wallName && VPX_STANDUP_TARGETS.has(earliest.rail.wallName))
+    const registersSwitch = (earliest.rail.kind !== 'slingshot' || firesSlingshot)
+      && (!isStandup || standupHit === true)
     if (contact && registersSwitch && earliest.rail.switchNumber) {
       pulseBallRuleSwitch(ball, earliest.rail.switchNumber, time)
     }
@@ -844,6 +1842,10 @@ function getTwoSidedMechanicalHit(ball: Ball, line: MechanicalLine, maximumTime:
 function pulseBallRuleSwitch(ball: Ball, switchNumber: number, time: number, cooldown = 80) {
   const key = `rule-switch-${switchNumber}`
   if ((ball.objectCooldowns[key] ?? 0) > time) return
+  if (ball.rules.tilted) {
+    ball.objectCooldowns[key] = time + cooldown
+    return
+  }
   const lockedBalls = ball.rules.lockedBalls
   const jackpotCollected = ball.rules.jackpotCollected
   pulseRoboCopSwitch(ball.rules, switchNumber, time)
@@ -852,6 +1854,7 @@ function pulseBallRuleSwitch(ball: Ball, switchNumber: number, time: number, coo
   }
   if (ball.rules.lockedBalls > lockedBalls) ball.pendingRuleLock = true
   if (!jackpotCollected && ball.rules.jackpotCollected) ball.pendingJackpot = true
+  ball.lastRuleSwitch = switchNumber
   ball.objectCooldowns[key] = time + cooldown
 }
 
@@ -869,7 +1872,7 @@ function pointInPolygon(x: number, y: number, points: readonly { x: number; y: n
 function processRoboCopRuleTriggers(ball: Ball, time: number) {
   VPX_RULE_TRIGGERS.forEach((trigger) => {
     const isCorrectSurface = trigger.rampTrackIndex == null
-      ? ball.z - ball.radius <= trigger.hitHeight
+      ? ball.z <= trigger.hitHeight
       : ball.rampTrackIndex === trigger.rampTrackIndex
     const insideShape = trigger.points
       ? pointInPolygon(ball.x, ball.y, trigger.points)
@@ -889,7 +1892,7 @@ function hitVpxMechanicalObjects(
   gateMovers: Record<string, VpxGateMover>,
   spinnerMovers: Record<string, VpxSpinnerMover>,
 ) {
-  if (ball.rampTrackIndex != null || ball.z - ball.radius > 65 * VPX_PLAYFIELD_SCALE) return
+  if (ball.rampTrackIndex != null || !ballOverlapsHeightBand(ball, 0, 65 * VPX_PLAYFIELD_SCALE)) return
 
   VPX_GATES.forEach((gate) => {
     if ((ball.objectCooldowns[gate.source.name] ?? 0) > time) return
@@ -906,7 +1909,6 @@ function hitVpxMechanicalObjects(
     if (!hit) return
     const normalSpeed = (ball.vx * hit.normalX + ball.vy * hit.normalY) * BALL_TO_VPX_VELOCITY_SCALE
     hitVpxSpinnerMover(spinnerMovers[spinner.source.name], spinner.source, normalSpeed, hit.fromBack)
-    pulseBallRuleSwitch(ball, 44, time, 24)
     ball.objectCooldowns[spinner.source.name] = time + 28
   })
 }
@@ -951,8 +1953,12 @@ function tryCaptureVpxKicker(ball: Ball, balls: Ball[], time: number) {
   const previousVolume = ball.kickerVolume
   for (const kicker of VPX_KICKERS) {
     if ((ball.objectCooldowns[kicker.source.name] ?? 0) > time) continue
-    if (balls.some((candidate) => candidate !== ball && candidate.capturedBy === kicker.source.name)) continue
-    if (ball.z - ball.radius > kicker.hitHeight) continue
+    if (balls.some((candidate) => (
+      candidate !== ball
+      && !candidate.finished
+      && (candidate.capturedBy === kicker.source.name || candidate.parkedAt === kicker.source.name)
+    ))) continue
+    if (ball.z > kicker.hitHeight) continue
     const dx = ball.x - kicker.center.x
     const dy = ball.y - kicker.center.y
     const distance = Math.hypot(dx, dy)
@@ -1030,35 +2036,30 @@ function collideFlipper(
   ball: Ball,
   rail: Rail,
   mover: VpxFlipperMover,
+  parameters: VpxFlipperParameters,
   worldAngularDirection: 1 | -1,
+  side: FlipperSide,
+  scriptState: FlipperScriptState,
+  time: number,
 ) {
-  if (ball.z - ball.radius > 50 * VPX_PLAYFIELD_SCALE) return
-  const dx = rail.x2 - rail.x1
-  const dy = rail.y2 - rail.y1
-  const lengthSquared = dx * dx + dy * dy
-  const t = Math.max(0, Math.min(1, ((ball.x - rail.x1) * dx + (ball.y - rail.y1) * dy) / lengthSquared))
-  const closestX = rail.x1 + t * dx
-  const closestY = rail.y1 + t * dy
-  const nxRaw = ball.x - closestX
-  const nyRaw = ball.y - closestY
-  const distance = Math.hypot(nxRaw, nyRaw)
-  // Pinball flippers are tapered bats rather than constant-width rails.
-  const flipperRadius = FLIPPER_BASE_RADIUS + (FLIPPER_END_RADIUS - FLIPPER_BASE_RADIUS) * t
-  if (distance >= ball.radius + flipperRadius) return
-
-  // If a fast-moving tip reaches the exact ball center, VPX still produces a
-  // separating contact normal. Do the same instead of dropping the contact.
-  const railLength = Math.sqrt(lengthSquared)
-  let nx = distance > 1e-6 ? nxRaw / distance : -dy / railLength
-  let ny = distance > 1e-6 ? nyRaw / distance : dx / railLength
-  if (distance <= 1e-6 && ball.vx * nx + ball.vy * ny > 0) { nx = -nx; ny = -ny }
-  const overlap = ball.radius + flipperRadius - distance
-  ball.x += nx * overlap
-  ball.y += ny * overlap
+  if (!ballOverlapsHeightBand(ball, 0, 50 * VPX_PLAYFIELD_SCALE)) return false
+  const contact = getVpxFlipperProfileContact(
+    ball,
+    rail.x1,
+    rail.y1,
+    rail.x2,
+    rail.y2,
+    FLIPPER_BASE_RADIUS,
+    FLIPPER_END_RADIUS,
+  )
+  if (!contact) return false
+  const { normalX: nx, normalY: ny } = contact
+  ball.x += nx * contact.penetration
+  ball.y += ny * contact.penetration
 
   const radiusX = ball.x - ball.radius * nx - rail.x1
   const radiusY = ball.y - ball.radius * ny - rail.y1
-  resolveVpxFlipperContact(ball, mover, FLIPPER_PARAMETERS, {
+  const result = resolveVpxFlipperContact(ball, mover, parameters, {
     normalX: nx,
     normalY: ny,
     radiusX,
@@ -1066,53 +2067,75 @@ function collideFlipper(
     worldAngularDirection,
     ballVelocityScale: BALL_TO_VPX_VELOCITY_SCALE,
   })
+  if (!result) return false
+  // VPX's circular pivot collider fires the generic Hit event; only the two
+  // faces and the end cap dispatch the Collide(parm) callback used by the
+  // live-catch script.
+  applyScriptedFlipperContact(
+    ball,
+    side,
+    scriptState,
+    mover,
+    Math.abs(result.normalSpeed),
+    time,
+    contact.part !== 'base',
+  )
+  return true
 }
 
-function collidePeg(ball: Ball, peg: Peg) {
-  if (ball.z - ball.radius > 90 * VPX_PLAYFIELD_SCALE) return false
+function resolvePegContact(ball: Ball, peg: Peg, nx: number, ny: number, penetration: number) {
   const radius = peg.r ?? 10
-  const dx = ball.x - peg.x
-  const dy = ball.y - peg.y
-  const distance = Math.hypot(dx, dy)
-  if (distance >= ball.radius + radius || distance === 0) return false
-  const nx = dx / distance
-  const ny = dy / distance
-  const overlap = ball.radius + radius - distance
-  ball.x += nx * overlap
-  ball.y += ny * overlap
+  if (penetration > 0) {
+    ball.x += nx * penetration
+    ball.y += ny * penetration
+  }
   const isBumper = peg.kind === 'bumper' || (peg.kind !== 'post' && radius > 20)
+  const incomingNormalSpeed = ball.vx * nx + ball.vy * ny
   const contact = resolveVpxSurfaceContact(ball, {
     normalX: nx,
     normalY: ny,
     elasticity: peg.elasticity ?? (isBumper ? 0.58 : 0.68),
     elasticityFalloff: peg.elasticityFalloff ?? 0,
     friction: peg.friction ?? (isBumper ? 0.025 : 0.075),
+    velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
   })
-  if (contact) applyVpxScatter(ball, scatterDegrees(peg.scatter), contact.normalImpulse)
-  if (isBumper) {
-    // VPX bumper FORC and surface SLGF are NOT the same scale: RoboCop's pops
-    // are FORC 10 while its slings are SLGF 65-70. Running both through the
-    // slingshot factor made a pop kick 0.61 units -- 6x weaker than the tuned
-    // fallback below, which is why the pops felt dead. BUMPER_FORCE_SCALE is
-    // calibrated so this table's FORC 10 lands on that tuned 3.8.
-    const kick = peg.force == null ? (radius >= 45 ? 3.8 : 3.1) : peg.force * BUMPER_FORCE_SCALE
-    ball.vx += nx * kick
-    ball.vy += ny * kick
-  }
-  return true
+  if (contact) applyVpxScatter(
+    ball,
+    scatterDegrees(peg.scatter),
+    contact.normalImpulse,
+    BALL_TO_VPX_VELOCITY_SCALE,
+  )
+  if (!contact) return false
+  if (!isBumper) return true
+  if (ball.rules.tilted) return true
+  return applyVpxBumperCoil(ball, incomingNormalSpeed, {
+    normalX: nx,
+    normalY: ny,
+    threshold: peg.threshold ?? 0,
+    force: peg.force ?? 0,
+    velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
+  })
 }
 
 function collideBalls(first: Ball, second: Ball) {
-  if (!first.active || !second.active || first.finished || second.finished || first.capturedBy || second.capturedBy) return
+  if (!first.active || !second.active || first.finished || second.finished || first.capturedBy || second.capturedBy) return false
   const dx = second.x - first.x
   const dy = second.y - first.y
   const dz = second.z - first.z
   const distance = Math.hypot(dx, dy, dz)
   const minimum = first.radius + second.radius
-  if (distance >= minimum) return
-  const nx = distance > 1e-6 ? dx / distance : 0
-  const ny = distance > 1e-6 ? dy / distance : 0
-  const nz = distance > 1e-6 ? dz / distance : 1
+  if (distance >= minimum) return false
+  const relativeVelocityX = second.vx - first.vx
+  const relativeVelocityY = second.vy - first.vy
+  const relativeVelocityZ = second.vz - first.vz
+  const relativeSpeed = Math.hypot(relativeVelocityX, relativeVelocityY, relativeVelocityZ)
+  // Exact coincident centers can occur when a mode creates several balls on
+  // one source point. VPX's event solver never receives a zero normal; derive
+  // a separating normal from relative motion rather than inventing a vertical
+  // kick that launches one ball off the table.
+  const nx = distance > 1e-6 ? dx / distance : relativeSpeed > 1e-6 ? -relativeVelocityX / relativeSpeed : 1
+  const ny = distance > 1e-6 ? dy / distance : relativeSpeed > 1e-6 ? -relativeVelocityY / relativeSpeed : 0
+  const nz = distance > 1e-6 ? dz / distance : relativeSpeed > 1e-6 ? -relativeVelocityZ / relativeSpeed : 0
   const overlap = minimum - distance
   first.x -= nx * overlap * 0.5
   first.y -= ny * overlap * 0.5
@@ -1121,10 +2144,8 @@ function collideBalls(first: Ball, second: Ball) {
   second.y += ny * overlap * 0.5
   second.z = Math.max(0, second.z + nz * overlap * 0.5)
 
-  const closingSpeed = (second.vx - first.vx) * nx
-    + (second.vy - first.vy) * ny
-    + (second.vz - first.vz) * nz
-  if (closingSpeed >= 0) return
+  const closingSpeed = relativeVelocityX * nx + relativeVelocityY * ny + relativeVelocityZ * nz
+  if (closingSpeed >= 0) return true
   // VPX uses a fixed 0.8 coefficient of restitution for equal-mass balls.
   const impulse = -(1 + 0.8) * closingSpeed / 2
   first.vx -= impulse * nx
@@ -1133,6 +2154,7 @@ function collideBalls(first: Ball, second: Ball) {
   second.vx += impulse * nx
   second.vy += impulse * ny
   second.vz += impulse * nz
+  return true
 }
 
 function traceVpxFlipperProfile(ctx: CanvasRenderingContext2D, length: number, baseRadius: number, endRadius: number) {
@@ -1298,15 +2320,22 @@ function isUnderVpxRamp(ball: Ball) {
     if (!closest) continue
     const surface = sampleRamp(track, closest.distance)
     if (closest.planarDistance > surface.width / 2) continue
-    // Clear the top of the ball before treating the ramp as an overpass.
-    if (surface.z > ball.z + ball.radius * 1.5) return true
+    // Clear the actual top of the ball before treating the ramp as an
+    // overpass. z is the contact height, so the top is z + the diameter.
+    if (surface.z > ball.z + ball.radius * 2 + 0.5) return true
   }
   return false
 }
 
 function tryEnterVpxRamp(ball: Ball, step: number) {
   if (ball.rampTrackIndex != null) return false
-  let best: { trackIndex: number; distance: number; score: number } | null = null
+  let best: {
+    trackIndex: number
+    distance: number
+    score: number
+    crossingProgress: number
+    crossesSurface: boolean
+  } | null = null
 
   VPX_RAMP_TRACKS.forEach((track, trackIndex) => {
     // Each closestPointOnRamp call walks every sampled node, and this runs for
@@ -1367,11 +2396,46 @@ function tryEnterVpxRamp(ball: Ball, step: number) {
     if (!crossesSurface && !enteringEndpoint) return
 
     const score = impactClosest.planarDistance + Math.abs(ball.z - sampled.z) * 0.5
-    if (!best || score < best.score) best = { trackIndex, distance: impactClosest.distance, score }
+    if (!best || score < best.score) {
+      best = {
+        trackIndex,
+        distance: impactClosest.distance,
+        score,
+        crossingProgress,
+        crossesSurface,
+      }
+    }
   })
 
-  const selected = best as { trackIndex: number; distance: number; score: number } | null
+  const selected = best as {
+    trackIndex: number
+    distance: number
+    score: number
+    crossingProgress: number
+    crossesSurface: boolean
+  } | null
   if (!selected) return false
+  if (selected.crossesSurface) {
+    const sampled = sampleRamp(VPX_RAMP_TRACKS[selected.trackIndex], selected.distance)
+    const normalSpeed = ball.vx * sampled.surfaceNormalX
+      + ball.vy * sampled.surfaceNormalY
+      + ball.vz * sampled.surfaceNormalZ
+    if (Math.abs(normalSpeed) * BALL_TO_VPX_VELOCITY_SCALE > VPX_CONTACT_VELOCITY) {
+      ball.x += ball.vx * step * selected.crossingProgress
+      ball.y += ball.vy * step * selected.crossingProgress
+      ball.z = sampled.z
+      resolveVpxSpatialSurfaceContact(ball, {
+        normalX: sampled.surfaceNormalX,
+        normalY: sampled.surfaceNormalY,
+        normalZ: sampled.surfaceNormalZ,
+        elasticity: sampled.elasticity,
+        elasticityFalloff: 0,
+        friction: sampled.friction,
+        velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
+      })
+      return true
+    }
+  }
   attachBallToRamp(ball, selected.trackIndex, selected.distance)
   return true
 }
@@ -1440,6 +2504,7 @@ function advanceVpxRamp(
       elasticity: sampled.elasticity,
       elasticityFalloff: 0,
       friction: sampled.friction,
+      velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
     })
     ball.rampSpeed = ball.vx * sampled.tangentX + ball.vy * sampled.tangentY
       + ball.vz * sampled.tangentZ
@@ -1487,7 +2552,7 @@ function synchronizeRampBallAfterCollision(ball: Ball) {
     + ball.vz * sampled.surfaceNormalZ
   // A ball-to-ball impact can legitimately lift a ball off a ramp. Preserve
   // that 3D impulse instead of snapping it back to the surface next step.
-  if (separatingNormalSpeed > VPX_CONTACT_VELOCITY) {
+  if (separatingNormalSpeed * BALL_TO_VPX_VELOCITY_SCALE > VPX_CONTACT_VELOCITY) {
     ball.rampTrackIndex = null
     return
   }
@@ -1502,21 +2567,97 @@ function synchronizeRampBallAfterCollision(ball: Ball) {
   ball.z = sampled.z
 }
 
-function advanceBallHeight(ball: Ball, step: number) {
+function findVpxWallHorizontalSurface(
+  ball: Ball,
+  previousZ: number,
+  nextZ: number,
+  step: number,
+) {
+  if (ball.rampTrackIndex != null) return null
+  let selected: { surface: VpxWallHorizontalSurface; progress: number } | null = null
+  const grid = nextZ <= previousZ ? VPX_WALL_TOP_SURFACE_GRID : VPX_WALL_BOTTOM_SURFACE_GRID
+  const nextX = ball.x + ball.vx * step
+  const nextY = ball.y + ball.vy * step
+  const candidates = grid.query(
+    Math.min(ball.x, nextX), Math.min(ball.y, nextY),
+    Math.max(ball.x, nextX), Math.max(ball.y, nextY),
+  )
+  for (let candidateIndex = 0; candidateIndex < candidates.length; candidateIndex += 1) {
+    const surface = grid.surfaces[candidates[candidateIndex]]
+    const contactZ = surface.normalZ > 0 ? surface.height : surface.height - ball.radius * 2
+    // Top polygons catch a downward-moving ball by its bottom; a solid bottom
+    // catches an upward-moving ball by its top. contactZ expresses both in this
+    // port's bottom-of-ball z coordinate.
+    if (surface.normalZ > 0) {
+      if (previousZ < contactZ - 1e-4 || nextZ > contactZ + 1e-4) continue
+    } else if (previousZ > contactZ + 1e-4 || nextZ < contactZ - 1e-4) continue
+    const denominator = nextZ - previousZ
+    const progress = Math.abs(denominator) > 1e-8
+      ? Math.max(0, Math.min(1, (contactZ - previousZ) / denominator))
+      : 0
+    const impactX = ball.x + ball.vx * step * progress
+    const impactY = ball.y + ball.vy * step * progress
+    if (
+      impactX < surface.minX || impactX > surface.maxX
+      || impactY < surface.minY || impactY > surface.maxY
+    ) continue
+    if (!pointInPolygon(impactX, impactY, surface.points)) continue
+    if (!selected || progress < selected.progress) selected = { surface, progress }
+  }
+  return selected?.surface ?? null
+}
+
+/**
+ * Advances vertical motion and returns the static surface supporting the ball,
+ * if any. A bouncing impact already receives VPX's collision friction here and
+ * is therefore not returned for a second continuous-friction pass.
+ */
+function advanceBallHeight(ball: Ball, step: number): VpxWallHorizontalSurface | null {
   const kicker = ball.kickerVolume
     ? VPX_KICKERS.find((candidate) => candidate.source.name === ball.kickerVolume)
     : null
   const floorZ = kicker && !kicker.source.legacy
     ? -(1 - kicker.source.hitAccuracy) * ball.radius - 0.25
     : 0
-  if (ball.z <= floorZ && ball.vz <= 0) return
+  if (ball.z <= floorZ && ball.vz <= 0) return null
+  const previousZ = ball.z
   ball.vz -= playfieldGravity.normal * step
-  ball.z += ball.vz * step
-  if (ball.z >= floorZ) return
+  const nextZ = ball.z + ball.vz * step
+  const wallSurface = findVpxWallHorizontalSurface(ball, previousZ, nextZ, step)
+  if (wallSurface) {
+    ball.z = wallSurface.normalZ > 0
+      ? wallSurface.height
+      : wallSurface.height - ball.radius * 2
+    const impactSpeed = Math.abs(ball.vz)
+    if (impactSpeed > 0.8) {
+      const contact = resolveVpxSpatialSurfaceContact(ball, {
+        normalX: 0,
+        normalY: 0,
+        normalZ: wallSurface.normalZ,
+        elasticity: wallSurface.elasticity,
+        elasticityFalloff: wallSurface.elasticityFalloff,
+        friction: wallSurface.friction,
+        velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
+      })
+      if (contact) applyVpxScatter(
+        ball,
+        scatterDegrees(wallSurface.scatter),
+        contact.normalImpulse,
+        BALL_TO_VPX_VELOCITY_SCALE,
+      )
+      return null
+    }
+    ball.vz = 0
+    // Only an upward-facing polygon can continuously support a resting ball.
+    return wallSurface.normalZ > 0 ? wallSurface : null
+  }
+
+  ball.z = nextZ
+  if (ball.z >= floorZ) return null
   ball.z = floorZ
   if (floorZ < 0) {
     ball.vz = 0
-    return
+    return null
   }
   const impactSpeed = Math.abs(ball.vz)
   if (impactSpeed > 0.8) {
@@ -1527,10 +2668,277 @@ function advanceBallHeight(ball: Ball, step: number) {
       elasticity: VPX_TABLE.playfield.elasticity,
       elasticityFalloff: VPX_TABLE.playfield.elasticityFalloff,
       friction: VPX_TABLE.playfield.friction,
+      velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
     })
   } else {
     ball.vz = 0
   }
+  return null
+}
+
+/**
+ * VPX surrounds every Surface top with HitLine3D cylinders and HitPoint end
+ * caps (and repeats them at a solid bottom). A closest-point capsule is the
+ * same contact shape, including the spherical endpoints, without rotating the
+ * ball into a temporary cylinder coordinate system as the C++ implementation
+ * does. The rail grid keeps this to nearby polygon edges only.
+ */
+function collideVpxWallHorizontalEdges(ball: Ball) {
+  if (ball.rampTrackIndex != null || ball.capturedBy || ball.kickerVolume) return false
+  let collided = false
+  for (let iteration = 0; iteration < 2; iteration += 1) {
+    const candidateIndices = VPX_WALL_RAIL_GRID.query(ball.x, ball.y, ball.x, ball.y)
+    let deepest: {
+      rail: Rail
+      normalX: number
+      normalY: number
+      normalZ: number
+      penetration: number
+    } | null = null
+
+    for (let index = 0; index < candidateIndices.length; index += 1) {
+      const rail = VPX_WALL_RAIL_GRID.rails[candidateIndices[index]]
+      // Only Surface polygons receive the paired horizontal HitLine3D edges.
+      // Rubbers, wire guides, and standalone one-way gate LineSegs have their
+      // own collision shapes and deliberately carry no wallName.
+      if (!rail.wallName) continue
+      const dx = rail.x2 - rail.x1
+      const dy = rail.y2 - rail.y1
+      const length = Math.hypot(dx, dy)
+      if (length < 1e-6) continue
+      const unitX = dx / length
+      const unitY = dy / length
+      const along = Math.max(0, Math.min(length, (ball.x - rail.x1) * unitX + (ball.y - rail.y1) * unitY))
+      const closestX = rail.x1 + unitX * along
+      const closestY = rail.y1 + unitY * along
+      const centerZ = ball.z + ball.radius
+      const solidBottom = rail.wallName != null && vpxWallHasSolidBottom(rail.wallName)
+      const heights = solidBottom
+        ? [rail.heightTop, rail.heightBottom]
+        : [rail.heightTop]
+
+      for (let surfaceIndex = 0; surfaceIndex < heights.length; surfaceIndex += 1) {
+        const height = heights[surfaceIndex]
+        if (height == null) continue
+        const isTop = surfaceIndex === 0
+        // The vertical side owns the lower half of a top edge and the upper
+        // half of a bottom edge. This prevents the approximated side and the
+        // 3D capsule from applying the same corner impulse twice.
+        if (isTop ? centerZ < height - 1e-4 : centerZ > height + 1e-4) continue
+        const offsetX = ball.x - closestX
+        const offsetY = ball.y - closestY
+        const offsetZ = centerZ - height
+        const distanceSquared = offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ
+        if (distanceSquared >= ball.radius * ball.radius) continue
+        const distance = Math.sqrt(distanceSquared)
+        let normalX: number
+        let normalY: number
+        let normalZ: number
+        if (distance > 1e-6) {
+          normalX = offsetX / distance
+          normalY = offsetY / distance
+          normalZ = offsetZ / distance
+        } else {
+          // Exact center-on-edge is degenerate in VPX too. Use the component
+          // of incoming velocity perpendicular to the finite edge to produce
+          // a stable separating direction.
+          const parallelSpeed = ball.vx * unitX + ball.vy * unitY
+          const perpendicularX = ball.vx - parallelSpeed * unitX
+          const perpendicularY = ball.vy - parallelSpeed * unitY
+          const perpendicularLength = Math.hypot(perpendicularX, perpendicularY, ball.vz)
+          normalX = perpendicularLength > 1e-6 ? -perpendicularX / perpendicularLength : -unitY
+          normalY = perpendicularLength > 1e-6 ? -perpendicularY / perpendicularLength : unitX
+          normalZ = perpendicularLength > 1e-6 ? -ball.vz / perpendicularLength : 0
+        }
+        const penetration = ball.radius - distance
+        if (!deepest || penetration > deepest.penetration) {
+          deepest = { rail, normalX, normalY, normalZ, penetration }
+        }
+      }
+    }
+
+    if (!deepest) break
+    collided = true
+    ball.x += deepest.normalX * deepest.penetration
+    ball.y += deepest.normalY * deepest.penetration
+    ball.z += deepest.normalZ * deepest.penetration
+    const normalSpeed = ball.vx * deepest.normalX
+      + ball.vy * deepest.normalY
+      + ball.vz * deepest.normalZ
+    if (normalSpeed >= 0) continue
+    const staticContact = Math.abs(normalSpeed) * BALL_TO_VPX_VELOCITY_SCALE <= VPX_CONTACT_VELOCITY
+    const contact = resolveVpxSpatialSurfaceContact(ball, {
+      normalX: deepest.normalX,
+      normalY: deepest.normalY,
+      normalZ: deepest.normalZ,
+      elasticity: staticContact ? 0 : deepest.rail.elasticity ?? 0.25,
+      elasticityFalloff: deepest.rail.elasticityFalloff ?? 0,
+      friction: deepest.rail.friction ?? VPX_TABLE.playfield.friction,
+      velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
+    })
+    if (contact && !staticContact) applyVpxScatter(
+      ball,
+      scatterDegrees(deepest.rail.scatter),
+      contact.normalImpulse,
+      BALL_TO_VPX_VELOCITY_SCALE,
+    )
+  }
+  return collided
+}
+
+function closestPointOnPrimitiveTriangle(
+  px: number,
+  py: number,
+  pz: number,
+  triangle: VpxPrimitiveTriangle,
+  output: { x: number; y: number; z: number },
+) {
+  const abx = triangle.bx - triangle.ax
+  const aby = triangle.by - triangle.ay
+  const abz = triangle.bz - triangle.az
+  const acx = triangle.cx - triangle.ax
+  const acy = triangle.cy - triangle.ay
+  const acz = triangle.cz - triangle.az
+  const apx = px - triangle.ax
+  const apy = py - triangle.ay
+  const apz = pz - triangle.az
+  const d1 = abx * apx + aby * apy + abz * apz
+  const d2 = acx * apx + acy * apy + acz * apz
+  if (d1 <= 0 && d2 <= 0) {
+    output.x = triangle.ax; output.y = triangle.ay; output.z = triangle.az
+    return
+  }
+
+  const bpx = px - triangle.bx
+  const bpy = py - triangle.by
+  const bpz = pz - triangle.bz
+  const d3 = abx * bpx + aby * bpy + abz * bpz
+  const d4 = acx * bpx + acy * bpy + acz * bpz
+  if (d3 >= 0 && d4 <= d3) {
+    output.x = triangle.bx; output.y = triangle.by; output.z = triangle.bz
+    return
+  }
+
+  const vc = d1 * d4 - d3 * d2
+  if (vc <= 0 && d1 >= 0 && d3 <= 0) {
+    const along = d1 / (d1 - d3)
+    output.x = triangle.ax + abx * along
+    output.y = triangle.ay + aby * along
+    output.z = triangle.az + abz * along
+    return
+  }
+
+  const cpx = px - triangle.cx
+  const cpy = py - triangle.cy
+  const cpz = pz - triangle.cz
+  const d5 = abx * cpx + aby * cpy + abz * cpz
+  const d6 = acx * cpx + acy * cpy + acz * cpz
+  if (d6 >= 0 && d5 <= d6) {
+    output.x = triangle.cx; output.y = triangle.cy; output.z = triangle.cz
+    return
+  }
+
+  const vb = d5 * d2 - d1 * d6
+  if (vb <= 0 && d2 >= 0 && d6 <= 0) {
+    const along = d2 / (d2 - d6)
+    output.x = triangle.ax + acx * along
+    output.y = triangle.ay + acy * along
+    output.z = triangle.az + acz * along
+    return
+  }
+
+  const va = d3 * d6 - d5 * d4
+  if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0) {
+    const along = (d4 - d3) / ((d4 - d3) + (d5 - d6))
+    output.x = triangle.bx + (triangle.cx - triangle.bx) * along
+    output.y = triangle.by + (triangle.cy - triangle.by) * along
+    output.z = triangle.bz + (triangle.cz - triangle.bz) * along
+    return
+  }
+
+  const denominator = 1 / (va + vb + vc)
+  const v = vb * denominator
+  const w = vc * denominator
+  output.x = triangle.ax + abx * v + acx * w
+  output.y = triangle.ay + aby * v + acy * w
+  output.z = triangle.az + abz * v + acz * w
+}
+
+/** Discrete sphere contact against the exact collidable primitive triangles. */
+function collideVpxPrimitiveMeshes(ball: Ball, time: number) {
+  if (ball.rampTrackIndex != null || ball.capturedBy || ball.kickerVolume) return false
+  const closest = { x: 0, y: 0, z: 0 }
+  let collided = false
+  for (let iteration = 0; iteration < 3; iteration += 1) {
+    const centerZ = ball.z + ball.radius
+    const candidates = VPX_PRIMITIVE_TRIANGLE_GRID.query(ball.x, ball.y)
+    let deepest: {
+      triangle: VpxPrimitiveTriangle
+      normalX: number
+      normalY: number
+      normalZ: number
+      penetration: number
+    } | null = null
+    for (let index = 0; index < candidates.length; index += 1) {
+      const triangle = VPX_PRIMITIVE_TRIANGLE_GRID.triangles[candidates[index]]
+      if (centerZ + ball.radius < triangle.minZ || centerZ - ball.radius > triangle.maxZ) continue
+      closestPointOnPrimitiveTriangle(ball.x, ball.y, centerZ, triangle, closest)
+      const offsetX = ball.x - closest.x
+      const offsetY = ball.y - closest.y
+      const offsetZ = centerZ - closest.z
+      const distanceSquared = offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ
+      if (distanceSquared >= ball.radius * ball.radius) continue
+      const distance = Math.sqrt(distanceSquared)
+      let normalX: number
+      let normalY: number
+      let normalZ: number
+      if (distance > 1e-6) {
+        normalX = offsetX / distance
+        normalY = offsetY / distance
+        normalZ = offsetZ / distance
+      } else {
+        normalX = triangle.normalX
+        normalY = triangle.normalY
+        normalZ = triangle.normalZ
+        if (ball.vx * normalX + ball.vy * normalY + ball.vz * normalZ > 0) {
+          normalX = -normalX; normalY = -normalY; normalZ = -normalZ
+        }
+      }
+      const penetration = ball.radius - distance
+      if (!deepest || penetration > deepest.penetration) {
+        deepest = { triangle, normalX, normalY, normalZ, penetration }
+      }
+    }
+    if (!deepest) break
+
+    collided = true
+    ball.x += deepest.normalX * deepest.penetration
+    ball.y += deepest.normalY * deepest.penetration
+    ball.z += deepest.normalZ * deepest.penetration
+    const normalSpeed = ball.vx * deepest.normalX
+      + ball.vy * deepest.normalY
+      + ball.vz * deepest.normalZ
+    if (normalSpeed >= 0) continue
+    const staticContact = Math.abs(normalSpeed) * BALL_TO_VPX_VELOCITY_SCALE <= VPX_CONTACT_VELOCITY
+    const material = deepest.triangle.material
+    const contact = resolveVpxSpatialSurfaceContact(ball, {
+      normalX: deepest.normalX,
+      normalY: deepest.normalY,
+      normalZ: deepest.normalZ,
+      elasticity: staticContact ? 0 : material.elasticity,
+      elasticityFalloff: material.elasticityFalloff,
+      friction: material.friction,
+      velocityScale: BALL_TO_VPX_VELOCITY_SCALE,
+    })
+    if (contact && !staticContact) applyVpxScatter(
+      ball,
+      scatterDegrees(material.scatter),
+      contact.normalImpulse,
+      BALL_TO_VPX_VELOCITY_SCALE,
+    )
+    if (contact && !staticContact) applyVpxCollectionHit(ball, material.name, time)
+  }
+  return collided
 }
 
 export function VenuePinballPicker() {
@@ -1564,6 +2972,19 @@ export function VenuePinballPicker() {
     awaitingPlunge: false,
     sharedRules: createRoboCopRulesState(),
   })
+  const fullGameRef = useRef<{
+    ballNumber: number
+    phase: FullGamePhase
+    multiballSpawned: boolean
+    displayedScore: number
+    sharedRules: RoboCopRulesState
+  }>({
+    ballNumber: 1,
+    phase: 'idle',
+    multiballSpawned: false,
+    displayedScore: 0,
+    sharedRules: createRoboCopRulesState(),
+  })
   const candidateDeckRef = useRef<string[]>([])
   const flipperPressedRef = useRef({ left: false, right: false })
   const drawRef = useRef<() => void>(() => {})
@@ -1571,12 +2992,27 @@ export function VenuePinballPicker() {
     left: createVpxFlipperMover(FLIPPER_PARAMETERS),
     right: createVpxFlipperMover(FLIPPER_PARAMETERS),
   })
+  const flipperScriptRef = useRef<Record<FlipperSide, FlipperScriptState>>({
+    left: createFlipperScriptState(),
+    right: createFlipperScriptState(),
+  })
+  const flipperPolarityRef = useRef<Record<FlipperSide, FlipperPolarityState>>({
+    left: createFlipperPolarityState(),
+    right: createFlipperPolarityState(),
+  })
   const gateMoversRef = useRef<Record<string, VpxGateMover>>(Object.fromEntries(
     VPX_TABLE.gates.map((gate) => [gate.name, createVpxGateMover(gate)]),
   ))
   const spinnerMoversRef = useRef<Record<string, VpxSpinnerMover>>(Object.fromEntries(
     VPX_TABLE.spinners.map((spinner) => [spinner.name, createVpxSpinnerMover()]),
   ))
+  const standupDisabledUntilRef = useRef(new Map<string, number>())
+  const captiveBallRef = useRef<CaptiveBallState>({
+    distance: 0,
+    speed: 0,
+    sourceRules: null,
+    targetCooldownUntil: 0,
+  })
   const { display } = useMachineCanon()
   const [venues, setVenues] = useState<Venue[]>([])
   const [venueKey, setVenueKey] = useState('')
@@ -1589,6 +3025,9 @@ export function VenuePinballPicker() {
   const [rulesCandidate, setRulesCandidate] = useState('')
   const [rulesLocked, setRulesLocked] = useState<string[]>([])
   const [rulesPhase, setRulesPhase] = useState<RulesPickerPhase>('idle')
+  const [fullGameBall, setFullGameBall] = useState(1)
+  const [fullGameScore, setFullGameScore] = useState(0)
+  const [fullGamePhase, setFullGamePhase] = useState<FullGamePhase>('idle')
   const [awaitingPlunge, setAwaitingPlunge] = useState(false)
   const [plungerOpen, setPlungerOpen] = useState(false)
   const [plungerPull, setPlungerPull] = useState(0)
@@ -1695,11 +3134,18 @@ export function VenuePinballPicker() {
         setTilted(true)
         tiltRef.current = 0
         nudgeHistoryRef.current = []
+        const seenRules = new Set<RoboCopRulesState>()
+        ballsRef.current.forEach((ball) => {
+          if (ball.finished || seenRules.has(ball.rules)) return
+          seenRules.add(ball.rules)
+          tiltRoboCopBall(ball.rules, now)
+        })
+        ballsRef.current.forEach((ball) => {
+          ball.pendingCandidateSteps = 0
+          ball.pendingRuleLock = false
+          ball.pendingJackpot = false
+        })
         showMotionNotice('TILT', 1800)
-        window.setTimeout(() => {
-          tiltedRef.current = false
-          setTilted(false)
-        }, 1800)
         return
       }
 
@@ -1804,13 +3250,14 @@ export function VenuePinballPicker() {
     ctx.clearRect(0, 0, WIDTH, HEIGHT)
 
     const flippers = getFlipperRails(
-      predictedFlipperAngle(flipperMoversRef.current.left, flipperHeld(flipperPressedRef.current, 'left', tiltedRef.current), runningRef.current),
-      predictedFlipperAngle(flipperMoversRef.current.right, flipperHeld(flipperPressedRef.current, 'right', tiltedRef.current), runningRef.current),
+      predictedFlipperAngle(flipperMoversRef.current.left, flipperScriptRef.current.left.parameters, flipperHeld(flipperPressedRef.current, 'left', tiltedRef.current), runningRef.current),
+      predictedFlipperAngle(flipperMoversRef.current.right, flipperScriptRef.current.right.parameters, flipperHeld(flipperPressedRef.current, 'right', tiltedRef.current), runningRef.current),
     )
     ;([flippers.left, flippers.right] as Rail[]).forEach((flipper, index) => {
       const side = index === 0 ? 'left' : 'right'
       drawFlipper(ctx, flipper, flipperHeld(flipperPressedRef.current, side, tiltedRef.current) ? '#fff36a' : '#ffd92f')
     })
+    drawCaptiveBall(ctx, captiveBallRef.current)
 
     ballsRef.current.forEach((ball, index) => {
       if ((!ball.active && !ball.heldInShooterLane) || ball.parked || ball.finished) return
@@ -1909,18 +3356,48 @@ export function VenuePinballPicker() {
     releaseAt: 0,
     objectCooldowns: {},
     activeRuleVolumes: {},
+    flipperCorrectionSamples: {},
+    corSpeed: 0,
+    corVelocityX: 0,
+    corVelocityY: 0,
+    corElapsedMilliseconds: 0,
     rules,
     isRegularBall: !machineKey,
     parked: options.parked ?? false,
+    parkedAt: options.parkedAt ?? null,
     heldInShooterLane: options.heldInShooterLane ?? false,
     pendingCandidateSteps: 0,
     pendingRuleLock: false,
     pendingJackpot: false,
+    lastRuleSwitch: null,
     finished: false,
   }), [display])
 
+  const parkRulesBallAtLock = useCallback((ball: Ball, lockIndex: number) => {
+    const kickerName = ['sw28', 'sw29', 'sw30'][Math.max(0, Math.min(2, lockIndex))]
+    const kicker = VPX_KICKERS.find((candidate) => candidate.source.name === kickerName)
+    ball.active = false
+    ball.parked = true
+    ball.parkedAt = kickerName
+    ball.heldInShooterLane = false
+    ball.capturedBy = null
+    ball.kickerVolume = null
+    ball.rampTrackIndex = null
+    ball.vx = 0
+    ball.vy = 0
+    ball.vz = 0
+    ball.angularVelocity = 0
+    ball.angularVelocityX = 0
+    ball.angularVelocityY = 0
+    if (kicker) {
+      ball.x = kicker.center.x
+      ball.y = kicker.center.y
+      ball.z = 0
+    }
+  }, [])
+
   const ejectRulesBall = useCallback((ball: Ball, kickerIndex: number, time: number) => {
-    const kickerName = ['sw28', 'sw29', 'sw30'][kickerIndex % 3]
+    const kickerName = ball.parkedAt ?? ['sw28', 'sw29', 'sw30'][kickerIndex % 3]
     const kicker = VPX_KICKERS.find((candidate) => candidate.source.name === kickerName) ?? VPX_KICKERS[kickerIndex % VPX_KICKERS.length]
     const angle = kicker.source.ejectAngle * Math.PI / 180
     const speed = vpxVelocityToCanvas(kicker.source.ejectSpeed)
@@ -1932,6 +3409,7 @@ export function VenuePinballPicker() {
     ball.vz = 0
     ball.active = true
     ball.parked = false
+    ball.parkedAt = null
     ball.heldInShooterLane = false
     ball.launchAt = time
     ball.objectCooldowns[kicker.source.name] = time + 300
@@ -1983,29 +3461,48 @@ export function VenuePinballPicker() {
   }, [clearRoulette, machineKeys, stop])
 
   const plungeRulesBalls = useCallback((power = 1) => {
-    if (modeId !== 'rules-picker' || !rulesPickerRef.current.awaitingPlunge) return
+    const isRulesPicker = modeId === 'rules-picker'
+    const isFullGame = modeId === 'full-game'
+    const waiting = isRulesPicker
+      ? rulesPickerRef.current.awaitingPlunge
+      : isFullGame && fullGameRef.current.phase === 'ready'
+    if (!waiting) return
     const now = performance.now()
     const clampedPower = Math.max(0, Math.min(1, power))
-    // The former full-pull speed (32) was only enough for the weakest useful
-    // launch on this full-height VPX playfield. Make that the spring's floor
-    // and let a complete pull deliver twice the linear launch velocity.
-    const launchSpeed = 32 + clampedPower * 32
+    const fullLaunchSpeed = vpxPlungerLaunchSpeed(VPX_TABLE.plunger, 1)
+      / BALL_TO_VPX_VELOCITY_SCALE
+    // Preserve the requested useful floor of the former 100% launch, but map
+    // the rest of the pull to the actual VPX Fire/Collide result. This is
+    // equivalent to starting the virtual rod partway behind ParkPosition,
+    // then following VPX's linear release-speed calculation to full pull.
+    const minimumLaunchSpeed = Math.min(32, fullLaunchSpeed)
+    const minimumPullFraction = minimumLaunchSpeed / Math.max(1e-9, fullLaunchSpeed)
+    const effectivePullFraction = minimumPullFraction
+      + clampedPower * (1 - minimumPullFraction)
+    const startPosition = VPX_TABLE.plunger.parkPosition
+      + (1 - VPX_TABLE.plunger.parkPosition) * effectivePullFraction
+    const launchSpeed = vpxPlungerLaunchSpeed(VPX_TABLE.plunger, startPosition)
+      / BALL_TO_VPX_VELOCITY_SCALE
     const shooterBall = ballsRef.current.find((ball) => ball.heldInShooterLane && !ball.finished)
     if (shooterBall) {
       shooterBall.heldInShooterLane = false
       shooterBall.active = true
       shooterBall.launchAt = now
-      shooterBall.vx = randomBetween(-0.18, 0.12) * clampedPower
+      shooterBall.vx = 0
       shooterBall.vy = -launchSpeed
       shooterBall.objectCooldowns.BallRelease = now + 300
       shooterBall.objectCooldowns.PlungerRelease = now + 650
     }
-    if (rulesPickerRef.current.phase === 'standard-multiball') {
+    if (isRulesPicker && rulesPickerRef.current.phase === 'standard-multiball') {
       ballsRef.current.filter((ball) => ball.parked && !ball.finished).forEach((ball, index) => {
         ejectRulesBall(ball, index + 1, now)
       })
     }
-    rulesPickerRef.current.awaitingPlunge = false
+    if (isRulesPicker) rulesPickerRef.current.awaitingPlunge = false
+    if (isFullGame) {
+      fullGameRef.current.phase = 'playing'
+      setFullGamePhase('playing')
+    }
     setAwaitingPlunge(false)
     setPlungerOpen(false)
     plungerPullRef.current = 0
@@ -2014,7 +3511,10 @@ export function VenuePinballPicker() {
   }, [ejectRulesBall, modeId])
 
   const openPlunger = useCallback(() => {
-    if (modeId !== 'rules-picker' || !rulesPickerRef.current.awaitingPlunge) return
+    const waiting = modeId === 'rules-picker'
+      ? rulesPickerRef.current.awaitingPlunge
+      : modeId === 'full-game' && fullGameRef.current.phase === 'ready'
+    if (!waiting) return
     plungerPullRef.current = 0
     setPlungerPull(0)
     setPlungerOpen(true)
@@ -2044,9 +3544,12 @@ export function VenuePinballPicker() {
   }, [plungeRulesBalls])
 
   const tryRestageAtPlunger = useCallback((ball: Ball, time: number) => {
-    if (modeId !== 'rules-picker'
-      || rulesPickerRef.current.phase === 'selected'
-      || rulesPickerRef.current.awaitingPlunge
+    const isRulesPicker = modeId === 'rules-picker'
+    const isFullGame = modeId === 'full-game'
+    const cannotRestage = isRulesPicker
+      ? rulesPickerRef.current.phase === 'selected' || rulesPickerRef.current.awaitingPlunge
+      : !isFullGame || fullGameRef.current.phase !== 'playing'
+    if (cannotRestage
       || (ball.objectCooldowns.PlungerRelease ?? 0) > time
       || ball.rampTrackIndex != null
       || ball.capturedBy
@@ -2071,7 +3574,12 @@ export function VenuePinballPicker() {
     ball.active = false
     ball.heldInShooterLane = true
     ball.activeRuleVolumes = {}
-    rulesPickerRef.current.awaitingPlunge = true
+    ball.flipperCorrectionSamples = {}
+    if (isRulesPicker) rulesPickerRef.current.awaitingPlunge = true
+    if (isFullGame) {
+      fullGameRef.current.phase = 'ready'
+      setFullGamePhase('ready')
+    }
     setAwaitingPlunge(true)
     setPlungerOpen(false)
     plungerPullRef.current = 0
@@ -2170,14 +3678,119 @@ export function VenuePinballPicker() {
       heldInShooterLane: true,
       colorIndex: locked.length,
     })
-    const heldBalls = locked.map((machineKey, index) => makeRulesBall(machineKey, sharedRules, {
-      parked: true,
-      colorIndex: index,
-    }))
+    const heldBalls = locked.map((machineKey, index) => {
+      const heldBall = makeRulesBall(machineKey, sharedRules, {
+        parked: true,
+        parkedAt: ['sw28', 'sw29', 'sw30'][index],
+        colorIndex: index,
+      })
+      parkRulesBallAtLock(heldBall, index)
+      return heldBall
+    })
     Object.assign(ball, shooter)
     ballsRef.current.push(...heldBalls)
     return true
-  }, [machineKeys, makeRulesBall, modeId, runDrainRoulette, selectRulesGame])
+  }, [machineKeys, makeRulesBall, modeId, parkRulesBallAtLock, runDrainRoulette, selectRulesGame])
+
+  const syncFullGameScore = useCallback((rules: RoboCopRulesState) => {
+    if (rules.score === fullGameRef.current.displayedScore) return
+    fullGameRef.current.displayedScore = rules.score
+    setFullGameScore(rules.score)
+  }, [])
+
+  const consumeFullGameEvents = useCallback((ball: Ball, time: number) => {
+    if (modeId !== 'full-game' || fullGameRef.current.phase === 'game-over') return
+    ball.lastRuleSwitch = null
+    // Picker-only signals still originate in the shared switch adapter. Clear
+    // them here so a Full Game ball never carries stale selection work.
+    ball.pendingCandidateSteps = 0
+    ball.pendingJackpot = false
+
+    const registeredLock = ball.pendingRuleLock
+    const startedMultiball = registeredLock
+      && ball.rules.multiballActive
+      && !fullGameRef.current.multiballSpawned
+    ball.pendingRuleLock = false
+    if (startedMultiball) {
+      fullGameRef.current.multiballSpawned = true
+      const stagedBalls = ballsRef.current.filter((candidate) => candidate.parked && !candidate.finished)
+      while (stagedBalls.length < 2) {
+        const staged = makeRulesBall('', ball.rules, { parked: true })
+        parkRulesBallAtLock(staged, stagedBalls.length)
+        ballsRef.current.push(staged)
+        stagedBalls.push(staged)
+      }
+      stagedBalls.forEach((stagedBall, index) => ejectRulesBall(stagedBall, index + 1, time))
+      ball.rules.lastAward = 'ROBOCOP MULTIBALL'
+      ball.rules.lastAwardUntil = time + 1400
+    } else if (registeredLock) {
+      const lockIndex = Math.max(0, Math.min(2, ball.rules.lockedBalls - 1))
+      parkRulesBallAtLock(ball, lockIndex)
+      ballsRef.current.push(makeRulesBall('', ball.rules, { heldInShooterLane: true }))
+      fullGameRef.current.phase = 'ready'
+      setFullGamePhase('ready')
+      setAwaitingPlunge(true)
+      setPlungerOpen(false)
+    }
+    syncFullGameScore(ball.rules)
+  }, [ejectRulesBall, makeRulesBall, modeId, parkRulesBallAtLock, syncFullGameScore])
+
+  const handleFullGameDrain = useCallback((ball: Ball, time: number) => {
+    if (modeId !== 'full-game') return false
+    ball.finished = true
+    const rules = fullGameRef.current.sharedRules
+    const survivingBalls = ballsRef.current.filter((candidate) => !candidate.finished && !candidate.parked)
+
+    // A multiball drain only removes that ball. Once one is left, normal
+    // single-ball play resumes with the same score and rule progress.
+    if (survivingBalls.length > 0) {
+      if (rules.multiballActive && survivingBalls.length === 1) {
+        endRoboCopMultiball(rules, time)
+        fullGameRef.current.multiballSpawned = false
+      }
+      syncFullGameScore(rules)
+      return true
+    }
+
+    const replayExtraBall = rules.extraBallAwarded
+    if (replayExtraBall) rules.extraBallAwarded = false
+    if (rules.multiballActive) {
+      endRoboCopMultiball(rules, time)
+      fullGameRef.current.multiballSpawned = false
+    }
+    endRoboCopBall(rules, time, tiltedRef.current)
+    syncFullGameScore(rules)
+    const nextBallNumber = replayExtraBall
+      ? fullGameRef.current.ballNumber
+      : fullGameRef.current.ballNumber + 1
+
+    if (nextBallNumber <= 3) {
+      tiltedRef.current = false
+      setTilted(false)
+      fullGameRef.current.ballNumber = nextBallNumber
+      fullGameRef.current.phase = 'ready'
+      fullGameRef.current.multiballSpawned = false
+      setFullGameBall(nextBallNumber)
+      setFullGamePhase('ready')
+      setAwaitingPlunge(true)
+      setPlungerOpen(false)
+      const stagedLocks = ballsRef.current.filter((candidate) => candidate.parked && !candidate.finished)
+      ballsRef.current = [...stagedLocks, makeRulesBall('', rules, { heldInShooterLane: true })]
+      startRoboCopBall(rules, nextBallNumber, time)
+      if (replayExtraBall) {
+        rules.lastAward = 'SHOOT AGAIN'
+        rules.lastAwardUntil = time + 1200
+      }
+      return true
+    }
+
+    fullGameRef.current.phase = 'game-over'
+    setFullGamePhase('game-over')
+    setAwaitingPlunge(false)
+    syncFullGameScore(rules)
+    stop()
+    return true
+  }, [makeRulesBall, modeId, stop, syncFullGameScore])
 
   const animate = useCallback((time: number) => {
     if (!runningRef.current) return
@@ -2190,8 +3803,31 @@ export function VenuePinballPicker() {
     const step = elapsed / substeps
     for (let substep = 0; substep < substeps; substep += 1) {
       const vpxStep = step / BALL_TO_VPX_VELOCITY_SCALE
-      stepVpxFlipperMover(flipperMoversRef.current.left, FLIPPER_PARAMETERS, flipperHeld(flipperPressedRef.current, 'left', tiltedRef.current), vpxStep)
-      stepVpxFlipperMover(flipperMoversRef.current.right, FLIPPER_PARAMETERS, flipperHeld(flipperPressedRef.current, 'right', tiltedRef.current), vpxStep)
+      const substepTime = time - (substeps - substep - 1) * step * 16.667 / GAME_SPEED
+      const leftPressed = flipperHeld(flipperPressedRef.current, 'left', tiltedRef.current)
+      const rightPressed = flipperHeld(flipperPressedRef.current, 'right', tiltedRef.current)
+      if (leftPressed && !flipperPolarityRef.current.left.pressed) {
+        beginFlipperPolarityCorrection('left', balls, flipperMoversRef.current.left, flipperPolarityRef.current.left, time)
+      }
+      if (rightPressed && !flipperPolarityRef.current.right.pressed) {
+        beginFlipperPolarityCorrection('right', balls, flipperMoversRef.current.right, flipperPolarityRef.current.right, time)
+      }
+      flipperPolarityRef.current.left.pressed = leftPressed
+      flipperPolarityRef.current.right.pressed = rightPressed
+      const leftScript = flipperScriptRef.current.left
+      const rightScript = flipperScriptRef.current.right
+      if (leftPressed !== leftScript.pressed) {
+        if (leftPressed) activateScriptedFlipper(leftScript)
+        else deactivateScriptedFlipper(leftScript, flipperMoversRef.current.left, balls, FLIPPER_LEFT_CENTER)
+      }
+      if (rightPressed !== rightScript.pressed) {
+        if (rightPressed) activateScriptedFlipper(rightScript)
+        else deactivateScriptedFlipper(rightScript, flipperMoversRef.current.right, balls, FLIPPER_RIGHT_CENTER)
+      }
+      updateScriptedFlipper(leftScript, flipperMoversRef.current.left, leftPressed, substepTime)
+      updateScriptedFlipper(rightScript, flipperMoversRef.current.right, rightPressed, substepTime)
+      stepVpxFlipperMover(flipperMoversRef.current.left, leftScript.parameters, leftPressed, vpxStep)
+      stepVpxFlipperMover(flipperMoversRef.current.right, rightScript.parameters, rightPressed, vpxStep)
       VPX_TABLE.gates.forEach((gate) => stepVpxGateMover(gateMoversRef.current[gate.name], gate, vpxStep))
       VPX_TABLE.spinners.forEach((spinner) => {
         const mover = spinnerMoversRef.current[spinner.name]
@@ -2203,17 +3839,40 @@ export function VenuePinballPicker() {
             (mover.angularVelocity >= 0 && mover.angle < previousAngle)
             || (mover.angularVelocity < 0 && mover.angle > previousAngle)
           )
-        if (completedTurn && modeId === 'rules-picker' && rulesPickerRef.current.phase === 'normal') {
-          const rulesBall = balls.find((ball) => ball.active && ball.isRegularBall && !ball.finished)
+        if (completedTurn && (modeId === 'rules-picker' || modeId === 'full-game')) {
+          // VPX closes sw44 once per completed spinner rotation. The impact
+          // that starts the blade moving is not an additional switch pulse.
+          // All Full Game balls share one rules state, so any live ball is a
+          // valid carrier while named picker balls may be in multiball.
+          const rulesBall = balls.find((ball) => (
+            ball.active && !ball.finished && !ball.parked && !ball.heldInShooterLane && !ball.rules.tilted
+          ))
           if (rulesBall) {
             pulseRoboCopSwitch(rulesBall.rules, 44, time)
-            nextRulesCandidate()
+            if (
+              modeId === 'rules-picker'
+              && rulesPickerRef.current.phase === 'normal'
+              && rulesBall.isRegularBall
+            ) nextRulesCandidate()
           }
         }
       })
+      stepCaptiveBall(captiveBallRef.current, step, time)
       const flippers = getFlipperRails(flipperMoversRef.current.left.angle, flipperMoversRef.current.right.angle)
+      // Preserve the source script's paired EOS cradle nudge. If one held
+      // flipper reaches the stop empty while the other holds a ball, VPX gives
+      // that ball a small upward settling impulse.
+      applyScriptedFlipperNudge(rightScript, flipperMoversRef.current.right, flippers.right, flipperMoversRef.current.left, flippers.left, balls)
+      applyScriptedFlipperNudge(leftScript, flipperMoversRef.current.left, flippers.left, flipperMoversRef.current.right, flippers.right, balls)
       balls.forEach((ball) => {
         if (ball.finished) return
+        ball.corElapsedMilliseconds += step * 16.667 / GAME_SPEED
+        if (ball.corElapsedMilliseconds >= VPX_ROBOCOP_SCRIPT_PHYSICS.gameTimerIntervalMilliseconds) {
+          ball.corElapsedMilliseconds %= VPX_ROBOCOP_SCRIPT_PHYSICS.gameTimerIntervalMilliseconds
+          ball.corSpeed = Math.hypot(ball.vx, ball.vy, ball.vz) * BALL_TO_VPX_VELOCITY_SCALE
+          ball.corVelocityX = ball.vx
+          ball.corVelocityY = ball.vy
+        }
         if (ball.parked || ball.heldInShooterLane) return
         if (!ball.active) {
           if (time < ball.launchAt) return
@@ -2228,11 +3887,20 @@ export function VenuePinballPicker() {
         if (advanceVpxRamp(ball, step, vpxStep, tiltAccelerationX, gravityAccelerationY)) {
           processRoboCopRuleTriggers(ball, time)
           consumeRulesPickerEvents(ball, time)
+          consumeFullGameEvents(ball, time)
           return
         }
         const fallingStraightDown = ball.straightZDrop && ball.z > 0
-        advanceBallHeight(ball, step)
-        if (ball.z <= 0 && !ball.kickerVolume) {
+        const wallTopSupport = advanceBallHeight(ball, step)
+        if (wallTopSupport) {
+          applyVpxPlayfieldFriction(ball, {
+            deltaTime: vpxStep,
+            friction: wallTopSupport.friction,
+            normalAcceleration: playfieldGravity.normal,
+            planarAccelerationX: tiltAccelerationX,
+            planarAccelerationY: gravityAccelerationY,
+          })
+        } else if (ball.z <= 0 && !ball.kickerVolume) {
           applyVpxPlayfieldFriction(ball, {
             deltaTime: vpxStep,
             friction: VPX_TABLE.playfield.friction,
@@ -2246,29 +3914,46 @@ export function VenuePinballPicker() {
           ball.vx += tiltDeltaX
         }
         hitVpxMechanicalObjects(ball, step, time, gateMoversRef.current, spinnerMoversRef.current)
-        advanceThroughVpxWalls(ball, VPX_WALL_RAIL_GRID, step, tiltDeltaX, gravityDeltaY, time)
-        for (let index = 0; index < playfieldPegs.length; index += 1) {
-          const peg = playfieldPegs[index]
-          if (collidePeg(ball, peg) && peg.switchNumber) pulseBallRuleSwitch(ball, peg.switchNumber, time)
-        }
+        advanceThroughVpxWalls(
+          ball,
+          VPX_WALL_RAIL_GRID,
+          playfieldPegs,
+          step,
+          tiltDeltaX,
+          gravityDeltaY,
+          substepTime,
+          standupDisabledUntilRef.current,
+        )
+        collideVpxWallHorizontalEdges(ball)
+        collideVpxPrimitiveMeshes(ball, time)
+        collideCaptiveBall(ball, captiveBallRef.current)
         for (let index = 0; index < VPX_LOOSE_RAILS.length; index += 1) {
           const rail = VPX_LOOSE_RAILS[index]
           if (collideRail(ball, rail) && rail.switchNumber) pulseBallRuleSwitch(ball, rail.switchNumber, time)
         }
-        collideFlipper(ball, flippers.left, flipperMoversRef.current.left, 1)
-        collideFlipper(ball, flippers.right, flipperMoversRef.current.right, -1)
+        collideFlipper(ball, flippers.left, flipperMoversRef.current.left, leftScript.parameters, 1, 'left', leftScript, substepTime)
+        collideFlipper(ball, flippers.right, flipperMoversRef.current.right, rightScript.parameters, -1, 'right', rightScript, substepTime)
+        processFlipperPolarityVolumes(ball, time, flipperPolarityRef.current)
         processRoboCopRuleTriggers(ball, time)
+        if (tryFireLaserKick(ball, time)) {
+          consumeRulesPickerEvents(ball, time)
+          consumeFullGameEvents(ball, time)
+          return
+        }
         if (tryCaptureVpxKicker(ball, balls, time)) {
           consumeRulesPickerEvents(ball, time)
+          consumeFullGameEvents(ball, time)
           return
         }
         consumeRulesPickerEvents(ball, time)
+        consumeFullGameEvents(ball, time)
         if (!runningRef.current || ball.parked || ball.heldInShooterLane) return
         if (ball.x < ball.radius) { ball.x = ball.radius; ball.vx = Math.abs(ball.vx) * 0.78 }
         if (ball.x > WIDTH - ball.radius) { ball.x = WIDTH - ball.radius; ball.vx = -Math.abs(ball.vx) * 0.78 }
         if (tryRestageAtPlunger(ball, time)) return
         if (ball.y > FINISH_Y && ball.x > FINISH_LEFT && ball.x < FINISH_RIGHT) {
           if (handleRulesPickerDrain(ball)) return
+          if (handleFullGameDrain(ball, time)) return
           ball.finished = true
           finishingRef.current = [...finishingRef.current, ball.machineKey]
           setRanking([...finishingRef.current])
@@ -2279,8 +3964,17 @@ export function VenuePinballPicker() {
           ball.angularVelocityX = 0; ball.angularVelocityY = 0; ball.rampTrackIndex = null
         }
       })
-      for (let first = 0; first < balls.length; first += 1) {
-        for (let second = first + 1; second < balls.length; second += 1) collideBalls(balls[first], balls[second])
+      // VPX revisits simultaneous contacts until the active collision set is
+      // separated. A single pair pass leaves later corrections pushing balls
+      // back into earlier neighbours, especially in the clustered modes.
+      for (let contactIteration = 0; contactIteration < 3; contactIteration += 1) {
+        let resolvedContact = false
+        for (let first = 0; first < balls.length; first += 1) {
+          for (let second = first + 1; second < balls.length; second += 1) {
+            resolvedContact = collideBalls(balls[first], balls[second]) || resolvedContact
+          }
+        }
+        if (!resolvedContact) break
       }
       balls.forEach(synchronizeRampBallAfterCollision)
     }
@@ -2288,12 +3982,15 @@ export function VenuePinballPicker() {
     if (!runningRef.current) return
     if (finishingRef.current.length >= balls.length) stop()
     else frameRef.current = requestAnimationFrame(animate)
-  }, [consumeRulesPickerEvents, draw, handleRulesPickerDrain, modeId, motionEnabled, nextRulesCandidate, playfieldPegs, stop, tryRestageAtPlunger])
+  }, [consumeFullGameEvents, consumeRulesPickerEvents, draw, handleFullGameDrain, handleRulesPickerDrain, modeId, motionEnabled, nextRulesCandidate, playfieldPegs, stop, tryRestageAtPlunger])
 
   const reset = useCallback(() => {
     stop()
     clearRoulette()
     setCelebration(null)
+    tiltedRef.current = false
+    setTilted(false)
+    nudgeHistoryRef.current = []
     finishingRef.current = []
     setRanking([])
     flipperPressedRef.current = { left: false, right: false }
@@ -2301,13 +3998,29 @@ export function VenuePinballPicker() {
       left: createVpxFlipperMover(FLIPPER_PARAMETERS),
       right: createVpxFlipperMover(FLIPPER_PARAMETERS),
     }
+    flipperScriptRef.current = {
+      left: createFlipperScriptState(),
+      right: createFlipperScriptState(),
+    }
+    flipperPolarityRef.current = {
+      left: createFlipperPolarityState(),
+      right: createFlipperPolarityState(),
+    }
     gateMoversRef.current = Object.fromEntries(
       VPX_TABLE.gates.map((gate) => [gate.name, createVpxGateMover(gate)]),
     )
     spinnerMoversRef.current = Object.fromEntries(
       VPX_TABLE.spinners.map((spinner) => [spinner.name, createVpxSpinnerMover()]),
     )
+    standupDisabledUntilRef.current = new Map()
+    captiveBallRef.current = {
+      distance: 0,
+      speed: 0,
+      sourceRules: null,
+      targetCooldownUntil: 0,
+    }
     const sharedRules = createRoboCopRulesState()
+    if (modeId === 'full-game') startRoboCopBall(sharedRules, 1, performance.now())
     rulesPickerRef.current = {
       candidate: '',
       locked: [],
@@ -2315,11 +4028,26 @@ export function VenuePinballPicker() {
       awaitingPlunge: false,
       sharedRules,
     }
+    fullGameRef.current = {
+      ballNumber: 1,
+      phase: 'idle',
+      multiballSpawned: false,
+      displayedScore: 0,
+      sharedRules,
+    }
+    setFullGameBall(1)
+    setFullGameScore(0)
+    setFullGamePhase('idle')
     candidateDeckRef.current = shuffled(machineKeys)
     if (modeId === 'rules-picker') nextRulesCandidate()
     syncRulesPickerState()
 
     if (modeId === 'rules-picker') {
+      ballsRef.current = [makeRulesBall('', sharedRules, { heldInShooterLane: true })]
+      requestAnimationFrame(draw)
+      return
+    }
+    if (modeId === 'full-game') {
       ballsRef.current = [makeRulesBall('', sharedRules, { heldInShooterLane: true })]
       requestAnimationFrame(draw)
       return
@@ -2360,13 +4088,20 @@ export function VenuePinballPicker() {
       releaseAt: 0,
       objectCooldowns: {},
       activeRuleVolumes: {},
+      flipperCorrectionSamples: {},
+      corSpeed: 0,
+      corVelocityX: 0,
+      corVelocityY: 0,
+      corElapsedMilliseconds: 0,
       rules: createRoboCopRulesState(),
       isRegularBall: false,
       parked: false,
+      parkedAt: null,
       heldInShooterLane: false,
       pendingCandidateSteps: 0,
       pendingRuleLock: false,
       pendingJackpot: false,
+      lastRuleSwitch: null,
       finished: false,
     }))
     requestAnimationFrame(draw)
@@ -2379,6 +4114,14 @@ export function VenuePinballPicker() {
     const launchStart = performance.now()
     if (modeId === 'rules-picker') {
       rulesPickerRef.current.awaitingPlunge = true
+      setAwaitingPlunge(true)
+      setPlungerOpen(false)
+      plungerPullRef.current = 0
+      setPlungerPull(0)
+    }
+    if (modeId === 'full-game') {
+      fullGameRef.current.phase = 'ready'
+      setFullGamePhase('ready')
       setAwaitingPlunge(true)
       setPlungerOpen(false)
       plungerPullRef.current = 0
@@ -2520,7 +4263,7 @@ export function VenuePinballPicker() {
           </label>
           <div className="min-w-0 text-[11px] font-semibold text-muted-foreground">
             Mode
-            <div className="mt-1 grid h-9 grid-cols-4 gap-1">
+            <div className="mt-1 grid h-9 grid-cols-5 gap-1">
               {MODES.map((item) => (
                 <button
                   key={item.id}
@@ -2563,6 +4306,26 @@ export function VenuePinballPicker() {
             <CardContent className="relative flex h-full items-center justify-center p-0">
               <VpxTableLamps className="absolute inset-0 h-full w-full" width={WIDTH} height={HEIGHT} getRulesStates={getActiveRulesStates} />
               <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="relative z-10 block h-full w-full" aria-label="Virtual pinball machine race" />
+              {modeId === 'full-game' && (
+                <div className="pointer-events-none absolute inset-x-[4%] top-[1.5%] z-20 flex items-start justify-between rounded-md border border-amber-300/35 bg-slate-950/80 px-3 py-2 font-mono text-amber-200 shadow-lg backdrop-blur-sm">
+                  <div>
+                    <div className="text-[7px] font-black uppercase tracking-[.22em] text-amber-400/80">Player 1</div>
+                    <div className="text-sm font-black tabular-nums sm:text-base">{fullGameScore.toLocaleString()}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-[7px] font-black uppercase tracking-[.18em] text-amber-400/80">Bonus</div>
+                    <div className="text-[9px] font-bold tabular-nums sm:text-[10px]">
+                      {formatRoboCopScore(fullGameRef.current.sharedRules.bonusValue)} × {fullGameRef.current.sharedRules.bonusMultiplier}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[7px] font-black uppercase tracking-[.22em] text-amber-400/80">{fullGamePhase === 'game-over' ? 'Game Over' : `Ball ${fullGameBall}`}</div>
+                    <div className="text-[9px] font-bold uppercase tracking-wider sm:text-[10px]">
+                      {fullGamePhase === 'ready' ? 'Ready to plunge' : fullGameRef.current.sharedRules.multiballActive ? 'Multiball' : 'RoboCop'}
+                    </div>
+                  </div>
+                </div>
+              )}
               {motionNotice && (
                 <div className={`pointer-events-none absolute z-20 rounded-lg border px-5 py-2 text-lg font-black tracking-[.18em] shadow-2xl ${motionNotice === 'TILT' ? 'border-red-400 bg-red-600 text-white' : motionNotice === 'DANGER' ? 'border-amber-300 bg-amber-500 text-slate-950' : 'border-neon-blue/60 bg-slate-950/90 text-neon-blue'}`}>
                   {motionNotice}
@@ -2570,7 +4333,7 @@ export function VenuePinballPicker() {
               )}
             </CardContent>
           </Card>
-          {modeId === 'rules-picker' && awaitingPlunge && (
+          {(modeId === 'rules-picker' || modeId === 'full-game') && awaitingPlunge && (
             <button
               type="button"
               onClick={openPlunger}
@@ -2613,11 +4376,7 @@ export function VenuePinballPicker() {
 
         <div className="hidden space-y-5 xl:block">
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg"><MapPin className="h-5 w-5" /> Set up the race</CardTitle>
-              <CardDescription>Machine lists come from the current venue data.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <label className="block text-sm font-medium">Venue</label>
               <select disabled={loading || running} value={venueKey} onChange={(event) => setVenueKey(event.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm">
                 {venues.map((item) => <option key={item.key || item.name} value={item.key || item.name}>{item.name} ({item.machines.length})</option>)}
@@ -2679,6 +4438,31 @@ export function VenuePinballPicker() {
             </Card>
           )}
 
+          {modeId === 'full-game' && (
+            <Card className="overflow-hidden border-amber-400/40">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">RoboCop — Player 1</CardTitle>
+                <CardDescription>
+                  {fullGamePhase === 'game-over' ? 'Game over'
+                    : fullGamePhase === 'ready' ? `Ball ${fullGameBall} is ready in the shooter lane.`
+                      : fullGameRef.current.sharedRules.multiballActive ? 'Multiball — the jackpot is on the right ramp.'
+                        : `Ball ${fullGameBall} of 3`}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="font-mono text-3xl font-black tabular-nums text-amber-600 dark:text-amber-300">{fullGameScore.toLocaleString()}</div>
+                <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] font-bold uppercase text-muted-foreground">
+                  <span>Bonus {formatRoboCopScore(fullGameRef.current.sharedRules.bonusValue)} × {fullGameRef.current.sharedRules.bonusMultiplier}</span>
+                  <span>Arrests {fullGameRef.current.sharedRules.collectedArrests.size}/3</span>
+                  <span>Spinner {fullGameRef.current.sharedRules.spinnerValue.toLocaleString()}</span>
+                </div>
+                <div className="mt-2 text-xs text-muted-foreground">
+                  {fullGameRef.current.sharedRules.lastAward ?? 'Complete directives, make arrests, and start multiball.'}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {winner && (
             <Card className="overflow-hidden border-neon-yellow/50 bg-gradient-to-br from-neon-yellow/15 to-neon-pink/10">
               <CardContent className="flex items-center gap-4 p-4">
@@ -2695,9 +4479,11 @@ export function VenuePinballPicker() {
           )}
 
           <Card>
-            <CardHeader className="pb-2"><CardTitle className="text-base">{modeId === 'rules-picker' ? 'Selected game' : 'Race order'}</CardTitle></CardHeader>
+            <CardHeader className="pb-2"><CardTitle className="text-base">{modeId === 'rules-picker' ? 'Selected game' : modeId === 'full-game' ? 'Game status' : 'Race order'}</CardTitle></CardHeader>
             <CardContent>
-              {ranking.length === 0 ? <p className="text-sm text-muted-foreground">{modeId === 'rules-picker' ? 'Play until a named ball drains or scores the jackpot.' : 'Start the table to see the finish order.'}</p> : (
+              {modeId === 'full-game' ? (
+                <p className="text-sm text-muted-foreground">{fullGamePhase === 'game-over' ? `Final score: ${fullGameScore.toLocaleString()}` : 'Play all three balls. Extra balls do not advance the ball count.'}</p>
+              ) : ranking.length === 0 ? <p className="text-sm text-muted-foreground">{modeId === 'rules-picker' ? 'Play until a named ball drains or scores the jackpot.' : 'Start the table to see the finish order.'}</p> : (
                 <ol className="max-h-52 space-y-2 overflow-y-auto">
                   {ranking.map((machineKey, index) => <li key={machineKey} className="flex items-center gap-3 text-sm"><span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${index === 0 ? 'bg-amber-400 text-slate-950' : 'bg-muted'}`}>{index + 1}</span><span className="truncate">{display(machineKey)}</span></li>)}
                 </ol>

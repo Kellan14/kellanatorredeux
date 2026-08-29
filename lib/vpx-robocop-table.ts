@@ -2,10 +2,14 @@
 // RoboCop (Data East 1989) VPX table. The original VPX file is not bundled.
 
 export type VpxPoint = readonly [x: number, y: number]
+type VpxCollisionHeightBands = Record<string, readonly [heightBottom: number, heightTop: number]>
 
 export type VpxWall = {
   name: string
   points: readonly VpxPoint[]
+  heightBottom?: number
+  heightTop?: number
+  solidBottom?: boolean
   elasticity: number
   elasticityFalloff: number
   friction: number
@@ -23,6 +27,7 @@ export type VpxSegment = {
   friction: number
   scatter: number
   oneWay: boolean
+  threshold?: number
 }
 
 export type VpxRamp = {
@@ -111,8 +116,71 @@ export const VPX_TABLE = {
   modelPath: '/vpx/robocop/Robocop%20(Data%20East%201989)_drakkon(mod_1.2).glb',
   playableWidth: 952,
   height: 2256,
-  // GameData GAVT/SLOP/FRCT/ELAS/ELFA/SCAT, verified by scripts/audit-vpx-physics.mjs.
-  playfield: { gravity: 1.7629848, slope: 6, friction: 0.15, elasticity: 0.25, elasticityFalloff: 0, scatter: 2 },
+  // GameData GAVT/SLOP/FRCT/ELAS/ELFA/PFSC/SCAT/TDFT, verified by
+  // scripts/audit-vpx-physics.mjs. PFSC is the implicit playfield plane's
+  // scatter; SCAT is the fallback for objects authored with negative scatter.
+  playfield: {
+    gravity: 1.7629848,
+    slope: 6,
+    friction: 0.15,
+    elasticity: 0.25,
+    elasticityFalloff: 0,
+    scatter: 0,
+    defaultScatter: 2,
+    difficulty: 0.5,
+  },
+  // Exact vertical spans of colliders that differ from the common 0..50 VPX
+  // wall band. Rubber1 is a 5-unit tube centered at its HTHI 25 hit height.
+  collisionHeightBands: {
+    'BumperCap Decal': [0, 95],
+    PGW: [0, 120],
+    Wall1: [25, 30],
+    Wall2: [0, 54],
+    Wall3: [0, 54],
+    Wall4: [0, 54],
+    Wall5: [0, 54],
+    Wall75: [0, 75],
+    Wall101: [0, 55],
+    Wall102: [0, 55],
+    Wall103: [0, 55],
+    Wall107: [0, 55],
+    Wall108: [0, 55],
+    Wall122: [0, 55],
+    Wall124: [0, 55],
+    Wall173: [0, 55],
+    Wall212: [0, 54],
+    Wall228: [25, 30],
+    Wall350: [0, 54],
+    Wall76: [0, 55],
+    Wall79: [0, 55],
+    Wall80: [0, 55],
+    Wall81: [0, 55],
+    Wall82: [0, 55],
+    Wall86: [0, 55],
+    Wall87: [0, 55],
+    Wall88: [0, 55],
+    Wall89: [0, 55],
+    Wall90: [0, 55],
+    Wall91: [0, 55],
+    Wall92: [0, 55],
+    Wall93: [0, 55],
+    Wall95: [0, 55],
+    Wall96: [0, 55],
+    Wall97: [0, 55],
+    Wall98: [0, 55],
+    Wall99: [0, 55],
+    LeftSlingShot: [26, 36],
+    RightSlingShot: [26, 36],
+    Rubber1: [22.5, 27.5],
+  } as const satisfies VpxCollisionHeightBands,
+  // Surface ISBS (IsBottomSolid) read from the original VPX. Every surface
+  // has a solid top; only these imported wall bodies also collide from below.
+  solidBottomWalls: [
+    'BumperCap Decal', 'PGW', 'Wall004', 'Wall005', 'Wall10', 'Wall11',
+    'Wall113', 'Wall114', 'Wall117', 'Wall118', 'Wall119', 'Wall12',
+    'Wall120', 'Wall121', 'Wall125', 'Wall127', 'Wall13', 'Wall43', 'Wall44',
+    'Wall6', 'Wall75', 'Wall78', 'Wall9',
+  ] as const,
   drain: { center: [448, 2156], radius: 25 },
   // Mechanical objects and ROM-scripted eject settings copied from the
   // RoboCop VPX. Angles are VPX angles: 0 degrees points toward the top.
@@ -120,7 +188,40 @@ export const VPX_TABLE = {
   // fully-pulled-back marker; the rod fires up-table (-y). The tip at rest is
   // center.y - stroke * (1 - parkPosition), and the ball parks one ball radius
   // up-lane of the tip.
-  plunger: { center: [908.9375, 2204.875], width: 25, stroke: 180, speedFire: 110, mechStrength: 85, parkPosition: 0.16666667 },
+  plunger: {
+    center: [908.9375, 2204.875], width: 25, stroke: 180, speedFire: 110,
+    mechStrength: 85, parkPosition: 0.16666667, momentumTransfer: 1, scatterVelocity: 0,
+  },
+  // CapBall1 creates the right captive ball above the two circular channel
+  // stops. Gravity seats it tangent to Wall173 and Wall76; a hit drives it up
+  // the channel into the thin sw23o primitive, which represents switch 23.
+  captiveBall: {
+    spawnCenter: [833.1186, 1192.4666],
+    restWalls: ['Wall173', 'Wall76'],
+    targetCenter: [916.75897, 954.04144],
+    radius: 25,
+    targetDepth: 1,
+    elasticity: 0.35,
+    elasticityFalloff: 0.5,
+    friction: 0.2,
+    scatter: 5,
+    switchNumber: 23,
+  },
+  // KickBack plunger: VCEN/WDTH/HIGH/HPSL/SPDP/SPDF/MEST/MPRK from the VPX.
+  // It sits below the left-outlane rollover and is fired by the Laser Kick
+  // rule coil rather than by player input.
+  kickback: {
+    center: [57.75, 1945.375],
+    width: 25,
+    height: 20,
+    stroke: 120,
+    speedPull: 50,
+    speedFire: 110,
+    mechStrength: 85,
+    parkPosition: 0.16666667,
+    momentumTransfer: 1,
+    scatterVelocity: 0,
+  },
   // Shooter lane clear width, taken from the walls that bound it: Wall212's
   // right edge and Wall44's left edge.
   shooterLane: { left: 879.4, right: 933.3, top: 1940 },
@@ -504,14 +605,14 @@ export const VPX_TABLE = {
     { name: 'Bumper3', center: [637.5, 622.5], radius: 45, force: 10, scatter: 2, threshold: 2 },
   ] as const,
   contacts: [
-    { name: 'sw23', from: [900.3894381527854, 943.2005938960564], to: [935.7354418472147, 959.6827061039436], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false },
-    { name: 'sw33', from: [137.25746862050084, 1236.0805536126368], to: [147.35141137949915, 1198.409446387363], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false },
-    { name: 'sw34', from: [153.85004862050084, 1174.275553612637], to: [163.94399137949915, 1136.6044463873632], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false },
-    { name: 'sw35', from: [170.26714862050085, 1110.2306536126368], to: [180.36109137949916, 1072.559546387363], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false },
-    { name: 'sw36', from: [185.89402862050085, 1048.2062536126368], to: [195.98797137949916, 1010.535146387363], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false },
-    { name: 'sw41', from: [414.7401481527853, 919.3282438960564], to: [450.08615184721464, 935.8103561039436], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false },
-    { name: 'sw42', from: [466.01574815278536, 944.5179438960564], to: [501.3617518472147, 961.0000561039436], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false },
-    { name: 'sw43', from: [517.4496981527853, 968.6272938960564], to: [552.7957018472147, 985.1094061039436], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false },
+    { name: 'sw23', from: [900.3894381527854, 943.2005938960564], to: [935.7354418472147, 959.6827061039436], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false, threshold: 2 },
+    { name: 'sw33', from: [137.25746862050084, 1236.0805536126368], to: [147.35141137949915, 1198.409446387363], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false, threshold: 2 },
+    { name: 'sw34', from: [153.85004862050084, 1174.275553612637], to: [163.94399137949915, 1136.6044463873632], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false, threshold: 2 },
+    { name: 'sw35', from: [170.26714862050085, 1110.2306536126368], to: [180.36109137949916, 1072.559546387363], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false, threshold: 2 },
+    { name: 'sw36', from: [185.89402862050085, 1048.2062536126368], to: [195.98797137949916, 1010.535146387363], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false, threshold: 2 },
+    { name: 'sw41', from: [414.7401481527853, 919.3282438960564], to: [450.08615184721464, 935.8103561039436], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false, threshold: 2 },
+    { name: 'sw42', from: [466.01574815278536, 944.5179438960564], to: [501.3617518472147, 961.0000561039436], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false, threshold: 2 },
+    { name: 'sw43', from: [517.4496981527853, 968.6272938960564], to: [552.7957018472147, 985.1094061039436], elasticity: 0.4, elasticityFalloff: 0, friction: 0.2, scatter: 0, oneWay: false, threshold: 2 },
   ] as const satisfies readonly VpxSegment[],
   // Every collidable flat ramp in the original table. VPX keeps these
   // surfaces invisible and renders decorative plastics/primitives above them.
