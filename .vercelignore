@@ -1,2 +1,6 @@
-# Don't bundle data files - fetch from GitHub instead
-mnp-data-archive
+# Fetch the large historical archive from GitHub instead of uploading it.
+# These two small snapshots are intentionally bundled as deployment-safe
+# fallbacks for the venue and machine-canon API routes.
+mnp-data-archive/**
+!mnp-data-archive/machines.json
+!mnp-data-archive/venues.json
