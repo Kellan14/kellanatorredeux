@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useRef, useState, Suspense } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Trophy, Target, TrendingUp, Users, Calendar, BarChart3, Percent, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, ArrowUpDown, ArrowUp, ArrowDown, LineChart, Loader2, Check, Send } from 'lucide-react'
 import { AlexLoader } from '@/components/alex-loader'
@@ -42,6 +42,7 @@ function HomePageContent() {
   const [matchLabel, setMatchLabel] = useState<string>('Loading...')
   const [opponent, setOpponent] = useState<string>('Loading...')
   const [matchDate, setMatchDate] = useState<string>('')
+  const [matchSeason, setMatchSeason] = useState<number | null>(null)
   const [venue, setVenue] = useState<string>('')
   const [matchState, setMatchState] = useState<string>('')
   const [loading, setLoading] = useState(true)
@@ -65,6 +66,10 @@ function HomePageContent() {
   const [topPicksSeasonStart, setTopPicksSeasonStart] = useState<number>(20)
   const [topPicksSeasonEnd, setTopPicksSeasonEnd] = useState<number>(23)
   const [loadingTopPicks, setLoadingTopPicks] = useState(false)
+  // Several inputs arrive independently on first load (match, venue machines,
+  // team seasons, roster). Ignore an older response if a newer request has
+  // started, otherwise the initial default range can overwrite valid picks.
+  const topPicksRequestId = useRef(0)
   const [availableSeasons, setAvailableSeasons] = useState<number[]>([20, 21, 22, 23])
   const [topPicksSortColumn, setTopPicksSortColumn] = useState<string>('timesPicked')
   const [topPicksSortDirection, setTopPicksSortDirection] = useState<'asc' | 'desc'>('desc')
@@ -264,7 +269,7 @@ function HomePageContent() {
     if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venueMachines.length > 0) {
       fetchOpponentPlayers()
     }
-  }, [opponent, showSubs, venueMachines])
+  }, [opponent, showSubs, venueMachines, matchSeason])
 
   useEffect(() => {
     if (playerName && venue && venue !== 'Loading...' && venueMachines.length > 0) {
@@ -294,6 +299,7 @@ function HomePageContent() {
   }, [opponent, venue, topPicksSeasonStart, topPicksSeasonEnd, opponentPlayers, venueMachines])
 
   const fetchOpponentTopPicks = async () => {
+    const requestId = ++topPicksRequestId.current
     setLoadingTopPicks(true)
     try {
       // Build season list from range
@@ -318,8 +324,8 @@ function HomePageContent() {
         if (cacheRes.ok) {
           const cacheData = await cacheRes.json()
           if (cacheData?.cached && Array.isArray(cacheData.picks)) {
+            if (requestId !== topPicksRequestId.current) return
             setOpponentTopPicks(cacheData.picks)
-            setLoadingTopPicks(false)
             return
           }
         }
@@ -351,13 +357,14 @@ function HomePageContent() {
           .filter((s: any) => s.timesPicked > 0)
           .sort((a: any, b: any) => b.timesPicked - a.timesPicked)
           .slice(0, 10)
+        if (requestId !== topPicksRequestId.current) return
         setOpponentTopPicks(sorted)
       }
     } catch (error) {
       console.error('Error fetching opponent top picks:', error)
-      setOpponentTopPicks([])
+      if (requestId === topPicksRequestId.current) setOpponentTopPicks([])
     } finally {
-      setLoadingTopPicks(false)
+      if (requestId === topPicksRequestId.current) setLoadingTopPicks(false)
     }
   }
 
@@ -750,6 +757,7 @@ function HomePageContent() {
         setOpponent(data.opponent)
         setVenue(data.venue)
         setMatchState(data.state)
+        setMatchSeason(data.season || null)
 
         // Set venue machines immediately
         const venueEntry = (venuesData.venues || []).find((v: any) => v.name === data.venue)
@@ -782,7 +790,9 @@ function HomePageContent() {
 
   const fetchOpponentPlayers = async () => {
     try {
-      const currentSeason = playerStats.currentSeason || 23
+      // Roster season belongs to the opponent/next match, not to the signed-in
+      // player's latest personal appearance (which may be a season behind).
+      const currentSeason = matchSeason || playerStats.currentSeason || 23
       const historicalSeason = currentSeason - 1
 
       // Fetch roster independently so it doesn't depend on machine-advantages

@@ -58,6 +58,15 @@ export async function GET(request: NextRequest) {
     } | null; error: any }
 
   if (error) {
+    // This cache is an optional optimization. A missing table must behave like
+    // a cache miss so the dashboard can immediately use /api/machine-stats;
+    // returning 500 here made the fallback slower and amplified request races.
+    if (error.code === 'PGRST205' || error.code === '42P01') {
+      return NextResponse.json(
+        { cached: false, reason: 'cache unavailable' },
+        { status: 404 }
+      )
+    }
     console.error('[top-picks] DB error:', error)
     return NextResponse.json({ error: 'Cache lookup failed' }, { status: 500 })
   }
