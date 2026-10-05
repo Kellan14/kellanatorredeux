@@ -25,7 +25,7 @@ async function generateThumbnails() {
   for (const file of files) {
     try {
       const sourcePath = path.join(sourceDir, file);
-      const thumbPath = path.join(thumbDir, file);
+      const thumbPath = path.join(thumbDir, file.replace(/\.jpg$/i, '.jpg'));
 
       // Check if thumbnail exists and is up to date
       if (fs.existsSync(thumbPath)) {

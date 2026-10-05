@@ -23,7 +23,8 @@ let skipped = 0;
 // Copy new or updated images to public directory
 for (const file of sourceFiles) {
   const sourcePath = path.join(sourceDir, file);
-  const destPath = path.join(publicDir, file);
+  // Image URLs use lowercase .jpg even when an imported source uses .JPG.
+  const destPath = path.join(publicDir, file.replace(/\.jpg$/i, '.jpg'));
 
   // Check if file needs to be copied
   if (fs.existsSync(destPath)) {
