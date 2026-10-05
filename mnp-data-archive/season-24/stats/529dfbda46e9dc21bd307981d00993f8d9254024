@@ -1,0 +1,143 @@
+{
+  "key": "529dfbda46e9dc21bd307981d00993f8d9254024",
+  "name": "Nic Cope",
+  "history": [
+    {
+      "team": "TTT",
+      "opp": "NQG",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 1,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 206519790,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NQG",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 2,
+      "machine": "VEN",
+      "division": 0,
+      "score": 685034660,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NQG",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 4,
+      "machine": "VEN",
+      "division": 0,
+      "score": 721277640,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "DTP",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 1,
+      "machine": "BSD",
+      "division": 0,
+      "score": 51000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "DTP",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 12544010,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "DTP",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 3,
+      "machine": "BSD",
+      "division": 0,
+      "score": 444120470,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "DSV",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 2,
+      "machine": "VEN",
+      "division": 0,
+      "score": 395000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "DSV",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 64178920,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "DSV",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 4,
+      "machine": "VEN",
+      "division": 0,
+      "score": 591808920,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.900",
+      "num_matches": 3,
+      "ppm": "7.500",
+      "points": {
+        "won": 22.5,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

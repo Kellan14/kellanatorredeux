@@ -1,0 +1,107 @@
+{
+  "key": "0475cda58c5071e01cd8affe212c00114ce221b4",
+  "name": "Ashton Wright",
+  "history": [
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-24-1-PBR-DIH",
+      "week": "1",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 6125960,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-24-1-PBR-DIH",
+      "week": "1",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 64840540,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-24-1-PBR-DIH",
+      "week": "1",
+      "round": 4,
+      "machine": "Centaur",
+      "division": 0,
+      "score": 409220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SHK",
+      "match": "mnp-24-3-PBR-SHK",
+      "week": "3",
+      "round": 2,
+      "machine": "OuterSpace",
+      "division": 0,
+      "score": 38550,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "SHK",
+      "match": "mnp-24-3-PBR-SHK",
+      "week": "3",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 80202840,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "SHK",
+      "match": "mnp-24-3-PBR-SHK",
+      "week": "3",
+      "round": 4,
+      "machine": "Earthshaker",
+      "division": 0,
+      "score": 1896410,
+      "points": 1.5,
+      "pops": "0.600"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.606",
+      "num_matches": 2,
+      "ppm": "5.000",
+      "points": {
+        "won": 10,
+        "of": 16.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

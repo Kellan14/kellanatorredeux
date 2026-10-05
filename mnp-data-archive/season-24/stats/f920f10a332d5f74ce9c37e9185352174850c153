@@ -1,0 +1,143 @@
+{
+  "key": "f920f10a332d5f74ce9c37e9185352174850c153",
+  "name": "Jimmie Eiseman",
+  "history": [
+    {
+      "team": "JMF",
+      "opp": "SSS",
+      "match": "mnp-24-1-SSS-JMF",
+      "week": "1",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 396679340,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "JMF",
+      "opp": "SSS",
+      "match": "mnp-24-1-SSS-JMF",
+      "week": "1",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 15677450,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "JMF",
+      "opp": "SSS",
+      "match": "mnp-24-1-SSS-JMF",
+      "week": "1",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 162671620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "RTR",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 233450,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "JMF",
+      "opp": "RTR",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 2,
+      "machine": "Genie",
+      "division": 0,
+      "score": 246000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "JMF",
+      "opp": "RTR",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 4,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 287050,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "ETB",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 1,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 109570,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "JMF",
+      "opp": "ETB",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 2,
+      "machine": "NGG",
+      "division": 0,
+      "score": 16991720,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "ETB",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 12166130,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.551",
+      "num_matches": 3,
+      "ppm": "4.500",
+      "points": {
+        "won": 13.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

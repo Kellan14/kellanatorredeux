@@ -1,0 +1,143 @@
+{
+  "key": "2fe0a6ac28bc95f9d850d754d92a7460d49676ad",
+  "name": "Nick Lindsay",
+  "history": [
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 729757820,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 1227896540,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 4,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 117355900,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 1,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 2887550,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 2,
+      "machine": "EJ",
+      "division": 0,
+      "score": 158665950,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 4,
+      "machine": "EJ",
+      "division": 0,
+      "score": 86929860,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "DIH",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 297368180,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "POW",
+      "opp": "DIH",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 94189760,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "DIH",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 34482880,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.791",
+      "num_matches": 3,
+      "ppm": "6.333",
+      "points": {
+        "won": 19,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

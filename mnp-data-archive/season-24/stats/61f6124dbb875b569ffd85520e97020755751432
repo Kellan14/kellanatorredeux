@@ -1,0 +1,143 @@
+{
+  "key": "61f6124dbb875b569ffd85520e97020755751432",
+  "name": "Elyssa Cichy",
+  "history": [
+    {
+      "team": "SRF",
+      "opp": "SHK",
+      "match": "mnp-24-1-SRF-SHK",
+      "week": "1",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 13233910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "SHK",
+      "match": "mnp-24-1-SRF-SHK",
+      "week": "1",
+      "round": 2,
+      "machine": "SouthPark",
+      "division": 0,
+      "score": 7761040,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "SHK",
+      "match": "mnp-24-1-SRF-SHK",
+      "week": "1",
+      "round": 3,
+      "machine": "OuterSpace",
+      "division": 0,
+      "score": 33560,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "PYC",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 10927200,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SRF",
+      "opp": "PYC",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 2,
+      "machine": "DUNE",
+      "division": 0,
+      "score": 41864640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "PYC",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 5845770,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "FBP",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 3461700,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "FBP",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 12658880,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "FBP",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 12096870,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.387",
+      "num_matches": 3,
+      "ppm": "3.166",
+      "points": {
+        "won": 9.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "096de1fd005e1a9c67479cdf593678ca01bb7df9",
+  "name": "Matt Galbraith",
+  "history": [
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 44982710,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 3,
+      "machine": "GLizard",
+      "division": 0,
+      "score": 1089480,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 4,
+      "machine": "Cheetah",
+      "division": 0,
+      "score": 136500,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 1,
+      "machine": "Tron",
+      "division": 0,
+      "score": 13045540,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 95437970,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 162508220,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 1,
+      "machine": "WhoDunnit",
+      "division": 0,
+      "score": 923242470,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 112652000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 278380,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.562",
+      "num_matches": 3,
+      "ppm": "4.500",
+      "points": {
+        "won": 13.5,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

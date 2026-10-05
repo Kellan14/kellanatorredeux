@@ -1,0 +1,107 @@
+{
+  "key": "5c4cf1d87119391ff84651a08f6094023f18c19e",
+  "name": "Mandy Woodard",
+  "history": [
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 2,
+      "machine": "Stars",
+      "division": 0,
+      "score": 94950,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1616043710,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 4,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 353850,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "BLK",
+      "opp": "DTP",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 60497330,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "BLK",
+      "opp": "DTP",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 16948890,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BLK",
+      "opp": "DTP",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 89778830,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.676",
+      "num_matches": 2,
+      "ppm": "5.750",
+      "points": {
+        "won": 11.5,
+        "of": 17
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

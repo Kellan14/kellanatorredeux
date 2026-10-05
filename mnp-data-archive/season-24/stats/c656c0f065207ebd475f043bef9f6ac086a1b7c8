@@ -1,0 +1,143 @@
+{
+  "key": "c656c0f065207ebd475f043bef9f6ac086a1b7c8",
+  "name": "Kevin Deschenes",
+  "history": [
+    {
+      "team": "RMS",
+      "opp": "SCN",
+      "match": "mnp-24-1-RMS-SCN",
+      "week": "1",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 6000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RMS",
+      "opp": "SCN",
+      "match": "mnp-24-1-RMS-SCN",
+      "week": "1",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 7000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "SCN",
+      "match": "mnp-24-1-RMS-SCN",
+      "week": "1",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 31041900,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RMS",
+      "opp": "DIH",
+      "match": "mnp-24-2-DIH-RMS",
+      "week": "2",
+      "round": 1,
+      "machine": "LOTR",
+      "division": 0,
+      "score": 26000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RMS",
+      "opp": "DIH",
+      "match": "mnp-24-2-DIH-RMS",
+      "week": "2",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 93864180,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "RMS",
+      "opp": "DIH",
+      "match": "mnp-24-2-DIH-RMS",
+      "week": "2",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 328082780,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "NLT",
+      "match": "mnp-24-3-RMS-NLT",
+      "week": "3",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 175665400,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "NLT",
+      "match": "mnp-24-3-RMS-NLT",
+      "week": "3",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 130894560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "NLT",
+      "match": "mnp-24-3-RMS-NLT",
+      "week": "3",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 50934560,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.489",
+      "num_matches": 3,
+      "ppm": "4.000",
+      "points": {
+        "won": 12,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

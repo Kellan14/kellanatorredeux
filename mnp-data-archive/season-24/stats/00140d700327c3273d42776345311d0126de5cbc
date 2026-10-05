@@ -1,0 +1,143 @@
+{
+  "key": "00140d700327c3273d42776345311d0126de5cbc",
+  "name": "Craig R Jones",
+  "history": [
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 11378060,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 2,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 9122540,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 4,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 3610640,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 1,
+      "machine": "ElviraHouseOfHorrors",
+      "division": 0,
+      "score": 264237240,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 2,
+      "machine": "ElviraHouseOfHorrors",
+      "division": 0,
+      "score": 155849910,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 743775950,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 83775890,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 50292880,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 106458160,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.770",
+      "num_matches": 3,
+      "ppm": "6.166",
+      "points": {
+        "won": 18.5,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

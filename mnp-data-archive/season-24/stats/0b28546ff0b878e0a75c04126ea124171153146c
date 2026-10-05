@@ -1,0 +1,107 @@
+{
+  "key": "0b28546ff0b878e0a75c04126ea124171153146c",
+  "name": "Audrey Fleck",
+  "history": [
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 1,
+      "machine": "MH",
+      "division": 0,
+      "score": 93000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 3,
+      "machine": "Stars",
+      "division": 0,
+      "score": 37840,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 39435410,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 144290970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 3,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 7645020,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 4,
+      "machine": "VEN",
+      "division": 0,
+      "score": 11546410,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.303",
+      "num_matches": 2,
+      "ppm": "2.500",
+      "points": {
+        "won": 5,
+        "of": 16.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

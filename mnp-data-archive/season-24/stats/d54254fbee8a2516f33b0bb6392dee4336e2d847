@@ -1,0 +1,143 @@
+{
+  "key": "d54254fbee8a2516f33b0bb6392dee4336e2d847",
+  "name": "Max Stewart",
+  "history": [
+    {
+      "team": "DSV",
+      "opp": "CRA",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 150057760,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "CRA",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 2,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 40515000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DSV",
+      "opp": "CRA",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 3,
+      "machine": "TAF",
+      "division": 0,
+      "score": 169580040,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 1,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 298950,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 202000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 4,
+      "machine": "BadCats",
+      "division": 0,
+      "score": 34535840,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 62680220,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 24530000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 6279000000,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.680",
+      "num_matches": 3,
+      "ppm": "5.666",
+      "points": {
+        "won": 17,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "key": "c55b966dde436ddd24fa0ec4213bdff3d096795a",
+  "name": "Cory Lampe",
+  "history": [
+    {
+      "team": "NLT",
+      "opp": "SSD",
+      "match": "mnp-24-1-SSD-NLT",
+      "week": "1",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 503046900,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SSD",
+      "match": "mnp-24-1-SSD-NLT",
+      "week": "1",
+      "round": 2,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 888840570,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SSD",
+      "match": "mnp-24-1-SSD-NLT",
+      "week": "1",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 82593590,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SSD",
+      "match": "mnp-24-1-SSD-NLT",
+      "week": "1",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 1023333230,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "PBR",
+      "match": "mnp-24-2-NLT-PBR",
+      "week": "2",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 150094910,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "PBR",
+      "match": "mnp-24-2-NLT-PBR",
+      "week": "2",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 131143550,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "PBR",
+      "match": "mnp-24-2-NLT-PBR",
+      "week": "2",
+      "round": 4,
+      "machine": "MH",
+      "division": 0,
+      "score": 40960,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "RMS",
+      "match": "mnp-24-3-RMS-NLT",
+      "week": "3",
+      "round": 1,
+      "machine": "STMNT",
+      "division": 0,
+      "score": 4419400,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NLT",
+      "opp": "RMS",
+      "match": "mnp-24-3-RMS-NLT",
+      "week": "3",
+      "round": 3,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 4631111650,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "RMS",
+      "match": "mnp-24-3-RMS-NLT",
+      "week": "3",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 1804312900,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.870",
+      "num_matches": 3,
+      "ppm": "7.833",
+      "points": {
+        "won": 23.5,
+        "of": 27
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

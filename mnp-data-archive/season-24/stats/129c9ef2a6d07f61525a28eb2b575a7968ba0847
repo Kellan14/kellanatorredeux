@@ -1,0 +1,143 @@
+{
+  "key": "129c9ef2a6d07f61525a28eb2b575a7968ba0847",
+  "name": "Chris Mullen",
+  "history": [
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 37404630,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 2,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 376989600,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 4,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 96675340,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 27000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 2,
+      "machine": "JD",
+      "division": 0,
+      "score": 27071000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 4,
+      "machine": "HP",
+      "division": 0,
+      "score": 352464715,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "DIH",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 861390,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "DIH",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 2,
+      "machine": "BOPP",
+      "division": 0,
+      "score": 41980,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "DIH",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 12651470,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.666",
+      "num_matches": 3,
+      "ppm": "5.333",
+      "points": {
+        "won": 16,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

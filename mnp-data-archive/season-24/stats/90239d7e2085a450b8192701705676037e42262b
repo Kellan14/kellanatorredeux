@@ -1,0 +1,143 @@
+{
+  "key": "90239d7e2085a450b8192701705676037e42262b",
+  "name": "Luke Camarda",
+  "history": [
+    {
+      "team": "TWC",
+      "opp": "DTP",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 1,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 33775360,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TWC",
+      "opp": "DTP",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 2,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 25255750,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "DTP",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 4,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 9730290,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TWC",
+      "opp": "DSV",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 1,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 59150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "DSV",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 308574680,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "DSV",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 14460140,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ICB",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 508608220,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TWC",
+      "opp": "ICB",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 2,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 430800,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ICB",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 4,
+      "machine": "Ali",
+      "division": 0,
+      "score": 232700,
+      "points": 2,
+      "pops": "0.800"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.375",
+      "num_matches": 3,
+      "ppm": "3.000",
+      "points": {
+        "won": 9,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

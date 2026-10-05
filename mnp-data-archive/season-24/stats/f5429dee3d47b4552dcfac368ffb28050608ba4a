@@ -1,0 +1,143 @@
+{
+  "key": "f5429dee3d47b4552dcfac368ffb28050608ba4a",
+  "name": "Chandler Lattin",
+  "history": [
+    {
+      "team": "PYC",
+      "opp": "DRK",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 185880,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PYC",
+      "opp": "DRK",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 2,
+      "machine": "QS",
+      "division": 0,
+      "score": 164370,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "DRK",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 19170440,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "SRF",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 35655920,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SRF",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 10000630,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "SRF",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 21052880,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-24-3-SSD-PYC",
+      "week": "3",
+      "round": 1,
+      "machine": "Cheetah",
+      "division": 0,
+      "score": 418130,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-24-3-SSD-PYC",
+      "week": "3",
+      "round": 2,
+      "machine": "Frontier",
+      "division": 0,
+      "score": 92590,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-24-3-SSD-PYC",
+      "week": "3",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 82216720,
+      "points": 2,
+      "pops": "0.666"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.580",
+      "num_matches": 3,
+      "ppm": "4.833",
+      "points": {
+        "won": 14.5,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

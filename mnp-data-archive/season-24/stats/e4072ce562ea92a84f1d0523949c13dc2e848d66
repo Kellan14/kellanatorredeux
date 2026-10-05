@@ -1,0 +1,143 @@
+{
+  "key": "e4072ce562ea92a84f1d0523949c13dc2e848d66",
+  "name": "katie viray",
+  "history": [
+    {
+      "team": "DOG",
+      "opp": "KNR",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 1000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "KNR",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 9826750,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "KNR",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 18627490,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSS",
+      "match": "mnp-24-2-DOG-SSS",
+      "week": "2",
+      "round": 1,
+      "machine": "TargetAlpha",
+      "division": 0,
+      "score": 24540,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSS",
+      "match": "mnp-24-2-DOG-SSS",
+      "week": "2",
+      "round": 3,
+      "machine": "Centaur",
+      "division": 0,
+      "score": 245240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSS",
+      "match": "mnp-24-2-DOG-SSS",
+      "week": "2",
+      "round": 4,
+      "machine": "Centaur",
+      "division": 0,
+      "score": 225580,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 363113600,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 2,
+      "machine": "CA",
+      "division": 0,
+      "score": 169470,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 31967610,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.125",
+      "num_matches": 3,
+      "ppm": "1.000",
+      "points": {
+        "won": 3,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "e10076f402847f4055455fc4d2717fc3ae14078e",
+  "name": "Kristin Vick",
+  "history": [
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 2,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 107549930,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 183000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 4,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 72000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 62474930,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 8182100,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 2980520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 111628190,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 149560110,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 478447070,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.469",
+      "num_matches": 3,
+      "ppm": "3.833",
+      "points": {
+        "won": 11.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

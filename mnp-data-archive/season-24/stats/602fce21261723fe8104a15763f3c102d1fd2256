@@ -1,0 +1,143 @@
+{
+  "key": "602fce21261723fe8104a15763f3c102d1fd2256",
+  "name": "Clinton Peterson",
+  "history": [
+    {
+      "team": "SWL",
+      "opp": "ADB",
+      "match": "mnp-24-1-SWL-ADB",
+      "week": "1",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 32633640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "ADB",
+      "match": "mnp-24-1-SWL-ADB",
+      "week": "1",
+      "round": 2,
+      "machine": "Munsters",
+      "division": 0,
+      "score": 5741640,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SWL",
+      "opp": "ADB",
+      "match": "mnp-24-1-SWL-ADB",
+      "week": "1",
+      "round": 4,
+      "machine": "Munsters",
+      "division": 0,
+      "score": 21075490,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "SKP",
+      "match": "mnp-24-2-SKP-SWL",
+      "week": "2",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 286812800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "SKP",
+      "match": "mnp-24-2-SKP-SWL",
+      "week": "2",
+      "round": 3,
+      "machine": "SONIC",
+      "division": 0,
+      "score": 55631520,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SWL",
+      "opp": "SKP",
+      "match": "mnp-24-2-SKP-SWL",
+      "week": "2",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 9237530,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SWL",
+      "opp": "ZOO",
+      "match": "mnp-24-3-SWL-ZOO",
+      "week": "3",
+      "round": 2,
+      "machine": "Junkyard",
+      "division": 0,
+      "score": 4889140,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "ZOO",
+      "match": "mnp-24-3-SWL-ZOO",
+      "week": "3",
+      "round": 3,
+      "machine": "Junkyard",
+      "division": 0,
+      "score": 21098330,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "ZOO",
+      "match": "mnp-24-3-SWL-ZOO",
+      "week": "3",
+      "round": 4,
+      "machine": "Junkyard",
+      "division": 0,
+      "score": 5792660,
+      "points": 1.5,
+      "pops": "0.600"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.551",
+      "num_matches": 3,
+      "ppm": "4.500",
+      "points": {
+        "won": 13.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

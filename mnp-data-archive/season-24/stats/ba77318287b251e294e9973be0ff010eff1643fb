@@ -1,0 +1,143 @@
+{
+  "key": "ba77318287b251e294e9973be0ff010eff1643fb",
+  "name": "Marshall Denton",
+  "history": [
+    {
+      "team": "TWC",
+      "opp": "DTP",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 1,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 3007340,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TWC",
+      "opp": "DTP",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 922142300,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "DTP",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 3,
+      "machine": "Indy",
+      "division": 0,
+      "score": 233018420,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TWC",
+      "opp": "DSV",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 1,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 241043050,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "DSV",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 2,
+      "machine": "FOO",
+      "division": 0,
+      "score": 75084000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TWC",
+      "opp": "DSV",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 91026280,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TWC",
+      "opp": "ICB",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 1404473540,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ICB",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 7858066740,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ICB",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 3933462910,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.612",
+      "num_matches": 3,
+      "ppm": "5.000",
+      "points": {
+        "won": 15,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

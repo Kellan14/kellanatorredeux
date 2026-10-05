@@ -1,0 +1,143 @@
+{
+  "key": "c543633ea63045411ecebe25a7d0e29c58a7b29b",
+  "name": "Emily Beirne",
+  "history": [
+    {
+      "team": "RTR",
+      "opp": "PKT",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 489290800,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "PKT",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 2,
+      "machine": "TOTAN",
+      "division": 0,
+      "score": 2590070,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "PKT",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 4,
+      "machine": "SS",
+      "division": 0,
+      "score": 12516670,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 156040,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 2,
+      "machine": "BSD",
+      "division": 0,
+      "score": 3557260,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 4,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 175900,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2304482700,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 12015240,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 4,
+      "machine": "CA",
+      "division": 0,
+      "score": 288530,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.354",
+      "num_matches": 3,
+      "ppm": "2.833",
+      "points": {
+        "won": 8.5,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "f61932d48e0c6de037d7e9dbca92f8138a9ca199",
+  "name": "Nick Taseris",
+  "history": [
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 1,
+      "machine": "METREM",
+      "division": 0,
+      "score": 25000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 2,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 7275590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 4,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 75715950,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 132000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 3,
+      "machine": "BSD",
+      "division": 0,
+      "score": 6813310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 4,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 8010420,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 51007730,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 107497240,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 42946440,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.530",
+      "num_matches": 3,
+      "ppm": "4.333",
+      "points": {
+        "won": 13,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "fd9784352747498efd00ec5abd77bb2bc9598edf",
+  "name": "Ryan Loftus",
+  "history": [
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 755885810,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 3,
+      "machine": "WCS",
+      "division": 0,
+      "score": 185898850,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 4,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 7820960,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "WCS",
+      "division": 0,
+      "score": 158581460,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 3,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 155180,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 389430,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 2,
+      "machine": "Indy",
+      "division": 0,
+      "score": 25727650,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 19343710,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 38526930,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.372",
+      "num_matches": 3,
+      "ppm": "3.166",
+      "points": {
+        "won": 9.5,
+        "of": 25.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

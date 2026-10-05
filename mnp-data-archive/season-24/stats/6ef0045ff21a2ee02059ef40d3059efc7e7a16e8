@@ -1,0 +1,143 @@
+{
+  "key": "6ef0045ff21a2ee02059ef40d3059efc7e7a16e8",
+  "name": "Kyle Hayden",
+  "history": [
+    {
+      "team": "TTT",
+      "opp": "NQG",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 10878860,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "NQG",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 3,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 147861000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NQG",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 82767260,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "DTP",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 221520,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "DTP",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 5531870,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "DTP",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 279960,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TTT",
+      "opp": "DSV",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 51414540,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TTT",
+      "opp": "DSV",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 2,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 215994170,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "DSV",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 4,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 20730330,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.551",
+      "num_matches": 3,
+      "ppm": "4.500",
+      "points": {
+        "won": 13.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

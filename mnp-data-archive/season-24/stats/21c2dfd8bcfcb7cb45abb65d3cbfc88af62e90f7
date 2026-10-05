@@ -1,0 +1,143 @@
+{
+  "key": "21c2dfd8bcfcb7cb45abb65d3cbfc88af62e90f7",
+  "name": "Justin Ari",
+  "history": [
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 545315420,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 60178270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 4,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 17568700,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 1,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 261277460,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 3980140,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 4,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 72701760,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "CF",
+      "division": 0,
+      "score": 62400,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 42809840,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 3,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 4999290,
+      "points": 2,
+      "pops": "0.666"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.720",
+      "num_matches": 3,
+      "ppm": "6.000",
+      "points": {
+        "won": 18,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

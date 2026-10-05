@@ -1,0 +1,143 @@
+{
+  "key": "db2e65a5bf849a8635c762207755ec0786881982",
+  "name": "Billy Conwell",
+  "history": [
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 35056650,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 3,
+      "machine": "FT",
+      "division": 0,
+      "score": 33102290,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 4,
+      "machine": "EJ",
+      "division": 0,
+      "score": 16974090,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 1,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 71654580,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 59771540,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 3,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 603277230,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 266333030,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 3,
+      "machine": "WCS",
+      "division": 0,
+      "score": 436869350,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 28000000,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.200",
+      "num_matches": 3,
+      "ppm": "1.666",
+      "points": {
+        "won": 5,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

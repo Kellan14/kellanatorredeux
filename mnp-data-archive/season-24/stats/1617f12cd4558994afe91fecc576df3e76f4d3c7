@@ -1,0 +1,143 @@
+{
+  "key": "1617f12cd4558994afe91fecc576df3e76f4d3c7",
+  "name": "Daniela Guerrero",
+  "history": [
+    {
+      "team": "DSV",
+      "opp": "CRA",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 5778550,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DSV",
+      "opp": "CRA",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 37804950,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "CRA",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 4,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 3117540,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 16781010,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 3,
+      "machine": "SurfChamp",
+      "division": 0,
+      "score": 45240,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 4,
+      "machine": "BadCats",
+      "division": 0,
+      "score": 1791150,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 20222510,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 19625270,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 61019710,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.541",
+      "num_matches": 3,
+      "ppm": "4.333",
+      "points": {
+        "won": 13,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

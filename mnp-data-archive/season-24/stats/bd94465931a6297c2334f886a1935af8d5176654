@@ -1,0 +1,143 @@
+{
+  "key": "bd94465931a6297c2334f886a1935af8d5176654",
+  "name": "Ken Disbennett",
+  "history": [
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 44800970,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 158950680,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 3,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 8648880,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 3988650,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 2,
+      "machine": "Munsters",
+      "division": 0,
+      "score": 3713130,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 3,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 41230670,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 20605580,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 2,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 23763990,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 107825860,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.431",
+      "num_matches": 3,
+      "ppm": "3.666",
+      "points": {
+        "won": 11,
+        "of": 25.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

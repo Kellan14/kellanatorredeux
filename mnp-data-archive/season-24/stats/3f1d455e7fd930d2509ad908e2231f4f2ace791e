@@ -1,0 +1,107 @@
+{
+  "key": "3f1d455e7fd930d2509ad908e2231f4f2ace791e",
+  "name": "Dwayne Collins",
+  "history": [
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 1,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 1332460,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1943311600,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 4,
+      "machine": "Ali",
+      "division": 0,
+      "score": 130380,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 13451340,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 11818210,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 11923100,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.636",
+      "num_matches": 2,
+      "ppm": "5.250",
+      "points": {
+        "won": 10.5,
+        "of": 16.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "80f27879534ce9dc61070ae438d97d1a2940ee7e",
+  "name": "Zac Petersen",
+  "history": [
+    {
+      "team": "DSV",
+      "opp": "CRA",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 95953170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "CRA",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 2,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 2869930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "CRA",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 3,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 14961300,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 1,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 43741540,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 2,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 2783830,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TWC",
+      "match": "mnp-24-2-TWC-DSV",
+      "week": "2",
+      "round": 4,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 71000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2116282430,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 11674270,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DSV",
+      "opp": "TTT",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 4,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 35961130,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.428",
+      "num_matches": 3,
+      "ppm": "3.500",
+      "points": {
+        "won": 10.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "d0f9f419cf29296781e2b4ba19492deeba7c32c7",
+  "name": "Wardell Baldwin III",
+  "history": [
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 44441600,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 2,
+      "machine": "WCS",
+      "division": 0,
+      "score": 183463680,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 252595740,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 14858830,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 2,
+      "machine": "T2",
+      "division": 0,
+      "score": 7196990,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 4,
+      "machine": "BigGuns",
+      "division": 0,
+      "score": 254140,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 357737820,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 2,
+      "machine": "Munsters",
+      "division": 0,
+      "score": 8592820,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 288851970,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.387",
+      "num_matches": 3,
+      "ppm": "3.166",
+      "points": {
+        "won": 9.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

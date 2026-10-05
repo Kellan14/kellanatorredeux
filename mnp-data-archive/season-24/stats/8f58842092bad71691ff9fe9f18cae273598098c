@@ -1,0 +1,143 @@
+{
+  "key": "8f58842092bad71691ff9fe9f18cae273598098c",
+  "name": "Nic Crowson",
+  "history": [
+    {
+      "team": "SCN",
+      "opp": "RMS",
+      "match": "mnp-24-1-RMS-SCN",
+      "week": "1",
+      "round": 1,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 1142740,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "RMS",
+      "match": "mnp-24-1-RMS-SCN",
+      "week": "1",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 142000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "RMS",
+      "match": "mnp-24-1-RMS-SCN",
+      "week": "1",
+      "round": 4,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 64000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "POW",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 64000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "POW",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 272000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "POW",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 4,
+      "machine": "EJ",
+      "division": 0,
+      "score": 2237730,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "TRL",
+      "match": "mnp-24-3-TRL-SCN",
+      "week": "3",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 13487260,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SCN",
+      "opp": "TRL",
+      "match": "mnp-24-3-TRL-SCN",
+      "week": "3",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 865000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "TRL",
+      "match": "mnp-24-3-TRL-SCN",
+      "week": "3",
+      "round": 4,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 547000,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.833",
+      "num_matches": 3,
+      "ppm": "6.666",
+      "points": {
+        "won": 20,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

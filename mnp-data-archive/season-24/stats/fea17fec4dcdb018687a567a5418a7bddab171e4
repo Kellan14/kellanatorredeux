@@ -1,0 +1,143 @@
+{
+  "key": "fea17fec4dcdb018687a567a5418a7bddab171e4",
+  "name": "Clay Shelton",
+  "history": [
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 85391160,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 2,
+      "machine": "POTC",
+      "division": 0,
+      "score": 25924490,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 9946880,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 1,
+      "machine": "PlayboyStern",
+      "division": 0,
+      "score": 9117660,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 27000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 18393890,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 187547050,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 58953240,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 4,
+      "machine": "POTC",
+      "division": 0,
+      "score": 44975360,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.620",
+      "num_matches": 3,
+      "ppm": "5.166",
+      "points": {
+        "won": 15.5,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

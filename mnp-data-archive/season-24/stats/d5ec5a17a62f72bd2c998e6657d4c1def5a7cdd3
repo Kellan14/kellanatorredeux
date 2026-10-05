@@ -1,0 +1,143 @@
+{
+  "key": "d5ec5a17a62f72bd2c998e6657d4c1def5a7cdd3",
+  "name": "Hunter Vogt",
+  "history": [
+    {
+      "team": "PYC",
+      "opp": "DRK",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 208282810,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PYC",
+      "opp": "DRK",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 3,
+      "machine": "Skateball",
+      "division": 0,
+      "score": 526050,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "DRK",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 426818310,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SRF",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 49385910,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SRF",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 2,
+      "machine": "LAB",
+      "division": 0,
+      "score": 13455270,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SRF",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 3,
+      "machine": "LAB",
+      "division": 0,
+      "score": 12199570,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-24-3-SSD-PYC",
+      "week": "3",
+      "round": 2,
+      "machine": "JD",
+      "division": 0,
+      "score": 39129650,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-24-3-SSD-PYC",
+      "week": "3",
+      "round": 3,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 90910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-24-3-SSD-PYC",
+      "week": "3",
+      "round": 4,
+      "machine": "JD",
+      "division": 0,
+      "score": 38000000,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.600",
+      "num_matches": 3,
+      "ppm": "5.000",
+      "points": {
+        "won": 15,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

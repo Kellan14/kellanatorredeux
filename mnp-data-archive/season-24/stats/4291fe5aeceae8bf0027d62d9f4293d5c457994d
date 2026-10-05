@@ -1,0 +1,143 @@
+{
+  "key": "4291fe5aeceae8bf0027d62d9f4293d5c457994d",
+  "name": "Gus Voss",
+  "history": [
+    {
+      "team": "DIH",
+      "opp": "PBR",
+      "match": "mnp-24-1-PBR-DIH",
+      "week": "1",
+      "round": 1,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 65120590,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "PBR",
+      "match": "mnp-24-1-PBR-DIH",
+      "week": "1",
+      "round": 2,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 147297920,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "PBR",
+      "match": "mnp-24-1-PBR-DIH",
+      "week": "1",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 43791310,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DIH",
+      "opp": "RMS",
+      "match": "mnp-24-2-DIH-RMS",
+      "week": "2",
+      "round": 2,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 155728240,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "RMS",
+      "match": "mnp-24-2-DIH-RMS",
+      "week": "2",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 33101270,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "RMS",
+      "match": "mnp-24-2-DIH-RMS",
+      "week": "2",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 6007520,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "POW",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 529452930,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "POW",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 128462350,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "POW",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 4632440,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.714",
+      "num_matches": 3,
+      "ppm": "5.833",
+      "points": {
+        "won": 17.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

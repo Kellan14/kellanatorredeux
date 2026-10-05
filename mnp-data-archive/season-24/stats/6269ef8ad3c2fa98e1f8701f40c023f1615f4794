@@ -1,0 +1,143 @@
+{
+  "key": "6269ef8ad3c2fa98e1f8701f40c023f1615f4794",
+  "name": "Mae Collin",
+  "history": [
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 13359570,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 21486140,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 4,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 87390,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 2,
+      "machine": "PlayboyStern",
+      "division": 0,
+      "score": 8529470,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 83396260,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 4,
+      "machine": "PlayboyStern",
+      "division": 0,
+      "score": 7288210,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 6318130,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 2,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 171270,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 4,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 304070,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.836",
+      "num_matches": 3,
+      "ppm": "6.833",
+      "points": {
+        "won": 20.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

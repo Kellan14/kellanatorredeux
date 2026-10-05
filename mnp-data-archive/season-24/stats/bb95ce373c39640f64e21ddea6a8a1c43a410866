@@ -1,0 +1,107 @@
+{
+  "key": "bb95ce373c39640f64e21ddea6a8a1c43a410866",
+  "name": "Randall Olson",
+  "history": [
+    {
+      "team": "PKT",
+      "opp": "RTR",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 2,
+      "machine": "BDK",
+      "division": 0,
+      "score": 20872440,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PKT",
+      "opp": "RTR",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 3,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 30313160,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PKT",
+      "opp": "RTR",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 4,
+      "machine": "BDK",
+      "division": 0,
+      "score": 19163350,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PKT",
+      "opp": "ETB",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 11746590,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "ETB",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 4691400,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "ETB",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 4452620,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.454",
+      "num_matches": 2,
+      "ppm": "3.750",
+      "points": {
+        "won": 7.5,
+        "of": 16.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

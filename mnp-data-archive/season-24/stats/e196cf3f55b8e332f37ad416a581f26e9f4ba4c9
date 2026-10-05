@@ -1,0 +1,143 @@
+{
+  "key": "e196cf3f55b8e332f37ad416a581f26e9f4ba4c9",
+  "name": "Brendan Niebruegge",
+  "history": [
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 1,
+      "machine": "Junkyard",
+      "division": 0,
+      "score": 7228260,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 3,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 136969100,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 4,
+      "machine": "LZ",
+      "division": 0,
+      "score": 7986400,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 1,
+      "machine": "TWD",
+      "division": 0,
+      "score": 67564600,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 122000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 4672200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "DIH",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 224731900,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "DIH",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 192774950,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "POW",
+      "opp": "DIH",
+      "match": "mnp-24-3-POW-DIH",
+      "week": "3",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 9391970,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.591",
+      "num_matches": 3,
+      "ppm": "4.833",
+      "points": {
+        "won": 14.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

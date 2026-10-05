@@ -1,0 +1,143 @@
+{
+  "key": "2738b5f280961ae82e81d82612bba4ee8516c3a2",
+  "name": "Liberty Ruderman",
+  "history": [
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 1,
+      "machine": "EBD",
+      "division": 0,
+      "score": 983500,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 40120930,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 3,
+      "machine": "TAF",
+      "division": 0,
+      "score": 21621330,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 679842120,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 3,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 6722300,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 4,
+      "machine": "TZ",
+      "division": 0,
+      "score": 351702760,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 1,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 26518500,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 2,
+      "machine": "MB",
+      "division": 0,
+      "score": 79874410,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 18545080,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.660",
+      "num_matches": 3,
+      "ppm": "5.500",
+      "points": {
+        "won": 16.5,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

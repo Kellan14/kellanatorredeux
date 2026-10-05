@@ -1,0 +1,143 @@
+{
+  "key": "2c3aad09f2211084f29525b327b48fe02c0275df",
+  "name": "Shaun Crumb",
+  "history": [
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 153133250,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 607680,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 469140,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 108185620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 3,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 41216310,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 4,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 128550,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ETB",
+      "opp": "JMF",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 1,
+      "machine": "FOO",
+      "division": 0,
+      "score": 27774320,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "JMF",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 3437540,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "JMF",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 4,
+      "machine": "KONG",
+      "division": 0,
+      "score": 22724280,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.448",
+      "num_matches": 3,
+      "ppm": "3.666",
+      "points": {
+        "won": 11,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

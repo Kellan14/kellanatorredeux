@@ -1,0 +1,143 @@
+{
+  "key": "7324261c932a00ce7d19306cd1a35f6f34517274",
+  "name": "Genevieve Forrester",
+  "history": [
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 269390,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 2,
+      "machine": "GLizard",
+      "division": 0,
+      "score": 228100,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 4,
+      "machine": "Congo",
+      "division": 0,
+      "score": 220712520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 162184030,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 112000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 4,
+      "machine": "PlayboyStern",
+      "division": 0,
+      "score": 4152840,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 2,
+      "machine": "SurfChamp",
+      "division": 0,
+      "score": 44320,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 3,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 193010,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 541530,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.367",
+      "num_matches": 3,
+      "ppm": "3.000",
+      "points": {
+        "won": 9,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

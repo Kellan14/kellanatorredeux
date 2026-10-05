@@ -1,0 +1,107 @@
+{
+  "key": "b8683eda93e5f57eeb9b21328b96e9680d806c80",
+  "name": "Mike Murphy WA",
+  "history": [
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 1,
+      "machine": "METREM",
+      "division": 0,
+      "score": 19000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 17177340,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 4,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 109000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 101042710,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 36050460,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 365610,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.156",
+      "num_matches": 2,
+      "ppm": "1.250",
+      "points": {
+        "won": 2.5,
+        "of": 16
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

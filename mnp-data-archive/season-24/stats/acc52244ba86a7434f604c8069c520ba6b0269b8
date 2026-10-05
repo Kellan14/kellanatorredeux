@@ -1,0 +1,143 @@
+{
+  "key": "acc52244ba86a7434f604c8069c520ba6b0269b8",
+  "name": "Sterling Butterfield",
+  "history": [
+    {
+      "team": "DOG",
+      "opp": "KNR",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 3364957390,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "KNR",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2200000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "KNR",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 109000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSS",
+      "match": "mnp-24-2-DOG-SSS",
+      "week": "2",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 146342050,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSS",
+      "match": "mnp-24-2-DOG-SSS",
+      "week": "2",
+      "round": 3,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 30707810,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSS",
+      "match": "mnp-24-2-DOG-SSS",
+      "week": "2",
+      "round": 4,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 34323180,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 304564900,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 33393310,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 4,
+      "machine": "CA",
+      "division": 0,
+      "score": 786340,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.520",
+      "num_matches": 3,
+      "ppm": "4.333",
+      "points": {
+        "won": 13,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

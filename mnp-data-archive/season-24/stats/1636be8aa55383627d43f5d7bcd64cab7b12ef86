@@ -1,0 +1,143 @@
+{
+  "key": "1636be8aa55383627d43f5d7bcd64cab7b12ef86",
+  "name": "Melanie Meyer WA",
+  "history": [
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 57371930,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 2,
+      "machine": "NGG",
+      "division": 0,
+      "score": 5824360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 4,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 380780,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 2,
+      "machine": "WCS",
+      "division": 0,
+      "score": 202822420,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 3,
+      "machine": "PlayboyStern",
+      "division": 0,
+      "score": 8752140,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 323436600,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 117931420,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 3,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 173500,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 4,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 109410,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.653",
+      "num_matches": 3,
+      "ppm": "5.333",
+      "points": {
+        "won": 16,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

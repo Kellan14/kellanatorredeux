@@ -1,0 +1,107 @@
+{
+  "key": "515c9fa77861c6f129b1b0f08fba97f4d3da6a15",
+  "name": "Ariel Bedolla",
+  "history": [
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 1,
+      "machine": "ED",
+      "division": 0,
+      "score": 111000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 178130,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 80021000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 235929080,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 2,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 250240,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 24634570,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.393",
+      "num_matches": 2,
+      "ppm": "3.250",
+      "points": {
+        "won": 6.5,
+        "of": 16.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

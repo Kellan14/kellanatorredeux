@@ -1,0 +1,143 @@
+{
+  "key": "dc9a0d98339122aa5458348b2f90f62de59bab9d",
+  "name": "Bubbles Shaiman",
+  "history": [
+    {
+      "team": "KNR",
+      "opp": "DOG",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 17000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "DOG",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 5088251450,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "KNR",
+      "opp": "DOG",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 93000000,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "KNR",
+      "opp": "TBT",
+      "match": "mnp-24-2-TBT-KNR",
+      "week": "2",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 47000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "KNR",
+      "opp": "TBT",
+      "match": "mnp-24-2-TBT-KNR",
+      "week": "2",
+      "round": 3,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 92000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "TBT",
+      "match": "mnp-24-2-TBT-KNR",
+      "week": "2",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 959000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PGN",
+      "match": "mnp-24-3-KNR-PGN",
+      "week": "3",
+      "round": 1,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 4563790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PGN",
+      "match": "mnp-24-3-KNR-PGN",
+      "week": "3",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 86000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PGN",
+      "match": "mnp-24-3-KNR-PGN",
+      "week": "3",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 19165540,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.612",
+      "num_matches": 3,
+      "ppm": "5.000",
+      "points": {
+        "won": 15,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

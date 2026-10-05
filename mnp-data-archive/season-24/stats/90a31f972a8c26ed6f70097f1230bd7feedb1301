@@ -1,0 +1,107 @@
+{
+  "key": "90a31f972a8c26ed6f70097f1230bd7feedb1301",
+  "name": "John McConnell",
+  "history": [
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 26444410,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 4341520,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 74736640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "JMF",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 1,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 85120,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "ETB",
+      "opp": "JMF",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 5102750,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ETB",
+      "opp": "JMF",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1264903920,
+      "points": 1,
+      "pops": "0.333"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.411",
+      "num_matches": 2,
+      "ppm": "3.500",
+      "points": {
+        "won": 7,
+        "of": 17
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

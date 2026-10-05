@@ -1,0 +1,143 @@
+{
+  "key": "15d227f6189e99e16d88a2d3c93f0372c44727d2",
+  "name": "Nav Murthy",
+  "history": [
+    {
+      "team": "SKP",
+      "opp": "TRL",
+      "match": "mnp-24-1-TRL-SKP",
+      "week": "1",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 32024700,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "TRL",
+      "match": "mnp-24-1-TRL-SKP",
+      "week": "1",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 571679340,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "TRL",
+      "match": "mnp-24-1-TRL-SKP",
+      "week": "1",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 595938340,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "SWL",
+      "match": "mnp-24-2-SKP-SWL",
+      "week": "2",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 44259170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "SWL",
+      "match": "mnp-24-2-SKP-SWL",
+      "week": "2",
+      "round": 2,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 28843240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "SWL",
+      "match": "mnp-24-2-SKP-SWL",
+      "week": "2",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 6686390,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "CPO",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 1,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 19792280,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "CPO",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 3,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 66760,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SKP",
+      "opp": "CPO",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1660088040,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.163",
+      "num_matches": 3,
+      "ppm": "1.333",
+      "points": {
+        "won": 4,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

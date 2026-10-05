@@ -1,0 +1,143 @@
+{
+  "key": "227f787380ce0ab47de30d7d0d0c6c674a07c621",
+  "name": "Andy Bernard",
+  "history": [
+    {
+      "team": "TBT",
+      "opp": "KBZ",
+      "match": "mnp-24-1-KBZ-TBT",
+      "week": "1",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 10252920,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "KBZ",
+      "match": "mnp-24-1-KBZ-TBT",
+      "week": "1",
+      "round": 2,
+      "machine": "007",
+      "division": 0,
+      "score": 186082000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "KBZ",
+      "match": "mnp-24-1-KBZ-TBT",
+      "week": "1",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 21198070,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "KNR",
+      "match": "mnp-24-2-TBT-KNR",
+      "week": "2",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 860852510,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "KNR",
+      "match": "mnp-24-2-TBT-KNR",
+      "week": "2",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 170000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "KNR",
+      "match": "mnp-24-2-TBT-KNR",
+      "week": "2",
+      "round": 4,
+      "machine": "WOF",
+      "division": 0,
+      "score": 2431320,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TBT",
+      "opp": "SSS",
+      "match": "mnp-24-3-SSS-TBT",
+      "week": "3",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 15192440,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TBT",
+      "opp": "SSS",
+      "match": "mnp-24-3-SSS-TBT",
+      "week": "3",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 6196000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "SSS",
+      "match": "mnp-24-3-SSS-TBT",
+      "week": "3",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 18170670,
+      "points": 2,
+      "pops": "0.800"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.520",
+      "num_matches": 3,
+      "ppm": "4.333",
+      "points": {
+        "won": 13,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

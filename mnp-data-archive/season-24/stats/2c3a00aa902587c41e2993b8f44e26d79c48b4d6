@@ -1,0 +1,107 @@
+{
+  "key": "2c3a00aa902587c41e2993b8f44e26d79c48b4d6",
+  "name": "Clare Green",
+  "history": [
+    {
+      "team": "KBZ",
+      "opp": "PGN",
+      "match": "mnp-24-2-PGN-KBZ",
+      "week": "2",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1505160360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "PGN",
+      "match": "mnp-24-2-PGN-KBZ",
+      "week": "2",
+      "round": 3,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 206237890,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "PGN",
+      "match": "mnp-24-2-PGN-KBZ",
+      "week": "2",
+      "round": 4,
+      "machine": "FH",
+      "division": 0,
+      "score": 4088000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "CRA",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 29302380,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "KBZ",
+      "opp": "CRA",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 2,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 46422090,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "KBZ",
+      "opp": "CRA",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 3,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 2512450,
+      "points": 1,
+      "pops": "0.333"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.575",
+      "num_matches": 2,
+      "ppm": "4.750",
+      "points": {
+        "won": 9.5,
+        "of": 16.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

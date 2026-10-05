@@ -1,0 +1,143 @@
+{
+  "key": "9f253276520240d0adfe0dc45d7af35ea96ef45f",
+  "name": "Robbie Finnigan",
+  "history": [
+    {
+      "team": "PYC",
+      "opp": "DRK",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 125002200,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "DRK",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 3,
+      "machine": "GLizard",
+      "division": 0,
+      "score": 2330400,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "DRK",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 4,
+      "machine": "GLizard",
+      "division": 0,
+      "score": 2320550,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SRF",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 2,
+      "machine": "XFiles",
+      "division": 0,
+      "score": 13474410,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SRF",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 1162504360,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SRF",
+      "match": "mnp-24-2-PYC-SRF",
+      "week": "2",
+      "round": 4,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 206938870,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-24-3-SSD-PYC",
+      "week": "3",
+      "round": 1,
+      "machine": "HP",
+      "division": 0,
+      "score": 340000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-24-3-SSD-PYC",
+      "week": "3",
+      "round": 3,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 1678420,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SSD",
+      "match": "mnp-24-3-SSD-PYC",
+      "week": "3",
+      "round": 4,
+      "machine": "GLizard",
+      "division": 0,
+      "score": 1119900,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "1.000",
+      "num_matches": 3,
+      "ppm": "8.166",
+      "points": {
+        "won": 24.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "key": "73c261828246e7477e02a8498bae41b646dbd354",
+  "name": "Lauren McCausland",
+  "history": [
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 2,
+      "machine": "Munsters",
+      "division": 0,
+      "score": 3931590,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 49678950,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 4,
+      "machine": "Munsters",
+      "division": 0,
+      "score": 2309690,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 1,
+      "machine": "Tron",
+      "division": 0,
+      "score": 3221090,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 36497420,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 3,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 13943590,
+      "points": 1,
+      "pops": "0.333"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.235",
+      "num_matches": 2,
+      "ppm": "2.000",
+      "points": {
+        "won": 4,
+        "of": 17
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

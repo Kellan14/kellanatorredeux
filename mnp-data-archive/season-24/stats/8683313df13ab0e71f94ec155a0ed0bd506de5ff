@@ -1,0 +1,143 @@
+{
+  "key": "8683313df13ab0e71f94ec155a0ed0bd506de5ff",
+  "name": "Evan Adkins",
+  "history": [
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 1,
+      "machine": "EBD",
+      "division": 0,
+      "score": 1209090,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 3,
+      "machine": "Stars",
+      "division": 0,
+      "score": 44890,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 1177620,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 1,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 14281040,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 65279940,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 82201610,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 36178490,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 3,
+      "machine": "FH",
+      "division": 0,
+      "score": 2455840,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 31651060,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.416",
+      "num_matches": 3,
+      "ppm": "3.333",
+      "points": {
+        "won": 10,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "72cc89b8e24ff51ee7161c7fa391ea0127683773",
+  "name": "Bear Logan",
+  "history": [
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 267632450,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 2,
+      "machine": "AIQ",
+      "division": 0,
+      "score": 25135860,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 10841590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 5965370,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 96340490,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 178027650,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 23922870,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 2,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 269230,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 4,
+      "machine": "Stars",
+      "division": 0,
+      "score": 84340,
+      "points": 1.5,
+      "pops": "0.600"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.416",
+      "num_matches": 3,
+      "ppm": "3.333",
+      "points": {
+        "won": 10,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

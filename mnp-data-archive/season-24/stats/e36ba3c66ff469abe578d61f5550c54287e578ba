@@ -1,0 +1,143 @@
+{
+  "key": "e36ba3c66ff469abe578d61f5550c54287e578ba",
+  "name": "Bill Nary",
+  "history": [
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 20088300,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 57523150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 2707100,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 19326940,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 2,
+      "machine": "DP",
+      "division": 0,
+      "score": 10265130,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 17830920,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "JMF",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 1,
+      "machine": "FOO",
+      "division": 0,
+      "score": 39828620,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "JMF",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 946737150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "JMF",
+      "match": "mnp-24-3-ETB-JMF",
+      "week": "3",
+      "round": 4,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 19720650,
+      "points": 2,
+      "pops": "0.800"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.326",
+      "num_matches": 3,
+      "ppm": "2.666",
+      "points": {
+        "won": 8,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

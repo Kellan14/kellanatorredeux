@@ -1,0 +1,143 @@
+{
+  "key": "9d7f2dda387ab1b992ed56c19aad76c0f425328c",
+  "name": "Philip Pinette",
+  "history": [
+    {
+      "team": "TTT",
+      "opp": "NQG",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 31945830,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NQG",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 31314270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "NQG",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 17724960,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "TTT",
+      "opp": "DTP",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 1527570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "DTP",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "FT",
+      "division": 0,
+      "score": 2571840,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "DTP",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 4,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 136000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "DSV",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2599309120,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "DSV",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 18261160,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "DSV",
+      "match": "mnp-24-3-DSV-TTT",
+      "week": "3",
+      "round": 4,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 35933310,
+      "points": 1.5,
+      "pops": "0.600"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.500",
+      "num_matches": 3,
+      "ppm": "4.000",
+      "points": {
+        "won": 12,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

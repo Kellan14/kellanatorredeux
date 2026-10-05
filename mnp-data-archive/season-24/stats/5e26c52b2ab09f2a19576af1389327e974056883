@@ -1,0 +1,107 @@
+{
+  "key": "5e26c52b2ab09f2a19576af1389327e974056883",
+  "name": "Mitchell D. Anderson",
+  "history": [
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 247032060,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 44050220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "BLK",
+      "match": "mnp-24-1-ETB-BLK",
+      "week": "1",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 88781010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 1,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 147380,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 2,
+      "machine": "VEN",
+      "division": 0,
+      "score": 263000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PKT",
+      "match": "mnp-24-2-PKT-ETB",
+      "week": "2",
+      "round": 3,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 149010,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.393",
+      "num_matches": 2,
+      "ppm": "3.250",
+      "points": {
+        "won": 6.5,
+        "of": 16.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "39bb3af6f7f08a77ea93c4503220d1f5f39ec18f",
+  "name": "Emily Hunter WA",
+  "history": [
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 5567540,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 2512200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 3,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 56350,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 276218910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 983766190,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 140651520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 30455350,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 36376890,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 10019960,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.200",
+      "num_matches": 3,
+      "ppm": "1.666",
+      "points": {
+        "won": 5,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

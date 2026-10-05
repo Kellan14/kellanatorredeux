@@ -1,0 +1,107 @@
+{
+  "key": "7a615fb6d08f60e4a14f72ea873727d6d8d8df6f",
+  "name": "Jackilyn Hoxworth",
+  "history": [
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 1,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 162990,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 2,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 114430,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 359561360,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 77134030,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 3,
+      "machine": "WCS",
+      "division": 0,
+      "score": 279297270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 24149270,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.281",
+      "num_matches": 2,
+      "ppm": "2.250",
+      "points": {
+        "won": 4.5,
+        "of": 16
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

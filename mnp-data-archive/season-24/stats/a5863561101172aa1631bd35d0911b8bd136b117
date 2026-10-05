@@ -1,0 +1,143 @@
+{
+  "key": "a5863561101172aa1631bd35d0911b8bd136b117",
+  "name": "Kevin Coffey",
+  "history": [
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 1,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 3416280,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 2,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 302300,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 4,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 341000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 1,
+      "machine": "BSD",
+      "division": 0,
+      "score": 17000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 161000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 4,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 471960,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 47479790,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 933790,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 2821800,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.562",
+      "num_matches": 3,
+      "ppm": "4.500",
+      "points": {
+        "won": 13.5,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

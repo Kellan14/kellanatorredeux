@@ -1,0 +1,107 @@
+{
+  "key": "3086da1c7df78361489f4171b460e51ca924c3d8",
+  "name": "Cody Collister",
+  "history": [
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 21425630,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 271586360,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ZOO",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 4,
+      "machine": "Junkyard",
+      "division": 0,
+      "score": 7374230,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 2,
+      "machine": "IronMan",
+      "division": 0,
+      "score": 5951180,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 3,
+      "machine": "BSD",
+      "division": 0,
+      "score": 117234100,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SCN",
+      "match": "mnp-24-2-SCN-POW",
+      "week": "2",
+      "round": 4,
+      "machine": "IronMan",
+      "division": 0,
+      "score": 3638280,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.558",
+      "num_matches": 2,
+      "ppm": "4.750",
+      "points": {
+        "won": 9.5,
+        "of": 17
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "98326b585dcf615cb04751c475b9c754240a84bd",
+  "name": "Hayden McCabe",
+  "history": [
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-24-1-PBR-DIH",
+      "week": "1",
+      "round": 1,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 36143010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-24-1-PBR-DIH",
+      "week": "1",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 232460,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "DIH",
+      "match": "mnp-24-1-PBR-DIH",
+      "week": "1",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 88173880,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "NLT",
+      "match": "mnp-24-2-NLT-PBR",
+      "week": "2",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 70621190,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PBR",
+      "opp": "NLT",
+      "match": "mnp-24-2-NLT-PBR",
+      "week": "2",
+      "round": 2,
+      "machine": "SurfChamp",
+      "division": 0,
+      "score": 94210,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "NLT",
+      "match": "mnp-24-2-NLT-PBR",
+      "week": "2",
+      "round": 4,
+      "machine": "MH",
+      "division": 0,
+      "score": 104260,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PBR",
+      "opp": "SHK",
+      "match": "mnp-24-3-PBR-SHK",
+      "week": "3",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 1046930,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SHK",
+      "match": "mnp-24-3-PBR-SHK",
+      "week": "3",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 646850,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SHK",
+      "match": "mnp-24-3-PBR-SHK",
+      "week": "3",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 170460,
+      "points": 1,
+      "pops": "0.333"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.714",
+      "num_matches": 3,
+      "ppm": "5.833",
+      "points": {
+        "won": 17.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

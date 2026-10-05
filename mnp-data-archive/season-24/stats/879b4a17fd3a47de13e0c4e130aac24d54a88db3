@@ -1,0 +1,107 @@
+{
+  "key": "879b4a17fd3a47de13e0c4e130aac24d54a88db3",
+  "name": "Adam Livengood",
+  "history": [
+    {
+      "team": "NQG",
+      "opp": "BLK",
+      "match": "mnp-24-2-BLK-NQG",
+      "week": "2",
+      "round": 1,
+      "machine": "CA",
+      "division": 0,
+      "score": 125810,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "BLK",
+      "match": "mnp-24-2-BLK-NQG",
+      "week": "2",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 17522930,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "BLK",
+      "match": "mnp-24-2-BLK-NQG",
+      "week": "2",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 71506670,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "PKT",
+      "match": "mnp-24-3-NQG-PKT",
+      "week": "3",
+      "round": 1,
+      "machine": "Congo",
+      "division": 0,
+      "score": 1887369500,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "PKT",
+      "match": "mnp-24-3-NQG-PKT",
+      "week": "3",
+      "round": 3,
+      "machine": "Congo",
+      "division": 0,
+      "score": 519477800,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NQG",
+      "opp": "PKT",
+      "match": "mnp-24-3-NQG-PKT",
+      "week": "3",
+      "round": 4,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 40400400,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.781",
+      "num_matches": 2,
+      "ppm": "6.250",
+      "points": {
+        "won": 12.5,
+        "of": 16
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

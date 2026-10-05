@@ -1,0 +1,143 @@
+{
+  "key": "a0c424d1c003b64dcc41ca99bd8f38421ef96a53",
+  "name": "Clare Newell",
+  "history": [
+    {
+      "team": "ZOO",
+      "opp": "POW",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 5203380,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "POW",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 2,
+      "machine": "WCS",
+      "division": 0,
+      "score": 246397760,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ZOO",
+      "opp": "POW",
+      "match": "mnp-24-1-POW-ZOO",
+      "week": "1",
+      "round": 3,
+      "machine": "LZ",
+      "division": 0,
+      "score": 2032690,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "TRL",
+      "match": "mnp-24-2-ZOO-TRL",
+      "week": "2",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 21314640,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ZOO",
+      "opp": "TRL",
+      "match": "mnp-24-2-ZOO-TRL",
+      "week": "2",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 39922620,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ZOO",
+      "opp": "TRL",
+      "match": "mnp-24-2-ZOO-TRL",
+      "week": "2",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 12065360,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "ZOO",
+      "opp": "SWL",
+      "match": "mnp-24-3-SWL-ZOO",
+      "week": "3",
+      "round": 1,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 27286270,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ZOO",
+      "opp": "SWL",
+      "match": "mnp-24-3-SWL-ZOO",
+      "week": "3",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 13920990,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ZOO",
+      "opp": "SWL",
+      "match": "mnp-24-3-SWL-ZOO",
+      "week": "3",
+      "round": 4,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 70073360,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.306",
+      "num_matches": 3,
+      "ppm": "2.500",
+      "points": {
+        "won": 7.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

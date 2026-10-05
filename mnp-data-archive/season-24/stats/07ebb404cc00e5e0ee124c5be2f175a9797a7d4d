@@ -1,0 +1,143 @@
+{
+  "key": "07ebb404cc00e5e0ee124c5be2f175a9797a7d4d",
+  "name": "Joshua Francis",
+  "history": [
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 296846590,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 3,
+      "machine": "TAF",
+      "division": 0,
+      "score": 376776450,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DSV",
+      "match": "mnp-24-1-DSV-CRA",
+      "week": "1",
+      "round": 4,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 804640,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 1,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 167574150,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 241544040,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "ICB",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 4,
+      "machine": "Munsters",
+      "division": 0,
+      "score": 190172210,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "CF",
+      "division": 0,
+      "score": 32990,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2217223140,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "KBZ",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 4,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 722461000,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.916",
+      "num_matches": 3,
+      "ppm": "7.333",
+      "points": {
+        "won": 22,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

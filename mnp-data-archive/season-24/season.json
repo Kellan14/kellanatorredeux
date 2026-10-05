@@ -16,25 +16,25 @@
           "name": "Jackson McComish"
         },
         {
-          "name": "Jerry Duncan"
-        },
-        {
           "name": "Michael Tomber"
         },
         {
           "name": "Mohamed Sawani"
         },
         {
-          "name": "Nichole Casado"
-        },
-        {
           "name": "Scott Lee WA"
         },
         {
-          "name": "Sherae Lascelles"
+          "name": "Thomas Homan"
         },
         {
-          "name": "Thomas Homan"
+          "name": "Dana Lockwood"
+        },
+        {
+          "name": "Denton Dickson"
+        },
+        {
+          "name": "Scott Helgason"
         }
       ],
       "schedule": [
@@ -339,7 +339,7 @@
           "side": "@",
           "opp": {
             "key": "NQG",
-            "name": "No Quarters Given"
+            "name": "No Quarter Given"
           }
         },
         {
@@ -433,25 +433,10 @@
       "name": "Pants Optional",
       "roster": [
         {
-          "name": "Aaron Garberding"
-        },
-        {
-          "name": "Erik Rikansrud"
-        },
-        {
           "name": "Evan Adkins"
         },
         {
           "name": "Lefty Sitaras"
-        },
-        {
-          "name": "Liberty Ruderman"
-        },
-        {
-          "name": "Mandy Woodard"
-        },
-        {
-          "name": "Michael Miller"
         },
         {
           "name": "Owen Weyland"
@@ -460,7 +445,22 @@
           "name": "Sandy Magallanes"
         },
         {
-          "name": "William Scott Jordan"
+          "name": "Rhett Pearson"
+        },
+        {
+          "name": "Ariel Bedolla"
+        },
+        {
+          "name": "Donald Warren"
+        },
+        {
+          "name": "Liberty Ruderman"
+        },
+        {
+          "name": "Robert Bissell"
+        },
+        {
+          "name": "Michael Miller"
         }
       ],
       "schedule": [
@@ -566,8 +566,8 @@
         }
       ],
       "division": 0,
-      "co_captain": "Liberty Ruderman",
-      "captain": "Mandy Woodard"
+      "co_captain": "Michael Miller",
+      "captain": "Liberty Ruderman"
     },
     "CRA": {
       "key": "CRA",
@@ -683,7 +683,7 @@
           "side": "vs",
           "opp": {
             "key": "NQG",
-            "name": "No Quarters Given"
+            "name": "No Quarter Given"
           }
         },
         {
@@ -717,12 +717,6 @@
       "name": "Drain in Hell",
       "roster": [
         {
-          "name": "Clare Newell"
-        },
-        {
-          "name": "Danae Hackett"
-        },
-        {
           "name": "Gus Voss"
         },
         {
@@ -745,6 +739,12 @@
         },
         {
           "name": "Ryan Tamm"
+        },
+        {
+          "name": "Teri Hayner"
+        },
+        {
+          "name": "AJ Norris"
         }
       ],
       "schedule": [
@@ -880,13 +880,13 @@
           "name": "Katja Rodgers"
         },
         {
-          "name": "Richard Scott"
-        },
-        {
           "name": "Sterling Butterfield"
         },
         {
           "name": "Zachary Peeples"
+        },
+        {
+          "name": "Cat Alexander"
         }
       ],
       "schedule": [
@@ -937,7 +937,7 @@
           "side": "@",
           "opp": {
             "key": "NQG",
-            "name": "No Quarters Given"
+            "name": "No Quarter Given"
           }
         },
         {
@@ -1016,19 +1016,19 @@
           "name": "Genevieve Forrester"
         },
         {
-          "name": "Clare Newell"
-        },
-        {
           "name": "Noah Rubin"
         },
         {
-          "name": "Logan Bear"
-        },
-        {
-          "name": "Marlene Lewis"
-        },
-        {
           "name": "Nadine Scarlett"
+        },
+        {
+          "name": "Brooke Albright"
+        },
+        {
+          "name": "Emi Bee"
+        },
+        {
+          "name": "Bear Logan"
         }
       ],
       "schedule": [
@@ -1146,9 +1146,6 @@
           "name": "Audrey Fleck"
         },
         {
-          "name": "Chryste Ferrara"
-        },
-        {
           "name": "Dave Stewart"
         },
         {
@@ -1156,9 +1153,6 @@
         },
         {
           "name": "Emma Frost"
-        },
-        {
-          "name": "Jake Hei"
         },
         {
           "name": "Jordan Shankle"
@@ -1171,6 +1165,12 @@
         },
         {
           "name": "Zac Petersen"
+        },
+        {
+          "name": "Sarah Warden"
+        },
+        {
+          "name": "Daniela Guerrero"
         }
       ],
       "schedule": [
@@ -1300,9 +1300,6 @@
           "name": "Kristin Vick"
         },
         {
-          "name": "Marissa Rodriguez"
-        },
-        {
           "name": "Matthew Sherwood"
         },
         {
@@ -1313,6 +1310,9 @@
         },
         {
           "name": "Tom Baisden"
+        },
+        {
+          "name": "Mike Murphy WA"
         }
       ],
       "schedule": [
@@ -1436,9 +1436,6 @@
           "name": "John McConnell"
         },
         {
-          "name": "John Robinson WA"
-        },
-        {
           "name": "Kevin Kelly"
         },
         {
@@ -1448,13 +1445,13 @@
           "name": "Mitchell D. Anderson"
         },
         {
-          "name": "Rhett Pearson"
+          "name": "Stephen Frontis"
         },
         {
           "name": "Shaun Crumb"
         },
         {
-          "name": "Stephen Frontis"
+          "name": "Canyon Mosely"
         }
       ],
       "schedule": [
@@ -1561,7 +1558,7 @@
       ],
       "division": 0,
       "captain": "John McConnell",
-      "co_captain": "Rhett Pearson"
+      "co_captain": "Shaun Crumb"
     },
     "FBP": {
       "key": "FBP",
@@ -1581,12 +1578,6 @@
           "name": "Dakota Warden"
         },
         {
-          "name": "Los Rangel"
-        },
-        {
-          "name": "Lui Rangel"
-        },
-        {
           "name": "Mae Collin"
         },
         {
@@ -1594,6 +1585,12 @@
         },
         {
           "name": "Xander Jackson"
+        },
+        {
+          "name": "Jackilyn Hoxworth"
+        },
+        {
+          "name": "James Hasbrouck"
         }
       ],
       "schedule": [
@@ -1732,10 +1729,10 @@
           "name": "Quinn Thomas"
         },
         {
-          "name": "Rachel Jarvis"
+          "name": "Robyn Houseworth"
         },
         {
-          "name": "Robyn Houseworth"
+          "name": "James vanRosmalen"
         }
       ],
       "schedule": [
@@ -1856,13 +1853,7 @@
           "name": "Bre Lloyd"
         },
         {
-          "name": "Diane Panagiotopoulos"
-        },
-        {
           "name": "Ian Lucas"
-        },
-        {
-          "name": "Jeff Dewitt"
         },
         {
           "name": "Jeff Dicker"
@@ -1878,6 +1869,12 @@
         },
         {
           "name": "Sam Stiles"
+        },
+        {
+          "name": "Cedar Russell"
+        },
+        {
+          "name": "Joseph Baca"
         }
       ],
       "schedule": [
@@ -1918,7 +1915,7 @@
           "side": "@",
           "opp": {
             "key": "NQG",
-            "name": "No Quarters Given"
+            "name": "No Quarter Given"
           }
         },
         {
@@ -1992,9 +1989,6 @@
       "name": "Kraken Ball Z",
       "roster": [
         {
-          "name": "Andrew Hopper"
-        },
-        {
           "name": "Clare Green"
         },
         {
@@ -2017,6 +2011,12 @@
         },
         {
           "name": "Trevor Leonard"
+        },
+        {
+          "name": "Keith Spencer WA"
+        },
+        {
+          "name": "Drew Hopper"
         }
       ],
       "schedule": [
@@ -2418,9 +2418,6 @@
           "name": "Andrew Meuser"
         },
         {
-          "name": "Brian Baskoff"
-        },
-        {
           "name": "Cassandra Dymock"
         },
         {
@@ -2443,6 +2440,9 @@
         },
         {
           "name": "Wardell Baldwin III"
+        },
+        {
+          "name": "Brian Besmanoff"
         }
       ],
       "schedule": [
@@ -2554,16 +2554,13 @@
     "NQG": {
       "key": "NQG",
       "venue": "HND",
-      "name": "No Quarters Given",
+      "name": "No Quarter Given",
       "roster": [
         {
           "name": "Adam Livengood"
         },
         {
           "name": "Brandon Pietenpol"
-        },
-        {
-          "name": "Colin O'Keefe"
         },
         {
           "name": "Danielle Wilcox"
@@ -2690,7 +2687,7 @@
         }
       ],
       "division": 0,
-      "co_captain": "Danielle Wilcox",
+      "co_captain": "Michael Gray",
       "captain": "Jared Bayliss"
     },
     "PBR": {
@@ -2705,19 +2702,10 @@
           "name": "Ben Simmons"
         },
         {
-          "name": "Casey Benton"
-        },
-        {
-          "name": "Clayton Stetz"
-        },
-        {
           "name": "Hayden McCabe"
         },
         {
           "name": "Landon Cross"
-        },
-        {
-          "name": "Liz Brotman"
         },
         {
           "name": "Matt Golden"
@@ -2727,6 +2715,15 @@
         },
         {
           "name": "Mickey Nussbaumer"
+        },
+        {
+          "name": "Jake Hei"
+        },
+        {
+          "name": "Casey Benton"
+        },
+        {
+          "name": "Chryste Ferrara"
         }
       ],
       "schedule": [
@@ -2832,7 +2829,7 @@
         }
       ],
       "division": 0,
-      "co_captain": "Clayton Stetz",
+      "co_captain": "Casey Benton",
       "captain": "Michael Ulmen"
     },
     "PGN": {
@@ -2841,19 +2838,10 @@
       "name": "Pinguins",
       "roster": [
         {
-          "name": "Anthony McCammant"
-        },
-        {
           "name": "Bud Lipke"
         },
         {
-          "name": "Canyon Mosely"
-        },
-        {
           "name": "Emily Henshaw"
-        },
-        {
-          "name": "Jeffrey Lawrence"
         },
         {
           "name": "Jonathan Allen"
@@ -2865,10 +2853,19 @@
           "name": "Ryan Tupper"
         },
         {
-          "name": "Ryan Whalen"
+          "name": "Sookie Sookram"
         },
         {
-          "name": "Sookie Sookram"
+          "name": "Altwin Hawksford"
+        },
+        {
+          "name": "Jessie Ruiz"
+        },
+        {
+          "name": "Matt Korsmoe"
+        },
+        {
+          "name": "Ryan Moseley"
         }
       ],
       "schedule": [
@@ -2939,7 +2936,7 @@
           "side": "@",
           "opp": {
             "key": "NQG",
-            "name": "No Quarters Given"
+            "name": "No Quarter Given"
           }
         },
         {
@@ -3041,7 +3038,7 @@
           "side": "vs",
           "opp": {
             "key": "NQG",
-            "name": "No Quarters Given"
+            "name": "No Quarter Given"
           }
         },
         {
@@ -3125,9 +3122,6 @@
       "name": "The Power",
       "roster": [
         {
-          "name": "Bird Arzoumanian"
-        },
-        {
           "name": "Brendan Niebruegge"
         },
         {
@@ -3153,6 +3147,9 @@
         },
         {
           "name": "Val Gaifoulline"
+        },
+        {
+          "name": "Cody Collister"
         }
       ],
       "schedule": [
@@ -3267,22 +3264,10 @@
       "name": "Pinballycule",
       "roster": [
         {
-          "name": "Andyroo Callan"
-        },
-        {
           "name": "Astri Niederkorn"
         },
         {
           "name": "Bobby Boden"
-        },
-        {
-          "name": "Chase Engdall"
-        },
-        {
-          "name": "Donna Hucklebee"
-        },
-        {
-          "name": "Genevieve Forrester"
         },
         {
           "name": "Hunter Vogt"
@@ -3294,7 +3279,19 @@
           "name": "Mason Dunbar"
         },
         {
-          "name": "Matt Galbraith"
+          "name": "Chandler Lattin"
+        },
+        {
+          "name": "David Latimer"
+        },
+        {
+          "name": "Robbie Finnigan"
+        },
+        {
+          "name": "Nolan Collier"
+        },
+        {
+          "name": "Colin O'Keefe"
         }
       ],
       "schedule": [
@@ -3693,16 +3690,7 @@
       "name": "Seacorns",
       "roster": [
         {
-          "name": "Corbin Sheffels"
-        },
-        {
-          "name": "Danielle Crowson"
-        },
-        {
           "name": "Jesse Labbe"
-        },
-        {
-          "name": "Lucas Marcolongo"
         },
         {
           "name": "Michael Adcock"
@@ -3711,10 +3699,25 @@
           "name": "Nic Crowson"
         },
         {
-          "name": "Nick Delehanty"
+          "name": "Olivia Orni"
         },
         {
-          "name": "Olivia Orni"
+          "name": "Danielle Crowson"
+        },
+        {
+          "name": "Corbin Sheffels"
+        },
+        {
+          "name": "James Thomas WA"
+        },
+        {
+          "name": "Kristin Johnson"
+        },
+        {
+          "name": "Dan Crakes"
+        },
+        {
+          "name": "Sam Kunesh"
         }
       ],
       "schedule": [
@@ -3820,7 +3823,7 @@
         }
       ],
       "division": 0,
-      "captain": "Danielle Crowson",
+      "captain": "Corbin Sheffels",
       "co_captain": "Olivia Orni"
     },
     "SHK": {
@@ -3833,9 +3836,6 @@
         },
         {
           "name": "Janelle Oakley"
-        },
-        {
-          "name": "Jerry Rippy"
         },
         {
           "name": "Kat Martinez"
@@ -3857,6 +3857,9 @@
         },
         {
           "name": "Zachary Turner"
+        },
+        {
+          "name": "Neil Chakravarty"
         }
       ],
       "schedule": [
@@ -3957,7 +3960,7 @@
           "side": "vs",
           "opp": {
             "key": "NQG",
-            "name": "No Quarters Given"
+            "name": "No Quarter Given"
           }
         }
       ],
@@ -3980,25 +3983,25 @@
           "name": "Morgan Verburg"
         },
         {
-          "name": "Nick Gibson"
-        },
-        {
           "name": "Paul White WA"
-        },
-        {
-          "name": "Ryan Odonnell CA"
-        },
-        {
-          "name": "Shawnna Kenney"
         },
         {
           "name": "Tino Stivaros"
         },
         {
-          "name": "Zeb Virkus"
+          "name": "Erick Spaan"
         },
         {
-          "name": "Zoe Ackerman"
+          "name": "Shawnna Kenney"
+        },
+        {
+          "name": "Nav Murthy"
+        },
+        {
+          "name": "Sammi Snyder"
+        },
+        {
+          "name": "Vinnie Iannucci"
         }
       ],
       "schedule": [
@@ -4137,10 +4140,10 @@
           "name": "Matthew Greene"
         },
         {
-          "name": "Matthew O'Brien"
+          "name": "Jamie O'Hara"
         },
         {
-          "name": "Paul Irvine"
+          "name": "Noah Phipps"
         }
       ],
       "schedule": [
@@ -4258,9 +4261,6 @@
           "name": "Demarus Tevuk"
         },
         {
-          "name": "Donna Ruacho"
-        },
-        {
           "name": "Evan O'Brien"
         },
         {
@@ -4268,9 +4268,6 @@
         },
         {
           "name": "Jesse Fallahi"
-        },
-        {
-          "name": "Kieonna Ford"
         },
         {
           "name": "Lauren Aiello"
@@ -4282,7 +4279,13 @@
           "name": "Spencer Anderson"
         },
         {
-          "name": "Tyler Morgan"
+          "name": "Craig Gary"
+        },
+        {
+          "name": "Honi Harrison"
+        },
+        {
+          "name": "Arlen Simon"
         }
       ],
       "schedule": [
@@ -4422,6 +4425,9 @@
         },
         {
           "name": "Vincent Sperrazza"
+        },
+        {
+          "name": "Matt Slater"
         }
       ],
       "schedule": [
@@ -4766,7 +4772,7 @@
           "side": "vs",
           "opp": {
             "key": "NQG",
-            "name": "No Quarters Given"
+            "name": "No Quarter Given"
           }
         },
         {
@@ -4845,6 +4851,9 @@
         },
         {
           "name": "Rob Homan WA"
+        },
+        {
+          "name": "Jerry Duncan"
         }
       ],
       "schedule": [
@@ -4959,16 +4968,7 @@
       "name": "The Trailer Trashers",
       "roster": [
         {
-          "name": "Alicia Seftel"
-        },
-        {
           "name": "Blake Butler"
-        },
-        {
-          "name": "Dana Harper"
-        },
-        {
-          "name": "Greg Balducci"
         },
         {
           "name": "Kevin Coulton"
@@ -4986,7 +4986,13 @@
           "name": "Rick Weber"
         },
         {
-          "name": "Stephen Brundle"
+          "name": "Mikey Wilson"
+        },
+        {
+          "name": "Colvin Fields"
+        },
+        {
+          "name": "Martin Rivero"
         }
       ],
       "schedule": [
@@ -4997,7 +5003,7 @@
           "side": "vs",
           "opp": {
             "key": "NQG",
-            "name": "No Quarters Given"
+            "name": "No Quarter Given"
           }
         },
         {
@@ -5219,7 +5225,7 @@
           "side": "@",
           "opp": {
             "key": "NQG",
-            "name": "No Quarters Given"
+            "name": "No Quarter Given"
           }
         },
         {
@@ -5243,9 +5249,6 @@
       "name": "Zoo Crew",
       "roster": [
         {
-          "name": "Darren Palmer"
-        },
-        {
           "name": "Kieonna Ford"
         },
         {
@@ -5255,9 +5258,6 @@
           "name": "D'juan Brown"
         },
         {
-          "name": "Alina Valenciana"
-        },
-        {
           "name": "Noah Luskey"
         },
         {
@@ -5265,6 +5265,18 @@
         },
         {
           "name": "Jordon Budke"
+        },
+        {
+          "name": "Jamie Matthew"
+        },
+        {
+          "name": "Marlene Lewis"
+        },
+        {
+          "name": "Alina Face"
+        },
+        {
+          "name": "Puppytooth Palmer"
         }
       ],
       "schedule": [
@@ -5438,7 +5450,7 @@
         {
           "match_key": "mnp-24-1-NQG-TTT",
           "away_key": "NQG",
-          "away_name": "No Quarters Given",
+          "away_name": "No Quarter Given",
           "away_linked": true,
           "home_key": "TTT",
           "home_name": "The Trailer Trashers",
@@ -5698,7 +5710,7 @@
           "away_name": "Ballard Locks",
           "away_linked": true,
           "home_key": "NQG",
-          "home_name": "No Quarters Given",
+          "home_name": "No Quarter Given",
           "home_linked": true,
           "venue": {
             "key": "HND",
@@ -5952,7 +5964,7 @@
         {
           "match_key": "mnp-24-3-NQG-PKT",
           "away_key": "NQG",
-          "away_name": "No Quarters Given",
+          "away_name": "No Quarter Given",
           "away_linked": true,
           "home_key": "PKT",
           "home_name": "Pocketeers",
@@ -6212,7 +6224,7 @@
           "away_name": "Middle Flippers",
           "away_linked": true,
           "home_key": "NQG",
-          "home_name": "No Quarters Given",
+          "home_name": "No Quarter Given",
           "home_linked": true,
           "venue": {
             "key": "HND",
@@ -6469,7 +6481,7 @@
           "away_name": "The Stray Dogs",
           "away_linked": true,
           "home_key": "NQG",
-          "home_name": "No Quarters Given",
+          "home_name": "No Quarter Given",
           "home_linked": true,
           "venue": {
             "key": "HND",
@@ -6723,7 +6735,7 @@
         {
           "match_key": "mnp-24-6-NQG-TBT",
           "away_key": "NQG",
-          "away_name": "No Quarters Given",
+          "away_name": "No Quarter Given",
           "away_linked": true,
           "home_key": "TBT",
           "home_name": "The B Team",
@@ -6983,7 +6995,7 @@
           "away_name": "Pinguins",
           "away_linked": true,
           "home_key": "NQG",
-          "home_name": "No Quarters Given",
+          "home_name": "No Quarter Given",
           "home_linked": true,
           "venue": {
             "key": "HND",
@@ -7237,7 +7249,7 @@
         {
           "match_key": "mnp-24-8-NQG-CRA",
           "away_key": "NQG",
-          "away_name": "No Quarters Given",
+          "away_name": "No Quarter Given",
           "away_linked": true,
           "home_key": "CRA",
           "home_name": "Castle Crashers",
@@ -7497,7 +7509,7 @@
           "away_name": "The Wrecking Crew",
           "away_linked": true,
           "home_key": "NQG",
-          "home_name": "No Quarters Given",
+          "home_name": "No Quarter Given",
           "home_linked": true,
           "venue": {
             "key": "HND",
@@ -7751,7 +7763,7 @@
         {
           "match_key": "mnp-24-10-NQG-SHK",
           "away_key": "NQG",
-          "away_name": "No Quarters Given",
+          "away_name": "No Quarter Given",
           "away_linked": true,
           "home_key": "SHK",
           "home_name": "Sharks",

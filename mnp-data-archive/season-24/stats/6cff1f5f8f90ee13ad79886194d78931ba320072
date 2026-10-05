@@ -1,0 +1,143 @@
+{
+  "key": "6cff1f5f8f90ee13ad79886194d78931ba320072",
+  "name": "Trevor Leonard",
+  "history": [
+    {
+      "team": "KBZ",
+      "opp": "TBT",
+      "match": "mnp-24-1-KBZ-TBT",
+      "week": "1",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 36009140,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TBT",
+      "match": "mnp-24-1-KBZ-TBT",
+      "week": "1",
+      "round": 2,
+      "machine": "Corvette",
+      "division": 0,
+      "score": 39112220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TBT",
+      "match": "mnp-24-1-KBZ-TBT",
+      "week": "1",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 20986280,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "PGN",
+      "match": "mnp-24-2-PGN-KBZ",
+      "week": "2",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 107526260,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "PGN",
+      "match": "mnp-24-2-PGN-KBZ",
+      "week": "2",
+      "round": 3,
+      "machine": "FH",
+      "division": 0,
+      "score": 740000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "KBZ",
+      "opp": "PGN",
+      "match": "mnp-24-2-PGN-KBZ",
+      "week": "2",
+      "round": 4,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 33000,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "KBZ",
+      "opp": "CRA",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 1039790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "CRA",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 68993420,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "CRA",
+      "match": "mnp-24-3-KBZ-CRA",
+      "week": "3",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 45981190,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.320",
+      "num_matches": 3,
+      "ppm": "2.666",
+      "points": {
+        "won": 8,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

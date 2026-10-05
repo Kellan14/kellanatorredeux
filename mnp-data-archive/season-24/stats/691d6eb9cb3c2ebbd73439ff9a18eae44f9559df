@@ -1,0 +1,143 @@
+{
+  "key": "691d6eb9cb3c2ebbd73439ff9a18eae44f9559df",
+  "name": "Chelsea Rakonza",
+  "history": [
+    {
+      "team": "RTR",
+      "opp": "PKT",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 1,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 11869490,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "PKT",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 2,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 24993880,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "RTR",
+      "opp": "PKT",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 4,
+      "machine": "SS",
+      "division": 0,
+      "score": 5489020,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 1,
+      "machine": "ElviraHouseOfHorrors",
+      "division": 0,
+      "score": 9115430,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 2,
+      "machine": "Genie",
+      "division": 0,
+      "score": 244050,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 4,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 199160,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 141386000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 2,
+      "machine": "CA",
+      "division": 0,
+      "score": 147990,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 4,
+      "machine": "CA",
+      "division": 0,
+      "score": 278610,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.354",
+      "num_matches": 3,
+      "ppm": "2.833",
+      "points": {
+        "won": 8.5,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

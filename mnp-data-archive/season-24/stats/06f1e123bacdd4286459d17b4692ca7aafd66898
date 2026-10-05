@@ -1,0 +1,143 @@
+{
+  "key": "06f1e123bacdd4286459d17b4692ca7aafd66898",
+  "name": "Cat Alexander",
+  "history": [
+    {
+      "team": "DOG",
+      "opp": "KNR",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 2000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "KNR",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 2,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 24000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "KNR",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 4000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSS",
+      "match": "mnp-24-2-DOG-SSS",
+      "week": "2",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 349570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSS",
+      "match": "mnp-24-2-DOG-SSS",
+      "week": "2",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 7255030,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "SSS",
+      "match": "mnp-24-2-DOG-SSS",
+      "week": "2",
+      "round": 3,
+      "machine": "SC",
+      "division": 0,
+      "score": 174370,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 8629150,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 1183230,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "RTR",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 6848670,
+      "points": 1,
+      "pops": "0.333"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.372",
+      "num_matches": 3,
+      "ppm": "3.166",
+      "points": {
+        "won": 9.5,
+        "of": 25.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

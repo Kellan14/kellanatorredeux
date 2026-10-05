@@ -1,0 +1,143 @@
+{
+  "key": "9e94bcf3e818de7f914e53c33f577f991e4f0e20",
+  "name": "Marisa Figueroa",
+  "history": [
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 29533340,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 11705330,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 72013260,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 3192010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 44798130,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 96701510,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 554139440,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 101320260,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 4,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 5883210,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.163",
+      "num_matches": 3,
+      "ppm": "1.333",
+      "points": {
+        "won": 4,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

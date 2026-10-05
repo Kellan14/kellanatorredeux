@@ -1,0 +1,143 @@
+{
+  "key": "e730a1ccad3fcc9bda42602904308adffb3b1624",
+  "name": "Brooke Albright",
+  "history": [
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 19729470,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 2,
+      "machine": "Congo",
+      "division": 0,
+      "score": 244811730,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 4,
+      "machine": "Cheetah",
+      "division": 0,
+      "score": 452710,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 22473560,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 2,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 27862380,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 58696520,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 26445010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 3,
+      "machine": "EBD",
+      "division": 0,
+      "score": 220530,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 660030,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.306",
+      "num_matches": 3,
+      "ppm": "2.500",
+      "points": {
+        "won": 7.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "4e52cc18ce09b9f90f38c1a085aeac9a262ea0a3",
+  "name": "Joshua Chandler",
+  "history": [
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 1,
+      "machine": "LAB",
+      "division": 0,
+      "score": 6916010,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 3,
+      "machine": "SONIC",
+      "division": 0,
+      "score": 15411840,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "PGN",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 4,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 189333160,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 1,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 45905990,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 51196620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "CRA",
+      "match": "mnp-24-2-CRA-ICB",
+      "week": "2",
+      "round": 4,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 12666070,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 2,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 97290,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 3,
+      "machine": "LZ",
+      "division": 0,
+      "score": 11500000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TWC",
+      "match": "mnp-24-3-ICB-TWC",
+      "week": "3",
+      "round": 4,
+      "machine": "Ali",
+      "division": 0,
+      "score": 219560,
+      "points": 1.5,
+      "pops": "0.600"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.265",
+      "num_matches": 3,
+      "ppm": "2.166",
+      "points": {
+        "won": 6.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

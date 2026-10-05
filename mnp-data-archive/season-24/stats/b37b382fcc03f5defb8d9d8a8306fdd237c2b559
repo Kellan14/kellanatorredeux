@@ -1,0 +1,143 @@
+{
+  "key": "b37b382fcc03f5defb8d9d8a8306fdd237c2b559",
+  "name": "Kelli Goins",
+  "history": [
+    {
+      "team": "NQG",
+      "opp": "TTT",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2241855130,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NQG",
+      "opp": "TTT",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 16215520,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "TTT",
+      "match": "mnp-24-1-NQG-TTT",
+      "week": "1",
+      "round": 4,
+      "machine": "VEN",
+      "division": 0,
+      "score": 53925270,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NQG",
+      "opp": "BLK",
+      "match": "mnp-24-2-BLK-NQG",
+      "week": "2",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 7082290,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "NQG",
+      "opp": "BLK",
+      "match": "mnp-24-2-BLK-NQG",
+      "week": "2",
+      "round": 3,
+      "machine": "CA",
+      "division": 0,
+      "score": 155540,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NQG",
+      "opp": "BLK",
+      "match": "mnp-24-2-BLK-NQG",
+      "week": "2",
+      "round": 4,
+      "machine": "CA",
+      "division": 0,
+      "score": 151340,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "PKT",
+      "match": "mnp-24-3-NQG-PKT",
+      "week": "3",
+      "round": 2,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 21970770,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "PKT",
+      "match": "mnp-24-3-NQG-PKT",
+      "week": "3",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1312298390,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "PKT",
+      "match": "mnp-24-3-NQG-PKT",
+      "week": "3",
+      "round": 4,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 19442640,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.620",
+      "num_matches": 3,
+      "ppm": "5.166",
+      "points": {
+        "won": 15.5,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

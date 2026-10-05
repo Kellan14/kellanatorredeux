@@ -1,0 +1,143 @@
+{
+  "key": "7667cb7b78d118b72f26d5b2459bfa875b84e88e",
+  "name": "Andy Yarritu",
+  "history": [
+    {
+      "team": "RTR",
+      "opp": "PKT",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 2,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 10595760,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "RTR",
+      "opp": "PKT",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 3,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 22284540,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "PKT",
+      "match": "mnp-24-1-RTR-PKT",
+      "week": "1",
+      "round": 4,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 20859610,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 1,
+      "machine": "ElviraHouseOfHorrors",
+      "division": 0,
+      "score": 6657230,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 111107790,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "JMF",
+      "match": "mnp-24-2-JMF-RTR",
+      "week": "2",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 618000090,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 115784640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 3,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 9291160,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "DOG",
+      "match": "mnp-24-3-RTR-DOG",
+      "week": "3",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 13432060,
+      "points": 1,
+      "pops": "0.400"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.448",
+      "num_matches": 3,
+      "ppm": "3.666",
+      "points": {
+        "won": 11,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

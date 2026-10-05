@@ -1,0 +1,143 @@
+{
+  "key": "0b663a3daffd33f0d16bc9c9cfc006f32f8182a9",
+  "name": "Emily Henshaw",
+  "history": [
+    {
+      "team": "PGN",
+      "opp": "ICB",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 117790,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PGN",
+      "opp": "ICB",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 5250270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "ICB",
+      "match": "mnp-24-1-ICB-PGN",
+      "week": "1",
+      "round": 4,
+      "machine": "LOTR",
+      "division": 0,
+      "score": 6983430,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "KBZ",
+      "match": "mnp-24-2-PGN-KBZ",
+      "week": "2",
+      "round": 1,
+      "machine": "FH",
+      "division": 0,
+      "score": 3764700,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "KBZ",
+      "match": "mnp-24-2-PGN-KBZ",
+      "week": "2",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 99915970,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "KBZ",
+      "match": "mnp-24-2-PGN-KBZ",
+      "week": "2",
+      "round": 4,
+      "machine": "FH",
+      "division": 0,
+      "score": 2371530,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "KNR",
+      "match": "mnp-24-3-KNR-PGN",
+      "week": "3",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 286000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "KNR",
+      "match": "mnp-24-3-KNR-PGN",
+      "week": "3",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 103226550,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "KNR",
+      "match": "mnp-24-3-KNR-PGN",
+      "week": "3",
+      "round": 3,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 386004350,
+      "points": 1,
+      "pops": "0.333"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.510",
+      "num_matches": 3,
+      "ppm": "4.166",
+      "points": {
+        "won": 12.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

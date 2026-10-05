@@ -1,0 +1,143 @@
+{
+  "key": "b906f43b6512717222eea955c5f292a0e1b3d3ba",
+  "name": "Owen Weyland",
+  "history": [
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 151973570,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 2,
+      "machine": "BM66",
+      "division": 0,
+      "score": 126682910,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "BAD",
+      "match": "mnp-24-1-CPO-BAD",
+      "week": "1",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 31559600,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 1,
+      "machine": "ED",
+      "division": 0,
+      "score": 138000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 299483450,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "ADB",
+      "match": "mnp-24-2-ADB-CPO",
+      "week": "2",
+      "round": 4,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 5840830,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 2,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 186203310,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 3,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 79083400,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SKP",
+      "match": "mnp-24-3-CPO-SKP",
+      "week": "3",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1920485570,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.795",
+      "num_matches": 3,
+      "ppm": "6.500",
+      "points": {
+        "won": 19.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "key": "8079c6d5bc2e68a338c7b88e1bb908dcf4859048",
+  "name": "Emi Bee",
+  "history": [
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 74170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 2,
+      "machine": "QS",
+      "division": 0,
+      "score": 125850,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DRK",
+      "opp": "PYC",
+      "match": "mnp-24-1-DRK-PYC",
+      "week": "1",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 17535890,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 2,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 83934070,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 3,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 10115600,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "FBP",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 16572210,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 2,
+      "machine": "Stars",
+      "division": 0,
+      "score": 30500,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 12894600,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "BAD",
+      "match": "mnp-24-3-DRK-BAD",
+      "week": "3",
+      "round": 4,
+      "machine": "Stars",
+      "division": 0,
+      "score": 120910,
+      "points": 1.5,
+      "pops": "0.600"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.176",
+      "num_matches": 3,
+      "ppm": "1.500",
+      "points": {
+        "won": 4.5,
+        "of": 25.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

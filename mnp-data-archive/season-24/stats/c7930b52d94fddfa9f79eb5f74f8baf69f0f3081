@@ -1,0 +1,143 @@
+{
+  "key": "c7930b52d94fddfa9f79eb5f74f8baf69f0f3081",
+  "name": "Gary Sabo",
+  "history": [
+    {
+      "team": "KNR",
+      "opp": "DOG",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 1,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 7895970,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "KNR",
+      "opp": "DOG",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 2,
+      "machine": "HW",
+      "division": 0,
+      "score": 48458720,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KNR",
+      "opp": "DOG",
+      "match": "mnp-24-1-KNR-DOG",
+      "week": "1",
+      "round": 3,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 33586870,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "TBT",
+      "match": "mnp-24-2-TBT-KNR",
+      "week": "2",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 945140790,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "KNR",
+      "opp": "TBT",
+      "match": "mnp-24-2-TBT-KNR",
+      "week": "2",
+      "round": 2,
+      "machine": "RFM",
+      "division": 0,
+      "score": 91000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "KNR",
+      "opp": "TBT",
+      "match": "mnp-24-2-TBT-KNR",
+      "week": "2",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 20000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PGN",
+      "match": "mnp-24-3-KNR-PGN",
+      "week": "3",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 40686940,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PGN",
+      "match": "mnp-24-3-KNR-PGN",
+      "week": "3",
+      "round": 3,
+      "machine": "FOO",
+      "division": 0,
+      "score": 6686520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PGN",
+      "match": "mnp-24-3-KNR-PGN",
+      "week": "3",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 40364890,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.352",
+      "num_matches": 3,
+      "ppm": "3.000",
+      "points": {
+        "won": 9,
+        "of": 25.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

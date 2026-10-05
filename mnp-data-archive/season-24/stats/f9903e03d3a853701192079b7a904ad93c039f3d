@@ -1,0 +1,143 @@
+{
+  "key": "f9903e03d3a853701192079b7a904ad93c039f3d",
+  "name": "Todd Brown",
+  "history": [
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 4801080,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 4056020,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 4272240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 71728830,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 2,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 48783560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 4,
+      "machine": "TOM",
+      "division": 0,
+      "score": 305570750,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 1,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 104159560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 45814060,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 4,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 14739530,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.142",
+      "num_matches": 3,
+      "ppm": "1.166",
+      "points": {
+        "won": 3.5,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

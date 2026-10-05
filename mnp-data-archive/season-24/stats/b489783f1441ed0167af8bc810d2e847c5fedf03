@@ -1,0 +1,143 @@
+{
+  "key": "b489783f1441ed0167af8bc810d2e847c5fedf03",
+  "name": "Brian Reinhard",
+  "history": [
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 228132120,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 3,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 7052800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "NMC",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 4,
+      "machine": "Fire",
+      "division": 0,
+      "score": 2115360,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 145000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 2,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 4134320,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "FBP",
+      "opp": "DRK",
+      "match": "mnp-24-2-FBP-DRK",
+      "week": "2",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 70847400,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 195449730,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 204478710,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SRF",
+      "match": "mnp-24-3-SRF-FBP",
+      "week": "3",
+      "round": 4,
+      "machine": "POTC",
+      "division": 0,
+      "score": 1708390,
+      "points": 0.5,
+      "pops": "0.200"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.687",
+      "num_matches": 3,
+      "ppm": "5.500",
+      "points": {
+        "won": 16.5,
+        "of": 24
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

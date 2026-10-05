@@ -1,0 +1,143 @@
+{
+  "key": "783a17c9fa1bf37f6129acfe5cd79d74d43c90d8",
+  "name": "Mark McClure",
+  "history": [
+    {
+      "team": "TRL",
+      "opp": "SKP",
+      "match": "mnp-24-1-TRL-SKP",
+      "week": "1",
+      "round": 1,
+      "machine": "FH",
+      "division": 0,
+      "score": 1835920,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SKP",
+      "match": "mnp-24-1-TRL-SKP",
+      "week": "1",
+      "round": 2,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 952650,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SKP",
+      "match": "mnp-24-1-TRL-SKP",
+      "week": "1",
+      "round": 3,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 11060950,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TRL",
+      "opp": "ZOO",
+      "match": "mnp-24-2-ZOO-TRL",
+      "week": "2",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 31220470,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "ZOO",
+      "match": "mnp-24-2-ZOO-TRL",
+      "week": "2",
+      "round": 3,
+      "machine": "NGG",
+      "division": 0,
+      "score": 6149650,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TRL",
+      "opp": "ZOO",
+      "match": "mnp-24-2-ZOO-TRL",
+      "week": "2",
+      "round": 4,
+      "machine": "Corvette",
+      "division": 0,
+      "score": 135004260,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TRL",
+      "opp": "SCN",
+      "match": "mnp-24-3-TRL-SCN",
+      "week": "3",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 5063258390,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SCN",
+      "match": "mnp-24-3-TRL-SCN",
+      "week": "3",
+      "round": 3,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 2947320,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TRL",
+      "opp": "SCN",
+      "match": "mnp-24-3-TRL-SCN",
+      "week": "3",
+      "round": 4,
+      "machine": "XFiles",
+      "division": 0,
+      "score": 6785520,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.571",
+      "num_matches": 3,
+      "ppm": "4.666",
+      "points": {
+        "won": 14,
+        "of": 24.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

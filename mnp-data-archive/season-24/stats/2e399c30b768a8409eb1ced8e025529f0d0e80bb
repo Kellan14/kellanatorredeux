@@ -1,0 +1,143 @@
+{
+  "key": "2e399c30b768a8409eb1ced8e025529f0d0e80bb",
+  "name": "Tom Baisden",
+  "history": [
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 1,
+      "machine": "Indy",
+      "division": 0,
+      "score": 55841760,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 3,
+      "machine": "Ali",
+      "division": 0,
+      "score": 469730,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TWC",
+      "match": "mnp-24-1-DTP-TWC",
+      "week": "1",
+      "round": 4,
+      "machine": "Ali",
+      "division": 0,
+      "score": 190570,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 56609120,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 2,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 90640,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "TTT",
+      "match": "mnp-24-2-TTT-DTP",
+      "week": "2",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1380219500,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 63458210,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 3,
+      "machine": "Indy",
+      "division": 0,
+      "score": 29455550,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "BLK",
+      "match": "mnp-24-3-DTP-BLK",
+      "week": "3",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 944154560,
+      "points": 2.5,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.740",
+      "num_matches": 3,
+      "ppm": "6.166",
+      "points": {
+        "won": 18.5,
+        "of": 25
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

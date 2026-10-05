@@ -1,0 +1,143 @@
+{
+  "key": "d491094f6b30d6eb67ff3d38d0f44a866846613a",
+  "name": "Sean Bray",
+  "history": [
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 2,
+      "machine": "POTC",
+      "division": 0,
+      "score": 15913100,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 3,
+      "machine": "TAF",
+      "division": 0,
+      "score": 52045180,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NMC",
+      "opp": "FBP",
+      "match": "mnp-24-1-NMC-FBP",
+      "week": "1",
+      "round": 4,
+      "machine": "Fire",
+      "division": 0,
+      "score": 209140,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 1,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 109402290,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 2,
+      "machine": "ED",
+      "division": 0,
+      "score": 11761820,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "BAD",
+      "match": "mnp-24-2-BAD-NMC",
+      "week": "2",
+      "round": 3,
+      "machine": "ED",
+      "division": 0,
+      "score": 26282010,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 25678170,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 2,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 96000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "ADB",
+      "match": "mnp-24-3-NMC-ADB",
+      "week": "3",
+      "round": 3,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 101097370,
+      "points": 0,
+      "pops": "0.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.254",
+      "num_matches": 3,
+      "ppm": "2.166",
+      "points": {
+        "won": 6.5,
+        "of": 25.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}
