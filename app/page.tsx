@@ -63,14 +63,14 @@ function HomePageContent() {
 
   // Opponent top picks section
   const [opponentTopPicks, setOpponentTopPicks] = useState<any[]>([])
-  const [topPicksSeasonStart, setTopPicksSeasonStart] = useState<number>(20)
-  const [topPicksSeasonEnd, setTopPicksSeasonEnd] = useState<number>(23)
+  const [topPicksSeasonStart, setTopPicksSeasonStart] = useState<number>(0)
+  const [topPicksSeasonEnd, setTopPicksSeasonEnd] = useState<number>(0)
+  const [topPicksRangeReadyFor, setTopPicksRangeReadyFor] = useState<string | null>(null)
   const [loadingTopPicks, setLoadingTopPicks] = useState(false)
   // Several inputs arrive independently on first load (match, venue machines,
-  // team seasons, roster). Ignore an older response if a newer request has
-  // started, otherwise the initial default range can overwrite valid picks.
+  // team seasons, roster). Ignore an older response if a newer request has started.
   const topPicksRequestId = useRef(0)
-  const [availableSeasons, setAvailableSeasons] = useState<number[]>([20, 21, 22, 23])
+  const [availableSeasons, setAvailableSeasons] = useState<number[]>([])
   const [topPicksSortColumn, setTopPicksSortColumn] = useState<string>('timesPicked')
   const [topPicksSortDirection, setTopPicksSortDirection] = useState<'asc' | 'desc'>('desc')
 
@@ -186,26 +186,48 @@ function HomePageContent() {
     localStorage.setItem('achievementsCollapsed', String(achievementsCollapsed))
   }, [achievementsCollapsed])
 
-  // Reset swaps and fetch available seasons when opponent changes
+  // Reset swaps and fetch available seasons when opponent or current season changes.
   useEffect(() => {
     setExcludedPlayers(new Set())
     setIncludedPlayers(new Set())
-    if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable') {
-      fetch(`/api/team-seasons?team=${encodeURIComponent(opponent)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.seasons && data.seasons.length > 0) {
-            setAvailableSeasons(data.seasons)
-            // Reset season range to cover all available data
-            setLeastUniqueSeasonStart(data.seasons[0])
-            setLeastUniqueSeasonEnd(data.seasons[data.seasons.length - 1])
-            setTopPicksSeasonStart(data.seasons[0])
-            setTopPicksSeasonEnd(data.seasons[data.seasons.length - 1])
-          }
-        })
-        .catch(err => console.error('Error fetching team seasons:', err))
-    }
-  }, [opponent])
+    if (!opponent || opponent === 'Loading...' || opponent === 'Schedule unavailable' || matchSeason === null) return
+
+    let cancelled = false
+    setTopPicksRangeReadyFor(null)
+    topPicksRequestId.current += 1
+    setOpponentTopPicks([])
+    setLoadingTopPicks(false)
+    fetch(`/api/team-seasons?team=${encodeURIComponent(opponent)}`)
+      .then(res => {
+        if (!res.ok) throw new Error(`Team seasons request failed: ${res.status}`)
+        return res.json()
+      })
+      .then(data => {
+        if (cancelled) return
+        const playedSeasons = (Array.isArray(data.seasons) ? data.seasons : [])
+          .filter((season: unknown): season is number =>
+            typeof season === 'number' && Number.isInteger(season) && season <= matchSeason)
+        const firstSeason = playedSeasons.length > 0 ? Math.min(...playedSeasons) : matchSeason
+        const seasons = Array.from({ length: matchSeason - firstSeason + 1 }, (_, i) => firstSeason + i)
+        setAvailableSeasons(seasons)
+        setLeastUniqueSeasonStart(firstSeason)
+        setLeastUniqueSeasonEnd(playedSeasons.length > 0 ? Math.max(...playedSeasons) : matchSeason)
+        setTopPicksSeasonStart(Math.max(matchSeason - 2, firstSeason))
+        setTopPicksSeasonEnd(matchSeason)
+        setTopPicksRangeReadyFor(opponent)
+      })
+      .catch(err => {
+        if (cancelled) return
+        console.error('Error fetching team seasons:', err)
+        setAvailableSeasons([matchSeason])
+        setLeastUniqueSeasonStart(matchSeason)
+        setLeastUniqueSeasonEnd(matchSeason)
+        setTopPicksSeasonStart(matchSeason)
+        setTopPicksSeasonEnd(matchSeason)
+        setTopPicksRangeReadyFor(opponent)
+      })
+    return () => { cancelled = true }
+  }, [opponent, matchSeason])
 
   // Achievements section
   const [achievements, setAchievements] = useState<any[]>([])
@@ -292,11 +314,12 @@ function HomePageContent() {
     if (
       opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' &&
       venue && venue !== 'Loading...' &&
-      venueMachines.length > 0
+      venueMachines.length > 0 &&
+      topPicksRangeReadyFor === opponent
     ) {
       fetchOpponentTopPicks()
     }
-  }, [opponent, venue, topPicksSeasonStart, topPicksSeasonEnd, opponentPlayers, venueMachines])
+  }, [opponent, venue, topPicksSeasonStart, topPicksSeasonEnd, topPicksRangeReadyFor, opponentPlayers, venueMachines])
 
   const fetchOpponentTopPicks = async () => {
     const requestId = ++topPicksRequestId.current
@@ -1292,26 +1315,30 @@ function HomePageContent() {
               {!topPicksCollapsed && (
               <CardContent>
                 <div className="flex items-center gap-2 mb-3">
-                  <label className="text-xs text-muted-foreground whitespace-nowrap">Seasons:</label>
-                  <select
-                    value={topPicksSeasonStart}
-                    onChange={(e) => setTopPicksSeasonStart(parseInt(e.target.value))}
-                    className="w-16 px-2 py-1 text-sm border rounded bg-background"
-                  >
-                    {availableSeasons.map(s => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                  <span className="text-xs text-muted-foreground">to</span>
-                  <select
-                    value={topPicksSeasonEnd}
-                    onChange={(e) => setTopPicksSeasonEnd(parseInt(e.target.value))}
-                    className="w-16 px-2 py-1 text-sm border rounded bg-background"
-                  >
-                    {availableSeasons.map(s => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
+                  <label className="text-xs text-muted-foreground whitespace-nowrap">Seasons: from</label>
+                  {topPicksRangeReadyFor === opponent ? <>
+                    <select
+                      aria-label="From season"
+                      value={topPicksSeasonStart}
+                      onChange={(e) => setTopPicksSeasonStart(parseInt(e.target.value))}
+                      className="w-16 px-2 py-1 text-sm border rounded bg-background"
+                    >
+                      {availableSeasons.map(s => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                    <span className="text-xs text-muted-foreground">to</span>
+                    <select
+                      aria-label="To season"
+                      value={topPicksSeasonEnd}
+                      onChange={(e) => setTopPicksSeasonEnd(parseInt(e.target.value))}
+                      className="w-16 px-2 py-1 text-sm border rounded bg-background"
+                    >
+                      {availableSeasons.map(s => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </> : <span className="text-xs text-muted-foreground">Loading seasons...</span>}
                   <Button
                     size="sm"
                     variant="outline"
@@ -1456,7 +1483,7 @@ function HomePageContent() {
                 <CardContent>
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <label className="text-xs text-muted-foreground whitespace-nowrap">Seasons:</label>
+                      <label className="text-xs text-muted-foreground whitespace-nowrap">Seasons: from</label>
                       <select
                         value={leastUniqueSeasonStart}
                         onChange={(e) => setLeastUniqueSeasonStart(parseInt(e.target.value))}
