@@ -4,6 +4,7 @@ import { standardizeVenueName } from '@/lib/venue-mappings'
 import { applyAndTrackKeyMapping } from '@/lib/apply-key-mappings'
 import { applySubLinks } from '@/lib/apply-sub-links'
 import { renamePlayerStats } from '@/lib/apply-name-mappings'
+import { rebuildTeamPicksCache } from '@/lib/top-picks-cache'
 
 // Vercel Cron job to sync MNP data from GitHub.
 // Runs daily at 2am UTC (see vercel.json: "0 2 * * *").
@@ -564,7 +565,7 @@ export async function GET(request: Request) {
 
     // ===== PRE-COMPUTE CACHE TABLES =====
     console.log(skipCache ? '[cron/sync-data] Skipping cache rebuild (targeted backfill)' : '[cron/sync-data] Building cache tables...')
-    let cacheStats = { teamMachine: 0, playerMachine: 0, topScores: 0, players: 0 }
+    let cacheStats = { teamMachine: 0, playerMachine: 0, topScores: 0, players: 0, teamPicks: 0 }
 
     if (!skipCache) try {
       // Build a player name standardization map from the mappings we just applied
@@ -615,7 +616,7 @@ export async function GET(request: Request) {
         while (true) {
           const { data: page, error } = await supabase
             .from('games')
-            .select('id, machine, venue, season, match_key, week, round_number, player_1_name, player_1_key, player_1_team, player_1_score, player_1_points, player_1_is_pick, player_2_name, player_2_key, player_2_team, player_2_score, player_2_points, player_2_is_pick, player_3_name, player_3_key, player_3_team, player_3_score, player_3_points, player_3_is_pick, player_4_name, player_4_key, player_4_team, player_4_score, player_4_points, player_4_is_pick')
+            .select('id, machine, venue, season, match_key, week, round_number, game_number, home_team, away_team, player_1_name, player_1_key, player_1_team, player_1_score, player_1_points, player_1_is_pick, player_2_name, player_2_key, player_2_team, player_2_score, player_2_points, player_2_is_pick, player_3_name, player_3_key, player_3_team, player_3_score, player_3_points, player_3_is_pick, player_4_name, player_4_key, player_4_team, player_4_score, player_4_points, player_4_is_pick')
             .gt('id', lastId)
             .order('id', { ascending: true })
             .limit(PAGE_SIZE)
@@ -625,6 +626,14 @@ export async function GET(request: Request) {
           lastId = page[page.length - 1].id
           if (page.length < PAGE_SIZE) break
         }
+      }
+
+      // Top Picks stores every picked game across all teams and seasons.
+      // An unavailable optional table must not prevent the other caches from rebuilding.
+      try {
+        cacheStats.teamPicks = await rebuildTeamPicksCache(supabase, allHistoryGames)
+      } catch (error) {
+        console.error('[cron/sync-data] Error rebuilding cache_team_pick_games:', error)
       }
 
       // ---- Accumulate aggregates per season from full history ----
@@ -879,7 +888,7 @@ export async function GET(request: Request) {
         cacheStats.players = (playerCount as unknown as number) || 0
       }
 
-      console.log(`[cron/sync-data] Cache built: ${cacheStats.teamMachine} team-machine, ${cacheStats.playerMachine} player-machine, ${cacheStats.topScores} top-scores, ${cacheStats.players} players`)
+      console.log(`[cron/sync-data] Cache built: ${cacheStats.teamMachine} team-machine, ${cacheStats.playerMachine} player-machine, ${cacheStats.topScores} top-scores, ${cacheStats.players} players, ${cacheStats.teamPicks} team-picks`)
     } catch (cacheError) {
       console.error('[cron/sync-data] Cache building error (non-fatal):', cacheError)
     }

@@ -34,7 +34,8 @@ export function gamesToProcessedScores(
       // Per MNP rules: away team picks rounds 1 (doubles) and 3 (singles);
       // home team picks rounds 2 (singles) and 4 (doubles).
       const isHomeTeam = teamKey === game.home_team
-      const isPick = game.round_number % 2 === 1 ? !isHomeTeam : isHomeTeam
+      const isPick = game.round_number >= 1 && game.round_number <= 4 &&
+        (game.round_number % 2 === 1 ? !isHomeTeam : isHomeTeam)
 
       out.push({
         season: game.season || 0,

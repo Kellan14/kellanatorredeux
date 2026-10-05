@@ -319,33 +319,34 @@ function HomePageContent() {
     ) {
       fetchOpponentTopPicks()
     }
-  }, [opponent, venue, topPicksSeasonStart, topPicksSeasonEnd, topPicksRangeReadyFor, opponentPlayers, venueMachines])
+  }, [opponent, venue, topPicksSeasonStart, topPicksSeasonEnd, topPicksRangeReadyFor, venueMachines])
 
   const fetchOpponentTopPicks = async () => {
     const requestId = ++topPicksRequestId.current
     setLoadingTopPicks(true)
     try {
+      let rosterPlayers: string[] = []
       // Build season list from range
       const seasons: number[] = []
       for (let s = topPicksSeasonStart; s <= topPicksSeasonEnd; s++) {
         seasons.push(s)
       }
 
-      // Cache-first: ask /api/top-picks for the pre-computed snapshot, which
-      // the weekly cron writes for TWC's next match. The cache is keyed by
-      // (opponent, venue, season_start, season_end), so it only hits when
-      // the user is on the cron's defaults; otherwise we fall through to a
-      // live compute.
+      // The API ranks the team's all-time pick cache for this season range,
+      // then fills the other columns for the resulting machines. If the cache
+      // is not installed or populated yet, compute everything live.
       try {
         const cacheParams = new URLSearchParams({
           opponentName: opponent,
           venue,
           seasonStart: String(topPicksSeasonStart),
           seasonEnd: String(topPicksSeasonEnd),
+          machines: venueMachines.join(','),
         })
         const cacheRes = await fetch(`/api/top-picks?${cacheParams}`)
+        const cacheData = await cacheRes.json()
+        rosterPlayers = Array.isArray(cacheData?.rosterPlayers) ? cacheData.rosterPlayers : []
         if (cacheRes.ok) {
-          const cacheData = await cacheRes.json()
           if (cacheData?.cached && Array.isArray(cacheData.picks)) {
             if (requestId !== topPicksRequestId.current) return
             setOpponentTopPicks(cacheData.picks)
@@ -354,6 +355,18 @@ function HomePageContent() {
         }
       } catch {
         // Cache lookup failed — silently fall through to live compute.
+      }
+
+      // The roster display can include subs. Top Picks always uses current
+      // roster players, even when its aggregate cache is unavailable.
+      if (rosterPlayers.length === 0) {
+        try {
+          const rosterRes = await fetch(`/api/opponent-roster?team=${encodeURIComponent(opponent)}`)
+          if (rosterRes.ok) {
+            const data = await rosterRes.json()
+            rosterPlayers = Array.isArray(data.rosterPlayers) ? data.rosterPlayers : []
+          }
+        } catch { /* Preserve the existing no-roster fallback. */ }
       }
 
       const params = new URLSearchParams({
@@ -368,8 +381,8 @@ function HomePageContent() {
         machines: venueMachines.join(','),
       })
       // Restrict opponent stats (incl. Times Picked) to current roster.
-      if (opponentPlayers.length > 0) {
-        params.set('opponentRoster', opponentPlayers.join(','))
+      if (rosterPlayers.length > 0) {
+        params.set('opponentRoster', rosterPlayers.join(','))
       }
 
       const response = await fetch(`/api/machine-stats?${params}`)

@@ -90,14 +90,19 @@ export async function GET(request: NextRequest) {
     // Fetch all games for the requested seasons from Supabase
     let gamesData: any[];
     try {
+      // Top Picks only needs a handful of venue machines. Filter at the DB
+      // instead of downloading every league game in the selected seasons.
+      const requestedMachines = machinesParam?.split(',').map(m => m.trim()).filter(Boolean) || [];
+      const machineKeys = Array.from(new Set(requestedMachines.flatMap(m => [m, m.toLowerCase(), m.toUpperCase()])));
       gamesData = await fetchAllRecords(
-        () => supabase
-          .from('games')
-          .select('*')
-          .in('season', seasonList)
-          .order('season', { ascending: false })
-          .order('week', { ascending: false })
-          .order('id', { ascending: true }) // Unique key ensures consistent pagination
+        () => {
+          let query = supabase.from('games').select('*').in('season', seasonList);
+          if (machineKeys.length > 0) query = query.in('machine', machineKeys);
+          return query
+            .order('season', { ascending: false })
+            .order('week', { ascending: false })
+            .order('id', { ascending: true }); // Unique key ensures consistent pagination
+        }
       );
     } catch (error: any) {
       console.error('[machine-stats] Database error:', error);

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { supabase, fetchAllRecords } from '@/lib/supabase'
 
 export interface LastSeen {
   season: number
@@ -24,14 +24,12 @@ export interface TeamRoster {
  * No hard-coded season ranges: subs span the team's entire history.
  */
 export async function getTeamRoster(teamKey: string): Promise<TeamRoster> {
-  const { data } = await supabase
-    .from('player_match_participation')
-    .select('player_name, season, week, is_sub')
-    .eq('team', teamKey) as {
-      data: { player_name: string; season: number; week: number; is_sub: boolean }[] | null
-    }
-
-  const rows = data || []
+  const rows = await fetchAllRecords<{ player_name: string; season: number; week: number; is_sub: boolean }>(
+    () => supabase.from('player_match_participation')
+      .select('player_name, season, week, is_sub')
+      .eq('team', teamKey)
+      .order('id', { ascending: true })
+  )
   if (rows.length === 0) {
     return { rosterPlayers: [], subPlayers: [], subPlayerLastSeen: {}, currentSeason: null }
   }
