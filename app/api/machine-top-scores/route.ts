@@ -2,21 +2,24 @@ import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getScoreLimits } from '@/lib/score-limits'
+import { resolveMachineKey } from '@/lib/machines-canon'
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
-    const machineName = searchParams.get('machine')
+    const requestedMachine = searchParams.get('machine')
     const venue = searchParams.get('venue') || ''
 
-    if (!machineName) {
+    if (!requestedMachine) {
       return NextResponse.json(
         { error: 'Machine parameter is required' },
         { status: 400 }
       )
     }
+
+    const machineName = (await resolveMachineKey(requestedMachine)) ?? requestedMachine
 
     // Get the current season dynamically from the database
     const { data: maxSeasonData } = await supabase

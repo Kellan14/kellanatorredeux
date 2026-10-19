@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { getScoreLimits } from '@/lib/score-limits'
 import { requireUser } from '@/lib/auth'
+import { resolveMachineKey } from '@/lib/machines-canon'
 
 export const dynamic = 'force-dynamic';
 
@@ -13,14 +14,16 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const player = searchParams.get('player')
-    const machine = searchParams.get('machine')
+    const requestedMachine = searchParams.get('machine')
 
-    if (!player || !machine) {
+    if (!player || !requestedMachine) {
       return NextResponse.json(
         { error: 'Player and machine parameters are required' },
         { status: 400 }
       )
     }
+
+    const machine = (await resolveMachineKey(requestedMachine)) ?? requestedMachine
 
     // Read score limits from the DB (single source of truth) rather than the
     // stale local score_limits.json that the rest of the app no longer uses.

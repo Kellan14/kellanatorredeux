@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getMachinesData } from '@/lib/data-loader'
+import { resolveMachineKey } from '@/lib/machines-canon'
 
 export const dynamic = 'force-dynamic';
 
@@ -15,19 +15,12 @@ export async function GET(request: Request) {
       )
     }
 
-    const machinesData = await getMachinesData()
-
-    // Find the machine key from the machine name
-    const machineEntry = Object.values(machinesData).find(
-      (m: any) => m.name === machineName
-    )
-
-    if (!machineEntry) {
+    const machineKey = await resolveMachineKey(machineName)
+    if (!machineKey) {
       console.log('Machine not found in machines.json:', machineName)
       return NextResponse.json({ venues: [] })
     }
 
-    const machineKey = (machineEntry as any).key
     console.log('Finding venues for machine:', machineName, '(key:', machineKey, ')')
 
     // Get all venues and their machines

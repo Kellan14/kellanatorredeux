@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { resolveMachineKey } from '@/lib/machines-canon'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,7 +29,8 @@ export async function GET(request: Request) {
 
     // Single player+machine lookup (for machine page)
     const player = searchParams.get('player')
-    const machine = searchParams.get('machine')
+    const requestedMachine = searchParams.get('machine')
+    const machine = requestedMachine ? (await resolveMachineKey(requestedMachine)) ?? requestedMachine : null
 
     const venue = searchParams.get('venue')
 

@@ -148,7 +148,7 @@ export default function MachinesPage() {
       {!isLoading && (
         <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-2 md:gap-4">
         {filteredMachines.map((machine) => (
-          <Link key={machine.key} href={`/machines/${encodeURIComponent(machine.name)}${filterByVenue && nextMatch ? `?venue=${encodeURIComponent(nextMatch.venue)}` : ''}`}>
+          <Link key={machine.key} href={`/machines/${encodeURIComponent(machine.key)}${filterByVenue && nextMatch ? `?venue=${encodeURIComponent(nextMatch.venue)}` : ''}`}>
             <Card className="overflow-hidden hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
               <div className="relative aspect-[3/4] bg-gradient-to-br from-slate-800 to-slate-900">
                 <Image
