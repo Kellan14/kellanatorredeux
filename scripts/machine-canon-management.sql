@@ -111,16 +111,16 @@ BEGIN
 
   IF to_regclass('public.venue_machine_lists') IS NOT NULL THEN
     SELECT coalesce(jsonb_agg(to_jsonb(v)),'[]') INTO before_row FROM venue_machine_lists v
-      WHERE EXISTS(SELECT 1 FROM unnest(coalesce(v.included,'{}')||coalesce(v.excluded,'{}')) x
+      WHERE EXISTS(SELECT 1 FROM jsonb_array_elements_text(coalesce(v.included,'[]'::jsonb)||coalesce(v.excluded,'[]'::jsonb)) x
         WHERE lower(regexp_replace(btrim(x),'\s+',' ','g'))=ANY(norms) AND x<>target_key);
-    GET DIAGNOSTICS affected=ROW_COUNT;
+    affected:=jsonb_array_length(before_row);
     total_affected:=total_affected+affected;
     changes:=changes||jsonb_build_object('venue_machine_lists',affected);
     snapshots:=snapshots||jsonb_build_object('venue_machine_lists',before_row);
     UPDATE venue_machine_lists v SET
-      included=ARRAY(SELECT DISTINCT CASE WHEN lower(regexp_replace(btrim(x),'\s+',' ','g'))=ANY(norms) THEN target_key ELSE x END FROM unnest(v.included) x),
-      excluded=ARRAY(SELECT DISTINCT CASE WHEN lower(regexp_replace(btrim(x),'\s+',' ','g'))=ANY(norms) THEN target_key ELSE x END FROM unnest(v.excluded) x)
-      WHERE EXISTS(SELECT 1 FROM unnest(coalesce(v.included,'{}')||coalesce(v.excluded,'{}')) x
+      included=to_jsonb(ARRAY(SELECT DISTINCT CASE WHEN lower(regexp_replace(btrim(x),'\s+',' ','g'))=ANY(norms) THEN target_key ELSE x END FROM jsonb_array_elements_text(coalesce(v.included,'[]'::jsonb)) x)),
+      excluded=to_jsonb(ARRAY(SELECT DISTINCT CASE WHEN lower(regexp_replace(btrim(x),'\s+',' ','g'))=ANY(norms) THEN target_key ELSE x END FROM jsonb_array_elements_text(coalesce(v.excluded,'[]'::jsonb)) x))
+      WHERE EXISTS(SELECT 1 FROM jsonb_array_elements_text(coalesce(v.included,'[]'::jsonb)||coalesce(v.excluded,'[]'::jsonb)) x
         WHERE lower(regexp_replace(btrim(x),'\s+',' ','g'))=ANY(norms) AND x<>target_key);
   END IF;
 

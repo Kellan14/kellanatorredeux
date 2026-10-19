@@ -22,7 +22,7 @@ try {
     CREATE TABLE user_machine_scores(id bigserial PRIMARY KEY,machine text,score bigint);
     CREATE TABLE user_machine_inputs(id bigserial PRIMARY KEY,player_name text,machine text,venue text,user_average bigint,UNIQUE(player_name,machine,venue));
     CREATE TABLE custom_backglass_images(id bigserial PRIMARY KEY,machine_key text,image_type text,public_url text,UNIQUE(machine_key,image_type));
-    CREATE TABLE venue_machine_lists(venue_name text PRIMARY KEY,included text[],excluded text[]);
+    CREATE TABLE venue_machine_lists(venue_name text PRIMARY KEY,included jsonb,excluded jsonb);
     CREATE TABLE cache_team_pick_games(game_id bigint PRIMARY KEY,machine text);
     CREATE TABLE cache_team_machine_stats(machine text);
     CREATE TABLE cache_player_machine_stats(machine text);
@@ -57,7 +57,7 @@ try {
     INSERT INTO user_machine_scores(machine,score) VALUES ('New Game',123);
     INSERT INTO score_limits VALUES ('New Game',1000);
     INSERT INTO custom_backglass_images(machine_key,image_type,public_url) VALUES ('New Game','full','original-url');
-    INSERT INTO venue_machine_lists VALUES ('Test Venue',ARRAY['New Game','Other'],ARRAY[]::text[]);
+    INSERT INTO venue_machine_lists VALUES ('Test Venue','["New Game","Other"]'::jsonb,'[]'::jsonb);
   `)
   const created = await change({
     key: 'TEMP',
