@@ -5,8 +5,8 @@ import bundledMachines from '@/mnp-data-archive/machines.json'
  * The machine canon: short key + long form for every machine.
  * Clients render the long form and speak the short key back to the APIs.
  *
- * Changes only when the canon is edited, so successful database responses
- * cache hard. The bundled MNP snapshot keeps clients working while the
+ * Clients retain a local copy; responses revalidate so edits propagate promptly.
+ * The bundled MNP snapshot keeps clients working while the
  * database is unavailable.
  */
 export const dynamic = 'force-dynamic'
@@ -36,7 +36,8 @@ export async function GET() {
     // this route from returning the bundled fallback.
     const { listMachines } = await import('@/lib/machines-canon')
     const machines = await listMachines(true)
-    if (machines.length === 0) throw new Error('Supabase returned an empty machine canon')
+    if (machines.length === 0)
+      throw new Error('Supabase returned an empty machine canon')
     return NextResponse.json(
       {
         machines: machines.map((m) => ({
@@ -49,12 +50,15 @@ export async function GET() {
       },
       {
         headers: {
-          'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+          'Cache-Control': 'no-store',
         },
-      }
+      },
     )
   } catch (error) {
-    console.warn('Machine canon database unavailable; using bundled MNP fallback:', error)
+    console.warn(
+      'Machine canon database unavailable; using bundled MNP fallback:',
+      error,
+    )
     return NextResponse.json(
       { machines: fallbackMachines },
       {
@@ -64,7 +68,7 @@ export async function GET() {
           'Cache-Control': 'no-store',
           'X-Machine-Canon-Source': 'bundled-fallback',
         },
-      }
+      },
     )
   }
 }

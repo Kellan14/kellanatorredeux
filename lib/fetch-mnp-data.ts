@@ -1,11 +1,11 @@
 // Fetch MNP data from GitHub instead of bundling it
 const DATA_BASE_URL = process.env.MNP_DATA_URL || 'https://raw.githubusercontent.com/Invader-Zim/mnp-data-archive/main'
 
-export async function fetchMNPData(path: string) {
+export async function fetchMNPData(path: string, options: { fresh?: boolean } = {}) {
   const url = `${DATA_BASE_URL}/${path}`
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(url, options.fresh ? { cache: 'no-store' } : {
       next: { revalidate: 3600 } // Cache for 1 hour
     })
 

@@ -1,5 +1,12 @@
 import { fetchAllRecords } from '@/lib/supabase'
-import { getMachineCanon, normalizeMachineName, resolveWithIndex } from '@/lib/machines-canon'
+import {
+  getMachineCanon,
+  invalidateMachineCanon,
+  normalizeMachineName,
+  resolveWithIndex,
+} from '@/lib/machines-canon'
+import { loadMnpMachines } from '@/lib/manage-machine-canon'
+import { fetchMNPData } from '@/lib/fetch-mnp-data'
 
 /**
  * Scanner for the machine canon, mirroring lib/player-name-issues.ts.
@@ -46,7 +53,12 @@ export interface MachineIssue {
  * be resolved at all is worth reporting. Reporting case there would bury the
  * real findings under a thousand entries that are working as intended.
  */
-const SCANNED: { table: string; column: string; withContext?: boolean; derived?: boolean }[] = [
+const SCANNED: {
+  table: string
+  column: string
+  withContext?: boolean
+  derived?: boolean
+}[] = [
   { table: 'games', column: 'machine', withContext: true },
   { table: 'score_limits', column: 'machine' },
   { table: 'user_machine_scores', column: 'machine' },
@@ -54,6 +66,8 @@ const SCANNED: { table: string; column: string; withContext?: boolean; derived?:
   { table: 'cache_player_machine_stats', column: 'machine', derived: true },
   { table: 'cache_team_machine_stats', column: 'machine', derived: true },
   { table: 'cache_machine_top_scores', column: 'machine', derived: true },
+  { table: 'cache_team_pick_games', column: 'machine', derived: true },
+  { table: 'custom_backglass_images', column: 'machine_key' },
 ]
 
 function rangeLabel(values: number[]): string | null {
@@ -64,13 +78,16 @@ function rangeLabel(values: number[]): string | null {
   return lo === hi ? `s${lo}` : `s${lo}-${hi}`
 }
 
-export async function computeMachineIssues(supabase: any): Promise<MachineIssue[]> {
+export async function computeMachineIssues(
+  supabase: any,
+): Promise<MachineIssue[]> {
   const index = await getMachineCanon()
   const issues: MachineIssue[] = []
 
   // Canon long forms, for telling "stored the long form" apart from "stored an alias".
   const longForms = new Set<string>()
-  for (const m of Array.from(index.byKey.values())) longForms.add(normalizeMachineName(m.name))
+  for (const m of Array.from(index.byKey.values()))
+    longForms.add(normalizeMachineName(m.name))
 
   for (const { table, column, withContext, derived } of SCANNED) {
     let rows: any[] = []
@@ -81,18 +98,23 @@ export async function computeMachineIssues(supabase: any): Promise<MachineIssue[
         supabase
           .from(table)
           .select(withContext ? `${column}, season, venue` : column)
-          .order(column, { ascending: true })
+          .order(column, { ascending: true }),
       )
-    } catch {
-      continue // table may not exist in every environment
+    } catch (error: any) {
+      if (error.code === 'PGRST205' || error.code === '42P01') continue
+      throw new Error(`Could not scan ${table}: ${error.message}`)
     }
 
     // Group by raw value so one bad spelling is one issue, not one per row.
-    const groups = new Map<string, { n: number; seasons: number[]; venues: Set<string> }>()
+    const groups = new Map<
+      string,
+      { n: number; seasons: number[]; venues: Set<string> }
+    >()
     for (const r of rows) {
       const raw = r?.[column]
       if (!raw) continue
-      if (!groups.has(raw)) groups.set(raw, { n: 0, seasons: [], venues: new Set() })
+      if (!groups.has(raw))
+        groups.set(raw, { n: 0, seasons: [], venues: new Set() })
       const g = groups.get(raw)!
       g.n++
       if (withContext) {
@@ -136,11 +158,53 @@ export async function computeMachineIssues(supabase: any): Promise<MachineIssue[
         suggested_key: resolved,
         confidence,
         seasons: withContext ? rangeLabel(g.seasons) : null,
-        venues: withContext && g.venues.size > 0 ? Array.from(g.venues).sort().join(', ') : null,
+        venues:
+          withContext && g.venues.size > 0
+            ? Array.from(g.venues).sort().join(', ')
+            : null,
       })
     }
   }
 
+  // A newly installed machine may have venue entries before its first game.
+  const { data: overrides, error: overrideError } = await supabase
+    .from('venue_machine_lists')
+    .select('venue_name,included,excluded')
+  if (overrideError) throw overrideError
+  for (const column of ['included', 'excluded']) {
+    const grouped = new Map<string, { n: number; venues: Set<string> }>()
+    for (const row of overrides || [])
+      for (const raw of row[column] || []) {
+        if (resolveWithIndex(index, raw)) continue
+        const group = grouped.get(raw) || { n: 0, venues: new Set<string>() }
+        group.n++
+        group.venues.add(row.venue_name)
+        grouped.set(raw, group)
+      }
+    for (const [raw, group] of Array.from(grouped.entries()))
+      issues.push({
+        raw_value: raw,
+        table_name: 'venue_machine_lists',
+        column_name: column,
+        occurrences: group.n,
+        issue_type: 'unmapped',
+        suggested_key: null,
+        confidence: 'unknown',
+        seasons: null,
+        venues: Array.from(group.venues).sort().join(', '),
+      })
+  }
+  const venueNames = new Map<string, Set<string>>()
+  const upstreamVenues = Object.values(await fetchMNPData('venues.json', { fresh: true })) as Array<{name:string;machines?:string[]}>
+  for (const venue of upstreamVenues) for (const raw of venue.machines || []) {
+    if (resolveWithIndex(index,raw)) continue
+    const names = venueNames.get(raw) || new Set<string>()
+    names.add(venue.name); venueNames.set(raw,names)
+  }
+  for (const [raw,names] of Array.from(venueNames.entries())) issues.push({
+    raw_value:raw,table_name:'mnp_venues',column_name:'machines',occurrences:names.size,
+    issue_type:'unmapped',suggested_key:null,confidence:'unknown',seasons:null,venues:Array.from(names).sort().join(', '),
+  })
   issues.push(...(await computeUpstreamDrift(supabase, index)))
 
   // Actionable first: unmapped, then the rest by how much data they affect.
@@ -153,7 +217,8 @@ export async function computeMachineIssues(supabase: any): Promise<MachineIssue[
     alias: 5,
   }
   issues.sort((a, b) => {
-    if (rank[a.issue_type] !== rank[b.issue_type]) return rank[a.issue_type] - rank[b.issue_type]
+    if (rank[a.issue_type] !== rank[b.issue_type])
+      return rank[a.issue_type] - rank[b.issue_type]
     return b.occurrences - a.occurrences
   })
   return issues
@@ -165,15 +230,13 @@ export async function computeMachineIssues(supabase: any): Promise<MachineIssue[
  */
 async function computeUpstreamDrift(
   supabase: any,
-  index: Awaited<ReturnType<typeof getMachineCanon>>
+  index: Awaited<ReturnType<typeof getMachineCanon>>,
 ): Promise<MachineIssue[]> {
   let upstream: { key: string; name: string }[]
   try {
-    const { fetchMNPData } = await import('@/lib/fetch-mnp-data')
-    const json = await fetchMNPData('machines.json')
-    upstream = Object.values(json) as { key: string; name: string }[]
+    upstream = await loadMnpMachines(true)
   } catch {
-    return [] // archive unreachable — not an issue with our data
+    throw new Error('Could not compare the canon against current MNP data; previous scan retained')
   }
 
   const { data: stored } = await supabase
@@ -217,14 +280,21 @@ async function computeUpstreamDrift(
 }
 
 /** Recompute and replace the cached scan. Returns the fresh findings. */
-export async function refreshMachineIssues(supabase: any): Promise<MachineIssue[]> {
+export async function refreshMachineIssues(
+  supabase: any,
+): Promise<MachineIssue[]> {
+  invalidateMachineCanon()
   const issues = await computeMachineIssues(supabase)
   await supabase.from('machine_name_issues').delete().gte('id', 0)
   if (issues.length > 0) {
     for (let i = 0; i < issues.length; i += 500) {
       const { error } = await supabase
         .from('machine_name_issues')
-        .insert(issues.slice(i, i + 500).map((x) => ({ ...x, scanned_at: new Date().toISOString() })))
+        .insert(
+          issues
+            .slice(i, i + 500)
+            .map((x) => ({ ...x, scanned_at: new Date().toISOString() })),
+        )
       if (error) console.error('[machine-name-issues] insert:', error.message)
     }
   }

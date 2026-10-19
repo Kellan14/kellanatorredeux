@@ -5,6 +5,8 @@ import { applyAndTrackKeyMapping } from '@/lib/apply-key-mappings'
 import { applySubLinks } from '@/lib/apply-sub-links'
 import { renamePlayerStats } from '@/lib/apply-name-mappings'
 import { rebuildTeamPicksCache } from '@/lib/top-picks-cache'
+import { syncMnpCanon } from '@/lib/manage-machine-canon'
+import { getMachineCanon, resolveWithIndex } from '@/lib/machines-canon'
 
 // Vercel Cron job to sync MNP data from GitHub.
 // Runs daily at 2am UTC (see vercel.json: "0 2 * * *").
@@ -131,6 +133,11 @@ export async function GET(request: Request) {
   let gamesCreated = 0
 
   try {
+    try {
+      const sync = await syncMnpCanon(supabase, 'cron/sync-data')
+      if (sync.review.length) console.warn('[cron/sync-data] MNP canon entries need review:', sync.review)
+    } catch (error) { console.error('[cron/sync-data] MNP canon sync failed:', error) }
+    const machineCanon = await getMachineCanon()
     // Clear existing data for the seasons being imported
     // NOTE: the delete of existing games/participation is deferred until AFTER
     // all match data has been fetched and built (just before insert), so the
@@ -310,7 +317,8 @@ export async function GET(request: Request) {
                 venue: matchData.venue?.name,
                 round_number: roundNumber,
                 game_number: gameNumber,
-                machine: game.machine,
+                machine: resolveWithIndex(machineCanon, game.machine) ?? game.machine,
+                machine_raw: game.machine,
                 player_1_key: game.player_1 || null,
                 player_1_name: game.player_1 ? playerMap.get(game.player_1) : null,
                 player_1_score: game.score_1 ?? null,

@@ -7,6 +7,7 @@ import { supabase, fetchAllRecords } from '@/lib/supabase';
 import { standardizeVenueName } from '@/lib/venue-mappings';
 import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists';
 import bundledVenues from '@/mnp-data-archive/venues.json';
+import { getMachineCanon, resolveWithIndex } from '@/lib/machines-canon';
 
 export async function GET(request: Request) {
   try {
@@ -24,6 +25,7 @@ export async function GET(request: Request) {
       venuesObj = bundledVenues
     }
 
+    const machineCanon = await getMachineCanon().catch(() => null)
     // Convert to array and sort by name
     const venueArray = Object.values(venuesObj)
       .filter((v: any) => v.name !== 'No Available Venue') // Filter out NAV
@@ -34,6 +36,9 @@ export async function GET(request: Request) {
       neighborhood: v.neighborhood || '',
       machines: await applyVenueMachineListOverrides(v.name, v.machines || [])
     })))
+    if (machineCanon) venues = venues.map(venue => ({ ...venue,
+      machines: Array.from(new Set(venue.machines.map((raw: string) => resolveWithIndex(machineCanon,raw) ?? raw)))
+    }))
     venues.sort((a: any, b: any) => a.name.localeCompare(b.name));
 
     // If season is specified, filter venues to only those with scores in that season

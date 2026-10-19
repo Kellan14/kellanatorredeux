@@ -1,5 +1,5 @@
 import { supabase, fetchAllRecords } from '@/lib/supabase'
-import { cache, TTL } from '@/lib/cache'
+import { cache } from '@/lib/cache'
 
 /**
  * The machine name canon.
@@ -59,7 +59,7 @@ export async function getMachineCanon(): Promise<MachineCanonIndex> {
     supabase
       .from('machine_canon')
       .select('key, name, display_override, source, active')
-      .order('key', { ascending: true })
+      .order('key', { ascending: true }),
   )
 
   const byKey = new Map<string, CanonMachine>()
@@ -80,15 +80,20 @@ export async function getMachineCanon(): Promise<MachineCanonIndex> {
   }
 
   // Explicit aliases only cover spellings the two rules above cannot reach.
-  const aliases = await fetchAllRecords<{ alias: string; canon_key: string }>(() =>
-    supabase.from('machine_aliases').select('alias, canon_key').order('alias', { ascending: true })
+  const aliases = await fetchAllRecords<{ alias: string; canon_key: string }>(
+    () =>
+      supabase
+        .from('machine_aliases')
+        .select('alias, canon_key')
+        .order('alias', { ascending: true }),
   )
   for (const a of aliases) {
-    if (byKey.has(a.canon_key)) lookup.set(normalizeMachineName(a.alias), a.canon_key)
+    if (byKey.has(a.canon_key))
+      lookup.set(normalizeMachineName(a.alias), a.canon_key)
   }
 
   const index = { byKey, lookup }
-  cache.set(CACHE_KEY, index, TTL.ONE_HOUR)
+  cache.set(CACHE_KEY, index, 60 * 1000)
   return index
 }
 
@@ -97,7 +102,9 @@ export async function getMachineCanon(): Promise<MachineCanonIndex> {
  * Returns null when the spelling is not in the canon — callers must decide
  * whether that is an error or an issue to report; it is never guessed at.
  */
-export async function resolveMachineKey(raw: string | null | undefined): Promise<string | null> {
+export async function resolveMachineKey(
+  raw: string | null | undefined,
+): Promise<string | null> {
   if (!raw) return null
   const { byKey, lookup } = await getMachineCanon()
   if (byKey.has(raw)) return raw
@@ -106,26 +113,36 @@ export async function resolveMachineKey(raw: string | null | undefined): Promise
 
 /** Long form for a canon key (display_override wins). Falls back to the input
  *  so an unknown key still renders as something rather than blank. */
-export async function getMachineDisplay(key: string | null | undefined): Promise<string> {
+export async function getMachineDisplay(
+  key: string | null | undefined,
+): Promise<string> {
   if (!key) return ''
   const { byKey } = await getMachineCanon()
   return byKey.get(key)?.displayName ?? key
 }
 
 /** Synchronous variants for code that already holds the index. */
-export function resolveWithIndex(index: MachineCanonIndex, raw: string | null | undefined): string | null {
+export function resolveWithIndex(
+  index: MachineCanonIndex,
+  raw: string | null | undefined,
+): string | null {
   if (!raw) return null
   if (index.byKey.has(raw)) return raw
   return index.lookup.get(normalizeMachineName(raw)) ?? null
 }
 
-export function displayWithIndex(index: MachineCanonIndex, key: string | null | undefined): string {
+export function displayWithIndex(
+  index: MachineCanonIndex,
+  key: string | null | undefined,
+): string {
   if (!key) return ''
   return index.byKey.get(key)?.displayName ?? key
 }
 
 /** All canon machines, long-form sorted — for pickers and dropdowns. */
-export async function listMachines(includeInactive = false): Promise<CanonMachine[]> {
+export async function listMachines(
+  includeInactive = false,
+): Promise<CanonMachine[]> {
   const { byKey } = await getMachineCanon()
   return Array.from(byKey.values())
     .filter((m) => includeInactive || m.active)

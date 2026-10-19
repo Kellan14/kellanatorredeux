@@ -1,12 +1,18 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { refreshMachineIssues, type MachineIssue } from '@/lib/machine-name-issues'
+import {
+  refreshMachineIssues,
+  type MachineIssue,
+} from '@/lib/machine-name-issues'
+import { fetchAllRecords } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 60
+export const maxDuration = 120
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 /**
  * Machine canon scanner. Mirrors /api/player-name-issues.
@@ -28,11 +34,16 @@ export async function GET(request: Request) {
       issues = await refreshMachineIssues(supabase)
       scannedAt = new Date().toISOString()
     } else {
-      const { data } = await supabase
-        .from('machine_name_issues')
-        .select('*')
-        .order('occurrences', { ascending: false })
-      issues = (data || []) as MachineIssue[]
+      const data = await fetchAllRecords<
+        MachineIssue & { scanned_at?: string }
+      >(() =>
+        supabase
+          .from('machine_name_issues')
+          .select('*')
+          .order('occurrences', { ascending: false })
+          .order('id'),
+      )
+      issues = data
       scannedAt = (data && data[0]?.scanned_at) || null
     }
 
@@ -51,6 +62,9 @@ export async function GET(request: Request) {
     })
   } catch (error) {
     console.error('[machine-name-issues] Error:', error)
-    return NextResponse.json({ error: 'Failed to scan machine names' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to scan machine names' },
+      { status: 500 },
+    )
   }
 }

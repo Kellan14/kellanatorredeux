@@ -30,7 +30,8 @@ function readStored(): CanonMachine[] | null {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw)
-    if (!Array.isArray(parsed?.machines) || parsed.machines.length === 0) return null
+    if (!Array.isArray(parsed?.machines) || parsed.machines.length === 0)
+      return null
     return parsed.machines as CanonMachine[]
   } catch {
     return null
@@ -40,7 +41,10 @@ function readStored(): CanonMachine[] | null {
 function writeStored(machines: CanonMachine[]): void {
   if (typeof window === 'undefined') return
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ machines, fetchedAt: Date.now() }))
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ machines, fetchedAt: Date.now() }),
+    )
   } catch {
     /* quota / private mode — the memory cache still works */
   }
@@ -49,7 +53,9 @@ function writeStored(machines: CanonMachine[]): void {
 function fetchCanon(): Promise<CanonMachine[]> {
   if (!inFlight) {
     inFlight = fetch('/api/machine-canon')
-      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+      .then((res) =>
+        res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`)),
+      )
       .then((data: { machines?: CanonMachine[] }) => {
         const machines = data.machines || []
         if (machines.length > 0) {
@@ -70,7 +76,9 @@ function fetchCanon(): Promise<CanonMachine[]> {
 }
 
 export function useMachineCanon() {
-  const [machines, setMachines] = useState<CanonMachine[]>(() => memoryCache || [])
+  const [machines, setMachines] = useState<CanonMachine[]>(
+    () => memoryCache || [],
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -83,26 +91,37 @@ export function useMachineCanon() {
       }
     }
 
-    fetchCanon().then((next) => {
-      if (!cancelled && next.length > 0) setMachines(next)
-    })
+    const refresh = () =>
+      fetchCanon().then((next) => {
+        if (!cancelled && next.length > 0) setMachines(next)
+      })
+    void refresh()
+    window.addEventListener('machine-canon-updated', refresh)
 
     return () => {
       cancelled = true
+      window.removeEventListener('machine-canon-updated', refresh)
     }
   }, [])
 
-  const byKey = useMemo(() => new Map(machines.map((m) => [m.key, m])), [machines])
+  const byKey = useMemo(
+    () => new Map(machines.map((m) => [m.key, m])),
+    [machines],
+  )
 
   /**
    * Long form for a canon key. Falls back to the key so a machine that is not
    * in the canon still renders as something — and stays visibly odd, rather
    * than being silently prettified into looking correct.
    */
-  const display = useMemo(() => (key: string | null | undefined): string => {
-    if (!key) return ''
-    return byKey.get(key)?.displayName ?? key
-  }, [byKey])
+  const display = useMemo(
+    () =>
+      (key: string | null | undefined): string => {
+        if (!key) return ''
+        return byKey.get(key)?.displayName ?? key
+      },
+    [byKey],
+  )
 
   return { machines, byKey, display, loading: machines.length === 0 }
 }
