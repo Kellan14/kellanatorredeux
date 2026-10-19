@@ -109,16 +109,88 @@
       "score": 371640,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "SRF",
+      "opp": "BAD",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 19647040,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "BAD",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 4618494,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "BAD",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 900310,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "SKP",
+      "match": "mnp-24-5-SKP-SRF",
+      "week": "5",
+      "round": 1,
+      "machine": "XFiles",
+      "division": 0,
+      "score": 5692200,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "SKP",
+      "match": "mnp-24-5-SKP-SRF",
+      "week": "5",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 195810,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "SKP",
+      "match": "mnp-24-5-SKP-SRF",
+      "week": "5",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 336710,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.583",
-      "num_matches": 3,
-      "ppm": "4.666",
+      "pops": "0.675",
+      "num_matches": 5,
+      "ppm": "5.400",
       "points": {
-        "won": 14,
-        "of": 24
+        "won": 27,
+        "of": 40
       }
     },
     "div-1": {

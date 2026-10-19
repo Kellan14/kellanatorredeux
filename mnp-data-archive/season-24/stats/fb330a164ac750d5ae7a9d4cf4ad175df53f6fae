@@ -109,16 +109,88 @@
       "score": 206445940,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 6808470,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 145230810,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 107242530,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 102383360,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 80405590,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 4,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 118390,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.591",
-      "num_matches": 3,
-      "ppm": "4.833",
+      "pops": "0.518",
+      "num_matches": 5,
+      "ppm": "4.200",
       "points": {
-        "won": 14.5,
-        "of": 24.5
+        "won": 21,
+        "of": 40.5
       }
     },
     "div-1": {

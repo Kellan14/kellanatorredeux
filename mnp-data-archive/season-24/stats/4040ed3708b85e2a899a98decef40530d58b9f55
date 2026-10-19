@@ -109,16 +109,88 @@
       "score": 10496890,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 82712260,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 3,
+      "machine": "TOM",
+      "division": 0,
+      "score": 284859820,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 29868440,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 2,
+      "machine": "TOM",
+      "division": 0,
+      "score": 366056670,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 28986430,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 4,
+      "machine": "TOM",
+      "division": 0,
+      "score": 580455480,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.549",
-      "num_matches": 3,
-      "ppm": "4.666",
+      "pops": "0.642",
+      "num_matches": 5,
+      "ppm": "5.400",
       "points": {
-        "won": 14,
-        "of": 25.5
+        "won": 27,
+        "of": 42
       }
     },
     "div-1": {

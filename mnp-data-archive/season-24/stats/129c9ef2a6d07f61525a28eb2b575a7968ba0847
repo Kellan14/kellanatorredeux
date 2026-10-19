@@ -109,16 +109,88 @@
       "score": 12651470,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "POW",
+      "opp": "NLT",
+      "match": "mnp-24-4-NLT-POW",
+      "week": "4",
+      "round": 1,
+      "machine": "DollyParton",
+      "division": 0,
+      "score": 51980,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "NLT",
+      "match": "mnp-24-4-NLT-POW",
+      "week": "4",
+      "round": 3,
+      "machine": "DollyParton",
+      "division": 0,
+      "score": 107620,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "NLT",
+      "match": "mnp-24-4-NLT-POW",
+      "week": "4",
+      "round": 4,
+      "machine": "JD",
+      "division": 0,
+      "score": 97933370,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "POW",
+      "opp": "PYC",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 255990,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "PYC",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 3,
+      "machine": "Frontier",
+      "division": 0,
+      "score": 496830,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "PYC",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 4,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 207850,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.666",
-      "num_matches": 3,
-      "ppm": "5.333",
+      "pops": "0.587",
+      "num_matches": 5,
+      "ppm": "4.700",
       "points": {
-        "won": 16,
-        "of": 24
+        "won": 23.5,
+        "of": 40
       }
     },
     "div-1": {

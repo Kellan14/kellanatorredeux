@@ -85,16 +85,88 @@
       "score": 422687640,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "ZOO",
+      "opp": "CPO",
+      "match": "mnp-24-4-ZOO-CPO",
+      "week": "4",
+      "round": 1,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 203740,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ZOO",
+      "opp": "CPO",
+      "match": "mnp-24-4-ZOO-CPO",
+      "week": "4",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 194860,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ZOO",
+      "opp": "CPO",
+      "match": "mnp-24-4-ZOO-CPO",
+      "week": "4",
+      "round": 3,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 3347840,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ZOO",
+      "opp": "DRK",
+      "match": "mnp-24-5-ZOO-DRK",
+      "week": "5",
+      "round": 1,
+      "machine": "PlayboyStern",
+      "division": 0,
+      "score": 13243350,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "DRK",
+      "match": "mnp-24-5-ZOO-DRK",
+      "week": "5",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 81029390,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "DRK",
+      "match": "mnp-24-5-ZOO-DRK",
+      "week": "5",
+      "round": 3,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 3995070,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.315",
-      "num_matches": 2,
-      "ppm": "3.000",
+      "pops": "0.402",
+      "num_matches": 4,
+      "ppm": "3.625",
       "points": {
-        "won": 6,
-        "of": 19
+        "won": 14.5,
+        "of": 36
       }
     },
     "div-1": {

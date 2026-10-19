@@ -109,16 +109,88 @@
       "score": 138900,
       "points": 2,
       "pops": "0.800"
+    },
+    {
+      "team": "BAD",
+      "opp": "SRF",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 2812100,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "BAD",
+      "opp": "SRF",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 338190,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "SRF",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 4,
+      "machine": "DUNE",
+      "division": 0,
+      "score": 2226780,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 2,
+      "machine": "EBD",
+      "division": 0,
+      "score": 2317590,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 40196170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 337280,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.612",
-      "num_matches": 3,
-      "ppm": "5.000",
+      "pops": "0.487",
+      "num_matches": 5,
+      "ppm": "4.000",
       "points": {
-        "won": 15,
-        "of": 24.5
+        "won": 20,
+        "of": 41
       }
     },
     "div-1": {

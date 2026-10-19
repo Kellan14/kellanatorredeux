@@ -109,16 +109,88 @@
       "score": 17856080,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 172210490,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 597173890,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 192016660,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 2,
+      "machine": "FT",
+      "division": 0,
+      "score": 45933690,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 36713430,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 12285060,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.551",
-      "num_matches": 3,
+      "pops": "0.548",
+      "num_matches": 5,
       "ppm": "4.500",
       "points": {
-        "won": 13.5,
-        "of": 24.5
+        "won": 22.5,
+        "of": 41
       }
     },
     "div-1": {

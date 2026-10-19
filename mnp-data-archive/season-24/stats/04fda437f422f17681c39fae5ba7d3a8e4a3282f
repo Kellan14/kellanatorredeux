@@ -109,16 +109,88 @@
       "score": 122958230,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "PKT",
+      "match": "mnp-24-4-PKT-DTP",
+      "week": "4",
+      "round": 1,
+      "machine": "NGG",
+      "division": 0,
+      "score": 3447820,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "PKT",
+      "match": "mnp-24-4-PKT-DTP",
+      "week": "4",
+      "round": 2,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 119440,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "PKT",
+      "match": "mnp-24-4-PKT-DTP",
+      "week": "4",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 181040,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 1,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 83140,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 2,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 414470,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 4,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 343110,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.469",
-      "num_matches": 3,
-      "ppm": "3.833",
+      "pops": "0.456",
+      "num_matches": 5,
+      "ppm": "3.700",
       "points": {
-        "won": 11.5,
-        "of": 24.5
+        "won": 18.5,
+        "of": 40.5
       }
     },
     "div-1": {

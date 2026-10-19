@@ -109,16 +109,88 @@
       "score": 37936690,
       "points": 0.5,
       "pops": "0.200"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-24-4-TBT-RTR",
+      "week": "4",
+      "round": 2,
+      "machine": "TZ",
+      "division": 0,
+      "score": 207621060,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-24-4-TBT-RTR",
+      "week": "4",
+      "round": 3,
+      "machine": "Genie",
+      "division": 0,
+      "score": 49180,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-24-4-TBT-RTR",
+      "week": "4",
+      "round": 4,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 2972250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "ETB",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 1975560,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TBT",
+      "opp": "ETB",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 10371420,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "ETB",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 4,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 214390,
+      "points": 2,
+      "pops": "0.800"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.387",
-      "num_matches": 3,
-      "ppm": "3.166",
+      "pops": "0.402",
+      "num_matches": 5,
+      "ppm": "3.300",
       "points": {
-        "won": 9.5,
-        "of": 24.5
+        "won": 16.5,
+        "of": 41
       }
     },
     "div-1": {

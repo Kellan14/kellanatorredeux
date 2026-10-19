@@ -109,16 +109,88 @@
       "score": 22857270,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "ETB",
+      "match": "mnp-24-4-DOG-ETB",
+      "week": "4",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 89603930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "ETB",
+      "match": "mnp-24-4-DOG-ETB",
+      "week": "4",
+      "round": 3,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 180113990,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "ETB",
+      "match": "mnp-24-4-DOG-ETB",
+      "week": "4",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 292507860,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "NQG",
+      "match": "mnp-24-5-DOG-NQG",
+      "week": "5",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 104154110,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "NQG",
+      "match": "mnp-24-5-DOG-NQG",
+      "week": "5",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 5101550,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "NQG",
+      "match": "mnp-24-5-DOG-NQG",
+      "week": "5",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 346154690,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.416",
-      "num_matches": 3,
-      "ppm": "3.333",
+      "pops": "0.451",
+      "num_matches": 5,
+      "ppm": "3.700",
       "points": {
-        "won": 10,
-        "of": 24
+        "won": 18.5,
+        "of": 41
       }
     },
     "div-1": {

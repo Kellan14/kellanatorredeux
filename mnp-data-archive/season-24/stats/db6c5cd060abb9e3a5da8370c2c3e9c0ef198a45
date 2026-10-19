@@ -73,16 +73,88 @@
       "score": 6767740,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "PKT",
+      "match": "mnp-24-4-PKT-DTP",
+      "week": "4",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 60690420,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "PKT",
+      "match": "mnp-24-4-PKT-DTP",
+      "week": "4",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 167725020,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "PKT",
+      "match": "mnp-24-4-PKT-DTP",
+      "week": "4",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 2499420,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 18301830,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 140469130,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 4,
+      "machine": "SS",
+      "division": 0,
+      "score": 1634920,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.636",
-      "num_matches": 2,
-      "ppm": "5.250",
+      "pops": "0.615",
+      "num_matches": 4,
+      "ppm": "5.000",
       "points": {
-        "won": 10.5,
-        "of": 16.5
+        "won": 20,
+        "of": 32.5
       }
     },
     "div-1": {

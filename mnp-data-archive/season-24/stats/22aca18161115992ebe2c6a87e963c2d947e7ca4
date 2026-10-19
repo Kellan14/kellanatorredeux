@@ -73,16 +73,88 @@
       "score": 12288230,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "RMS",
+      "opp": "SHK",
+      "match": "mnp-24-4-SHK-RMS",
+      "week": "4",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 16382460,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RMS",
+      "opp": "SHK",
+      "match": "mnp-24-4-SHK-RMS",
+      "week": "4",
+      "round": 3,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 68025630,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "SHK",
+      "match": "mnp-24-4-SHK-RMS",
+      "week": "4",
+      "round": 4,
+      "machine": "MarsTrek",
+      "division": 0,
+      "score": 398100,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "FBP",
+      "match": "mnp-24-5-FBP-RMS",
+      "week": "5",
+      "round": 1,
+      "machine": "MarsTrek",
+      "division": 0,
+      "score": 146700,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "FBP",
+      "match": "mnp-24-5-FBP-RMS",
+      "week": "5",
+      "round": 2,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 42202910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "FBP",
+      "match": "mnp-24-5-FBP-RMS",
+      "week": "5",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 145000000,
+      "points": 1,
+      "pops": "0.333"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.181",
-      "num_matches": 2,
-      "ppm": "1.500",
+      "pops": "0.333",
+      "num_matches": 4,
+      "ppm": "2.750",
       "points": {
-        "won": 3,
-        "of": 16.5
+        "won": 11,
+        "of": 33
       }
     },
     "div-1": {

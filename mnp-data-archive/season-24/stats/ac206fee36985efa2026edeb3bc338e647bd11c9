@@ -109,16 +109,88 @@
       "score": 14935480,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "DRK",
+      "match": "mnp-24-4-ADB-DRK",
+      "week": "4",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 44379900,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "ADB",
+      "opp": "DRK",
+      "match": "mnp-24-4-ADB-DRK",
+      "week": "4",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 151721040,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "DRK",
+      "match": "mnp-24-4-ADB-DRK",
+      "week": "4",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 189265850,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "SSD",
+      "match": "mnp-24-5-ADB-SSD",
+      "week": "5",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 28014300,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "ADB",
+      "opp": "SSD",
+      "match": "mnp-24-5-ADB-SSD",
+      "week": "5",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 703118430,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "SSD",
+      "match": "mnp-24-5-ADB-SSD",
+      "week": "5",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 147080,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.571",
-      "num_matches": 3,
-      "ppm": "4.666",
+      "pops": "0.604",
+      "num_matches": 5,
+      "ppm": "4.900",
       "points": {
-        "won": 14,
-        "of": 24.5
+        "won": 24.5,
+        "of": 40.5
       }
     },
     "div-1": {

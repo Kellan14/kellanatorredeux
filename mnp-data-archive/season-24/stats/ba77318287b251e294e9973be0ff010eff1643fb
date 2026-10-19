@@ -109,16 +109,88 @@
       "score": 3933462910,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "KBZ",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 907780690,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "KBZ",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 205491340,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "KBZ",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 4,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 110780,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TWC",
+      "opp": "KNR",
+      "match": "mnp-24-5-TWC-KNR",
+      "week": "5",
+      "round": 1,
+      "machine": "GOT",
+      "division": 0,
+      "score": 1300000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "KNR",
+      "match": "mnp-24-5-TWC-KNR",
+      "week": "5",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 245830000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "KNR",
+      "match": "mnp-24-5-TWC-KNR",
+      "week": "5",
+      "round": 3,
+      "machine": "GOT",
+      "division": 0,
+      "score": 1958500080,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.612",
-      "num_matches": 3,
-      "ppm": "5.000",
+      "pops": "0.743",
+      "num_matches": 5,
+      "ppm": "6.100",
       "points": {
-        "won": 15,
-        "of": 24.5
+        "won": 30.5,
+        "of": 41
       }
     },
     "div-1": {

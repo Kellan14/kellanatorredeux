@@ -109,16 +109,88 @@
       "score": 76166620,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "PBR",
+      "opp": "PYC",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 1,
+      "machine": "MH",
+      "division": 0,
+      "score": 30350,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "PYC",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 2,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 195600,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "PYC",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 3,
+      "machine": "WhoDunnit",
+      "division": 0,
+      "score": 447960360,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 2,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 198230,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 40776570,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 370220,
+      "points": 2,
+      "pops": "0.800"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.510",
-      "num_matches": 3,
-      "ppm": "4.166",
+      "pops": "0.518",
+      "num_matches": 5,
+      "ppm": "4.300",
       "points": {
-        "won": 12.5,
-        "of": 24.5
+        "won": 21.5,
+        "of": 41.5
       }
     },
     "div-1": {

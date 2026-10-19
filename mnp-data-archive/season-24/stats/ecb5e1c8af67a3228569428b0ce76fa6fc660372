@@ -109,16 +109,88 @@
       "score": 26865420,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 4327480,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 21067300,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 25116580,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 7921770,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 4809800,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 3,
+      "machine": "NGG",
+      "division": 0,
+      "score": 11411110,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.416",
-      "num_matches": 3,
-      "ppm": "3.333",
+      "pops": "0.512",
+      "num_matches": 5,
+      "ppm": "4.200",
       "points": {
-        "won": 10,
-        "of": 24
+        "won": 21,
+        "of": 41
       }
     },
     "div-1": {

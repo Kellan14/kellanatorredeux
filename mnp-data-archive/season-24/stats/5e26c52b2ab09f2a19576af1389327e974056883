@@ -73,16 +73,88 @@
       "score": 149010,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "DOG",
+      "match": "mnp-24-4-DOG-ETB",
+      "week": "4",
+      "round": 1,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 224770,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "DOG",
+      "match": "mnp-24-4-DOG-ETB",
+      "week": "4",
+      "round": 2,
+      "machine": "VEN",
+      "division": 0,
+      "score": 853647360,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "DOG",
+      "match": "mnp-24-4-DOG-ETB",
+      "week": "4",
+      "round": 3,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 91910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "TBT",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 200054300,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "TBT",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 2,
+      "machine": "VEN",
+      "division": 0,
+      "score": 189000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "TBT",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 3,
+      "machine": "VEN",
+      "division": 0,
+      "score": 196531100,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.393",
-      "num_matches": 2,
-      "ppm": "3.250",
+      "pops": "0.522",
+      "num_matches": 4,
+      "ppm": "4.375",
       "points": {
-        "won": 6.5,
-        "of": 16.5
+        "won": 17.5,
+        "of": 33.5
       }
     },
     "div-1": {

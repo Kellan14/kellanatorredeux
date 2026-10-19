@@ -109,16 +109,88 @@
       "score": 4632440,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "TRL",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 2,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 40796890,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "TRL",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 3,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 184191080,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "TRL",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 226857740,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "CPO",
+      "match": "mnp-24-5-DIH-CPO",
+      "week": "5",
+      "round": 2,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 37887720,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "CPO",
+      "match": "mnp-24-5-DIH-CPO",
+      "week": "5",
+      "round": 3,
+      "machine": "CF",
+      "division": 0,
+      "score": 89130,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "CPO",
+      "match": "mnp-24-5-DIH-CPO",
+      "week": "5",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 100296620,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.714",
-      "num_matches": 3,
-      "ppm": "5.833",
+      "pops": "0.578",
+      "num_matches": 5,
+      "ppm": "4.800",
       "points": {
-        "won": 17.5,
-        "of": 24.5
+        "won": 24,
+        "of": 41.5
       }
     },
     "div-1": {

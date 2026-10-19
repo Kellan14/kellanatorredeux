@@ -73,16 +73,88 @@
       "score": 3128220,
       "points": 0.5,
       "pops": "0.200"
+    },
+    {
+      "team": "DIH",
+      "opp": "TRL",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 15145190,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "TRL",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 2,
+      "machine": "TOM",
+      "division": 0,
+      "score": 179332250,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DIH",
+      "opp": "TRL",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 7139040,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "CPO",
+      "match": "mnp-24-5-DIH-CPO",
+      "week": "5",
+      "round": 2,
+      "machine": "CF",
+      "division": 0,
+      "score": 32400,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DIH",
+      "opp": "CPO",
+      "match": "mnp-24-5-DIH-CPO",
+      "week": "5",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 24326190,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DIH",
+      "opp": "CPO",
+      "match": "mnp-24-5-DIH-CPO",
+      "week": "5",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 8523060,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.303",
-      "num_matches": 2,
-      "ppm": "2.500",
+      "pops": "0.242",
+      "num_matches": 4,
+      "ppm": "2.000",
       "points": {
-        "won": 5,
-        "of": 16.5
+        "won": 8,
+        "of": 33
       }
     },
     "div-1": {

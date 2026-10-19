@@ -109,16 +109,88 @@
       "score": 1735940,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "PYC",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 2,
+      "machine": "WhoDunnit",
+      "division": 0,
+      "score": 243743740,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "PYC",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 38703240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "PYC",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 128489980,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 1,
+      "machine": "WhoDunnit",
+      "division": 0,
+      "score": 1108582370,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1445455330,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 141841790,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.591",
-      "num_matches": 3,
-      "ppm": "4.833",
+      "pops": "0.573",
+      "num_matches": 5,
+      "ppm": "4.700",
       "points": {
-        "won": 14.5,
-        "of": 24.5
+        "won": 23.5,
+        "of": 41
       }
     },
     "div-1": {

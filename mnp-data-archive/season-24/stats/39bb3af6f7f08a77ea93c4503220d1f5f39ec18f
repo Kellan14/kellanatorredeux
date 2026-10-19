@@ -109,16 +109,88 @@
       "score": 10019960,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "SKP",
+      "match": "mnp-24-4-SKP-NMC",
+      "week": "4",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 58517130,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "SKP",
+      "match": "mnp-24-4-SKP-NMC",
+      "week": "4",
+      "round": 3,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 64000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "SKP",
+      "match": "mnp-24-4-SKP-NMC",
+      "week": "4",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 34453860,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SCN",
+      "match": "mnp-24-5-SCN-NMC",
+      "week": "5",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 20917530,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SCN",
+      "match": "mnp-24-5-SCN-NMC",
+      "week": "5",
+      "round": 3,
+      "machine": "TOM",
+      "division": 0,
+      "score": 86200120,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "SCN",
+      "match": "mnp-24-5-SCN-NMC",
+      "week": "5",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 55271060,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.200",
-      "num_matches": 3,
-      "ppm": "1.666",
+      "pops": "0.268",
+      "num_matches": 5,
+      "ppm": "2.200",
       "points": {
-        "won": 5,
-        "of": 25
+        "won": 11,
+        "of": 41
       }
     },
     "div-1": {

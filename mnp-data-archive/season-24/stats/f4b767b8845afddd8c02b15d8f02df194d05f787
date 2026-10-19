@@ -109,16 +109,88 @@
       "score": 28396500,
       "points": 0.5,
       "pops": "0.200"
+    },
+    {
+      "team": "CRA",
+      "opp": "KNR",
+      "match": "mnp-24-4-CRA-KNR",
+      "week": "4",
+      "round": 2,
+      "machine": "RFM",
+      "division": 0,
+      "score": 10034610,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "KNR",
+      "match": "mnp-24-4-CRA-KNR",
+      "week": "4",
+      "round": 3,
+      "machine": "RFM",
+      "division": 0,
+      "score": 54066990,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "KNR",
+      "match": "mnp-24-4-CRA-KNR",
+      "week": "4",
+      "round": 4,
+      "machine": "Ali",
+      "division": 0,
+      "score": 352000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CRA",
+      "opp": "SSS",
+      "match": "mnp-24-5-CRA-SSS",
+      "week": "5",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 754450,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "CRA",
+      "opp": "SSS",
+      "match": "mnp-24-5-CRA-SSS",
+      "week": "5",
+      "round": 2,
+      "machine": "BOPP",
+      "division": 0,
+      "score": 122650,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "SSS",
+      "match": "mnp-24-5-CRA-SSS",
+      "week": "5",
+      "round": 4,
+      "machine": "TargetAlpha",
+      "division": 0,
+      "score": 48750,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.458",
-      "num_matches": 3,
-      "ppm": "3.666",
+      "pops": "0.456",
+      "num_matches": 5,
+      "ppm": "3.700",
       "points": {
-        "won": 11,
-        "of": 24
+        "won": 18.5,
+        "of": 40.5
       }
     },
     "div-1": {

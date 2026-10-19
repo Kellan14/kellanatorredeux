@@ -73,16 +73,88 @@
       "score": 231060,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "PBR",
+      "opp": "PYC",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 1,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 2901440,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "PYC",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 3,
+      "machine": "MH",
+      "division": 0,
+      "score": 325630,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "PYC",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 542060,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 1,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 223670,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 3,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 965220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "BAD",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 84600,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.437",
-      "num_matches": 2,
-      "ppm": "3.500",
+      "pops": "0.468",
+      "num_matches": 4,
+      "ppm": "3.750",
       "points": {
-        "won": 7,
-        "of": 16
+        "won": 15,
+        "of": 32
       }
     },
     "div-1": {

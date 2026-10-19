@@ -109,16 +109,88 @@
       "score": 9391970,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "POW",
+      "opp": "NLT",
+      "match": "mnp-24-4-NLT-POW",
+      "week": "4",
+      "round": 1,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 134767000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "NLT",
+      "match": "mnp-24-4-NLT-POW",
+      "week": "4",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 112498440,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "NLT",
+      "match": "mnp-24-4-NLT-POW",
+      "week": "4",
+      "round": 3,
+      "machine": "DP",
+      "division": 0,
+      "score": 14795730,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "PYC",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 29768050,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "PYC",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 2,
+      "machine": "DP",
+      "division": 0,
+      "score": 208823380,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "PYC",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 11295660,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.591",
-      "num_matches": 3,
-      "ppm": "4.833",
+      "pops": "0.536",
+      "num_matches": 5,
+      "ppm": "4.400",
       "points": {
-        "won": 14.5,
-        "of": 24.5
+        "won": 22,
+        "of": 41
       }
     },
     "div-1": {

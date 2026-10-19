@@ -109,16 +109,88 @@
       "score": 77594290,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "CPO",
+      "match": "mnp-24-4-ZOO-CPO",
+      "week": "4",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 13069560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "CPO",
+      "match": "mnp-24-4-ZOO-CPO",
+      "week": "4",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 69642000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ZOO",
+      "opp": "CPO",
+      "match": "mnp-24-4-ZOO-CPO",
+      "week": "4",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 12691600,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "DRK",
+      "match": "mnp-24-5-ZOO-DRK",
+      "week": "5",
+      "round": 1,
+      "machine": "Tron",
+      "division": 0,
+      "score": 9536590,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ZOO",
+      "opp": "DRK",
+      "match": "mnp-24-5-ZOO-DRK",
+      "week": "5",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 39989100,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "DRK",
+      "match": "mnp-24-5-ZOO-DRK",
+      "week": "5",
+      "round": 4,
+      "machine": "PlayboyStern",
+      "division": 0,
+      "score": 5953130,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.163",
-      "num_matches": 3,
-      "ppm": "1.333",
+      "pops": "0.195",
+      "num_matches": 5,
+      "ppm": "1.600",
       "points": {
-        "won": 4,
-        "of": 24.5
+        "won": 8,
+        "of": 41
       }
     },
     "div-1": {

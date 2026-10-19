@@ -109,16 +109,88 @@
       "score": 82216720,
       "points": 2,
       "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 1,
+      "machine": "MH",
+      "division": 0,
+      "score": 170500,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 2,
+      "machine": "EBD",
+      "division": 0,
+      "score": 1394000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 3,
+      "machine": "MH",
+      "division": 0,
+      "score": 30430,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 1,
+      "machine": "Skateball",
+      "division": 0,
+      "score": 94210,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 143975490,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 3,
+      "machine": "Frontier",
+      "division": 0,
+      "score": 219210,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.580",
-      "num_matches": 3,
-      "ppm": "4.833",
+      "pops": "0.535",
+      "num_matches": 5,
+      "ppm": "4.500",
       "points": {
-        "won": 14.5,
-        "of": 25
+        "won": 22.5,
+        "of": 42
       }
     },
     "div-1": {

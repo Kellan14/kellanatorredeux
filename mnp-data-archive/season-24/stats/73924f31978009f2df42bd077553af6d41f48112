@@ -37,16 +37,88 @@
       "score": 4099250,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "JMF",
+      "opp": "NQG",
+      "match": "mnp-24-4-JMF-NQG",
+      "week": "4",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 25499380,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "NQG",
+      "match": "mnp-24-4-JMF-NQG",
+      "week": "4",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 263965500,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "NQG",
+      "match": "mnp-24-4-JMF-NQG",
+      "week": "4",
+      "round": 4,
+      "machine": "HW",
+      "division": 0,
+      "score": 11246220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "DTP",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 5581370,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "JMF",
+      "opp": "DTP",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 11000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "JMF",
+      "opp": "DTP",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 71877910,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.117",
-      "num_matches": 1,
-      "ppm": "1.000",
+      "pops": "0.265",
+      "num_matches": 3,
+      "ppm": "2.166",
       "points": {
-        "won": 1,
-        "of": 8.5
+        "won": 6.5,
+        "of": 24.5
       }
     },
     "div-1": {

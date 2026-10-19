@@ -109,16 +109,88 @@
       "score": 377410070,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SWL",
+      "match": "mnp-24-4-SCN-SWL",
+      "week": "4",
+      "round": 1,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 34936150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SWL",
+      "match": "mnp-24-4-SCN-SWL",
+      "week": "4",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 61777200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SWL",
+      "match": "mnp-24-4-SCN-SWL",
+      "week": "4",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 194123680,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "SCN",
+      "opp": "NMC",
+      "match": "mnp-24-5-SCN-NMC",
+      "week": "5",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 227542930,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "NMC",
+      "match": "mnp-24-5-SCN-NMC",
+      "week": "5",
+      "round": 2,
+      "machine": "T2",
+      "division": 0,
+      "score": 12181310,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SCN",
+      "opp": "NMC",
+      "match": "mnp-24-5-SCN-NMC",
+      "week": "5",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 179741560,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.448",
-      "num_matches": 3,
-      "ppm": "3.666",
+      "pops": "0.469",
+      "num_matches": 5,
+      "ppm": "3.800",
       "points": {
-        "won": 11,
-        "of": 24.5
+        "won": 19,
+        "of": 40.5
       }
     },
     "div-1": {

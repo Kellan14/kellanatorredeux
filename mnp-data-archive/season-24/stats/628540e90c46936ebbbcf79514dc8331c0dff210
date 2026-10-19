@@ -109,16 +109,88 @@
       "score": 4806280,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "NQG",
+      "match": "mnp-24-4-JMF-NQG",
+      "week": "4",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 38485780,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "NQG",
+      "match": "mnp-24-4-JMF-NQG",
+      "week": "4",
+      "round": 3,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 13066190,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "NQG",
+      "match": "mnp-24-4-JMF-NQG",
+      "week": "4",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 189200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "DTP",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 111190560,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "JMF",
+      "opp": "DTP",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 205930330,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "JMF",
+      "opp": "DTP",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 260898340,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.145",
-      "num_matches": 3,
-      "ppm": "1.166",
+      "pops": "0.358",
+      "num_matches": 5,
+      "ppm": "2.900",
       "points": {
-        "won": 3.5,
-        "of": 24
+        "won": 14.5,
+        "of": 40.5
       }
     },
     "div-1": {

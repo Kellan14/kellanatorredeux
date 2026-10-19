@@ -109,16 +109,88 @@
       "score": 38898170,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "POW",
+      "match": "mnp-24-4-NLT-POW",
+      "week": "4",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 29055690,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NLT",
+      "opp": "POW",
+      "match": "mnp-24-4-NLT-POW",
+      "week": "4",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 222953550,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NLT",
+      "opp": "POW",
+      "match": "mnp-24-4-NLT-POW",
+      "week": "4",
+      "round": 4,
+      "machine": "HP",
+      "division": 0,
+      "score": 144816680,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NLT",
+      "opp": "SWL",
+      "match": "mnp-24-5-NLT-SWL",
+      "week": "5",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 47656650,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SWL",
+      "match": "mnp-24-5-NLT-SWL",
+      "week": "5",
+      "round": 2,
+      "machine": "LOTR",
+      "division": 0,
+      "score": 26425890,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SWL",
+      "match": "mnp-24-5-NLT-SWL",
+      "week": "5",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 704693890,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.708",
-      "num_matches": 3,
-      "ppm": "5.666",
+      "pops": "0.675",
+      "num_matches": 5,
+      "ppm": "5.400",
       "points": {
-        "won": 17,
-        "of": 24
+        "won": 27,
+        "of": 40
       }
     },
     "div-1": {

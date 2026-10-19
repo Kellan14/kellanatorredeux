@@ -109,16 +109,88 @@
       "score": 6785520,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 1,
+      "machine": "TZ",
+      "division": 0,
+      "score": 79646260,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 2,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 41632300,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "DIH",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 4,
+      "machine": "Indy500",
+      "division": 0,
+      "score": 33090370,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 1,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 121949740,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 3,
+      "machine": "Corvette",
+      "division": 0,
+      "score": 370281920,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TRL",
+      "opp": "SHK",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 162392220,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.571",
-      "num_matches": 3,
-      "ppm": "4.666",
+      "pops": "0.641",
+      "num_matches": 5,
+      "ppm": "5.200",
       "points": {
-        "won": 14,
-        "of": 24.5
+        "won": 26,
+        "of": 40.5
       }
     },
     "div-1": {

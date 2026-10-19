@@ -109,16 +109,88 @@
       "score": 13345630,
       "points": 2,
       "pops": "0.666"
+    },
+    {
+      "team": "SWL",
+      "opp": "SCN",
+      "match": "mnp-24-4-SCN-SWL",
+      "week": "4",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 37524840,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "SCN",
+      "match": "mnp-24-4-SCN-SWL",
+      "week": "4",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 722313100,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SWL",
+      "opp": "SCN",
+      "match": "mnp-24-4-SCN-SWL",
+      "week": "4",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 74811280,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "NLT",
+      "match": "mnp-24-5-NLT-SWL",
+      "week": "5",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 18397150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "NLT",
+      "match": "mnp-24-5-NLT-SWL",
+      "week": "5",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 970550210,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SWL",
+      "opp": "NLT",
+      "match": "mnp-24-5-NLT-SWL",
+      "week": "5",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 31813870,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.580",
-      "num_matches": 3,
-      "ppm": "4.833",
+      "pops": "0.566",
+      "num_matches": 5,
+      "ppm": "4.700",
       "points": {
-        "won": 14.5,
-        "of": 25
+        "won": 23.5,
+        "of": 41.5
       }
     },
     "div-1": {

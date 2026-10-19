@@ -109,16 +109,88 @@
       "score": 19530990,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "ADB",
+      "opp": "DRK",
+      "match": "mnp-24-4-ADB-DRK",
+      "week": "4",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 90752660,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "DRK",
+      "match": "mnp-24-4-ADB-DRK",
+      "week": "4",
+      "round": 2,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 109965190,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "DRK",
+      "match": "mnp-24-4-ADB-DRK",
+      "week": "4",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 22617520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "SSD",
+      "match": "mnp-24-5-ADB-SSD",
+      "week": "5",
+      "round": 1,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 1636323552,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "SSD",
+      "match": "mnp-24-5-ADB-SSD",
+      "week": "5",
+      "round": 3,
+      "machine": "WCS",
+      "division": 0,
+      "score": 966954700,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "SSD",
+      "match": "mnp-24-5-ADB-SSD",
+      "week": "5",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 815352790,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.448",
-      "num_matches": 3,
-      "ppm": "3.666",
+      "pops": "0.604",
+      "num_matches": 5,
+      "ppm": "4.900",
       "points": {
-        "won": 11,
-        "of": 24.5
+        "won": 24.5,
+        "of": 40.5
       }
     },
     "div-1": {

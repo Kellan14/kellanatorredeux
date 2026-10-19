@@ -109,16 +109,88 @@
       "score": 232700,
       "points": 2,
       "pops": "0.800"
+    },
+    {
+      "team": "TWC",
+      "opp": "KBZ",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 1,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 30942610,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TWC",
+      "opp": "KBZ",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 2,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 90600,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TWC",
+      "opp": "KBZ",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 4,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 364910,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "KNR",
+      "match": "mnp-24-5-TWC-KNR",
+      "week": "5",
+      "round": 2,
+      "machine": "Ali",
+      "division": 0,
+      "score": 143690,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TWC",
+      "opp": "KNR",
+      "match": "mnp-24-5-TWC-KNR",
+      "week": "5",
+      "round": 3,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 367420,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "KNR",
+      "match": "mnp-24-5-TWC-KNR",
+      "week": "5",
+      "round": 4,
+      "machine": "Ali",
+      "division": 0,
+      "score": 152020,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.375",
-      "num_matches": 3,
-      "ppm": "3.000",
+      "pops": "0.469",
+      "num_matches": 5,
+      "ppm": "3.800",
       "points": {
-        "won": 9,
-        "of": 24
+        "won": 19,
+        "of": 40.5
       }
     },
     "div-1": {

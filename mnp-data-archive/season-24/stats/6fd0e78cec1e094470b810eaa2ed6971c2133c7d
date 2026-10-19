@@ -37,16 +37,88 @@
       "score": 396137020,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "FBP",
+      "opp": "SSD",
+      "match": "mnp-24-4-FBP-SSD",
+      "week": "4",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 330155670,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SSD",
+      "match": "mnp-24-4-FBP-SSD",
+      "week": "4",
+      "round": 2,
+      "machine": "WCS",
+      "division": 0,
+      "score": 248000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "FBP",
+      "opp": "SSD",
+      "match": "mnp-24-4-FBP-SSD",
+      "week": "4",
+      "round": 3,
+      "machine": "WCS",
+      "division": 0,
+      "score": 610000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 633138370,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 3,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 1991950,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 197413130,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.250",
-      "num_matches": 1,
-      "ppm": "2.000",
+      "pops": "0.346",
+      "num_matches": 3,
+      "ppm": "2.833",
       "points": {
-        "won": 2,
-        "of": 8
+        "won": 8.5,
+        "of": 24.5
       }
     },
     "div-1": {

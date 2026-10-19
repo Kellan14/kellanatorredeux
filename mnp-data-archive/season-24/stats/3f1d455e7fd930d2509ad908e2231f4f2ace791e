@@ -73,16 +73,88 @@
       "score": 11923100,
       "points": 3,
       "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "PKT",
+      "match": "mnp-24-4-PKT-DTP",
+      "week": "4",
+      "round": 2,
+      "machine": "SpaceInvaders",
+      "division": 0,
+      "score": 111800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "PKT",
+      "match": "mnp-24-4-PKT-DTP",
+      "week": "4",
+      "round": 3,
+      "machine": "FT",
+      "division": 0,
+      "score": 6500000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "PKT",
+      "match": "mnp-24-4-PKT-DTP",
+      "week": "4",
+      "round": 4,
+      "machine": "SpaceInvaders",
+      "division": 0,
+      "score": 150000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 2,
+      "machine": "FT",
+      "division": 0,
+      "score": 1114990,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 16000000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "JMF",
+      "match": "mnp-24-5-JMF-DTP",
+      "week": "5",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 20863650,
+      "points": 0.5,
+      "pops": "0.200"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.636",
-      "num_matches": 2,
-      "ppm": "5.250",
+      "pops": "0.492",
+      "num_matches": 4,
+      "ppm": "4.125",
       "points": {
-        "won": 10.5,
-        "of": 16.5
+        "won": 16.5,
+        "of": 33.5
       }
     },
     "div-1": {

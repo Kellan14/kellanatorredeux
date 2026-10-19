@@ -109,16 +109,88 @@
       "score": 314245230,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-24-4-TBT-RTR",
+      "week": "4",
+      "round": 1,
+      "machine": "DrWho",
+      "division": 0,
+      "score": 185656820,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-24-4-TBT-RTR",
+      "week": "4",
+      "round": 3,
+      "machine": "GOT",
+      "division": 0,
+      "score": 106378430,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-24-4-TBT-RTR",
+      "week": "4",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 208659590,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "ETB",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 2,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 78278800,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TBT",
+      "opp": "ETB",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 3,
+      "machine": "Mandalorian",
+      "division": 0,
+      "score": 41108000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "ETB",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 298605490,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.645",
-      "num_matches": 3,
-      "ppm": "5.166",
+      "pops": "0.703",
+      "num_matches": 5,
+      "ppm": "5.700",
       "points": {
-        "won": 15.5,
-        "of": 24
+        "won": 28.5,
+        "of": 40.5
       }
     },
     "div-1": {

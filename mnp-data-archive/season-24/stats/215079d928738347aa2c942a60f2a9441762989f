@@ -109,16 +109,88 @@
       "score": 5293900,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TWC",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 1,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 14303990,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TWC",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 3,
+      "machine": "FH",
+      "division": 0,
+      "score": 3325890,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TWC",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 5000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TTT",
+      "match": "mnp-24-5-TTT-KBZ",
+      "week": "5",
+      "round": 1,
+      "machine": "FH",
+      "division": 0,
+      "score": 1330370,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TTT",
+      "match": "mnp-24-5-TTT-KBZ",
+      "week": "5",
+      "round": 3,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 393760,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TTT",
+      "match": "mnp-24-5-TTT-KBZ",
+      "week": "5",
+      "round": 4,
+      "machine": "FH",
+      "division": 0,
+      "score": 1408770,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.244",
-      "num_matches": 3,
-      "ppm": "2.000",
+      "pops": "0.259",
+      "num_matches": 5,
+      "ppm": "2.100",
       "points": {
-        "won": 6,
-        "of": 24.5
+        "won": 10.5,
+        "of": 40.5
       }
     },
     "div-1": {

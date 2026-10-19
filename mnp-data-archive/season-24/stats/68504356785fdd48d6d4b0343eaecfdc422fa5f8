@@ -109,16 +109,88 @@
       "score": 230470,
       "points": 2,
       "pops": "0.666"
+    },
+    {
+      "team": "SHK",
+      "opp": "RMS",
+      "match": "mnp-24-4-SHK-RMS",
+      "week": "4",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 86159350,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SHK",
+      "opp": "RMS",
+      "match": "mnp-24-4-SHK-RMS",
+      "week": "4",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 2223970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "RMS",
+      "match": "mnp-24-4-SHK-RMS",
+      "week": "4",
+      "round": 4,
+      "machine": "MarsTrek",
+      "division": 0,
+      "score": 219800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "TRL",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 1,
+      "machine": "TZ",
+      "division": 0,
+      "score": 236655870,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "TRL",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 2,
+      "machine": "FT",
+      "division": 0,
+      "score": 42683230,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SHK",
+      "opp": "TRL",
+      "match": "mnp-24-5-SHK-TRL",
+      "week": "5",
+      "round": 3,
+      "machine": "TZ",
+      "division": 0,
+      "score": 99617280,
+      "points": 1,
+      "pops": "0.333"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.200",
-      "num_matches": 3,
-      "ppm": "1.666",
+      "pops": "0.253",
+      "num_matches": 5,
+      "ppm": "2.100",
       "points": {
-        "won": 5,
-        "of": 25
+        "won": 10.5,
+        "of": 41.5
       }
     },
     "div-1": {

@@ -109,16 +109,88 @@
       "score": 31582710,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "KNR",
+      "match": "mnp-24-4-CRA-KNR",
+      "week": "4",
+      "round": 1,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 10598640,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "KNR",
+      "match": "mnp-24-4-CRA-KNR",
+      "week": "4",
+      "round": 2,
+      "machine": "Indy",
+      "division": 0,
+      "score": 39494870,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "KNR",
+      "match": "mnp-24-4-CRA-KNR",
+      "week": "4",
+      "round": 4,
+      "machine": "Robocop",
+      "division": 0,
+      "score": 647500,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CRA",
+      "opp": "SSS",
+      "match": "mnp-24-5-CRA-SSS",
+      "week": "5",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 158887270,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "SSS",
+      "match": "mnp-24-5-CRA-SSS",
+      "week": "5",
+      "round": 2,
+      "machine": "SC",
+      "division": 0,
+      "score": 414340,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "SSS",
+      "match": "mnp-24-5-CRA-SSS",
+      "week": "5",
+      "round": 4,
+      "machine": "BOPP",
+      "division": 0,
+      "score": 51410,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.693",
-      "num_matches": 3,
-      "ppm": "5.666",
+      "pops": "0.666",
+      "num_matches": 5,
+      "ppm": "5.400",
       "points": {
-        "won": 17,
-        "of": 24.5
+        "won": 27,
+        "of": 40.5
       }
     },
     "div-1": {

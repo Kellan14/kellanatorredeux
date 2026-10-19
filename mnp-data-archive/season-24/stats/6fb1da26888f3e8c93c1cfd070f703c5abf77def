@@ -1,0 +1,107 @@
+{
+  "key": "6fb1da26888f3e8c93c1cfd070f703c5abf77def",
+  "name": "Shawn Mandel",
+  "history": [
+    {
+      "team": "NQG",
+      "opp": "JMF",
+      "match": "mnp-24-4-JMF-NQG",
+      "week": "4",
+      "round": 1,
+      "machine": "CA",
+      "division": 0,
+      "score": 528180,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "JMF",
+      "match": "mnp-24-4-JMF-NQG",
+      "week": "4",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 41067360,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "JMF",
+      "match": "mnp-24-4-JMF-NQG",
+      "week": "4",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 41512550,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NQG",
+      "opp": "DOG",
+      "match": "mnp-24-5-DOG-NQG",
+      "week": "5",
+      "round": 1,
+      "machine": "CA",
+      "division": 0,
+      "score": 285030,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NQG",
+      "opp": "DOG",
+      "match": "mnp-24-5-DOG-NQG",
+      "week": "5",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 10894890,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "DOG",
+      "match": "mnp-24-5-DOG-NQG",
+      "week": "5",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 3328287840,
+      "points": 3,
+      "pops": "1.000"
+    }
+  ],
+  "divisions": {
+    "all": {
+      "pops": "0.696",
+      "num_matches": 2,
+      "ppm": "5.750",
+      "points": {
+        "won": 11.5,
+        "of": 16.5
+      }
+    },
+    "div-1": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    },
+    "div-2": {
+      "pops": "0.000",
+      "num_matches": 0,
+      "ppm": "0.000",
+      "points": {
+        "won": 0,
+        "of": 0
+      }
+    }
+  }
+}

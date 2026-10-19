@@ -73,16 +73,88 @@
       "score": 15020550,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "SRF",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 5259840,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "SRF",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 3,
+      "machine": "XFiles",
+      "division": 0,
+      "score": 2664860,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "SRF",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 535110,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 1,
+      "machine": "WhoDunnit",
+      "division": 0,
+      "score": 245847090,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1824043470,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 296000,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.363",
-      "num_matches": 2,
-      "ppm": "3.000",
+      "pops": "0.338",
+      "num_matches": 4,
+      "ppm": "2.750",
       "points": {
-        "won": 6,
-        "of": 16.5
+        "won": 11,
+        "of": 32.5
       }
     },
     "div-1": {

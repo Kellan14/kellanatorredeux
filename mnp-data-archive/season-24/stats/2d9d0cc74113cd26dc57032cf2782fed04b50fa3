@@ -73,16 +73,88 @@
       "score": 76465850,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "BAD",
+      "opp": "SRF",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 70125590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "SRF",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 135419390,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "SRF",
+      "match": "mnp-24-4-BAD-SRF",
+      "week": "4",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 261990,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 150097340,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 3,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 1967650,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "PBR",
+      "match": "mnp-24-5-BAD-PBR",
+      "week": "5",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 180730,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.545",
-      "num_matches": 2,
-      "ppm": "4.500",
+      "pops": "0.492",
+      "num_matches": 4,
+      "ppm": "4.125",
       "points": {
-        "won": 9,
-        "of": 16.5
+        "won": 16.5,
+        "of": 33.5
       }
     },
     "div-1": {

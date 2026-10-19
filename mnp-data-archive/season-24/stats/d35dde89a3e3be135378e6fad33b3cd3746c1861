@@ -109,16 +109,88 @@
       "score": 11660340,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "DIH",
+      "opp": "TRL",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 4166200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "TRL",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 3,
+      "machine": "MB",
+      "division": 0,
+      "score": 3673180,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "TRL",
+      "match": "mnp-24-4-DIH-TRL",
+      "week": "4",
+      "round": 4,
+      "machine": "Indy500",
+      "division": 0,
+      "score": 40531470,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DIH",
+      "opp": "CPO",
+      "match": "mnp-24-5-DIH-CPO",
+      "week": "5",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 418702660,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DIH",
+      "opp": "CPO",
+      "match": "mnp-24-5-DIH-CPO",
+      "week": "5",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 110060,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DIH",
+      "opp": "CPO",
+      "match": "mnp-24-5-DIH-CPO",
+      "week": "5",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 120060,
+      "points": 0.5,
+      "pops": "0.200"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.300",
-      "num_matches": 3,
+      "pops": "0.301",
+      "num_matches": 5,
       "ppm": "2.500",
       "points": {
-        "won": 7.5,
-        "of": 25
+        "won": 12.5,
+        "of": 41.5
       }
     },
     "div-1": {

@@ -109,16 +109,88 @@
       "score": 139767010,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-24-4-TBT-RTR",
+      "week": "4",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 145252890,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-24-4-TBT-RTR",
+      "week": "4",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 38116270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "RTR",
+      "match": "mnp-24-4-TBT-RTR",
+      "week": "4",
+      "round": 4,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 8448580,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "ETB",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 1,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 170430,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TBT",
+      "opp": "ETB",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 2,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 137330,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TBT",
+      "opp": "ETB",
+      "match": "mnp-24-5-TBT-ETB",
+      "week": "5",
+      "round": 4,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 67420,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.700",
-      "num_matches": 3,
-      "ppm": "5.833",
+      "pops": "0.500",
+      "num_matches": 5,
+      "ppm": "4.100",
       "points": {
-        "won": 17.5,
-        "of": 25
+        "won": 20.5,
+        "of": 41
       }
     },
     "div-1": {

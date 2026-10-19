@@ -109,16 +109,88 @@
       "score": 45981190,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TWC",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 484058970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TWC",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 108069130,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TWC",
+      "match": "mnp-24-4-TWC-KBZ",
+      "week": "4",
+      "round": 4,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 100520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TTT",
+      "match": "mnp-24-5-TTT-KBZ",
+      "week": "5",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 49280590,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TTT",
+      "match": "mnp-24-5-TTT-KBZ",
+      "week": "5",
+      "round": 2,
+      "machine": "MB",
+      "division": 0,
+      "score": 2963020,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "TTT",
+      "match": "mnp-24-5-TTT-KBZ",
+      "week": "5",
+      "round": 3,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 15666590,
+      "points": 1,
+      "pops": "0.333"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.320",
-      "num_matches": 3,
-      "ppm": "2.666",
+      "pops": "0.265",
+      "num_matches": 5,
+      "ppm": "2.200",
       "points": {
-        "won": 8,
-        "of": 25
+        "won": 11,
+        "of": 41.5
       }
     },
     "div-1": {

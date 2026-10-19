@@ -109,16 +109,88 @@
       "score": 38000000,
       "points": 0.5,
       "pops": "0.200"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 21490560,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 2,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 107710,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 66920,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 1,
+      "machine": "Skateball",
+      "division": 0,
+      "score": 424870,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 3,
+      "machine": "Skateball",
+      "division": 0,
+      "score": 419060,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 4,
+      "machine": "EJ",
+      "division": 0,
+      "score": 65472270,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.600",
-      "num_matches": 3,
-      "ppm": "5.000",
+      "pops": "0.536",
+      "num_matches": 5,
+      "ppm": "4.400",
       "points": {
-        "won": 15,
-        "of": 25
+        "won": 22,
+        "of": 41
       }
     },
     "div-1": {

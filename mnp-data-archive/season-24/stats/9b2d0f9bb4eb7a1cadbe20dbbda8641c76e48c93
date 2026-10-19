@@ -109,16 +109,88 @@
       "score": 83150,
       "points": 0.5,
       "pops": "0.200"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 11251660,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 3,
+      "machine": "TAF",
+      "division": 0,
+      "score": 30818370,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "PBR",
+      "match": "mnp-24-4-PYC-PBR",
+      "week": "4",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 1000090,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 58893230,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 2,
+      "machine": "DP",
+      "division": 0,
+      "score": 34073480,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "POW",
+      "match": "mnp-24-5-PYC-POW",
+      "week": "5",
+      "round": 4,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 276310,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.520",
-      "num_matches": 3,
-      "ppm": "4.166",
+      "pops": "0.475",
+      "num_matches": 5,
+      "ppm": "3.800",
       "points": {
-        "won": 12.5,
-        "of": 24
+        "won": 19,
+        "of": 40
       }
     },
     "div-1": {

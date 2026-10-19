@@ -261,8 +261,8 @@
       "SternTrek",
       "TMTMTE",
       "SONIC",
-      "Guardians",
-      "FALLOUT"
+      "FALLOUT",
+      "DP"
     ],
     "address": "916 S. 3rd st, Renton"
   },
@@ -532,7 +532,8 @@
       "GLizard",
       "Metallica",
       "BKISS",
-      "TagTeam"
+      "TagTeam",
+      "NIGHTMOVES"
     ],
     "address": "615 NW Bright St, Seattle, WA 98107"
   },
@@ -691,7 +692,6 @@
       "METREM",
       "LZ",
       "AFM",
-      "XFiles",
       "RFM",
       "POKEMON",
       "SternTrek",
@@ -720,8 +720,7 @@
       "Ghost",
       "Indy500",
       "FALLOUT",
-      "STTNG",
-      "NIGHTMOVES"
+      "STTNG"
     ],
     "address": "4300 Leary Way NW, Seattle, WA 98107"
   },
@@ -751,13 +750,13 @@
       "BKSoR",
       "T2",
       "StrangerThings",
-      "BigGuns",
       "UXMEN",
       "SWFOTE",
       "ED",
       "AFM",
       "TOM",
-      "TMTMTE"
+      "TMTMTE",
+      "TW"
     ],
     "address": "1420 10th Ave, Seattle, WA 98122"
   },
