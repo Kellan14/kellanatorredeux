@@ -36,6 +36,8 @@ export async function GET(request: Request) {
             suggested_canonical: i.suggested_canonical,
             issue_type: i.issue_type,
             player_key: i.player_key,
+            keys: i.keys || null,
+            canonical_key: i.canonical_key || null,
             scanned_at: scannedAt,
           }))
         )

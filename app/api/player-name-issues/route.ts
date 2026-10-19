@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { computeNameIssues, type NameIssue } from '@/lib/player-name-issues'
+import { fetchAllRecords } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -25,13 +26,14 @@ export async function GET(request: Request) {
 
   try {
     if (!refresh) {
-      const { data, error } = await supabase
+      let data: any[]
+      try {
+        data = await fetchAllRecords<any>(() => supabase
         .from('player_name_issues')
-        .select('normalized_name, variants, suggested_canonical, issue_type, player_key, scanned_at')
+        .select('normalized_name, variants, suggested_canonical, issue_type, player_key, keys, canonical_key, scanned_at')
         .order('issue_type', { ascending: true })
-        .order('normalized_name', { ascending: true })
-
-      if (error) {
+        .order('normalized_name', { ascending: true }))
+      } catch {
         // Table may not exist yet (migration not run). Fail soft.
         return NextResponse.json({ issues: [], count: 0, actionableCount: 0, scannedAt: null, needsMigration: true })
       }
@@ -53,6 +55,8 @@ export async function GET(request: Request) {
             suggested_canonical: i.suggested_canonical,
             issue_type: i.issue_type,
             player_key: i.player_key,
+            keys: i.keys || null,
+            canonical_key: i.canonical_key || null,
             scanned_at: scannedAt,
           }))
         )

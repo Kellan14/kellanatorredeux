@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
+import { unstable_cache, revalidateTag } from 'next/cache'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 120
 
 // Helper to get canonical player name (removes " (sub)" suffix)
 function getCanonicalPlayerName(name: string | null): string | null {
@@ -56,20 +58,28 @@ async function getAllPlayers(): Promise<string[]> {
     return Array.from(uniquePlayers).sort()
   } catch (error) {
     console.error('Error getting all players:', error)
-    return []
+    throw error
   }
 }
 
 // GET - Fetch all available players from the database
 // Note: Mappings are stored client-side in localStorage
-export async function GET() {
+const cachedPlayers = unstable_cache(getAllPlayers, ['standardize-player-directory-v1'], {
+  revalidate: 3600,
+  tags: ['standardize-player-directory'],
+})
+
+export async function GET(request: Request) {
   try {
-    const allPlayers = await getAllPlayers()
+    if (new URL(request.url).searchParams.get('refresh') === 'true') {
+      revalidateTag('standardize-player-directory', { expire: 0 })
+    }
+    const allPlayers = await cachedPlayers()
 
     return NextResponse.json({
       allPlayers,
       count: allPlayers.length,
-      note: 'Player mappings are stored in localStorage. Use the UI to manage them.'
+      note: 'Player directory is cached for one hour; name mappings live in the database.'
     })
   } catch (error) {
     console.error('Error in GET /api/player-mappings:', error)

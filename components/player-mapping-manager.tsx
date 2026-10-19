@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   AlertDialog,
@@ -63,14 +63,18 @@ export function PlayerMappingManager({
   const [editingAlias, setEditingAlias] = useState<string | null>(null)
   const [editValue, setEditValue] = useState('')
   const [loading, setLoading] = useState(false)
+  const [loadingPlayers, setLoadingPlayers] = useState(false)
+  const loaded = useRef(false)
   const [saving, setSaving] = useState(false)
   const [searchFilter, setSearchFilter] = useState('')
+  const [visiblePlayers, setVisiblePlayers] = useState(100)
   const [updating, setUpdating] = useState(false)
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [pendingUpdate, setPendingUpdate] = useState<Record<string, string> | null>(null)
   const [updateDescription, setUpdateDescription] = useState('')
   const [issues, setIssues] = useState<NameIssue[]>([])
   const [loadingIssues, setLoadingIssues] = useState(false)
+  const [scannedAt, setScannedAt] = useState<string | null>(null)
   const [keyMappings, setKeyMappings] = useState<KeyMapping[]>([])
   const [mergingKeys, setMergingKeys] = useState(false)
   // Selection + target-picker for merging name-mapping groups together.
@@ -79,12 +83,16 @@ export function PlayerMappingManager({
 
   // Load mappings from localStorage and players from API when dialog opens
   useEffect(() => {
-    if (open) {
-      loadData()
+    if (open && !loaded.current) {
+      void loadData()
+      void loadIssues()
+      void loadKeyMappings()
+      void loadPlayers()
     }
   }, [open])
 
   const loadData = async () => {
+    loaded.current = true
     setLoading(true)
     setSelectedCanonicals([])
     try {
@@ -99,29 +107,38 @@ export function PlayerMappingManager({
         setMappings(mappingsObj)
       }
 
-      // Load players from API
-      const response = await fetch('/api/player-mappings')
-      const data = await response.json()
-      setAllPlayers(data.allPlayers || [])
     } catch (error) {
+      loaded.current = false
       console.error('Error loading player data:', error)
     } finally {
       setLoading(false)
     }
 
-    // Run a fresh scan for name inconsistencies (case/spelling + split-key).
-    loadIssues()
-    loadKeyMappings()
+  }
+
+  const loadPlayers = async (refresh = false) => {
+    setLoadingPlayers(true)
+    try {
+      const response = await fetch(`/api/player-mappings${refresh ? '?refresh=true' : ''}`)
+      if (!response.ok) throw new Error('Player list unavailable')
+      const data = await response.json()
+      setAllPlayers(data.allPlayers || [])
+    } catch (error) {
+      console.error('Error loading player list:', error)
+    } finally {
+      setLoadingPlayers(false)
+    }
   }
 
   // Fetch the current name issues. refresh=true recomputes server-side.
-  const loadIssues = async () => {
+  const loadIssues = async (refresh = false) => {
     setLoadingIssues(true)
     try {
-      const res = await fetch('/api/player-name-issues?refresh=true')
+      const res = await fetch(`/api/player-name-issues${refresh ? '?refresh=true' : ''}`)
       if (res.ok) {
         const data = await res.json()
         setIssues(data.issues || [])
+        setScannedAt(data.scannedAt || null)
       }
     } catch (error) {
       console.error('Error scanning name issues:', error)
@@ -171,7 +188,7 @@ export function PlayerMappingManager({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mappings: merges.map((m) => ({ from_key: m.from_key, to_key: m.to_key })) }),
       })
-      await Promise.all([loadIssues(), loadKeyMappings()])
+      await Promise.all([loadIssues(true), loadKeyMappings()])
     } catch (error) {
       console.error('Error applying key merges:', error)
       alert('Failed to apply key merges. Check console.')
@@ -198,7 +215,7 @@ export function PlayerMappingManager({
           body: JSON.stringify({ from_key }),
         })
       }
-      await Promise.all([loadIssues(), loadKeyMappings()])
+      await Promise.all([loadIssues(true), loadKeyMappings()])
     } catch (error) {
       console.error('Error undoing merge:', error)
       alert('Failed to undo merge. Check console.')
@@ -366,9 +383,9 @@ export function PlayerMappingManager({
   }
 
   // Filter players based on search
-  const filteredPlayers = allPlayers.filter(player =>
+  const filteredPlayers = useMemo(() => allPlayers.filter(player =>
     player.toLowerCase().includes(searchFilter.toLowerCase())
-  )
+  ), [allPlayers, searchFilter])
 
   // Group mappings by canonical name for display
   const groupedMappings: Record<string, string[]> = {}
@@ -432,7 +449,7 @@ export function PlayerMappingManager({
 
     setSaving(true)
     await saveMappings(newMappings)
-    await loadIssues() // rescan → resolved groups drop out
+    await loadIssues(true) // Only the affected review section needs rescanning.
     setSaving(false)
   }
 
@@ -462,7 +479,7 @@ export function PlayerMappingManager({
       if (response.ok) {
         alert(`Success! Updated ${data.totalUpdated} records in the database.`)
         // Reload data to reflect changes
-        loadData()
+        await Promise.all([loadPlayers(true), loadIssues(true)])
       } else {
         alert(`Error: ${data.error || 'Failed to update database'}`)
       }
@@ -506,11 +523,15 @@ export function PlayerMappingManager({
           </div>
         ) : (
           <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs text-muted-foreground">{scannedAt ? `Saved review: ${new Date(scannedAt).toLocaleString()}` : 'Saved review results'} — rescan only when needed.</span>
+              <Button variant="outline" size="sm" disabled={loadingIssues} onClick={() => void loadIssues(true)}>Rescan name issues</Button>
+            </div>
             {/* Name-issue scan results */}
             {loadingIssues ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground border rounded-lg p-4">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Scanning for name inconsistencies…
+                Loading name review…
               </div>
             ) : (
               <>
@@ -653,17 +674,21 @@ export function PlayerMappingManager({
               </h3>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Search and select players to combine</label>
+                <div className="flex items-center justify-between gap-2">
+                  <label className="text-sm font-medium">Search and select players to combine</label>
+                  <Button variant="ghost" size="sm" disabled={loadingPlayers} onClick={() => void loadPlayers(true)}>Refresh players</Button>
+                </div>
                 <Input
                   placeholder="Filter players..."
                   value={searchFilter}
-                  onChange={(e) => setSearchFilter(e.target.value)}
+                  onChange={(e) => { setSearchFilter(e.target.value); setVisiblePlayers(100) }}
                 />
               </div>
 
               <ScrollArea className="h-[200px] border rounded-lg p-2">
                 <div className="space-y-1">
-                  {filteredPlayers.map((player) => {
+                  {loadingPlayers && <p className="p-2 text-sm text-muted-foreground">Loading players…</p>}
+                  {filteredPlayers.slice(0, visiblePlayers).map((player) => {
                     const isSelected = selectedPlayers.includes(player)
                     const isMapped = mappings[player]
                     return (
@@ -688,6 +713,7 @@ export function PlayerMappingManager({
                       </div>
                     )
                   })}
+                  {filteredPlayers.length > visiblePlayers && <Button variant="ghost" size="sm" onClick={() => setVisiblePlayers(count => count + 100)}>Show more ({filteredPlayers.length - visiblePlayers} remaining)</Button>}
                 </div>
               </ScrollArea>
 
@@ -761,7 +787,7 @@ export function PlayerMappingManager({
                       Clear
                     </Button>
                   )}
-                  <Button variant="outline" size="sm" onClick={loadData} disabled={loading}>
+                  <Button variant="outline" size="sm" onClick={() => void loadData()} disabled={loading}>
                     Reload
                   </Button>
                   {Object.keys(mappings).length > 0 && (
