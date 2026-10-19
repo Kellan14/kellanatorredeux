@@ -29,7 +29,28 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { getMachineImagePath } from '@/lib/machine-images'
 import { useMachineCanon } from '@/hooks/use-machine-canon'
+import { defaultDashboardRange, changeSeasonRange, type SeasonRange } from '@/lib/dashboard-seasons'
 import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts'
+
+function DashboardSeasonSelectors({ label, range, seasons, onChange, onReset }: {
+  label: string
+  range: SeasonRange
+  seasons: number[]
+  onChange: (edge: 'start' | 'end', value: number) => void
+  onReset?: () => void
+}) {
+  return <div className="flex items-center gap-2">
+    {(['start', 'end'] as const).map(edge => <label key={edge} className="flex items-center gap-2 text-xs text-muted-foreground">
+      {edge === 'start' ? 'From' : 'To'}
+      <select aria-label={`${label} ${edge === 'start' ? 'from' : 'to'} season`}
+        value={range[edge]} onChange={event => onChange(edge, Number(event.target.value))}
+        className="w-16 px-2 py-1 text-sm border rounded bg-background text-foreground">
+        {seasons.map(season => <option key={season} value={season}>{season}</option>)}
+      </select>
+    </label>)}
+    {onReset && <button className="text-xs underline text-muted-foreground" onClick={onReset}>Use dashboard range</button>}
+  </div>
+}
 
 function HomePageContent() {
   // Long form is the sitewide display name; the canon lives in the DB.
@@ -43,6 +64,32 @@ function HomePageContent() {
   const [opponent, setOpponent] = useState<string>('Loading...')
   const [matchDate, setMatchDate] = useState<string>('')
   const [matchSeason, setMatchSeason] = useState<number | null>(null)
+  const [masterRange, setMasterRange] = useState<SeasonRange | null>(null)
+  const [sectionRanges, setSectionRanges] = useState<Record<string, SeasonRange>>({})
+  const dashboardRange = masterRange || defaultDashboardRange(matchSeason || 23)
+  const availableSeasons = Array.from({ length: Math.max(1, (matchSeason || 23) - 1) }, (_, i) => i + 2)
+  const topPicksRange = sectionRanges.picks || dashboardRange
+  const topPicksSeasonStart = topPicksRange.start
+  const topPicksSeasonEnd = topPicksRange.end
+  const leastUniqueRange = sectionRanges.unique || dashboardRange
+  const leastUniqueSeasonStart = leastUniqueRange.start
+  const leastUniqueSeasonEnd = leastUniqueRange.end
+  const performanceRange = sectionRanges.performance || dashboardRange
+  const playerRange = sectionRanges.player || dashboardRange
+  const playerSeasonStart = playerRange.start
+  const playerSeasonEnd = playerRange.end
+  const updateSectionRange = (section: string, edge: 'start' | 'end', value: number) => {
+    setSectionRanges(previous => ({ ...previous, [section]: changeSeasonRange(previous[section] || dashboardRange, edge, value) }))
+  }
+  const updateMasterRange = (range: SeasonRange) => {
+    setMasterRange(range)
+    setSectionRanges({})
+  }
+  const resetSectionRange = (section: string) => setSectionRanges(previous => {
+    const next = { ...previous }
+    delete next[section]
+    return next
+  })
   const [venue, setVenue] = useState<string>('')
   const [matchState, setMatchState] = useState<string>('')
   const [loading, setLoading] = useState(true)
@@ -63,14 +110,12 @@ function HomePageContent() {
 
   // Opponent top picks section
   const [opponentTopPicks, setOpponentTopPicks] = useState<any[]>([])
-  const [topPicksSeasonStart, setTopPicksSeasonStart] = useState<number>(0)
-  const [topPicksSeasonEnd, setTopPicksSeasonEnd] = useState<number>(0)
   const [topPicksRangeReadyFor, setTopPicksRangeReadyFor] = useState<string | null>(null)
   const [loadingTopPicks, setLoadingTopPicks] = useState(false)
   // Several inputs arrive independently on first load (match, venue machines,
   // team seasons, roster). Ignore an older response if a newer request has started.
   const topPicksRequestId = useRef(0)
-  const [availableSeasons, setAvailableSeasons] = useState<number[]>([])
+  const performanceRequestId = useRef(0)
   const [topPicksSortColumn, setTopPicksSortColumn] = useState<string>('timesPicked')
   const [topPicksSortDirection, setTopPicksSortDirection] = useState<'asc' | 'desc'>('desc')
 
@@ -99,8 +144,6 @@ function HomePageContent() {
   // Least unique players section
   const [leastUniquePlayers, setLeastUniquePlayers] = useState<any>(null)
   const [loadingLeastUnique, setLoadingLeastUnique] = useState(false)
-  const [leastUniqueSeasonStart, setLeastUniqueSeasonStart] = useState<number>(20)
-  const [leastUniqueSeasonEnd, setLeastUniqueSeasonEnd] = useState<number>(23)
   const [leastUniqueCollapsed, setLeastUniqueCollapsed] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('leastUniqueCollapsed')
@@ -186,47 +229,17 @@ function HomePageContent() {
     localStorage.setItem('achievementsCollapsed', String(achievementsCollapsed))
   }, [achievementsCollapsed])
 
-  // Reset swaps and fetch available seasons when opponent or current season changes.
+  // Reset swaps and invalidate the previous opponent's results.
   useEffect(() => {
     setExcludedPlayers(new Set())
     setIncludedPlayers(new Set())
     if (!opponent || opponent === 'Loading...' || opponent === 'Schedule unavailable' || matchSeason === null) return
 
-    let cancelled = false
-    setTopPicksRangeReadyFor(null)
     topPicksRequestId.current += 1
     setOpponentTopPicks([])
     setLoadingTopPicks(false)
-    fetch(`/api/team-seasons?team=${encodeURIComponent(opponent)}`)
-      .then(res => {
-        if (!res.ok) throw new Error(`Team seasons request failed: ${res.status}`)
-        return res.json()
-      })
-      .then(data => {
-        if (cancelled) return
-        const playedSeasons = (Array.isArray(data.seasons) ? data.seasons : [])
-          .filter((season: unknown): season is number =>
-            typeof season === 'number' && Number.isInteger(season) && season <= matchSeason)
-        const firstSeason = playedSeasons.length > 0 ? Math.min(...playedSeasons) : matchSeason
-        const seasons = Array.from({ length: matchSeason - firstSeason + 1 }, (_, i) => firstSeason + i)
-        setAvailableSeasons(seasons)
-        setLeastUniqueSeasonStart(firstSeason)
-        setLeastUniqueSeasonEnd(playedSeasons.length > 0 ? Math.max(...playedSeasons) : matchSeason)
-        setTopPicksSeasonStart(Math.max(matchSeason - 2, firstSeason))
-        setTopPicksSeasonEnd(matchSeason)
-        setTopPicksRangeReadyFor(opponent)
-      })
-      .catch(err => {
-        if (cancelled) return
-        console.error('Error fetching team seasons:', err)
-        setAvailableSeasons([matchSeason])
-        setLeastUniqueSeasonStart(matchSeason)
-        setLeastUniqueSeasonEnd(matchSeason)
-        setTopPicksSeasonStart(matchSeason)
-        setTopPicksSeasonEnd(matchSeason)
-        setTopPicksRangeReadyFor(opponent)
-      })
-    return () => { cancelled = true }
+    // New teams simply return the history available inside the selected range.
+    setTopPicksRangeReadyFor(opponent)
   }, [opponent, matchSeason])
 
   // Achievements section
@@ -239,20 +252,6 @@ function HomePageContent() {
   const [machinesAtVenue, setMachinesAtVenue] = useState<string[]>([])
   const [playerVenueSpecific, setPlayerVenueSpecific] = useState(true)
   const [machineCounts, setMachineCounts] = useState<Record<string, { atVenue: number; allVenues: number }>>({})
-  const [playerSeasonStart, setPlayerSeasonStart] = useState<number>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('playerSeasonRange')
-      if (saved) return JSON.parse(saved).start
-    }
-    return 22
-  })
-  const [playerSeasonEnd, setPlayerSeasonEnd] = useState<number>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('playerSeasonRange')
-      if (saved) return JSON.parse(saved).end
-    }
-    return 23
-  })
 
   // Machine selection dialog
   const [selectedMachine, setSelectedMachine] = useState<string | null>(null)
@@ -291,13 +290,18 @@ function HomePageContent() {
     if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venueMachines.length > 0) {
       fetchOpponentPlayers()
     }
-  }, [opponent, showSubs, venueMachines, matchSeason])
+  }, [opponent, showSubs, venueMachines, matchSeason, dashboardRange.start, dashboardRange.end])
 
   useEffect(() => {
-    if (playerName && venue && venue !== 'Loading...' && venueMachines.length > 0) {
+    if (matchSeason && playerName && venue && venue !== 'Loading...' && venueMachines.length > 0) {
       fetchPlayerPerformance()
     }
-  }, [playerName, venue, ownPerformanceVenueSpecific, venueMachines])
+  }, [playerName, venue, ownPerformanceVenueSpecific, venueMachines, matchSeason, performanceRange.start, performanceRange.end])
+
+  useEffect(() => {
+    if (playerDialogOpen && selectedPlayer) handlePlayerClick(selectedPlayer)
+    if (machineDialogOpen && selectedMachine) handleMachineClick(selectedMachine)
+  }, [playerSeasonStart, playerSeasonEnd])
 
   useEffect(() => {
     if (playerName) {
@@ -532,10 +536,10 @@ function HomePageContent() {
 
   // Fetch least unique players when opponent, venue, or season filters change
   useEffect(() => {
-    if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venue && venue !== 'Loading...' && venueMachines.length > 0) {
+    if (matchSeason && opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venue && venue !== 'Loading...' && venueMachines.length > 0) {
       fetchLeastUniquePlayers()
     }
-  }, [opponent, venue, leastUniqueSeasonStart, leastUniqueSeasonEnd, venueMachines, excludedPlayers, includedPlayers])
+  }, [opponent, venue, leastUniqueSeasonStart, leastUniqueSeasonEnd, venueMachines, excludedPlayers, includedPlayers, matchSeason])
 
   const fetchLeastUniquePlayers = async () => {
     setLoadingLeastUnique(true)
@@ -829,7 +833,6 @@ function HomePageContent() {
       // Roster season belongs to the opponent/next match, not to the signed-in
       // player's latest personal appearance (which may be a season behind).
       const currentSeason = matchSeason || playerStats.currentSeason || 23
-      const historicalSeason = currentSeason - 1
 
       // Fetch roster independently so it doesn't depend on machine-advantages
       const playersResponse = await fetch(`/api/team-roster?team=${encodeURIComponent(opponent)}&season=${currentSeason}&showSubs=${showSubs}`)
@@ -844,8 +847,8 @@ function HomePageContent() {
         `/api/machine-advantages?` +
         `venue=${encodeURIComponent(venue)}` +
         `&opponent=${encodeURIComponent(opponent)}` +
-        `&seasonStart=20` +
-        `&seasonEnd=${historicalSeason}` +
+        `&seasonStart=${dashboardRange.start}` +
+        `&seasonEnd=${dashboardRange.end}` +
         `&teamVenueSpecific=true` +
         `&twcVenueSpecific=false` +
         `&machines=${encodeURIComponent(venueMachines.join(','))}`
@@ -862,23 +865,25 @@ function HomePageContent() {
   }
 
   const fetchPlayerPerformance = async () => {
+    const requestId = ++performanceRequestId.current
+    setPlayerPerformance(null)
     console.log('Fetching player performance for:', playerName, 'at venue:', venue, 'venue-specific:', ownPerformanceVenueSpecific)
     try {
-      // Use previous season for historical data (current season likely has no games yet)
-      const historicalSeason = (playerStats.currentSeason || 23) - 1
       const url = `/api/player-analysis?` +
         `player=${encodeURIComponent(playerName)}` +
         `&venue=${encodeURIComponent(venue)}` +
-        `&seasonStart=20` +
-        `&seasonEnd=${historicalSeason}` +
+        `&seasonStart=${performanceRange.start}` +
+        `&seasonEnd=${performanceRange.end}` +
         `&allVenues=${!ownPerformanceVenueSpecific}` +
         `&machines=${encodeURIComponent(venueMachines.join(','))}`
 
       console.log('Performance API URL:', url)
       const response = await fetch(url)
+      if (requestId !== performanceRequestId.current) return
 
       if (response.ok) {
         const data = await response.json()
+        if (requestId !== performanceRequestId.current) return
         console.log('Player performance data:', data)
 
         // If venue-specific returned no data, try all venues
@@ -894,6 +899,7 @@ function HomePageContent() {
         setPlayerPerformance(null)
       }
     } catch (error) {
+      if (requestId !== performanceRequestId.current) return
       console.error('Error fetching player performance:', error)
       setPlayerPerformance(null)
     }
@@ -1170,6 +1176,14 @@ function HomePageContent() {
   return (
     <div className="container py-8 px-4 md:px-6">
       {/* Match Header */}
+      <div className="mb-6 rounded-lg border p-3 flex flex-wrap items-center gap-3">
+        <span className="text-sm font-medium">Dashboard seasons</span>
+        <DashboardSeasonSelectors label="Dashboard" range={dashboardRange} seasons={availableSeasons}
+          onChange={(edge, value) => updateMasterRange(changeSeasonRange(dashboardRange, edge, value))} />
+        <Button size="sm" variant="outline" disabled={!matchSeason}
+          onClick={() => updateMasterRange(defaultDashboardRange(matchSeason!))}>Reset all seasons</Button>
+        <span className="text-xs text-muted-foreground">Sections follow this range until changed individually. Changing or resetting this range resets every section.</span>
+      </div>
       <div className="text-center mb-8">
         <h1 className="text-base font-medium mb-4 text-muted-foreground">{matchLabel}</h1>
         <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4">
@@ -1333,7 +1347,7 @@ function HomePageContent() {
                     <select
                       aria-label="From season"
                       value={topPicksSeasonStart}
-                      onChange={(e) => setTopPicksSeasonStart(parseInt(e.target.value))}
+                      onChange={(e) => updateSectionRange('picks', 'start', Number(e.target.value))}
                       className="w-16 px-2 py-1 text-sm border rounded bg-background"
                     >
                       {availableSeasons.map(s => (
@@ -1344,7 +1358,7 @@ function HomePageContent() {
                     <select
                       aria-label="To season"
                       value={topPicksSeasonEnd}
-                      onChange={(e) => setTopPicksSeasonEnd(parseInt(e.target.value))}
+                      onChange={(e) => updateSectionRange('picks', 'end', Number(e.target.value))}
                       className="w-16 px-2 py-1 text-sm border rounded bg-background"
                     >
                       {availableSeasons.map(s => (
@@ -1352,6 +1366,7 @@ function HomePageContent() {
                       ))}
                     </select>
                   </> : <span className="text-xs text-muted-foreground">Loading seasons...</span>}
+                  {sectionRanges.picks && <button className="text-xs underline" onClick={() => resetSectionRange('picks')}>Use dashboard range</button>}
                   <Button
                     size="sm"
                     variant="outline"
@@ -1499,7 +1514,8 @@ function HomePageContent() {
                       <label className="text-xs text-muted-foreground whitespace-nowrap">Seasons: from</label>
                       <select
                         value={leastUniqueSeasonStart}
-                        onChange={(e) => setLeastUniqueSeasonStart(parseInt(e.target.value))}
+                        aria-label="Least unique players from season"
+                        onChange={(e) => updateSectionRange('unique', 'start', Number(e.target.value))}
                         className="w-16 px-2 py-1 text-sm border rounded bg-background"
                       >
                         {availableSeasons.map(s => (
@@ -1509,7 +1525,8 @@ function HomePageContent() {
                       <span className="text-xs text-muted-foreground">to</span>
                       <select
                         value={leastUniqueSeasonEnd}
-                        onChange={(e) => setLeastUniqueSeasonEnd(parseInt(e.target.value))}
+                        aria-label="Least unique players to season"
+                        onChange={(e) => updateSectionRange('unique', 'end', Number(e.target.value))}
                         className="w-16 px-2 py-1 text-sm border rounded bg-background"
                       >
                         {availableSeasons.map(s => (
@@ -1517,6 +1534,7 @@ function HomePageContent() {
                         ))}
                       </select>
                     </div>
+                    {sectionRanges.unique && <button className="text-xs underline" onClick={() => resetSectionRange('unique')}>Use dashboard range</button>}
                     {(excludedPlayers.size > 0 || includedPlayers.size > 0) && (
                       <Button
                         variant="outline"
@@ -1737,6 +1755,11 @@ function HomePageContent() {
               </CardHeader>
               {!performanceCollapsed && (
               <CardContent>
+                <div className="mb-3">
+                  <DashboardSeasonSelectors label="Your performance" range={performanceRange} seasons={availableSeasons}
+                    onReset={sectionRanges.performance ? () => resetSectionRange('performance') : undefined}
+                    onChange={(edge, value) => updateSectionRange('performance', edge, value)} />
+                </div>
                 {playerPerformance && playerPerformance.machinePerformance && playerPerformance.machinePerformance.length > 0 ? (
                 <>
                   <div className="flex items-center space-x-2 mb-3">
@@ -1908,31 +1931,23 @@ function HomePageContent() {
               {/* Season Range */}
               <div className="flex items-center gap-2 mb-2">
                 <label className="text-xs text-muted-foreground whitespace-nowrap">Seasons:</label>
-                <input
-                  type="number"
-                  min={2}
-                  max={playerSeasonEnd}
+                <select
+                  aria-label="Player details from season"
                   value={playerSeasonStart}
                   onChange={(e) => {
-                    const val = parseInt(e.target.value) || 2
-                    setPlayerSeasonStart(val)
-                    localStorage.setItem('playerSeasonRange', JSON.stringify({ start: val, end: playerSeasonEnd }))
+                    updateSectionRange('player', 'start', Number(e.target.value))
                   }}
                   className="w-16 px-2 py-1 text-sm border rounded bg-background"
-                />
+                >{availableSeasons.map(s => <option key={s} value={s}>{s}</option>)}</select>
                 <span className="text-xs text-muted-foreground">to</span>
-                <input
-                  type="number"
-                  min={playerSeasonStart}
-                  max={99}
+                <select
+                  aria-label="Player details to season"
                   value={playerSeasonEnd}
                   onChange={(e) => {
-                    const val = parseInt(e.target.value) || 23
-                    setPlayerSeasonEnd(val)
-                    localStorage.setItem('playerSeasonRange', JSON.stringify({ start: playerSeasonStart, end: val }))
+                    updateSectionRange('player', 'end', Number(e.target.value))
                   }}
                   className="w-16 px-2 py-1 text-sm border rounded bg-background"
-                />
+                >{availableSeasons.map(s => <option key={s} value={s}>{s}</option>)}</select>
                 <button
                   className="px-2 py-1 text-xs rounded border bg-muted hover:bg-accent transition-colors"
                   onClick={() => {
