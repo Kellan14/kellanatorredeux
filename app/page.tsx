@@ -249,7 +249,9 @@ function HomePageContent() {
   const [achievementTop10, setAchievementTop10] = useState<any[]>([])
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null)
   const [playerDialogOpen, setPlayerDialogOpen] = useState(false)
-  const [machinesAtVenue, setMachinesAtVenue] = useState<string[]>([])
+  const [loadingMachineCounts, setLoadingMachineCounts] = useState(false)
+  const [machineCountsError, setMachineCountsError] = useState('')
+  const machineCountsRequestId = useRef(0)
   const [playerVenueSpecific, setPlayerVenueSpecific] = useState(true)
   const [machineCounts, setMachineCounts] = useState<Record<string, { atVenue: number; allVenues: number }>>({})
 
@@ -290,7 +292,7 @@ function HomePageContent() {
     if (opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venueMachines.length > 0) {
       fetchOpponentPlayers()
     }
-  }, [opponent, showSubs, venueMachines, matchSeason, dashboardRange.start, dashboardRange.end])
+  }, [opponent, showSubs, venueMachines, matchSeason])
 
   useEffect(() => {
     if (matchSeason && playerName && venue && venue !== 'Loading...' && venueMachines.length > 0) {
@@ -834,7 +836,7 @@ function HomePageContent() {
       // player's latest personal appearance (which may be a season behind).
       const currentSeason = matchSeason || playerStats.currentSeason || 23
 
-      // Fetch roster independently so it doesn't depend on machine-advantages
+      // The roster is independent of comparative machine-performance data.
       const playersResponse = await fetch(`/api/team-roster?team=${encodeURIComponent(opponent)}&season=${currentSeason}&showSubs=${showSubs}`)
       if (playersResponse.ok) {
         const playersData = await playersResponse.json()
@@ -842,23 +844,6 @@ function HomePageContent() {
         setOpponentPlayers(playerNames)
       }
 
-      // Fetch machine advantages (uses venueMachines from state)
-      const response = await fetch(
-        `/api/machine-advantages?` +
-        `venue=${encodeURIComponent(venue)}` +
-        `&opponent=${encodeURIComponent(opponent)}` +
-        `&seasonStart=${dashboardRange.start}` +
-        `&seasonEnd=${dashboardRange.end}` +
-        `&teamVenueSpecific=true` +
-        `&twcVenueSpecific=false` +
-        `&machines=${encodeURIComponent(venueMachines.join(','))}`
-      )
-
-      if (response.ok) {
-        const data = await response.json()
-        const machines = data.advantages?.map((adv: any) => adv.machine) || []
-        setMachinesAtVenue(machines)
-      }
     } catch (error) {
       console.error('Error fetching opponent players:', error)
     }
@@ -944,8 +929,12 @@ function HomePageContent() {
   }
 
   const handlePlayerClick = async (playerName: string) => {
+    const requestId = ++machineCountsRequestId.current
     setSelectedPlayer(playerName)
     setPlayerDialogOpen(true)
+    setMachineCounts({})
+    setMachineCountsError('')
+    setLoadingMachineCounts(true)
 
     // Fetch machine play counts for this player
     try {
@@ -957,12 +946,14 @@ function HomePageContent() {
         `&seasonEnd=${playerSeasonEnd}`
       )
 
-      if (response.ok) {
-        const data = await response.json()
-        setMachineCounts(data.counts || {})
-      }
+      if (!response.ok) throw new Error('Unable to load player counts')
+      const data = await response.json()
+      if (requestId === machineCountsRequestId.current) setMachineCounts(data.counts || {})
     } catch (error) {
       console.error('Error fetching machine counts:', error)
+      if (requestId === machineCountsRequestId.current) setMachineCountsError('Play counts could not be loaded. You can still select a machine to view scores.')
+    } finally {
+      if (requestId === machineCountsRequestId.current) setLoadingMachineCounts(false)
     }
   }
 
@@ -1969,7 +1960,7 @@ function HomePageContent() {
 
               {/* Machines Grid */}
               <div className="space-y-3">
-                {machinesAtVenue.map((machine) => {
+                {venueMachines.map((machine) => {
                   const counts = machineCounts[machine] || { atVenue: 0, allVenues: 0 }
 
                   return (
@@ -1990,10 +1981,12 @@ function HomePageContent() {
                           }}
                         />
                         <div className="relative z-10 flex-1">
-                          <div className="font-medium">{machine}</div>
+                          <div className="font-medium">{getMachineDisplayName(machine)}</div>
                           <div className="text-xs text-muted-foreground mt-1">
-                            <div>{counts.atVenue} play{counts.atVenue !== 1 ? 's' : ''} at {venue}</div>
-                            <div>{counts.allVenues} play{counts.allVenues !== 1 ? 's' : ''} total</div>
+                            {loadingMachineCounts ? <div>Loading play counts...</div> : machineCountsError ? <div>Play counts unavailable</div> : <>
+                              <div>{counts.atVenue} play{counts.atVenue !== 1 ? 's' : ''} at {venue}</div>
+                              <div>{counts.allVenues} play{counts.allVenues !== 1 ? 's' : ''} total</div>
+                            </>}
                           </div>
                         </div>
                         <ChevronRight className="h-4 w-4 relative z-10 flex-shrink-0" />
