@@ -19,9 +19,19 @@ export const createSupabaseClient = () => supabase
 
 // Helper function to fetch all records with pagination (bypassing 1000 record limit)
 // Accepts a function that creates a fresh query builder for each page to avoid query builder mutation
+/**
+ * @param orderBy Column appended as a final sort so paging is deterministic.
+ *   `.range()` without a total ordering is non-deterministic in PostgREST:
+ *   rows can repeat on one page and be skipped on another, which silently
+ *   corrupts anything tallied from the result. Ordering by a non-unique
+ *   column is not enough, so this is applied *after* the caller's own
+ *   `.order()` calls and acts as a tiebreak. Pass null only when the query
+ *   already orders by a unique column.
+ */
 export async function fetchAllRecords<T>(
   createQueryBuilder: () => any,
-  pageSize: number = 1000
+  pageSize: number = 1000,
+  orderBy: string | null = 'id'
 ): Promise<T[]> {
   const allRecords: T[] = []
   let offset = 0
@@ -29,7 +39,8 @@ export async function fetchAllRecords<T>(
 
   while (hasMore) {
     // Create a fresh query builder for each page to avoid mutation issues
-    const queryBuilder = createQueryBuilder()
+    const base = createQueryBuilder()
+    const queryBuilder = orderBy ? base.order(orderBy, { ascending: true }) : base
     const { data, error } = await queryBuilder
       .range(offset, offset + pageSize - 1)
 

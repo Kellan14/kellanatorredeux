@@ -57,7 +57,10 @@ export async function getAllPlayerNames(): Promise<string[]> {
       supabase
         .from('cache_players')
         .select('player_name')
-        .order('player_name', { ascending: true })
+        .order('player_name', { ascending: true }),
+      // player_name is unique here and the table has no id column.
+      1000,
+      null,
     )
     players = rows.map(r => r.player_name).filter(Boolean)
   } catch (error) {

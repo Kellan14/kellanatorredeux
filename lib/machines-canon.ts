@@ -86,6 +86,10 @@ export async function getMachineCanon(): Promise<MachineCanonIndex> {
         .from('machine_aliases')
         .select('alias, canon_key')
         .order('alias', { ascending: true }),
+    // alias is the primary key, so this is already a total order; the table
+    // has no id column for fetchAllRecords to tiebreak on.
+    1000,
+    null,
   )
   for (const a of aliases) {
     if (byKey.has(a.canon_key))
