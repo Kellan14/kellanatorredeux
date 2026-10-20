@@ -82,8 +82,24 @@ export function toStatsMap(stats) {
  * need not sum to 1, though only their direction matters (see scaleInvariant
  * below). Returns a canonical signature so samples can be grouped.
  */
-export function lineupFor(statsMap, players, machines, { weights, confidenceBoost = 0 }) {
-  const { matrix } = buildCostMatrix(players, machines, statsMap, confidenceBoost, weights)
+export function lineupFor(statsMap, players, machines, {
+  weights, confidenceBoost = 0, edgeBonuses = null, opponentWeight = 0,
+}) {
+  const { matrix, realRows, realCols } = buildCostMatrix(players, machines, statsMap, confidenceBoost, weights)
+  // Opponent edge, applied exactly as optimizer.ts does: MULTIPLICATIVE on the
+  // real cells only, never the -1000 padding. The stored edge is already the
+  // ow=1 value, so scaling it here reproduces any opponentWeight. Because the
+  // edge comes from venue-adjusted averages and the opponent's assignment, not
+  // from the score weights, one fetch covers a whole weight sweep.
+  if (edgeBonuses && opponentWeight > 0) {
+    for (let row = 0; row < realRows; row += 1) {
+      for (let column = 0; column < realCols; column += 1) {
+        const edge = edgeBonuses[`${players[row]}|${machines[column]}`]
+        if (edge == null) continue
+        matrix[row][column] *= 1 + opponentWeight * edge
+      }
+    }
+  }
   const { assignments, totalCost } = hungarianAlgorithm(matrix, true)
 
   const pairs = []

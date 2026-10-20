@@ -65,10 +65,10 @@ function simplexWeights([u1, u2, u3]) {
 
 const pct = (n) => `${(n * 100).toFixed(1)}%`
 
-function main(scenario, statsMap) {
+function main(scenario, statsMap, edgeBonuses) {
   const { players, machines } = scenario
-  const evaluate = (weights, confidenceBoost) =>
-    lineupFor(statsMap, players, machines, { weights, confidenceBoost })
+  const evaluate = (weights, confidenceBoost, opponentWeight = 0) =>
+    lineupFor(statsMap, players, machines, { weights, confidenceBoost, edgeBonuses, opponentWeight })
 
   // --- sample ---------------------------------------------------------------
   const basins = new Map()
@@ -78,8 +78,10 @@ function main(scenario, statsMap) {
     const u = point(index)
     const weights = simplexWeights(u.slice(0, 3))
     const confidenceBoost = u[3]
-    const result = evaluate(weights, confidenceBoost)
-    samples.push({ weights, confidenceBoost, signature: result.signature })
+    // 5th low-discrepancy dim: opponent weight, only when an edge map exists.
+    const opponentWeight = edgeBonuses ? u[4] : 0
+    const result = evaluate(weights, confidenceBoost, opponentWeight)
+    samples.push({ weights, confidenceBoost, opponentWeight, signature: result.signature })
 
     const basin = basins.get(result.signature)
     if (basin) basin.count += 1
@@ -111,18 +113,20 @@ function main(scenario, statsMap) {
   const DELTA = 0.1
   const screenCount = Math.min(600, SAMPLES)
   const influence = []
-  for (const key of [...FACTORS, 'confidenceBoost']) {
+  for (const key of [...FACTORS, 'confidenceBoost', ...(edgeBonuses ? ['opponentWeight'] : [])]) {
     let flips = 0
     let tried = 0
     for (let index = 0; index < screenCount; index += 1) {
-      const { weights, confidenceBoost, signature } = samples[Math.floor(index * SAMPLES / screenCount)]
-      const current = key === 'confidenceBoost' ? confidenceBoost : weights[key]
+      const { weights, confidenceBoost, opponentWeight, signature } = samples[Math.floor(index * SAMPLES / screenCount)]
+      const current = key === 'confidenceBoost' ? confidenceBoost
+        : key === 'opponentWeight' ? opponentWeight
+        : weights[key]
       const moved = current + (current > 0.5 ? -DELTA : DELTA)
       if (moved < 0 || moved > 1) continue
       tried += 1
-      const next = key === 'confidenceBoost'
-        ? evaluate(weights, moved)
-        : evaluate(shiftSetting({ venueWeight: 0, userInputWeight: 0, confidenceBoost: 0, opponentWeight: 0, scoreWeights: weights }, key, moved).scoreWeights, confidenceBoost)
+      const next = key === 'confidenceBoost' ? evaluate(weights, moved, opponentWeight)
+        : key === 'opponentWeight' ? evaluate(weights, confidenceBoost, moved)
+        : evaluate(shiftSetting({ venueWeight: 0, userInputWeight: 0, confidenceBoost: 0, opponentWeight: 0, scoreWeights: weights }, key, moved).scoreWeights, confidenceBoost, opponentWeight)
       if (next.signature !== signature) flips += 1
     }
     influence.push({ key, flipRate: tried ? flips / tried : 0, tried })
@@ -134,13 +138,13 @@ function main(scenario, statsMap) {
   // turns a volume into an actionable threshold.
   const base = { venueWeight: 0, userInputWeight: 0, confidenceBoost: 0, opponentWeight: 0, scoreWeights: BASELINE }
   const baseResult = evaluate(BASELINE, 0)
-  const at = (key, value) => (key === 'confidenceBoost'
-    ? evaluate(BASELINE, value)
-    : evaluate(shiftSetting(base, key, value).scoreWeights, 0))
+  const at = (key, value) => (key === 'confidenceBoost' ? evaluate(BASELINE, value, 0)
+    : key === 'opponentWeight' ? evaluate(BASELINE, 0, value)
+    : evaluate(shiftSetting(base, key, value).scoreWeights, 0, 0))
 
   const boundaries = []
-  for (const key of [...FACTORS, 'confidenceBoost']) {
-    const from = key === 'confidenceBoost' ? 0 : BASELINE[key]
+  for (const key of [...FACTORS, 'confidenceBoost', ...(edgeBonuses ? ['opponentWeight'] : [])]) {
+    const from = key === 'confidenceBoost' || key === 'opponentWeight' ? 0 : BASELINE[key]
     for (const direction of [1, -1]) {
       let previous = from
       let found = null
@@ -200,14 +204,43 @@ if (coverage.ratio < 0.25) {
   process.exit(1)
 }
 const statsMap = toStatsMap(bundle.stats)
+
+// Opponent edge bonuses come from the route, not a reimplementation: the
+// computation lives inline in app/api/strategy/optimize and depends on the
+// opponent's own assignment. One fetch covers the whole weight sweep, because
+// the edge is built from venue-adjusted averages and is independent of the
+// score weights. Verified to reproduce the route's lineup exactly.
+let edgeBonuses = null
+const opponent = arg('opponent')
+if (opponent) {
+  const origin = arg('route', 'http://localhost:3000')
+  const response = await fetch(`${origin}/api/strategy/optimize`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      format: '7x7', playerNames: scenario.players, machines: scenario.machines,
+      seasonStart, seasonEnd, venue: scenario.venue, opponent,
+      opponentWeight: 1, includeEdgeBonuses: true,
+    }),
+  }).catch((error) => { throw new Error(`could not reach ${origin}: ${error.message}`) })
+  const payload = await response.json()
+  edgeBonuses = payload.edge_bonuses ?? null
+  if (!edgeBonuses || Object.keys(edgeBonuses).length === 0) {
+    console.error(`no edge bonuses came back for opponent "${opponent}".`)
+    console.error('the route needs the full team name (e.g. "Silverball Slayers", not "SSS");')
+    console.error('an unrecognised opponent silently disables the modelling.')
+    process.exit(1)
+  }
+}
 const started = Date.now()
-const report = main(scenario, statsMap)
+const report = main(scenario, statsMap, edgeBonuses)
 const elapsed = Date.now() - started
 
 if (AS_JSON) {
   console.log(JSON.stringify({ scenario, ...report }, null, 2))
 } else {
   console.log(`\nscenario: ${scenario.label}  (season ${scenario.season})`)
+  console.log(`${edgeBonuses ? `opponent: ${opponent} (${Object.keys(edgeBonuses).length} edge bonuses)` : 'no opponent modelling'}`)
   console.log(`${scenario.players.length} players x ${scenario.machines.length} machines`
     + `  |  coverage ${coverage.filled}/${coverage.total} cells (${(coverage.ratio * 100).toFixed(0)}%)`)
   console.log(`${report.total} samples in ${elapsed}ms  (${(elapsed * 1000 / report.total).toFixed(0)}us each)`)

@@ -50,6 +50,9 @@ export async function POST(request: NextRequest) {
       scoreWeights,
       forcedAssignments = [],  // Array of { player: string, machine: string }
       opponentWeight = 0,
+      // Opt-in: echo the per-(player|machine) opponent edge bonuses back, so
+      // offline analysis can sweep them without reimplementing this file.
+      includeEdgeBonuses = false,
       opponentPlayers,
       opponent,
       useNashEquilibrium = true,
@@ -373,7 +376,55 @@ export async function POST(request: NextRequest) {
       const playersPerMachine = format === '4x2' ? 2 : 1
 
       // Helper: run opponent Hungarian against a set of machines, return machine -> oppAvg map
-      const runOpponentHungarian = (targetMachines: string[]): Map<string, number[]> => {
+      // Logistic scale fitted to 4,323 head-to-head singles results (seasons
+      // 21-24, each season's stats built strictly from earlier ones): the
+      // value that best predicts who actually won from the two players'
+      // venue-adjusted ratios. See scripts/strategy/backtest.mjs.
+      const WIN_PROBABILITY_SCALE = 2.4
+
+      /**
+       * What a machine is worth to the opponent.
+       *
+       * Once we have a player on it they are not choosing in a vacuum: they
+       * want to WIN that specific game, so the value is their probability of
+       * beating whoever we put there rather than their own raw average.
+       *
+       * This has to be nonlinear. Simply subtracting our player's value would
+       * be a constant per column, and the Hungarian's choice is invariant to
+       * column potentials -- it would change nothing at all.
+       */
+      const oppCellValue = (oppPlayer: string, machine: string, facing?: Map<string, string>) => {
+        const own = getOppCellValue(oppPlayer, machine)
+        const ourPlayer = facing?.get(machine)
+        if (!ourPlayer) return own
+        const ours = statsMap.get(ourPlayer)?.get(machine)?.venue_adjusted_avg ?? 0
+        if (own <= 0 || ours <= 0) return own
+        return 1 / (1 + Math.exp(-(own - ours) / WIN_PROBABILITY_SCALE))
+      }
+
+      /** Our best player->machine map under the current edge bonuses. */
+      const twcAssignmentFor = (machines: string[], activeBonuses: Map<string, number>): Map<string, string> => {
+        const out = new Map<string, string>()
+        // Singles only; doubles pairs are handled by the optimizer itself.
+        if (format !== '7x7' || machines.length === 0) return out
+        const { matrix, realRows, realCols } = buildCostMatrix(
+          allPlayers, machines, statsMap, confidenceBoost, scoreWeights
+        )
+        for (let i = 0; i < realRows; i++) {
+          for (let j = 0; j < realCols; j++) {
+            const b = activeBonuses.get(`${allPlayers[i]}|${machines[j]}`)
+            if (b != null) matrix[i][j] *= (1 + b)
+          }
+        }
+        const solved = hungarianAlgorithm(matrix, true)
+        for (let i = 0; i < realRows; i++) {
+          const j = solved.assignments[i]
+          if (j >= 0 && j < realCols) out.set(machines[j], allPlayers[i])
+        }
+        return out
+      }
+
+      const runOpponentHungarian = (targetMachines: string[], facing?: Map<string, string>): Map<string, number[]> => {
         if (oppPlayerList.length === 0 || targetMachines.length === 0) return new Map()
 
         const mSlots: { machine: string; slotIndex: number }[] = []
@@ -389,7 +440,7 @@ export async function POST(request: NextRequest) {
           const row: number[] = []
           for (let c = 0; c < d; c++) {
             if (r < oppPlayerList.length && c < mSlots.length) {
-              row.push(getOppCellValue(oppPlayerList[r], mSlots[c].machine))
+              row.push(oppCellValue(oppPlayerList[r], mSlots[c].machine, facing))
             } else {
               row.push(-1e9)
             }
@@ -486,8 +537,14 @@ export async function POST(request: NextRequest) {
         const maxIter = useNashEquilibrium ? 30 : 1
         let iter = 0
 
+        // The lineup we would actually field right now. The opponent responds
+        // to this, and it is recomputed under their response each pass -- that
+        // back-and-forth is the fictitious play.
+        let twcAssignment = twcAssignmentFor(twcMachines.length > 0 ? twcMachines : selectedMachines, bonuses)
+
         for (iter = 0; iter < maxIter; iter++) {
-          const oppAvgMap = runOpponentHungarian(twcMachines.length > 0 ? twcMachines : selectedMachines)
+          const activeMachines = twcMachines.length > 0 ? twcMachines : selectedMachines
+          const oppAvgMap = runOpponentHungarian(activeMachines, twcAssignment)
 
           // Accumulate opp avgs across iterations for fictitious play.
           for (const [machine, avgs] of Array.from(oppAvgMap.entries())) {
@@ -521,6 +578,7 @@ export async function POST(request: NextRequest) {
 
           bonuses.clear()
           for (const [m, v] of Array.from(newBonuses.entries())) bonuses.set(m, v)
+          twcAssignment = twcAssignmentFor(activeMachines, bonuses)
 
           if (allowMachinePivot) {
             if (format === '4x2') {
@@ -972,7 +1030,12 @@ export async function POST(request: NextRequest) {
       if (assignAll) merged.regularCount = merged.assignments.length
       const assignedMachines = merged.assignments.map((a: any) => a.machine_id)
       assumedOpponents = computeAssumedOpponents(assignedMachines)
-      return NextResponse.json({ ...merged, ...(assumedOpponents ? { assumedOpponents } : {}), ...(assignAll ? { regularCount: merged.regularCount } : {}) })
+      return NextResponse.json({
+        ...merged,
+        ...(assumedOpponents ? { assumedOpponents } : {}),
+        ...(assignAll ? { regularCount: merged.regularCount } : {}),
+        ...(includeEdgeBonuses ? { edge_bonuses: Object.fromEntries(machineEdgeBonuses) } : {}),
+      })
     }
 
     // More players than required — exhaustive combination search
@@ -1054,7 +1117,12 @@ export async function POST(request: NextRequest) {
     greedyAssignRemaining(merged, bestBenched)
     const assignedMachines = merged.assignments.map((a: any) => a.machine_id)
     assumedOpponents = computeAssumedOpponents(assignedMachines)
-    return NextResponse.json({ ...merged, ...(assumedOpponents ? { assumedOpponents } : {}), ...(assignAll ? { regularCount: merged.regularCount } : {}) })
+    return NextResponse.json({
+      ...merged,
+      ...(assumedOpponents ? { assumedOpponents } : {}),
+      ...(assignAll ? { regularCount: merged.regularCount } : {}),
+      ...(includeEdgeBonuses ? { edge_bonuses: Object.fromEntries(machineEdgeBonuses) } : {}),
+    })
   } catch (error: any) {
     console.error('Optimization error:', error)
     return NextResponse.json(

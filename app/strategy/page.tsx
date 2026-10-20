@@ -321,14 +321,20 @@ export default function StrategyPage() {
     venueWeight: 70,
     userInputWeight: 0,
     confidenceBoost: 0,
-    opponentWeight: 0,
+    // Judgement call, not a fitted value: unlike the score weights there is no
+    // way to fit this from history, because it changes which lineup you field
+    // and we never observe how the unplayed one would have done. 0.5 weights
+    // matchup edge at half the strength of raw performance. Note the API
+    // itself still defaults to 0 -- opponent modelling costs ~5x the request
+    // time, so callers opt in rather than paying for it unasked.
+    opponentWeight: 50,
     winRateWeight: 17,
     recentFormWeight: 9,
     dataConfidenceWeight: 28,
   }
   // Bumped when SLIDER_DEFAULTS changes, so a saved set of old weights does
   // not silently outlive them for anyone who has used the page before.
-  const SLIDER_DEFAULTS_VERSION = 2
+  const SLIDER_DEFAULTS_VERSION = 3
 
   // Load persisted slider settings from localStorage
   const getPersistedSliders = () => {
