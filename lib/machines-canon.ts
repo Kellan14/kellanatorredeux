@@ -60,6 +60,9 @@ export async function getMachineCanon(): Promise<MachineCanonIndex> {
       .from('machine_canon')
       .select('key, name, display_override, source, active')
       .order('key', { ascending: true }),
+    // key is unique; this table has no id column for the default tiebreaker.
+    1000,
+    null,
   )
 
   const byKey = new Map<string, CanonMachine>()

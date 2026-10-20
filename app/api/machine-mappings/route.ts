@@ -42,7 +42,10 @@ export async function GET() {
           supabase
             .from('machine_aliases')
             .select('alias, alias_raw, canon_key, origin, reason')
-            .order('canon_key', { ascending: true }),
+            .order('canon_key', { ascending: true })
+            .order('alias', { ascending: true }),
+          1000,
+          null,
         ),
         loadMnpMachines(true)
           .then((rows) => ({ rows, error: null as string | null }))

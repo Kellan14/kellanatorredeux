@@ -8,6 +8,12 @@ async function getJson(path, params) {
   return response.json()
 }
 
+// Both canon tables use string primary keys, not the pagination helper's id.
+const canon = await getJson('/api/machine-canon', {})
+assert.ok(canon && Object.keys(canon).length > 0, 'Machine canon lookup loads')
+const mappings = await getJson('/api/machine-mappings', {})
+assert.ok(mappings.machines.length > 0, 'Canon management loads without sorting aliases by a nonexistent id')
+
 for (const [key, name] of [['PULP', 'Pulp Fiction'], ['AFM', 'Attack From Mars']]) {
   const byKey = await getJson('/api/machine-top-scores', { machine: key })
   const byName = await getJson('/api/machine-top-scores', { machine: name })
