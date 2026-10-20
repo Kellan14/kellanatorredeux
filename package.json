@@ -9,9 +9,13 @@
     "lint": "next lint",
     "extract-vpx-collision": "node scripts/extract-vpx-collision-walls.mjs && node scripts/extract-vpx-collision-primitives.mjs && node scripts/extract-vpx-triggers.mjs && node scripts/extract-vpx-collections.mjs && node scripts/extract-vpx-script-physics.mjs",
     "audit-vpx-physics": "node scripts/audit-vpx-physics.mjs",
+    "test-vpx-physics": "node --no-warnings --experimental-strip-types scripts/test-vpx-physics.mjs",
     "test-robocop-rules": "node --no-warnings --experimental-strip-types scripts/test-robocop-rules.mjs",
     "generate-thumbnails": "node scripts/generate-thumbnails.js",
-    "bake-vpx-table": "node scripts/bake-vpx-table.mjs"
+    "bake-vpx-table": "node scripts/bake-vpx-table.mjs",
+    "strategy:sweep": "node --import ./scripts/strategy/lib/register-alias.mjs scripts/strategy/sweep.mjs",
+    "strategy:backtest": "node --import ./scripts/strategy/lib/register-alias.mjs scripts/strategy/backtest.mjs",
+    "strategy:match": "node --import ./scripts/strategy/lib/register-alias.mjs scripts/strategy/match-plan.mjs"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",

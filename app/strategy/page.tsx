@@ -305,23 +305,42 @@ export default function StrategyPage() {
   // Machine picking state
   const [numSinglesMachines, setNumSinglesMachines] = useState(7)
   const [numDoublesMachines, setNumDoublesMachines] = useState(4)
-  // Slider defaults
+  // Slider defaults.
+  //
+  // The score weights are fitted, not chosen: scripts/strategy/backtest.mjs
+  // scores head-to-head singles results on held-out seasons, with the stats
+  // for each test season built strictly from earlier ones. Averaged over four
+  // fits (20->21, 21->22, 22->23, 23->24) it beats the old 40/30/20/10 on
+  // every season, 59.3% -> 61.6% mean accuracy.
+  //
+  // The headline is that recent form and win rate carry almost nothing:
+  // venue-adjusted average plus data confidence alone score the same. Re-run
+  // the backtest after a season rolls over and these should be revisited.
+  // venueAvgWeight is the remainder, so this leaves it at 46.
   const SLIDER_DEFAULTS = {
     venueWeight: 70,
     userInputWeight: 0,
     confidenceBoost: 0,
     opponentWeight: 0,
-    winRateWeight: 40,
-    recentFormWeight: 30,
-    dataConfidenceWeight: 10,
+    winRateWeight: 17,
+    recentFormWeight: 9,
+    dataConfidenceWeight: 28,
   }
+  // Bumped when SLIDER_DEFAULTS changes, so a saved set of old weights does
+  // not silently outlive them for anyone who has used the page before.
+  const SLIDER_DEFAULTS_VERSION = 2
 
   // Load persisted slider settings from localStorage
   const getPersistedSliders = () => {
     if (typeof window === 'undefined') return SLIDER_DEFAULTS
     try {
       const saved = localStorage.getItem('strategySliderSettings')
-      return saved ? { ...SLIDER_DEFAULTS, ...JSON.parse(saved) } : SLIDER_DEFAULTS
+      if (!saved) return SLIDER_DEFAULTS
+      const parsed = JSON.parse(saved)
+      // Settings saved against older defaults would mask the fitted weights
+      // indefinitely, so drop them once rather than leaving people on 40/30/20/10.
+      if (parsed?.version !== SLIDER_DEFAULTS_VERSION) return SLIDER_DEFAULTS
+      return { ...SLIDER_DEFAULTS, ...parsed }
     } catch { return SLIDER_DEFAULTS }
   }
 
@@ -398,7 +417,7 @@ export default function StrategyPage() {
   // Persist slider settings to localStorage (incl. the per-game-normalized toggle).
   useEffect(() => {
     if (typeof window === 'undefined') return
-    localStorage.setItem('strategySliderSettings', JSON.stringify({ ...currentWeights, usePerGameNormalized, avgMethod, trimPct, searchMachineSubsets }))
+    localStorage.setItem('strategySliderSettings', JSON.stringify({ ...currentWeights, usePerGameNormalized, avgMethod, trimPct, searchMachineSubsets, version: SLIDER_DEFAULTS_VERSION }))
   }, [venueWeight, userInputWeight, confidenceBoost, opponentWeight, winRateWeight, recentFormWeight, dataConfidenceWeight, usePerGameNormalized, avgMethod, trimPct, searchMachineSubsets])
 
   // Proportional adjustment when a score factor slider changes

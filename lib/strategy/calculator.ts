@@ -1,4 +1,4 @@
-import { PlayerMachineStats } from '@/types/strategy'
+import type { PlayerMachineStats } from '@/types/strategy'
 
 export interface ScoreWeights {
   winRate: number
@@ -7,11 +7,14 @@ export interface ScoreWeights {
   confidence: number
 }
 
+// Fitted against held-out seasons by scripts/strategy/backtest.mjs rather
+// than chosen by hand; see SLIDER_DEFAULTS in app/strategy/page.tsx. Mean
+// head-to-head accuracy over seasons 21-24 rises from 59.3% to 61.6%.
 const DEFAULT_WEIGHTS: ScoreWeights = {
-  winRate: 0.4,
-  recentForm: 0.3,
-  venueAdjustedAvg: 0.2,
-  confidence: 0.1
+  winRate: 0.17,
+  recentForm: 0.09,
+  venueAdjustedAvg: 0.46,
+  confidence: 0.28
 }
 
 /**
