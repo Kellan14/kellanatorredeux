@@ -81,7 +81,7 @@ export function getMachineThumbnailPath(machineKey: string, machineName?: string
  * Gets a fallback image if the main image fails to load
  */
 export function getFallbackImage(): string {
-  return '/opdb_backglass_images/placeholder.jpg'
+  return '/opdb_backglass_images/placeholder.svg'
 }
 
 /**

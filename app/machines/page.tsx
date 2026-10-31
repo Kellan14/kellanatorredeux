@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, Heart, Info } from 'lucide-react'
-import { getMachineImagePath, getMachineThumbnailPath } from '@/lib/machine-images'
+import { getMachineImagePath, getMachineThumbnailPath, getFallbackImage } from '@/lib/machine-images'
 
 interface Machine {
   key: string
@@ -159,9 +159,9 @@ export default function MachinesPage() {
                   sizes="(max-width: 640px) 25vw, (max-width: 768px) 20vw, (max-width: 1024px) 16vw, (max-width: 1280px) 14vw, 12vw"
                   unoptimized
                   onError={(e) => {
-                    // Fallback to AFM thumbnail if image fails to load
+                    // Missing artwork must not impersonate a different machine.
                     const target = e.target as HTMLImageElement
-                    target.src = '/opdb_backglass_images/thumbnails/AFM.jpg'
+                    if (!target.src.endsWith(getFallbackImage())) target.src = getFallbackImage()
                   }}
                 />
 
