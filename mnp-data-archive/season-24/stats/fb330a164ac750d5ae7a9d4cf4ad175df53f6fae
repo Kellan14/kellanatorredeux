@@ -181,16 +181,88 @@
       "score": 118390,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-24-6-TRL-PYC",
+      "week": "6",
+      "round": 1,
+      "machine": "TS",
+      "division": 0,
+      "score": 1731460,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-24-6-TRL-PYC",
+      "week": "6",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 143240810,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-24-6-TRL-PYC",
+      "week": "6",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 242565470,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SWL",
+      "match": "mnp-24-7-PYC-SWL",
+      "week": "7",
+      "round": 1,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 40498720,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SWL",
+      "match": "mnp-24-7-PYC-SWL",
+      "week": "7",
+      "round": 3,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 97329990,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SWL",
+      "match": "mnp-24-7-PYC-SWL",
+      "week": "7",
+      "round": 4,
+      "machine": "GTF",
+      "division": 0,
+      "score": 177380960,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.518",
-      "num_matches": 5,
-      "ppm": "4.200",
+      "pops": "0.477",
+      "num_matches": 7,
+      "ppm": "3.857",
       "points": {
-        "won": 21,
-        "of": 40.5
+        "won": 27,
+        "of": 56.5
       }
     },
     "div-1": {

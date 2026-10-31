@@ -145,16 +145,88 @@
       "score": 145000000,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "RMS",
+      "opp": "BAD",
+      "match": "mnp-24-6-RMS-BAD",
+      "week": "6",
+      "round": 1,
+      "machine": "BadCats",
+      "division": 0,
+      "score": 2198530,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "BAD",
+      "match": "mnp-24-6-RMS-BAD",
+      "week": "6",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 21492320,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RMS",
+      "opp": "BAD",
+      "match": "mnp-24-6-RMS-BAD",
+      "week": "6",
+      "round": 4,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 13844380,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "ADB",
+      "match": "mnp-24-7-ADB-RMS",
+      "week": "7",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 17730270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "ADB",
+      "match": "mnp-24-7-ADB-RMS",
+      "week": "7",
+      "round": 3,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 39506510,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "ADB",
+      "match": "mnp-24-7-ADB-RMS",
+      "week": "7",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 43935820,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.333",
-      "num_matches": 4,
-      "ppm": "2.750",
+      "pops": "0.295",
+      "num_matches": 6,
+      "ppm": "2.416",
       "points": {
-        "won": 11,
-        "of": 33
+        "won": 14.5,
+        "of": 49
       }
     },
     "div-1": {

@@ -109,16 +109,88 @@
       "score": 32562880,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "SSD",
+      "match": "mnp-24-6-SSD-SKP",
+      "week": "6",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 4549320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "SSD",
+      "match": "mnp-24-6-SSD-SKP",
+      "week": "6",
+      "round": 2,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 202000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "SSD",
+      "match": "mnp-24-6-SSD-SKP",
+      "week": "6",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 560050,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "PBR",
+      "match": "mnp-24-7-SKP-PBR",
+      "week": "7",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 4883324150,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SKP",
+      "opp": "PBR",
+      "match": "mnp-24-7-SKP-PBR",
+      "week": "7",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 81214840,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SKP",
+      "opp": "PBR",
+      "match": "mnp-24-7-SKP-PBR",
+      "week": "7",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 1977620,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.395",
-      "num_matches": 3,
-      "ppm": "3.166",
+      "pops": "0.425",
+      "num_matches": 5,
+      "ppm": "3.400",
       "points": {
-        "won": 9.5,
-        "of": 24
+        "won": 17,
+        "of": 40
       }
     },
     "div-1": {

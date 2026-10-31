@@ -145,16 +145,88 @@
       "score": 43861000,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SKP",
+      "match": "mnp-24-6-SSD-SKP",
+      "week": "6",
+      "round": 1,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 5339410,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SKP",
+      "match": "mnp-24-6-SSD-SKP",
+      "week": "6",
+      "round": 2,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 11165610,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SSD",
+      "opp": "SKP",
+      "match": "mnp-24-6-SSD-SKP",
+      "week": "6",
+      "round": 4,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 310700,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "ZOO",
+      "match": "mnp-24-7-ZOO-SSD",
+      "week": "7",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 149858390,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSD",
+      "opp": "ZOO",
+      "match": "mnp-24-7-ZOO-SSD",
+      "week": "7",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 29499420,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "ZOO",
+      "match": "mnp-24-7-ZOO-SSD",
+      "week": "7",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 9313010,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.369",
-      "num_matches": 4,
-      "ppm": "3.000",
+      "pops": "0.479",
+      "num_matches": 6,
+      "ppm": "3.916",
       "points": {
-        "won": 12,
-        "of": 32.5
+        "won": 23.5,
+        "of": 49
       }
     },
     "div-1": {

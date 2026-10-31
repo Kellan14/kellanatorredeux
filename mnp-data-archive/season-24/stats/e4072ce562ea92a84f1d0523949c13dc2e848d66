@@ -181,16 +181,88 @@
       "score": 5005560,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DTP",
+      "match": "mnp-24-6-DTP-DOG",
+      "week": "6",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 21248840,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DTP",
+      "match": "mnp-24-6-DTP-DOG",
+      "week": "6",
+      "round": 2,
+      "machine": "CA",
+      "division": 0,
+      "score": 75460,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "DTP",
+      "match": "mnp-24-6-DTP-DOG",
+      "week": "6",
+      "round": 3,
+      "machine": "CA",
+      "division": 0,
+      "score": 150270,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-24-7-DOG-DSV",
+      "week": "7",
+      "round": 1,
+      "machine": "SurfChamp",
+      "division": 0,
+      "score": 37230,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-24-7-DOG-DSV",
+      "week": "7",
+      "round": 2,
+      "machine": "FOO",
+      "division": 0,
+      "score": 13719190,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-24-7-DOG-DSV",
+      "week": "7",
+      "round": 3,
+      "machine": "SurfChamp",
+      "division": 0,
+      "score": 49600,
+      "points": 2,
+      "pops": "0.666"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.087",
-      "num_matches": 5,
-      "ppm": "0.700",
+      "pops": "0.210",
+      "num_matches": 7,
+      "ppm": "1.714",
       "points": {
-        "won": 3.5,
-        "of": 40
+        "won": 12,
+        "of": 57
       }
     },
     "div-1": {

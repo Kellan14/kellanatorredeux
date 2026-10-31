@@ -145,16 +145,88 @@
       "score": 560030,
       "points": 2,
       "pops": "0.666"
+    },
+    {
+      "team": "DSV",
+      "opp": "JMF",
+      "match": "mnp-24-6-DSV-JMF",
+      "week": "6",
+      "round": 1,
+      "machine": "NGG",
+      "division": 0,
+      "score": 19364550,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "JMF",
+      "match": "mnp-24-6-DSV-JMF",
+      "week": "6",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 31320270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "JMF",
+      "match": "mnp-24-6-DSV-JMF",
+      "week": "6",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 5910230,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DSV",
+      "opp": "DOG",
+      "match": "mnp-24-7-DOG-DSV",
+      "week": "7",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 3347940,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DSV",
+      "opp": "DOG",
+      "match": "mnp-24-7-DOG-DSV",
+      "week": "7",
+      "round": 2,
+      "machine": "EBD",
+      "division": 0,
+      "score": 362500,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "DOG",
+      "match": "mnp-24-7-DOG-DSV",
+      "week": "7",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 398030,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.318",
-      "num_matches": 4,
-      "ppm": "2.625",
+      "pops": "0.346",
+      "num_matches": 6,
+      "ppm": "2.833",
       "points": {
-        "won": 10.5,
-        "of": 33
+        "won": 17,
+        "of": 49
       }
     },
     "div-1": {

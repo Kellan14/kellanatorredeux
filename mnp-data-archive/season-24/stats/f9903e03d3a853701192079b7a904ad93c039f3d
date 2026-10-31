@@ -181,16 +181,88 @@
       "score": 168410,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DIH",
+      "match": "mnp-24-6-NMC-DIH",
+      "week": "6",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 9303200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DIH",
+      "match": "mnp-24-6-NMC-DIH",
+      "week": "6",
+      "round": 3,
+      "machine": "PULP",
+      "division": 0,
+      "score": 456390,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "DIH",
+      "match": "mnp-24-6-NMC-DIH",
+      "week": "6",
+      "round": 4,
+      "machine": "TargetAlpha",
+      "division": 0,
+      "score": 53160,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "NLT",
+      "match": "mnp-24-7-NLT-NMC",
+      "week": "7",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 35154460,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "NLT",
+      "match": "mnp-24-7-NLT-NMC",
+      "week": "7",
+      "round": 2,
+      "machine": "TW",
+      "division": 0,
+      "score": 36580,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "NLT",
+      "match": "mnp-24-7-NLT-NMC",
+      "week": "7",
+      "round": 4,
+      "machine": "TW",
+      "division": 0,
+      "score": 93460,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.219",
-      "num_matches": 5,
-      "ppm": "1.800",
+      "pops": "0.228",
+      "num_matches": 7,
+      "ppm": "1.857",
       "points": {
-        "won": 9,
-        "of": 41
+        "won": 13,
+        "of": 57
       }
     },
     "div-1": {

@@ -145,16 +145,88 @@
       "score": 83054610,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "PGN",
+      "opp": "ETB",
+      "match": "mnp-24-6-ETB-PGN",
+      "week": "6",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 47236620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "ETB",
+      "match": "mnp-24-6-ETB-PGN",
+      "week": "6",
+      "round": 2,
+      "machine": "GTF",
+      "division": 0,
+      "score": 125780980,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "ETB",
+      "match": "mnp-24-6-ETB-PGN",
+      "week": "6",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 30228840,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "NQG",
+      "match": "mnp-24-7-PGN-NQG",
+      "week": "7",
+      "round": 2,
+      "machine": "KONG",
+      "division": 0,
+      "score": 53418460,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PGN",
+      "opp": "NQG",
+      "match": "mnp-24-7-PGN-NQG",
+      "week": "7",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 114033890,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "NQG",
+      "match": "mnp-24-7-PGN-NQG",
+      "week": "7",
+      "round": 4,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 6868960,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.569",
-      "num_matches": 4,
-      "ppm": "4.625",
+      "pops": "0.591",
+      "num_matches": 6,
+      "ppm": "4.833",
       "points": {
-        "won": 18.5,
-        "of": 32.5
+        "won": 29,
+        "of": 49
       }
     },
     "div-1": {

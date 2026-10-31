@@ -181,16 +181,88 @@
       "score": 2045790,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "KBZ",
+      "opp": "BLK",
+      "match": "mnp-24-6-KBZ-BLK",
+      "week": "6",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 238239320,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KBZ",
+      "opp": "BLK",
+      "match": "mnp-24-6-KBZ-BLK",
+      "week": "6",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 37812150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "BLK",
+      "match": "mnp-24-6-KBZ-BLK",
+      "week": "6",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 288860720,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "KBZ",
+      "opp": "PKT",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 1,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 82892600,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "KBZ",
+      "opp": "PKT",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 2,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 224238510,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "PKT",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 78402430,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.329",
-      "num_matches": 5,
-      "ppm": "2.700",
+      "pops": "0.356",
+      "num_matches": 7,
+      "ppm": "2.928",
       "points": {
-        "won": 13.5,
-        "of": 41
+        "won": 20.5,
+        "of": 57.5
       }
     },
     "div-1": {

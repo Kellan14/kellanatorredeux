@@ -181,16 +181,88 @@
       "score": 90000000,
       "points": 2,
       "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-24-6-TRL-PYC",
+      "week": "6",
+      "round": 1,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 1025041320,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-24-6-TRL-PYC",
+      "week": "6",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 89381540,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "TRL",
+      "match": "mnp-24-6-TRL-PYC",
+      "week": "6",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 5925050,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SWL",
+      "match": "mnp-24-7-PYC-SWL",
+      "week": "7",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 49529420,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "SWL",
+      "match": "mnp-24-7-PYC-SWL",
+      "week": "7",
+      "round": 2,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 7398900,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "SWL",
+      "match": "mnp-24-7-PYC-SWL",
+      "week": "7",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 49148170,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.571",
-      "num_matches": 5,
-      "ppm": "4.800",
+      "pops": "0.525",
+      "num_matches": 7,
+      "ppm": "4.357",
       "points": {
-        "won": 24,
-        "of": 42
+        "won": 30.5,
+        "of": 58
       }
     },
     "div-1": {

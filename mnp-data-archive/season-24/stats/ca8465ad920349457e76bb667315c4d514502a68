@@ -37,16 +37,88 @@
       "score": 1014906410,
       "points": 2,
       "pops": "0.666"
+    },
+    {
+      "team": "PKT",
+      "opp": "ICB",
+      "match": "mnp-24-6-ICB-PKT",
+      "week": "6",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 3494144910,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "ICB",
+      "match": "mnp-24-6-ICB-PKT",
+      "week": "6",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 545930550,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PKT",
+      "opp": "ICB",
+      "match": "mnp-24-6-ICB-PKT",
+      "week": "6",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 709859050,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KBZ",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 1,
+      "machine": "FH",
+      "division": 0,
+      "score": 1202150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KBZ",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1000613290,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PKT",
+      "opp": "KBZ",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2789084550,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.235",
-      "num_matches": 1,
-      "ppm": "2.000",
+      "pops": "0.411",
+      "num_matches": 3,
+      "ppm": "3.500",
       "points": {
-        "won": 2,
-        "of": 8.5
+        "won": 10.5,
+        "of": 25.5
       }
     },
     "div-1": {

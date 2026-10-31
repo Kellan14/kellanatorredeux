@@ -109,16 +109,88 @@
       "score": 28590180,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 102245210,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 3,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 59320390,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 29019550,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TWC",
+      "match": "mnp-24-7-TWC-RTR",
+      "week": "7",
+      "round": 1,
+      "machine": "GOT",
+      "division": 0,
+      "score": 129145920,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "TWC",
+      "match": "mnp-24-7-TWC-RTR",
+      "week": "7",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 162441850,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TWC",
+      "match": "mnp-24-7-TWC-RTR",
+      "week": "7",
+      "round": 4,
+      "machine": "Genie",
+      "division": 0,
+      "score": 510450,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.625",
-      "num_matches": 3,
-      "ppm": "5.000",
+      "pops": "0.562",
+      "num_matches": 5,
+      "ppm": "4.500",
       "points": {
-        "won": 15,
-        "of": 24
+        "won": 22.5,
+        "of": 40
       }
     },
     "div-1": {

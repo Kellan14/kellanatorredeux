@@ -109,16 +109,88 @@
       "score": 152404290,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-24-6-CPO-NLT",
+      "week": "6",
+      "round": 1,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 131259060,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-24-6-CPO-NLT",
+      "week": "6",
+      "round": 2,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 728015590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "NLT",
+      "match": "mnp-24-6-CPO-NLT",
+      "week": "6",
+      "round": 4,
+      "machine": "DrWho",
+      "division": 0,
+      "score": 9908680,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SHK",
+      "match": "mnp-24-7-SHK-CPO",
+      "week": "7",
+      "round": 1,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 7472890,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SHK",
+      "match": "mnp-24-7-SHK-CPO",
+      "week": "7",
+      "round": 2,
+      "machine": "TZ",
+      "division": 0,
+      "score": 30802750,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CPO",
+      "opp": "SHK",
+      "match": "mnp-24-7-SHK-CPO",
+      "week": "7",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 473500,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.551",
-      "num_matches": 3,
+      "pops": "0.555",
+      "num_matches": 5,
       "ppm": "4.500",
       "points": {
-        "won": 13.5,
-        "of": 24.5
+        "won": 22.5,
+        "of": 40.5
       }
     },
     "div-1": {

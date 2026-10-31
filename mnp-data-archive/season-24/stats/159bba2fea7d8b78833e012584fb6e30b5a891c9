@@ -145,16 +145,88 @@
       "score": 36307200,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "DRK",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 1,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 23198270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "DRK",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 2,
+      "machine": "LZ",
+      "division": 0,
+      "score": 120709950,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "DRK",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 4,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 28999320,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SCN",
+      "opp": "SRF",
+      "match": "mnp-24-7-SCN-SRF",
+      "week": "7",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 75000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SCN",
+      "opp": "SRF",
+      "match": "mnp-24-7-SCN-SRF",
+      "week": "7",
+      "round": 2,
+      "machine": "LAB",
+      "division": 0,
+      "score": 27736130,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SRF",
+      "match": "mnp-24-7-SCN-SRF",
+      "week": "7",
+      "round": 3,
+      "machine": "LAB",
+      "division": 0,
+      "score": 7291440,
+      "points": 1,
+      "pops": "0.333"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.415",
-      "num_matches": 4,
-      "ppm": "3.375",
+      "pops": "0.469",
+      "num_matches": 6,
+      "ppm": "3.833",
       "points": {
-        "won": 13.5,
-        "of": 32.5
+        "won": 23,
+        "of": 49
       }
     },
     "div-1": {

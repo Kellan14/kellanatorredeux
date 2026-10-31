@@ -181,16 +181,88 @@
       "score": 141377100,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "FBP",
+      "match": "mnp-24-6-POW-FBP",
+      "week": "6",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 211350850,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "POW",
+      "opp": "FBP",
+      "match": "mnp-24-6-POW-FBP",
+      "week": "6",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 552453540,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "FBP",
+      "match": "mnp-24-6-POW-FBP",
+      "week": "6",
+      "round": 4,
+      "machine": "Fire",
+      "division": 0,
+      "score": 715120,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "POW",
+      "opp": "BAD",
+      "match": "mnp-24-7-BAD-POW",
+      "week": "7",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 22948850,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "BAD",
+      "match": "mnp-24-7-BAD-POW",
+      "week": "7",
+      "round": 2,
+      "machine": "EJ",
+      "division": 0,
+      "score": 132253700,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "BAD",
+      "match": "mnp-24-7-BAD-POW",
+      "week": "7",
+      "round": 4,
+      "machine": "EJ",
+      "division": 0,
+      "score": 228700090,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.756",
-      "num_matches": 5,
-      "ppm": "6.200",
+      "pops": "0.736",
+      "num_matches": 7,
+      "ppm": "6.000",
       "points": {
-        "won": 31,
-        "of": 41
+        "won": 42,
+        "of": 57
       }
     },
     "div-1": {

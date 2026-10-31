@@ -181,16 +181,88 @@
       "score": 316060,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "PKT",
+      "opp": "ICB",
+      "match": "mnp-24-6-ICB-PKT",
+      "week": "6",
+      "round": 1,
+      "machine": "Congo",
+      "division": 0,
+      "score": 235024760,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PKT",
+      "opp": "ICB",
+      "match": "mnp-24-6-ICB-PKT",
+      "week": "6",
+      "round": 2,
+      "machine": "Congo",
+      "division": 0,
+      "score": 785000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "ICB",
+      "match": "mnp-24-6-ICB-PKT",
+      "week": "6",
+      "round": 4,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 54741150,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KBZ",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1889683640,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KBZ",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 2,
+      "machine": "MB",
+      "division": 0,
+      "score": 8221090,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KBZ",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 4,
+      "machine": "MB",
+      "division": 0,
+      "score": 27142180,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.428",
-      "num_matches": 5,
-      "ppm": "3.600",
+      "pops": "0.543",
+      "num_matches": 7,
+      "ppm": "4.500",
       "points": {
-        "won": 18,
-        "of": 42
+        "won": 31.5,
+        "of": 58
       }
     },
     "div-1": {

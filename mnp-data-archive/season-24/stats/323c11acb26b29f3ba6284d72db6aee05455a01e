@@ -181,16 +181,88 @@
       "score": 143811850,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "SSS",
+      "opp": "TWC",
+      "match": "mnp-24-6-SSS-TWC",
+      "week": "6",
+      "round": 1,
+      "machine": "Tron",
+      "division": 0,
+      "score": 10103300,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TWC",
+      "match": "mnp-24-6-SSS-TWC",
+      "week": "6",
+      "round": 2,
+      "machine": "WOF",
+      "division": 0,
+      "score": 46451290,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SSS",
+      "opp": "TWC",
+      "match": "mnp-24-6-SSS-TWC",
+      "week": "6",
+      "round": 4,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 76000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 1496300,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 24000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 171763900,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.716",
-      "num_matches": 5,
-      "ppm": "5.800",
+      "pops": "0.637",
+      "num_matches": 7,
+      "ppm": "5.142",
       "points": {
-        "won": 29,
-        "of": 40.5
+        "won": 36,
+        "of": 56.5
       }
     },
     "div-1": {

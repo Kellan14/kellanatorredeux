@@ -109,16 +109,88 @@
       "score": 454000000,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-24-6-PBR-ADB",
+      "week": "6",
+      "round": 1,
+      "machine": "VEN",
+      "division": 0,
+      "score": 77344550,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-24-6-PBR-ADB",
+      "week": "6",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 83722410,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-24-6-PBR-ADB",
+      "week": "6",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 17464260,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PBR",
+      "opp": "SKP",
+      "match": "mnp-24-7-SKP-PBR",
+      "week": "7",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 6192568860,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SKP",
+      "match": "mnp-24-7-SKP-PBR",
+      "week": "7",
+      "round": 2,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 2576070,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SKP",
+      "match": "mnp-24-7-SKP-PBR",
+      "week": "7",
+      "round": 3,
+      "machine": "BM66",
+      "division": 0,
+      "score": 450000000,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.551",
-      "num_matches": 3,
-      "ppm": "4.500",
+      "pops": "0.621",
+      "num_matches": 5,
+      "ppm": "5.100",
       "points": {
-        "won": 13.5,
-        "of": 24.5
+        "won": 25.5,
+        "of": 41
       }
     },
     "div-1": {

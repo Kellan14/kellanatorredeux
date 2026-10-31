@@ -181,16 +181,88 @@
       "score": 1234000,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-24-6-PBR-ADB",
+      "week": "6",
+      "round": 1,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 101996840,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-24-6-PBR-ADB",
+      "week": "6",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 62240430,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "ADB",
+      "match": "mnp-24-6-PBR-ADB",
+      "week": "6",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 138743990,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SKP",
+      "match": "mnp-24-7-SKP-PBR",
+      "week": "7",
+      "round": 1,
+      "machine": "Dragonfist",
+      "division": 0,
+      "score": 539820,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SKP",
+      "match": "mnp-24-7-SKP-PBR",
+      "week": "7",
+      "round": 3,
+      "machine": "TAF",
+      "division": 0,
+      "score": 31631370,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PBR",
+      "opp": "SKP",
+      "match": "mnp-24-7-SKP-PBR",
+      "week": "7",
+      "round": 4,
+      "machine": "EBD",
+      "division": 0,
+      "score": 1098150,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.476",
-      "num_matches": 5,
-      "ppm": "4.000",
+      "pops": "0.521",
+      "num_matches": 7,
+      "ppm": "4.357",
       "points": {
-        "won": 20,
-        "of": 42
+        "won": 30.5,
+        "of": 58.5
       }
     },
     "div-1": {

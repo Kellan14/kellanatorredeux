@@ -181,16 +181,88 @@
       "score": 181150,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "ETB",
+      "opp": "PGN",
+      "match": "mnp-24-6-ETB-PGN",
+      "week": "6",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 131404320,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "ETB",
+      "opp": "PGN",
+      "match": "mnp-24-6-ETB-PGN",
+      "week": "6",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 41417210,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PGN",
+      "match": "mnp-24-6-ETB-PGN",
+      "week": "6",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 11914330,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "CRA",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 1,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 82480,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "CRA",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 3,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 92660,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ETB",
+      "opp": "CRA",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 4,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 167590,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.536",
-      "num_matches": 5,
-      "ppm": "4.400",
+      "pops": "0.447",
+      "num_matches": 7,
+      "ppm": "3.642",
       "points": {
-        "won": 22,
-        "of": 41
+        "won": 25.5,
+        "of": 57
       }
     },
     "div-1": {

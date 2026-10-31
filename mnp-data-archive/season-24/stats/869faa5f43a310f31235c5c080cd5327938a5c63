@@ -181,16 +181,88 @@
       "score": 60580,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "TBT",
+      "opp": "NQG",
+      "match": "mnp-24-6-NQG-TBT",
+      "week": "6",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 82227560,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TBT",
+      "opp": "NQG",
+      "match": "mnp-24-6-NQG-TBT",
+      "week": "6",
+      "round": 2,
+      "machine": "TZ",
+      "division": 0,
+      "score": 90626120,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TBT",
+      "opp": "NQG",
+      "match": "mnp-24-6-NQG-TBT",
+      "week": "6",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 212111230,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TBT",
+      "opp": "DTP",
+      "match": "mnp-24-7-TBT-DTP",
+      "week": "7",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 20000000,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "TBT",
+      "opp": "DTP",
+      "match": "mnp-24-7-TBT-DTP",
+      "week": "7",
+      "round": 2,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 47710,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "DTP",
+      "match": "mnp-24-7-TBT-DTP",
+      "week": "7",
+      "round": 3,
+      "machine": "Embryon",
+      "division": 0,
+      "score": 64090,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.240",
-      "num_matches": 5,
+      "pops": "0.241",
+      "num_matches": 7,
       "ppm": "2.000",
       "points": {
-        "won": 10,
-        "of": 41.5
+        "won": 14,
+        "of": 58
       }
     },
     "div-1": {

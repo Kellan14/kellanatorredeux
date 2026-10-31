@@ -145,16 +145,88 @@
       "score": 23625140,
       "points": 0.5,
       "pops": "0.200"
+    },
+    {
+      "team": "TTT",
+      "opp": "KNR",
+      "match": "mnp-24-6-KNR-TTT",
+      "week": "6",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 15573700,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "KNR",
+      "match": "mnp-24-6-KNR-TTT",
+      "week": "6",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 17959900,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "KNR",
+      "match": "mnp-24-6-KNR-TTT",
+      "week": "6",
+      "round": 4,
+      "machine": "VEN",
+      "division": 0,
+      "score": 21055940,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TTT",
+      "opp": "SSS",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 29348010,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TTT",
+      "opp": "SSS",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 13915260,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TTT",
+      "opp": "SSS",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 16141780,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.375",
-      "num_matches": 4,
-      "ppm": "3.000",
+      "pops": "0.406",
+      "num_matches": 6,
+      "ppm": "3.250",
       "points": {
-        "won": 12,
-        "of": 32
+        "won": 19.5,
+        "of": 48
       }
     },
     "div-1": {

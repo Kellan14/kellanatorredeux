@@ -181,16 +181,88 @@
       "score": 4650620,
       "points": 2,
       "pops": "0.666"
+    },
+    {
+      "team": "SSS",
+      "opp": "TWC",
+      "match": "mnp-24-6-SSS-TWC",
+      "week": "6",
+      "round": 1,
+      "machine": "RFM",
+      "division": 0,
+      "score": 163677580,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSS",
+      "opp": "TWC",
+      "match": "mnp-24-6-SSS-TWC",
+      "week": "6",
+      "round": 2,
+      "machine": "SEGAGOD",
+      "division": 0,
+      "score": 16526890,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TWC",
+      "match": "mnp-24-6-SSS-TWC",
+      "week": "6",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1501163500,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 4647490,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 2,
+      "machine": "TargetAlpha",
+      "division": 0,
+      "score": 16250,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 17550750,
+      "points": 2,
+      "pops": "0.666"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.578",
-      "num_matches": 5,
-      "ppm": "4.800",
+      "pops": "0.538",
+      "num_matches": 7,
+      "ppm": "4.500",
       "points": {
-        "won": 24,
-        "of": 41.5
+        "won": 31.5,
+        "of": 58.5
       }
     },
     "div-1": {

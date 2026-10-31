@@ -181,16 +181,88 @@
       "score": 941053360,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "NLT",
+      "opp": "CPO",
+      "match": "mnp-24-6-CPO-NLT",
+      "week": "6",
+      "round": 1,
+      "machine": "TWD",
+      "division": 0,
+      "score": 38355300,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NLT",
+      "opp": "CPO",
+      "match": "mnp-24-6-CPO-NLT",
+      "week": "6",
+      "round": 2,
+      "machine": "Indy500",
+      "division": 0,
+      "score": 145797280,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "CPO",
+      "match": "mnp-24-6-CPO-NLT",
+      "week": "6",
+      "round": 3,
+      "machine": "Indy500",
+      "division": 0,
+      "score": 38515270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "NMC",
+      "match": "mnp-24-7-NLT-NMC",
+      "week": "7",
+      "round": 1,
+      "machine": "T2",
+      "division": 0,
+      "score": 33047300,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "NMC",
+      "match": "mnp-24-7-NLT-NMC",
+      "week": "7",
+      "round": 2,
+      "machine": "T2",
+      "division": 0,
+      "score": 15263200,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NLT",
+      "opp": "NMC",
+      "match": "mnp-24-7-NLT-NMC",
+      "week": "7",
+      "round": 3,
+      "machine": "TW",
+      "division": 0,
+      "score": 100570,
+      "points": 1,
+      "pops": "0.333"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.517",
-      "num_matches": 5,
-      "ppm": "4.400",
+      "pops": "0.478",
+      "num_matches": 7,
+      "ppm": "4.071",
       "points": {
-        "won": 22,
-        "of": 42.5
+        "won": 28.5,
+        "of": 59.5
       }
     },
     "div-1": {

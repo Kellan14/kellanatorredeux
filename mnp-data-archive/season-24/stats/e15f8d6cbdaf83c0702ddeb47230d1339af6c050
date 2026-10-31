@@ -181,16 +181,88 @@
       "score": 179741560,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "DRK",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 2,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 35000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "DRK",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 3,
+      "machine": "WOF",
+      "division": 0,
+      "score": 51280600,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "DRK",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 4,
+      "machine": "WOF",
+      "division": 0,
+      "score": 8846360,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SRF",
+      "match": "mnp-24-7-SCN-SRF",
+      "week": "7",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 92708810,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SRF",
+      "match": "mnp-24-7-SCN-SRF",
+      "week": "7",
+      "round": 2,
+      "machine": "SONIC",
+      "division": 0,
+      "score": 240546560,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SRF",
+      "match": "mnp-24-7-SCN-SRF",
+      "week": "7",
+      "round": 4,
+      "machine": "DUNE",
+      "division": 0,
+      "score": 25467940,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.469",
-      "num_matches": 5,
-      "ppm": "3.800",
+      "pops": "0.578",
+      "num_matches": 7,
+      "ppm": "4.714",
       "points": {
-        "won": 19,
-        "of": 40.5
+        "won": 33,
+        "of": 57
       }
     },
     "div-1": {

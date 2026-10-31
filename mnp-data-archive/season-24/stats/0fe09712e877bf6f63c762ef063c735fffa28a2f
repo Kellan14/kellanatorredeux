@@ -109,16 +109,88 @@
       "score": 3763550,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 1,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 143720,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 3,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 319220,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 993930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TWC",
+      "match": "mnp-24-7-TWC-RTR",
+      "week": "7",
+      "round": 2,
+      "machine": "Genie",
+      "division": 0,
+      "score": 216570,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "TWC",
+      "match": "mnp-24-7-TWC-RTR",
+      "week": "7",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 104232420,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TWC",
+      "match": "mnp-24-7-TWC-RTR",
+      "week": "7",
+      "round": 4,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 46500,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.560",
-      "num_matches": 3,
-      "ppm": "4.666",
+      "pops": "0.530",
+      "num_matches": 5,
+      "ppm": "4.400",
       "points": {
-        "won": 14,
-        "of": 25
+        "won": 22,
+        "of": 41.5
       }
     },
     "div-1": {

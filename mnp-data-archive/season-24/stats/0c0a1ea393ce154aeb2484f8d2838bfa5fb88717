@@ -145,16 +145,88 @@
       "score": 117318,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "KBZ",
+      "opp": "BLK",
+      "match": "mnp-24-6-KBZ-BLK",
+      "week": "6",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 337420,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "BLK",
+      "match": "mnp-24-6-KBZ-BLK",
+      "week": "6",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 79782710,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "BLK",
+      "match": "mnp-24-6-KBZ-BLK",
+      "week": "6",
+      "round": 4,
+      "machine": "Indy",
+      "division": 0,
+      "score": 89197220,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "PKT",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 2,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 132250,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KBZ",
+      "opp": "PKT",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 3,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 71230,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "PKT",
+      "match": "mnp-24-7-PKT-KBZ",
+      "week": "7",
+      "round": 4,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 39750,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.333",
-      "num_matches": 4,
-      "ppm": "2.750",
+      "pops": "0.292",
+      "num_matches": 6,
+      "ppm": "2.416",
       "points": {
-        "won": 11,
-        "of": 33
+        "won": 14.5,
+        "of": 49.5
       }
     },
     "div-1": {

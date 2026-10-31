@@ -181,16 +181,88 @@
       "score": 48750,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 1,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 106620,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 2,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 38107880,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 24512210,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "ETB",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 1,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 216070,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "ETB",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 4658470,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "ETB",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 4,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 297850,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.456",
-      "num_matches": 5,
-      "ppm": "3.700",
+      "pops": "0.486",
+      "num_matches": 7,
+      "ppm": "3.928",
       "points": {
-        "won": 18.5,
-        "of": 40.5
+        "won": 27.5,
+        "of": 56.5
       }
     },
     "div-1": {

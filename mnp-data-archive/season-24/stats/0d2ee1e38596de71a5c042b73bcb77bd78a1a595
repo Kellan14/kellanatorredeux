@@ -109,16 +109,88 @@
       "score": 24092050,
       "points": 3,
       "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "SCN",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 1,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 59090500,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "SCN",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 2,
+      "machine": "LZ",
+      "division": 0,
+      "score": 9063250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "SCN",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 4,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 77467650,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "DIH",
+      "match": "mnp-24-7-DIH-DRK",
+      "week": "7",
+      "round": 1,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 33461150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "DIH",
+      "match": "mnp-24-7-DIH-DRK",
+      "week": "7",
+      "round": 2,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 49521080,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "DIH",
+      "match": "mnp-24-7-DIH-DRK",
+      "week": "7",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 2578680,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.400",
-      "num_matches": 3,
-      "ppm": "3.333",
+      "pops": "0.433",
+      "num_matches": 5,
+      "ppm": "3.600",
       "points": {
-        "won": 10,
-        "of": 25
+        "won": 18,
+        "of": 41.5
       }
     },
     "div-1": {

@@ -181,16 +181,88 @@
       "score": 13750860,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "NQG",
+      "opp": "TBT",
+      "match": "mnp-24-6-NQG-TBT",
+      "week": "6",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 72031660,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NQG",
+      "opp": "TBT",
+      "match": "mnp-24-6-NQG-TBT",
+      "week": "6",
+      "round": 2,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 640600430,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NQG",
+      "opp": "TBT",
+      "match": "mnp-24-6-NQG-TBT",
+      "week": "6",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 108160640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "PGN",
+      "match": "mnp-24-7-PGN-NQG",
+      "week": "7",
+      "round": 1,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 43369910,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "PGN",
+      "match": "mnp-24-7-PGN-NQG",
+      "week": "7",
+      "round": 2,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 10891620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "PGN",
+      "match": "mnp-24-7-PGN-NQG",
+      "week": "7",
+      "round": 4,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 54702450,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.325",
-      "num_matches": 5,
-      "ppm": "2.700",
+      "pops": "0.382",
+      "num_matches": 7,
+      "ppm": "3.142",
       "points": {
-        "won": 13.5,
-        "of": 41.5
+        "won": 22,
+        "of": 57.5
       }
     },
     "div-1": {

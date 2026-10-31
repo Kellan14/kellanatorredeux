@@ -181,16 +181,88 @@
       "score": 526800,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "POW",
+      "match": "mnp-24-6-POW-FBP",
+      "week": "6",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 48627830,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "POW",
+      "match": "mnp-24-6-POW-FBP",
+      "week": "6",
+      "round": 2,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 230000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "FBP",
+      "opp": "POW",
+      "match": "mnp-24-6-POW-FBP",
+      "week": "6",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 44406910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "TRL",
+      "match": "mnp-24-7-FBP-TRL",
+      "week": "7",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 135795120,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "TRL",
+      "match": "mnp-24-7-FBP-TRL",
+      "week": "7",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 113204580,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "TRL",
+      "match": "mnp-24-7-FBP-TRL",
+      "week": "7",
+      "round": 4,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 82041770,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.573",
-      "num_matches": 5,
-      "ppm": "4.700",
+      "pops": "0.582",
+      "num_matches": 7,
+      "ppm": "4.785",
       "points": {
-        "won": 23.5,
-        "of": 41
+        "won": 33.5,
+        "of": 57.5
       }
     },
     "div-1": {

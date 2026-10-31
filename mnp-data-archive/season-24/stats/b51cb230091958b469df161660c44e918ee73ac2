@@ -145,16 +145,88 @@
       "score": 26504160,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "PKT",
+      "match": "mnp-24-6-ICB-PKT",
+      "week": "6",
+      "round": 1,
+      "machine": "BDK",
+      "division": 0,
+      "score": 38004130,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "PKT",
+      "match": "mnp-24-6-ICB-PKT",
+      "week": "6",
+      "round": 2,
+      "machine": "BDK",
+      "division": 0,
+      "score": 8087810,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ICB",
+      "opp": "PKT",
+      "match": "mnp-24-6-ICB-PKT",
+      "week": "6",
+      "round": 4,
+      "machine": "BDK",
+      "division": 0,
+      "score": 41340020,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ICB",
+      "opp": "JMF",
+      "match": "mnp-24-7-JMF-ICB",
+      "week": "7",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 43677470,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "ICB",
+      "opp": "JMF",
+      "match": "mnp-24-7-JMF-ICB",
+      "week": "7",
+      "round": 3,
+      "machine": "VEN",
+      "division": 0,
+      "score": 11028910,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "JMF",
+      "match": "mnp-24-7-JMF-ICB",
+      "week": "7",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 19170080,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.390",
-      "num_matches": 4,
-      "ppm": "3.125",
+      "pops": "0.354",
+      "num_matches": 6,
+      "ppm": "2.833",
       "points": {
-        "won": 12.5,
-        "of": 32
+        "won": 17,
+        "of": 48
       }
     },
     "div-1": {

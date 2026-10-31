@@ -181,16 +181,88 @@
       "score": 279860,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TWC",
+      "match": "mnp-24-6-SSS-TWC",
+      "week": "6",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 371765340,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "TWC",
+      "match": "mnp-24-6-SSS-TWC",
+      "week": "6",
+      "round": 2,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 15755610,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSS",
+      "opp": "TWC",
+      "match": "mnp-24-6-SSS-TWC",
+      "week": "6",
+      "round": 4,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 193000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 1,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 57853450,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 3,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 71452050,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SSS",
+      "opp": "TTT",
+      "match": "mnp-24-7-TTT-SSS",
+      "week": "7",
+      "round": 4,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 90454570,
+      "points": 2,
+      "pops": "0.800"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.609",
-      "num_matches": 5,
-      "ppm": "5.000",
+      "pops": "0.570",
+      "num_matches": 7,
+      "ppm": "4.642",
       "points": {
-        "won": 25,
-        "of": 41
+        "won": 32.5,
+        "of": 57
       }
     },
     "div-1": {

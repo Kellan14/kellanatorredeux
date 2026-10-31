@@ -181,16 +181,88 @@
       "score": 417740,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 1,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 399390,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 3,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 122832400,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "RTR",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 344206590,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "ETB",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 1,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 355160,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "ETB",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 3,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 67320,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "ETB",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 4,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 677090,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.837",
-      "num_matches": 5,
-      "ppm": "6.700",
+      "pops": "0.848",
+      "num_matches": 7,
+      "ppm": "6.785",
       "points": {
-        "won": 33.5,
-        "of": 40
+        "won": 47.5,
+        "of": 56
       }
     },
     "div-1": {

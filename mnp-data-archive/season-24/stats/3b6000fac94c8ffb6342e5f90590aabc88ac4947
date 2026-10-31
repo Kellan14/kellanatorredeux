@@ -145,16 +145,88 @@
       "score": 24577870,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DTP",
+      "match": "mnp-24-6-DTP-DOG",
+      "week": "6",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 567000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DTP",
+      "match": "mnp-24-6-DTP-DOG",
+      "week": "6",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 3447143610,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DOG",
+      "opp": "DTP",
+      "match": "mnp-24-6-DTP-DOG",
+      "week": "6",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1702269490,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-24-7-DOG-DSV",
+      "week": "7",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 2563360,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-24-7-DOG-DSV",
+      "week": "7",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 150985840,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "DSV",
+      "match": "mnp-24-7-DOG-DSV",
+      "week": "7",
+      "round": 4,
+      "machine": "KONG",
+      "division": 0,
+      "score": 21984010,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.538",
-      "num_matches": 4,
-      "ppm": "4.375",
+      "pops": "0.525",
+      "num_matches": 6,
+      "ppm": "4.250",
       "points": {
-        "won": 17.5,
-        "of": 32.5
+        "won": 25.5,
+        "of": 48.5
       }
     },
     "div-1": {

@@ -109,16 +109,88 @@
       "score": 94748930,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "KBZ",
+      "match": "mnp-24-6-KBZ-BLK",
+      "week": "6",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 74054190,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "KBZ",
+      "match": "mnp-24-6-KBZ-BLK",
+      "week": "6",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 293483370,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "KBZ",
+      "match": "mnp-24-6-KBZ-BLK",
+      "week": "6",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 270413340,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "KNR",
+      "match": "mnp-24-7-BLK-KNR",
+      "week": "7",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 88162050,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "KNR",
+      "match": "mnp-24-7-BLK-KNR",
+      "week": "7",
+      "round": 3,
+      "machine": "METREM",
+      "division": 0,
+      "score": 12945330,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "KNR",
+      "match": "mnp-24-7-BLK-KNR",
+      "week": "7",
+      "round": 4,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 746370,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.580",
-      "num_matches": 3,
-      "ppm": "4.833",
+      "pops": "0.670",
+      "num_matches": 5,
+      "ppm": "5.500",
       "points": {
-        "won": 14.5,
-        "of": 25
+        "won": 27.5,
+        "of": 41
       }
     },
     "div-1": {

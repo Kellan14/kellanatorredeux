@@ -181,16 +181,88 @@
       "score": 68894350,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "DRK",
+      "opp": "SCN",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 87569450,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "SCN",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 3,
+      "machine": "GOT",
+      "division": 0,
+      "score": 43200000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "SCN",
+      "match": "mnp-24-6-DRK-SCN",
+      "week": "6",
+      "round": 4,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 141000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DRK",
+      "opp": "DIH",
+      "match": "mnp-24-7-DIH-DRK",
+      "week": "7",
+      "round": 1,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 68768320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "DIH",
+      "match": "mnp-24-7-DIH-DRK",
+      "week": "7",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 72980510,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DRK",
+      "opp": "DIH",
+      "match": "mnp-24-7-DIH-DRK",
+      "week": "7",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 469786490,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.463",
-      "num_matches": 5,
-      "ppm": "3.800",
+      "pops": "0.412",
+      "num_matches": 7,
+      "ppm": "3.357",
       "points": {
-        "won": 19,
-        "of": 41
+        "won": 23.5,
+        "of": 57
       }
     },
     "div-1": {

@@ -181,16 +181,88 @@
       "score": 214390,
       "points": 2,
       "pops": "0.800"
+    },
+    {
+      "team": "TBT",
+      "opp": "NQG",
+      "match": "mnp-24-6-NQG-TBT",
+      "week": "6",
+      "round": 1,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 106666670,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TBT",
+      "opp": "NQG",
+      "match": "mnp-24-6-NQG-TBT",
+      "week": "6",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 13144430,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TBT",
+      "opp": "NQG",
+      "match": "mnp-24-6-NQG-TBT",
+      "week": "6",
+      "round": 4,
+      "machine": "TOM",
+      "division": 0,
+      "score": 780639050,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "DTP",
+      "match": "mnp-24-7-TBT-DTP",
+      "week": "7",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1964263260,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TBT",
+      "opp": "DTP",
+      "match": "mnp-24-7-TBT-DTP",
+      "week": "7",
+      "round": 2,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 243000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "DTP",
+      "match": "mnp-24-7-TBT-DTP",
+      "week": "7",
+      "round": 3,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 260000,
+      "points": 1,
+      "pops": "0.333"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.402",
-      "num_matches": 5,
-      "ppm": "3.300",
+      "pops": "0.460",
+      "num_matches": 7,
+      "ppm": "3.785",
       "points": {
-        "won": 16.5,
-        "of": 41
+        "won": 26.5,
+        "of": 57.5
       }
     },
     "div-1": {

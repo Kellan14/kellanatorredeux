@@ -145,16 +145,88 @@
       "score": 27868100,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SKP",
+      "match": "mnp-24-6-SSD-SKP",
+      "week": "6",
+      "round": 1,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 8045890,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SSD",
+      "opp": "SKP",
+      "match": "mnp-24-6-SSD-SKP",
+      "week": "6",
+      "round": 2,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 48630,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SKP",
+      "match": "mnp-24-6-SSD-SKP",
+      "week": "6",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 1593600,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "ZOO",
+      "match": "mnp-24-7-ZOO-SSD",
+      "week": "7",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 12962660,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSD",
+      "opp": "ZOO",
+      "match": "mnp-24-7-ZOO-SSD",
+      "week": "7",
+      "round": 2,
+      "machine": "Indy",
+      "division": 0,
+      "score": 57640080,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "ZOO",
+      "match": "mnp-24-7-ZOO-SSD",
+      "week": "7",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 57462880,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.058",
-      "num_matches": 4,
-      "ppm": "0.500",
+      "pops": "0.210",
+      "num_matches": 6,
+      "ppm": "1.750",
       "points": {
-        "won": 2,
-        "of": 34
+        "won": 10.5,
+        "of": 50
       }
     },
     "div-1": {

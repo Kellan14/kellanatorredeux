@@ -181,16 +181,88 @@
       "score": 18199580,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "SWL",
+      "match": "mnp-24-6-SWL-SHK",
+      "week": "6",
+      "round": 2,
+      "machine": "SNS",
+      "division": 0,
+      "score": 62220,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "SWL",
+      "match": "mnp-24-6-SWL-SHK",
+      "week": "6",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 25400240,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "SWL",
+      "match": "mnp-24-6-SWL-SHK",
+      "week": "6",
+      "round": 4,
+      "machine": "SNS",
+      "division": 0,
+      "score": 50550,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "CPO",
+      "match": "mnp-24-7-SHK-CPO",
+      "week": "7",
+      "round": 1,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 3756200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "CPO",
+      "match": "mnp-24-7-SHK-CPO",
+      "week": "7",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 8818810,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "CPO",
+      "match": "mnp-24-7-SHK-CPO",
+      "week": "7",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 117250,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.358",
-      "num_matches": 5,
-      "ppm": "2.900",
+      "pops": "0.307",
+      "num_matches": 7,
+      "ppm": "2.500",
       "points": {
-        "won": 14.5,
-        "of": 40.5
+        "won": 17.5,
+        "of": 57
       }
     },
     "div-1": {

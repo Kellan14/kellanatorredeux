@@ -181,16 +181,88 @@
       "score": 215154210,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "ETB",
+      "opp": "PGN",
+      "match": "mnp-24-6-ETB-PGN",
+      "week": "6",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 33497970,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PGN",
+      "match": "mnp-24-6-ETB-PGN",
+      "week": "6",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 2630530,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "PGN",
+      "match": "mnp-24-6-ETB-PGN",
+      "week": "6",
+      "round": 4,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 67765730,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "CRA",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 53054100,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ETB",
+      "opp": "CRA",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 311337220,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ETB",
+      "opp": "CRA",
+      "match": "mnp-24-7-CRA-ETB",
+      "week": "7",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 140166830,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.469",
-      "num_matches": 5,
-      "ppm": "3.900",
+      "pops": "0.525",
+      "num_matches": 7,
+      "ppm": "4.357",
       "points": {
-        "won": 19.5,
-        "of": 41.5
+        "won": 30.5,
+        "of": 58
       }
     },
     "div-1": {

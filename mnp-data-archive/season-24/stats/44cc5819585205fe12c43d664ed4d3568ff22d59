@@ -109,16 +109,88 @@
       "score": 76387730,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 1,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 229730,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 3678200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "CRA",
+      "match": "mnp-24-6-RTR-CRA",
+      "week": "6",
+      "round": 4,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 113686440,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TWC",
+      "match": "mnp-24-7-TWC-RTR",
+      "week": "7",
+      "round": 1,
+      "machine": "Indy500",
+      "division": 0,
+      "score": 128534330,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TWC",
+      "match": "mnp-24-7-TWC-RTR",
+      "week": "7",
+      "round": 2,
+      "machine": "Taxi",
+      "division": 0,
+      "score": 1211540,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TWC",
+      "match": "mnp-24-7-TWC-RTR",
+      "week": "7",
+      "round": 3,
+      "machine": "GOT",
+      "division": 0,
+      "score": 365621000,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.860",
-      "num_matches": 3,
-      "ppm": "7.166",
+      "pops": "0.686",
+      "num_matches": 5,
+      "ppm": "5.700",
       "points": {
-        "won": 21.5,
-        "of": 25
+        "won": 28.5,
+        "of": 41.5
       }
     },
     "div-1": {

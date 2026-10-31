@@ -157,16 +157,88 @@
       "score": 3995070,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "SRF",
+      "match": "mnp-24-6-SRF-ZOO",
+      "week": "6",
+      "round": 1,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 123753040,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "SRF",
+      "match": "mnp-24-6-SRF-ZOO",
+      "week": "6",
+      "round": 2,
+      "machine": "LZ",
+      "division": 0,
+      "score": 26376380,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ZOO",
+      "opp": "SRF",
+      "match": "mnp-24-6-SRF-ZOO",
+      "week": "6",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 155672040,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "ZOO",
+      "opp": "SSD",
+      "match": "mnp-24-7-ZOO-SSD",
+      "week": "7",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 164909110,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "SSD",
+      "match": "mnp-24-7-ZOO-SSD",
+      "week": "7",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 33568450,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "ZOO",
+      "opp": "SSD",
+      "match": "mnp-24-7-ZOO-SSD",
+      "week": "7",
+      "round": 3,
+      "machine": "Indy",
+      "division": 0,
+      "score": 175951530,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.402",
-      "num_matches": 4,
-      "ppm": "3.625",
+      "pops": "0.495",
+      "num_matches": 6,
+      "ppm": "4.333",
       "points": {
-        "won": 14.5,
-        "of": 36
+        "won": 26,
+        "of": 52.5
       }
     },
     "div-1": {

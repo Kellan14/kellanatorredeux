@@ -181,16 +181,88 @@
       "score": 336710,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "ZOO",
+      "match": "mnp-24-6-SRF-ZOO",
+      "week": "6",
+      "round": 1,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 27778670,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "ZOO",
+      "match": "mnp-24-6-SRF-ZOO",
+      "week": "6",
+      "round": 2,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 101030960,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SRF",
+      "opp": "ZOO",
+      "match": "mnp-24-6-SRF-ZOO",
+      "week": "6",
+      "round": 4,
+      "machine": "007",
+      "division": 0,
+      "score": 19120010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "SCN",
+      "match": "mnp-24-7-SCN-SRF",
+      "week": "7",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 4500000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "SCN",
+      "match": "mnp-24-7-SCN-SRF",
+      "week": "7",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 499850,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SRF",
+      "opp": "SCN",
+      "match": "mnp-24-7-SCN-SRF",
+      "week": "7",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 979220,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.675",
-      "num_matches": 5,
-      "ppm": "5.400",
+      "pops": "0.616",
+      "num_matches": 7,
+      "ppm": "4.928",
       "points": {
-        "won": 27,
-        "of": 40
+        "won": 34.5,
+        "of": 56
       }
     },
     "div-1": {

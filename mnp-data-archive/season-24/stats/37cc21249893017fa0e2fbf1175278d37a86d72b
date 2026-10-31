@@ -145,16 +145,88 @@
       "score": 233195470,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "RMS",
+      "match": "mnp-24-6-RMS-BAD",
+      "week": "6",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 633149790,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "RMS",
+      "match": "mnp-24-6-RMS-BAD",
+      "week": "6",
+      "round": 2,
+      "machine": "BM66",
+      "division": 0,
+      "score": 2143792410,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "RMS",
+      "match": "mnp-24-6-RMS-BAD",
+      "week": "6",
+      "round": 4,
+      "machine": "BM66",
+      "division": 0,
+      "score": 1881629820,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "POW",
+      "match": "mnp-24-7-BAD-POW",
+      "week": "7",
+      "round": 2,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 245836450,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "POW",
+      "match": "mnp-24-7-BAD-POW",
+      "week": "7",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 11537540,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "POW",
+      "match": "mnp-24-7-BAD-POW",
+      "week": "7",
+      "round": 4,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 207042030,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.742",
-      "num_matches": 4,
-      "ppm": "6.125",
+      "pops": "0.717",
+      "num_matches": 6,
+      "ppm": "5.916",
       "points": {
-        "won": 24.5,
-        "of": 33
+        "won": 35.5,
+        "of": 49.5
       }
     },
     "div-1": {

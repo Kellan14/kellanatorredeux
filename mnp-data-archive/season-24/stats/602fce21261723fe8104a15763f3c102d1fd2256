@@ -181,16 +181,88 @@
       "score": 15465240,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "SHK",
+      "match": "mnp-24-6-SWL-SHK",
+      "week": "6",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 49338140,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "SHK",
+      "match": "mnp-24-6-SWL-SHK",
+      "week": "6",
+      "round": 2,
+      "machine": "SNS",
+      "division": 0,
+      "score": 24480,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "SHK",
+      "match": "mnp-24-6-SWL-SHK",
+      "week": "6",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 14356440,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SWL",
+      "opp": "PYC",
+      "match": "mnp-24-7-PYC-SWL",
+      "week": "7",
+      "round": 1,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 137602150,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "PYC",
+      "match": "mnp-24-7-PYC-SWL",
+      "week": "7",
+      "round": 2,
+      "machine": "SONIC",
+      "division": 0,
+      "score": 146000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SWL",
+      "opp": "PYC",
+      "match": "mnp-24-7-PYC-SWL",
+      "week": "7",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 65442850,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.426",
-      "num_matches": 5,
-      "ppm": "3.500",
+      "pops": "0.421",
+      "num_matches": 7,
+      "ppm": "3.428",
       "points": {
-        "won": 17.5,
-        "of": 41
+        "won": 24,
+        "of": 57
       }
     },
     "div-1": {
