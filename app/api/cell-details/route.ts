@@ -61,13 +61,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Determine which team to filter by based on the column
+    const isVenueAverage = column.trim().toLowerCase() === 'venue avg';
     const isTWCColumn = column.toLowerCase().includes('twc');
-    const targetTeam = isTWCColumn ? twcTeam : team;
+    const targetTeam = isVenueAverage ? null : isTWCColumn ? twcTeam : team;
 
     // Respect venue-specific flags: if the relevant flag is false, query all venues
     const teamVenueSpecific = searchParams.get('teamVenueSpecific') === 'true';
     const twcVenueSpecific = searchParams.get('twcVenueSpecific') === 'true';
-    const useVenueFilter = isTWCColumn ? twcVenueSpecific : teamVenueSpecific;
+    const useVenueFilter = isVenueAverage || (isTWCColumn ? twcVenueSpecific : teamVenueSpecific);
 
     console.log('[cell-details] Target team:', targetTeam, 'isTWCColumn:', isTWCColumn, 'venueFiltered:', useVenueFilter);
 
@@ -180,7 +181,7 @@ export async function GET(request: NextRequest) {
         if (!playerName || score === null || score === undefined) continue;
 
         // Only include scores from the target team
-        if (!targetTeam || teamName.toLowerCase() !== targetTeam.toLowerCase()) {
+        if (!isVenueAverage && (!targetTeam || teamName.toLowerCase() !== targetTeam.toLowerCase())) {
           continue;
         }
 
@@ -190,7 +191,7 @@ export async function GET(request: NextRequest) {
           continue;
         }
         // Same for opponent team — restrict to current roster players.
-        if (!isTWCColumn && opponentRosterFilter && !opponentRosterFilter.has(playerName)) {
+        if (!isVenueAverage && !isTWCColumn && opponentRosterFilter && !opponentRosterFilter.has(playerName)) {
           continue;
         }
 
