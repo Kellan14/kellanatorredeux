@@ -1140,14 +1140,21 @@ export default function StatsPage() {
           )}
 
           {!loading && machineStats.length > 0 && (
-            <div className="overflow-x-auto -mx-4 md:mx-0">
-              <Table className="text-xs md:text-sm">
+              <Table
+                className="text-xs md:text-sm"
+                containerProps={{
+                  className: 'max-h-[70dvh] -mx-4 md:mx-0',
+                  role: 'region',
+                  'aria-label': 'Machine statistics',
+                  tabIndex: 0,
+                }}
+              >
                 <TableHeader>
                   <TableRow>
                     {visibleColumns.map((col) => (
                       <TableHead
                         key={col.key}
-                        className="cursor-pointer px-2 md:px-4 py-2 md:py-3 whitespace-nowrap"
+                        className={`sticky top-0 bg-background shadow-[inset_0_-1px_0_hsl(var(--border))] cursor-pointer px-2 md:px-4 py-2 md:py-3 whitespace-nowrap ${col.key === 'machine' ? 'left-0 z-30' : 'z-20'}`}
                         onClick={() => handleSort(col.key)}
                       >
                         <span className="text-[10px] md:text-sm">{scopeColumnLabel(col.key, col.label)}</span> <SortIcon column={col.key} />
@@ -1161,7 +1168,7 @@ export default function StatsPage() {
                       {visibleColumns.map((col) => (
                         <TableCell
                           key={col.key}
-                          className={`px-2 md:px-4 py-1.5 md:py-3 whitespace-nowrap ${col.key === 'machine' ? 'font-medium sticky left-0 bg-background' : 'cursor-pointer hover:bg-muted/50'}`}
+                          className={`px-2 md:px-4 py-1.5 md:py-3 whitespace-nowrap ${col.key === 'machine' ? 'font-medium sticky left-0 z-10 bg-background' : 'cursor-pointer hover:bg-muted/50'}`}
                           onClick={() => handleCellClick(stat.machine, col.key)}
                         >
                           <span className="text-[10px] md:text-sm">{col.key === 'machine' ? machineLabel(stat.machine) : getCellValue(stat, col.key)}</span>
@@ -1171,7 +1178,6 @@ export default function StatsPage() {
                   ))}
                 </TableBody>
               </Table>
-            </div>
           )}
 
           {!loading && machineStats.length === 0 && (
