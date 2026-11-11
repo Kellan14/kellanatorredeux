@@ -1,7 +1,33 @@
 export type DoublesExclusions = Record<string, string[]>
 export type DoublesLineup = {
   score: number
-  picks: { machine: string; players: string[] }[]
+  picks: { machine: string; players: string[]; opponents?: string[] }[]
+}
+
+export const doublesMetricOptions = [
+  { key: 'twcVenue', label: 'Highest TWC % of venue avg', low: false, spread: false },
+  { key: 'oppVenue', label: 'Lowest opponent % of venue avg', low: true, spread: false },
+  { key: 'venueSpread', label: 'Best % of venue avg spread', low: false, spread: true },
+  { key: 'twcPops', label: 'Highest TWC POPS', low: false, spread: false },
+  { key: 'oppPops', label: 'Lowest opponent POPS', low: true, spread: false },
+  { key: 'popsSpread', label: 'Best POPS spread', low: false, spread: true },
+] as const
+export type DoublesMetrics = Record<typeof doublesMetricOptions[number]['key'], number | null>
+
+export function bestDoublesMetrics(metrics: DoublesMetrics[]) {
+  return doublesMetricOptions.map(option => {
+    let index = -1
+    let value: number | null = null
+    metrics.forEach((lineup, i) => {
+      const candidate = lineup[option.key]
+      if (candidate !== null && Number.isFinite(candidate) &&
+          (value === null || (option.low ? candidate < value : candidate > value))) {
+        value = candidate
+        index = i
+      }
+    })
+    return { ...option, index, value: value as number | null }
+  })
 }
 
 function exclusionKey(exclusions: DoublesExclusions) {

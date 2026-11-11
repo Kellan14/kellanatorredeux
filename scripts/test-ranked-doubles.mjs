@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { rankDoublesRuns } from '../lib/ranked-doubles.ts'
+import { bestDoublesMetrics, rankDoublesRuns } from '../lib/ranked-doubles.ts'
 
 const lineup = (score, machine, players) => ({ score, picks: [{ machine, players }] })
 const control = new AbortController()
@@ -36,3 +36,12 @@ const stopped = await rankDoublesRuns({
 assert.equal(stopped.completed, 1)
 assert.equal(stopped.lineups.length, 1, 'Stop retains completed lineups')
 console.log('Ranked doubles: alternate branches, ranking, uniqueness, constraints and stop verified')
+
+const metrics = bestDoublesMetrics([
+  { twcVenue: 110, oppVenue: 85, venueSpread: 25, twcPops: 80, oppPops: 40, popsSpread: 40 },
+  { twcVenue: 130, oppVenue: 95, venueSpread: 35, twcPops: 75, oppPops: 0, popsSpread: 75 },
+  { twcVenue: null, oppVenue: null, venueSpread: null, twcPops: null, oppPops: null, popsSpread: null },
+])
+assert.deepEqual(metrics.map(m => m.index), [1, 0, 1, 0, 1, 1])
+assert.equal(metrics.find(m => m.key === 'oppPops').value, 0, 'Real zero counts, unlike missing data')
+console.log('Doubles metric winners: min, max, spread, missing data and real zero verified')

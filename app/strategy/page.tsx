@@ -64,7 +64,7 @@ import { TwcPlayerAvailability } from '@/components/twc-player-availability'
 import { PlayerAvailability } from '@/components/player-availability'
 import type { PlayerMachineStats, OptimizationResult } from '@/types/strategy'
 import { authFetch } from '@/lib/auth-fetch'
-import { rankDoublesRuns, type DoublesLineup } from '@/lib/ranked-doubles'
+import { bestDoublesMetrics, doublesMetricOptions, rankDoublesRuns, type DoublesLineup, type DoublesMetrics } from '@/lib/ranked-doubles'
 
 interface Team {
   key: string
@@ -1087,6 +1087,8 @@ export default function StrategyPage() {
   const [doublesIterations, setDoublesIterations] = useState('5')
   const [doublesRunCount, setDoublesRunCount] = useState(0)
   const [rankedDoubles, setRankedDoubles] = useState<DoublesLineup[] | null>(null)
+  const [doublesMetrics, setDoublesMetrics] = useState<{ metrics: DoublesMetrics; opponents: string[][] }[]>([])
+  const [calculatingDoublesMetrics, setCalculatingDoublesMetrics] = useState(false)
   const [doublesRunError, setDoublesRunError] = useState('')
   const [generatingDoubles, setGeneratingDoubles] = useState(false)
   const doublesRun = useRef<AbortController | null>(null)
@@ -1102,6 +1104,7 @@ export default function StrategyPage() {
     const mustPlay = Array.from(satOutPlayers).filter(player => players.includes(player))
     setDoublesRunError('')
     setRankedDoubles(null)
+    setDoublesMetrics([])
     setDoublesRunCount(0)
     if (!Number.isInteger(iterations) || iterations < 1 || iterations > 20) {
       setDoublesRunError('Choose between 1 and 20 iterations.')
@@ -1150,27 +1153,45 @@ export default function StrategyPage() {
           const data = await response.json()
           if (!response.ok) throw new Error(data.error || 'Could not generate doubles.')
           if (greedy) {
-            const recommendations: { machine: string; players: string[]; stats: { performanceScore: number }[] }[] =
+            const recommendations: { machine: string; players: string[]; stats: { performanceScore: number }[]; assumedOpponents?: { player: string }[] }[] =
               data.recommendations || []
             return {
               // Use performance only; the greedy selection bonus for must-play
               // players is a constraint, not a performance measure.
               score: recommendations.reduce((sum, pick) => sum +
                 pick.stats.reduce((total, player) => total + player.performanceScore / 100, 0), 0),
-              picks: recommendations.map(({ machine, players }) => ({ machine, players })),
+              picks: recommendations.map(({ machine, players, assumedOpponents }) => ({
+                machine, players, opponents: assumedOpponents?.map(p => p.player),
+              })),
             }
           }
           const assignments: { machine_id: string; player1_id: string; player2_id: string }[] = data.assignments || []
-          return { score: data.total_score, picks: assignments.map(p => ({ machine: p.machine_id, players: [p.player1_id, p.player2_id] })) }
+          return { score: data.total_score, picks: assignments.map(p => ({
+            machine: p.machine_id, players: [p.player1_id, p.player2_id],
+            opponents: data.assumedOpponents?.[p.machine_id]?.map((opponent: { player: string }) => opponent.player),
+          })) }
         },
       })
       if (doublesRun.current === controller) setRankedDoubles(result.lineups)
+      if (!controller.signal.aborted && result.lineups.length) {
+        setCalculatingDoublesMetrics(true)
+        const response = await fetch('/api/strategy/doubles-metrics', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: controller.signal,
+          body: JSON.stringify({ lineups: result.lineups, opponentPlayers: settings.opponentPlayers,
+            venue: settings.venue, seasonStart: settings.seasonStart, seasonEnd: settings.seasonEnd,
+            twcVenueSpecific, teamVenueSpecific }),
+        })
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.error || 'Could not compare doubles metrics.')
+        if (!controller.signal.aborted) setDoublesMetrics(data.results)
+      }
     } catch (error) {
       if (!controller.signal.aborted) setDoublesRunError(error instanceof Error ? error.message : 'Could not generate doubles.')
     } finally {
       if (doublesRun.current === controller) {
         doublesRun.current = null
         setGeneratingDoubles(false)
+        setCalculatingDoublesMetrics(false)
       }
     }
   }
@@ -5304,6 +5325,7 @@ export default function StrategyPage() {
               <Select value={doublesMethod} disabled={generatingDoubles} onValueChange={value => {
                 setDoublesMethod(value as 'greedy' | 'hungarian')
                 setRankedDoubles(null)
+                setDoublesMetrics([])
                 setDoublesRunError('')
               }}>
                 <SelectTrigger id="doubles-method"><SelectValue /></SelectTrigger>
@@ -5326,17 +5348,47 @@ export default function StrategyPage() {
             </Button>
             {generatingDoubles && <Button variant="outline" onClick={() => doublesRun.current?.abort()}>Stop</Button>}
           </div>
-          {generatingDoubles && <p role="status" className="text-sm text-muted-foreground">{doublesRunCount} of {doublesIterations} iterations complete…</p>}
+          {generatingDoubles && <p role="status" className="text-sm text-muted-foreground">{calculatingDoublesMetrics
+            ? 'Comparing venue averages and POPS…'
+            : `${doublesRunCount} of ${doublesIterations} iterations complete…`}</p>}
           {doublesRunError && <p role="alert" className="text-sm text-destructive">{doublesRunError}</p>}
           {rankedDoubles && <div className="space-y-3">
             <p className="text-sm text-muted-foreground">{rankedDoubles.length
               ? `${rankedDoubles.length} distinct lineups in ${doublesRunCount} iterations, ranked by model score.`
               : 'No complete lineups found. Check player and machine exclusions.'}</p>
-            {rankedDoubles.map((lineup, index) => <div key={index} className="rounded-md border p-3">
+            {doublesMetrics.length > 0 && <div className="space-y-2 rounded-md border p-3">
+              <h3 className="font-medium">Best by metric</h3>
+              <p className="text-xs text-muted-foreground">Among the generated lineups. Uses historical stats for assigned players and projected opponents. Spread is TWC minus opponent, in percentage points.</p>
+              <dl className="space-y-2 text-sm">
+                {bestDoublesMetrics(doublesMetrics.map(result => result.metrics)).map(metric => (
+                  <div key={metric.key} className="flex items-baseline justify-between gap-2">
+                    <dt>{metric.label}</dt>
+                    <dd className="shrink-0 tabular-nums">
+                      {metric.value === null ? 'Not enough data' : (
+                        <button type="button" className="underline" onClick={() => document.getElementById(`doubles-lineup-${metric.index}`)?.scrollIntoView({ block: 'nearest' })}>
+                          #{metric.index + 1} · {metric.value.toFixed(1)}{metric.spread ? ' pp' : '%'}
+                        </button>
+                      )}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>}
+            {rankedDoubles.map((lineup, index) => <div key={index} id={`doubles-lineup-${index}`} className="rounded-md border p-3">
               <h3 className="mb-2 font-medium">#{index + 1} · Score {lineup.score.toFixed(2)}</h3>
               <ul className="space-y-1 text-sm">
-                {lineup.picks.map(pick => <li key={pick.machine}><span className="font-medium">{getMachineDisplayName(pick.machine)}</span>: {pick.players.join(' & ')}</li>)}
+                {lineup.picks.map((pick, i) => <li key={pick.machine}>
+                  <span className="font-medium">{getMachineDisplayName(pick.machine)}</span>: {pick.players.join(' & ')}
+                  {!!doublesMetrics[index]?.opponents[i]?.length && <span className="text-muted-foreground"> vs {doublesMetrics[index].opponents[i].join(' & ')}</span>}
+                </li>)}
               </ul>
+              {doublesMetrics[index] && <dl className="mt-3 grid grid-cols-2 gap-2 border-t pt-2 text-xs sm:grid-cols-3">
+                {doublesMetricOptions.map(metric => {
+                  const value = doublesMetrics[index].metrics[metric.key]
+                  return <div key={metric.key}><dt className="text-muted-foreground">{metric.label.replace(/^(Highest|Lowest|Best) /, '')}</dt>
+                    <dd className="tabular-nums">{value === null ? '—' : `${value.toFixed(1)}${metric.spread ? ' pp' : '%'}`}</dd></div>
+                })}
+              </dl>}
             </div>)}
           </div>}
         </DialogContent>
