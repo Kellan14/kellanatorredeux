@@ -38,6 +38,7 @@ import { PlayerAvailability } from '@/components/player-availability'
 import { authFetch } from '@/lib/auth-fetch'
 import { PlayerCombobox } from '@/components/ui/player-combobox'
 import { useMachineCanon } from '@/hooks/use-machine-canon'
+import { statisticsQueryKey, statisticsResults } from '@/lib/statistics-cache'
 
 interface Team {
   key: string
@@ -543,7 +544,13 @@ export default function StatsPage() {
         params.set('opponentRoster', selectedOpponentPlayers.join(','))
       }
 
-      const response = await fetch(`/api/machine-stats?${params}`, { signal })
+      const query = statisticsQueryKey(params)
+      const cached = includeManualScores ? undefined : statisticsResults.get<MachineStats[]>(query)
+      if (cached) {
+        if (!signal.aborted) setMachineStats(cached)
+        return
+      }
+      const response = await fetch(`/api/machine-stats?${query}`, { signal })
       const data = await response.json()
 
       if (!response.ok) {
@@ -551,7 +558,11 @@ export default function StatsPage() {
       }
 
       console.log('[stats] Loaded', data.count, 'machine stats from server-side calculation')
-      if (!signal.aborted) setMachineStats(data.stats || [])
+      if (!signal.aborted) {
+        const stats = data.stats || []
+        if (!includeManualScores) statisticsResults.set(query, stats)
+        setMachineStats(stats)
+      }
     } catch (error) {
       if (!signal.aborted) {
         console.error('Error loading stats:', error)

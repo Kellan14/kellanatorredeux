@@ -13,6 +13,10 @@
       "schedule": "0 13 * * 2"
     },
     {
+      "path": "/api/cron/refresh-player-rankings",
+      "schedule": "0 4 * * 3"
+    },
+    {
       "path": "/api/cron/scan-player-names",
       "schedule": "0 4 * * 1"
     },

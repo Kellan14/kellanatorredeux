@@ -4,16 +4,28 @@ import { createClient } from '@supabase/supabase-js';
 import { type MachineStats, type ProcessedScore, computePops } from '@/lib/tournament-data';
 import { standardizeVenueName, venuesMatch } from '@/lib/venue-mappings';
 import { gamesToProcessedScores, buildTeamNameMap } from '@/lib/game-scores';
-import { cache, TTL } from '@/lib/cache';
+import { unstable_cache } from 'next/cache';
+import { statisticsQueryKey, STATISTICS_CACHE_TAG, STATISTICS_SERVER_TTL_SECONDS } from '@/lib/statistics-cache';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-// This route reads request query params, so it is inherently dynamic — a
-// `revalidate` segment value would be a no-op here. Repeated computation is
-// instead avoided with an explicit in-memory cache (see below), keyed on the
-// query string; league data only changes once a day (the sync-data cron).
 export const dynamic = 'force-dynamic';
+
+class StatsRequestError extends Error {
+  constructor(readonly response: NextResponse) {
+    super('Statistics could not be calculated');
+  }
+}
+
+const cachedStatistics = unstable_cache(async (query: string) => {
+  const response = await calculateStatistics(new URLSearchParams(query));
+  if (!response.ok) throw new StatsRequestError(response);
+  return response.json();
+}, ['machine-statistics-v1'], {
+  revalidate: STATISTICS_SERVER_TTL_SECONDS,
+  tags: [STATISTICS_CACHE_TAG],
+});
 
 /**
  * Server-side machine statistics calculator
@@ -33,6 +45,17 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
+  if (searchParams.get('includeManualScores') === 'true') return calculateStatistics(searchParams);
+  try {
+    return NextResponse.json(await cachedStatistics(statisticsQueryKey(searchParams)));
+  } catch (error) {
+    if (error instanceof StatsRequestError) return error.response;
+    console.error('[machine-stats] Statistics cache error:', error);
+    return calculateStatistics(searchParams);
+  }
+}
+
+async function calculateStatistics(searchParams: URLSearchParams) {
   const seasonsParam = searchParams.get('seasons');
   const allMachines = searchParams.get('allMachines') === 'true';
   const venue = allMachines ? null : searchParams.get('venue');
@@ -57,16 +80,6 @@ export async function GET(request: NextRequest) {
       { error: 'Missing required parameters: seasons, venue, and teamName are required' },
       { status: 400 }
     );
-  }
-
-  // In-memory cache keyed on the exact query. Skip when manual scores are
-  // included, since those are user-mutable and should show up immediately.
-  const cacheKey = `machine-stats:${searchParams.toString()}`;
-  if (!includeManualScores) {
-    const cached = cache.get<any>(cacheKey);
-    if (cached) {
-      return NextResponse.json(cached);
-    }
   }
 
   try {
@@ -218,9 +231,6 @@ export async function GET(request: NextRequest) {
       processedScoresCount: processedScores.length,
       gamesCount: gamesData.length,
     };
-    if (!includeManualScores) {
-      cache.set(cacheKey, payload, TTL.ONE_HOUR);
-    }
     return NextResponse.json(payload);
   } catch (error) {
     console.error('[machine-stats] Error calculating machine stats:', error);

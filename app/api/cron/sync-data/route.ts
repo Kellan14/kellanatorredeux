@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
+import { STATISTICS_CACHE_TAG } from '@/lib/statistics-cache'
 import { createClient } from '@supabase/supabase-js'
 import { standardizeVenueName } from '@/lib/venue-mappings'
 import { applyAndTrackKeyMapping } from '@/lib/apply-key-mappings'
@@ -901,6 +903,7 @@ export async function GET(request: Request) {
       console.error('[cron/sync-data] Cache building error (non-fatal):', cacheError)
     }
 
+    revalidateTag(STATISTICS_CACHE_TAG, { expire: 0 })
     return NextResponse.json({
       success: true,
       seasons,
