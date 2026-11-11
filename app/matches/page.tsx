@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Table, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useMachineCanon } from '@/hooks/use-machine-canon'
 import type { MatchDetail, MatchSummary, MatchTeam } from '@/lib/match-browser'
 
@@ -77,13 +77,13 @@ export default function MatchesPage() {
   }
 
   return (
-    <main className="container mx-auto space-y-6 px-4 py-6 md:px-6">
+    <main className="container mx-auto min-w-0 space-y-4 px-2 py-4 sm:space-y-6 sm:px-6 sm:py-6">
       <div>
         <h1 className="text-3xl font-bold">Matches</h1>
         <p className="text-muted-foreground">Look up a completed match by team and see every recorded game.</p>
       </div>
       <Card>
-        <CardContent className="grid gap-4 pt-6 md:grid-cols-2">
+        <CardContent className="grid grid-cols-1 gap-3 p-3 sm:gap-4 sm:p-6 md:grid-cols-2">
           <div className="min-w-0 space-y-2">
             <label htmlFor="match-team" className="text-sm font-medium">Team</label>
             <Select value={team} disabled={!teams.length} onValueChange={value => {
@@ -113,9 +113,9 @@ export default function MatchesPage() {
               <label htmlFor="match-result" className="text-sm font-medium">Recent matches</label>
               <Select value={matchKey} onValueChange={value => { setDetail(null); setMatchKey(value) }}>
                 <SelectTrigger id="match-result"><SelectValue placeholder="Choose a match" /></SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-w-[calc(100vw-2rem)]">
                   {matches.map(match => (
-                    <SelectItem key={match.key} value={match.key}>
+                    <SelectItem key={match.key} value={match.key} className="whitespace-normal">
                       {matchLabel(match)} · {teamName(match.away)} at {teamName(match.home)}
                     </SelectItem>
                   ))}
@@ -134,12 +134,12 @@ export default function MatchesPage() {
       {detail && (
         <>
           <Card>
-            <CardHeader>
-              <CardTitle>{teamName(detail.away)} at {teamName(detail.home)}</CardTitle>
+            <CardHeader className="p-3 sm:p-6">
+              <CardTitle className="text-lg leading-snug sm:text-2xl">{teamName(detail.away)} at {teamName(detail.home)}</CardTitle>
               <p className="text-sm text-muted-foreground">{matchLabel(detail)}</p>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
+            <CardContent className="px-3 pb-3 sm:px-6 sm:pb-6">
+              <div className="grid grid-cols-2 gap-2 sm:gap-4">
                 <div><p className="text-sm text-muted-foreground">Away · {teamName(detail.away)}</p><p className="text-3xl font-bold tabular-nums">{number(detail.points.away)}</p></div>
                 <div><p className="text-sm text-muted-foreground">Home · {teamName(detail.home)}</p><p className="text-3xl font-bold tabular-nums">{number(detail.points.home)}</p></div>
               </div>
@@ -149,33 +149,43 @@ export default function MatchesPage() {
           {!detail.rounds.length && <p className="text-muted-foreground">No game scores are available for this match.</p>}
           {detail.rounds.map(round => (
             <Card key={round.number}>
-              <CardHeader>
-                <CardTitle>Round {round.number}{round.type && ` · ${round.type}`}</CardTitle>
+              <CardHeader className="p-3 sm:p-6">
+                <CardTitle className="text-lg sm:text-2xl">Round {round.number}{round.type && ` · ${round.type}`}</CardTitle>
                 <p className="text-sm text-muted-foreground">{detail.away} {number(round.points.away)} · {detail.home} {number(round.points.home)} points</p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {round.games.map(game => (
-                  <section key={game.number} className="overflow-hidden rounded-md border">
-                    <div className="flex flex-wrap items-center justify-between gap-1 bg-muted/40 px-3 py-2">
-                      <h3 className="font-medium">Game {game.number} · <Link href={`/machines/${encodeURIComponent(game.machine)}`} className="hover:underline">{display(game.machine)}</Link></h3>
-                      <span className="text-sm tabular-nums">{detail.away} {number(game.points.away)} · {detail.home} {number(game.points.home)}</span>
-                    </div>
-                    <Table className="text-xs sm:text-sm">
-                      <TableHeader><TableRow>
-                        <TableHead>Player</TableHead><TableHead>Team</TableHead>
-                        <TableHead className="text-right">Score</TableHead><TableHead className="text-right">Points</TableHead>
-                      </TableRow></TableHeader>
-                      <TableBody>
+              <CardContent className="px-0 pb-0 sm:px-6 sm:pb-6">
+                <Table className="table-fixed text-xs sm:text-sm">
+                  <colgroup>
+                    <col />
+                    <col className="w-11 sm:w-[14%]" />
+                    <col className="w-[36%] sm:w-[27%]" />
+                    <col className="w-12 sm:w-[13%]" />
+                  </colgroup>
+                  <TableHeader><TableRow>
+                    <TableHead scope="col" className="h-8 px-2 sm:px-4">Player</TableHead>
+                    <TableHead scope="col" className="h-8 px-1 sm:px-4">Team</TableHead>
+                    <TableHead scope="col" className="h-8 px-1 text-right sm:px-4">Score</TableHead>
+                    <TableHead scope="col" className="h-8 px-2 text-right sm:px-4">Points</TableHead>
+                  </TableRow></TableHeader>
+                  {round.games.map(game => (
+                    <tbody key={game.number}>
+                      <TableRow>
+                        <th colSpan={4} scope="rowgroup" className="bg-muted/40 px-2 py-2 text-left font-medium sm:px-4">
+                          <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+                            <span className="min-w-0 break-words">Game {game.number} · <Link href={`/machines/${encodeURIComponent(game.machine)}`} className="hover:underline">{display(game.machine)}</Link></span>
+                            <span className="whitespace-nowrap text-muted-foreground tabular-nums">{detail.away} {number(game.points.away)} · {detail.home} {number(game.points.home)}</span>
+                          </div>
+                        </th>
+                      </TableRow>
                         {game.players.map(player => <TableRow key={player.slot}>
-                          <TableCell>{player.name}{player.picked && <span className="ml-2 text-xs text-muted-foreground">Pick</span>}</TableCell>
-                          <TableCell>{player.team || '—'}</TableCell>
-                          <TableCell className="text-right tabular-nums">{number(player.score)}</TableCell>
-                          <TableCell className="text-right tabular-nums">{number(player.points)}</TableCell>
+                          <TableCell className="break-words px-2 py-2 sm:px-4">{player.name}{player.picked && <span className="ml-1 whitespace-nowrap text-[10px] text-muted-foreground sm:text-xs">Pick</span>}</TableCell>
+                          <TableCell className="break-words px-1 py-2 sm:px-4">{player.team || '—'}</TableCell>
+                          <TableCell className="whitespace-nowrap px-1 py-2 text-right tabular-nums sm:px-4">{number(player.score)}</TableCell>
+                          <TableCell className="whitespace-nowrap px-2 py-2 text-right tabular-nums sm:px-4">{number(player.points)}</TableCell>
                         </TableRow>)}
-                      </TableBody>
-                    </Table>
-                  </section>
-                ))}
+                    </tbody>
+                  ))}
+                </Table>
               </CardContent>
             </Card>
           ))}
