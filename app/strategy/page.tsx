@@ -22,7 +22,7 @@
 
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -64,6 +64,7 @@ import { TwcPlayerAvailability } from '@/components/twc-player-availability'
 import { PlayerAvailability } from '@/components/player-availability'
 import type { PlayerMachineStats, OptimizationResult } from '@/types/strategy'
 import { authFetch } from '@/lib/auth-fetch'
+import { rankDoublesRuns, type DoublesLineup } from '@/lib/ranked-doubles'
 
 interface Team {
   key: string
@@ -1081,6 +1082,98 @@ export default function StrategyPage() {
 
   // Generate report text for all machine picks
   const [generatingReport, setGeneratingReport] = useState(false)
+  const [doublesGeneratorOpen, setDoublesGeneratorOpen] = useState(false)
+  const [doublesMethod, setDoublesMethod] = useState<'greedy' | 'hungarian'>('greedy')
+  const [doublesIterations, setDoublesIterations] = useState('5')
+  const [doublesRunCount, setDoublesRunCount] = useState(0)
+  const [rankedDoubles, setRankedDoubles] = useState<DoublesLineup[] | null>(null)
+  const [doublesRunError, setDoublesRunError] = useState('')
+  const [generatingDoubles, setGeneratingDoubles] = useState(false)
+  const doublesRun = useRef<AbortController | null>(null)
+  useEffect(() => () => doublesRun.current?.abort(), [])
+
+  const generateDoubles = async () => {
+    const iterations = Number(doublesIterations)
+    const greedy = doublesMethod === 'greedy'
+    const roundSize = greedy ? numDoublesMachines : 4
+    const players = Object.keys(availablePlayers).filter(p => availablePlayers[p] && !sitThisRound.has(p))
+    const machines = (venues.find(v => v.name === selectedVenue)?.machines || [])
+      .filter(machine => !excludedMachines.includes(machine))
+    const mustPlay = Array.from(satOutPlayers).filter(player => players.includes(player))
+    setDoublesRunError('')
+    setRankedDoubles(null)
+    setDoublesRunCount(0)
+    if (!Number.isInteger(iterations) || iterations < 1 || iterations > 20) {
+      setDoublesRunError('Choose between 1 and 20 iterations.')
+      return
+    }
+    if (!selectedVenue || players.length < roundSize * 2 || machines.length < roundSize) {
+      setDoublesRunError(`Choose a venue with at least ${roundSize} eligible machines and ${roundSize * 2} available players.`)
+      return
+    }
+    if (mustPlay.length > roundSize * 2) {
+      setDoublesRunError('There are more must-play players than slots in this doubles round.')
+      return
+    }
+    const controller = new AbortController()
+    doublesRun.current = controller
+    setGeneratingDoubles(true)
+    const settings = {
+      venue: selectedVenue,
+      opponent: selectedOpponent,
+      opponentPlayers: getSelectedOpponentPlayers(),
+      seasonStart: seasonRange[0],
+      seasonEnd: seasonRange[1],
+      venueWeight: venueWeight / 100,
+      usePerGameNormalized,
+      avgMethod,
+      trimPct: trimPct / 100,
+      userInputWeight: userInputWeight / 100,
+      confidenceBoost: confidenceBoost / 100,
+      opponentWeight: opponentWeight / 100,
+      scoreWeights,
+      machines,
+      mustPlay,
+    }
+    try {
+      const result = await rankDoublesRuns({
+        iterations, machines: roundSize, mustPlay, exclusions: doublesExclusions,
+        signal: controller.signal,
+        onProgress: setDoublesRunCount,
+        solve: async (exclusions, signal) => {
+          const response = await fetch(greedy ? '/api/optimize-picks' : '/api/strategy/optimize', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, signal,
+            body: JSON.stringify({ ...settings, exclusions, ...(greedy
+              ? { format: 'doubles', numMachines: roundSize, availablePlayers: players, teamVenueSpecific, twcVenueSpecific }
+              : { format: '4x2', playerNames: players, useNashEquilibrium, searchMachineSubsets }) }),
+          })
+          const data = await response.json()
+          if (!response.ok) throw new Error(data.error || 'Could not generate doubles.')
+          if (greedy) {
+            const recommendations: { machine: string; players: string[]; stats: { performanceScore: number }[] }[] =
+              data.recommendations || []
+            return {
+              // Use performance only; the greedy selection bonus for must-play
+              // players is a constraint, not a performance measure.
+              score: recommendations.reduce((sum, pick) => sum +
+                pick.stats.reduce((total, player) => total + player.performanceScore / 100, 0), 0),
+              picks: recommendations.map(({ machine, players }) => ({ machine, players })),
+            }
+          }
+          const assignments: { machine_id: string; player1_id: string; player2_id: string }[] = data.assignments || []
+          return { score: data.total_score, picks: assignments.map(p => ({ machine: p.machine_id, players: [p.player1_id, p.player2_id] })) }
+        },
+      })
+      if (doublesRun.current === controller) setRankedDoubles(result.lineups)
+    } catch (error) {
+      if (!controller.signal.aborted) setDoublesRunError(error instanceof Error ? error.message : 'Could not generate doubles.')
+    } finally {
+      if (doublesRun.current === controller) {
+        doublesRun.current = null
+        setGeneratingDoubles(false)
+      }
+    }
+  }
 
   const generateReport = async () => {
     setGeneratingReport(true)
@@ -2319,7 +2412,10 @@ export default function StrategyPage() {
               </div>
 
               {/* Create Report Button */}
-              <div className="flex justify-end mb-4">
+              <div className="flex flex-wrap justify-end gap-2 mb-4">
+                <Button variant="outline" size="sm" className="text-xs" onClick={() => setDoublesGeneratorOpen(true)}>
+                  Generate Doubles
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
@@ -5190,6 +5286,59 @@ export default function StrategyPage() {
               No detailed data available for this cell
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={doublesGeneratorOpen} onOpenChange={open => {
+        if (!open) doublesRun.current?.abort()
+        setDoublesGeneratorOpen(open)
+      }}>
+        <DialogContent className="max-w-xl max-h-[85dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Generate Doubles</DialogTitle>
+            <DialogDescription>Try alternate assignments and rank the complete lineups found with your current Strategy settings.</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label htmlFor="doubles-method" className="text-sm font-medium">Method</label>
+              <Select value={doublesMethod} disabled={generatingDoubles} onValueChange={value => {
+                setDoublesMethod(value as 'greedy' | 'hungarian')
+                setRankedDoubles(null)
+                setDoublesRunError('')
+              }}>
+                <SelectTrigger id="doubles-method"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="greedy">Greedy</SelectItem>
+                  <SelectItem value="hungarian">Hungarian</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="doubles-iterations" className="text-sm font-medium">Iterations</label>
+              <Input id="doubles-iterations" type="number" min={1} max={20} step={1} value={doublesIterations}
+                disabled={generatingDoubles} onChange={e => setDoublesIterations(e.target.value)} />
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">Up to one distinct lineup per iteration. {doublesMethod === 'hungarian' ? 'Hungarian uses four machines.' : `Greedy uses ${numDoublesMachines} machines.`}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button onClick={generateDoubles} disabled={generatingDoubles}>
+              Generate {doublesMethod === 'greedy' ? 'Greedy' : 'Hungarian'} Doubles
+            </Button>
+            {generatingDoubles && <Button variant="outline" onClick={() => doublesRun.current?.abort()}>Stop</Button>}
+          </div>
+          {generatingDoubles && <p role="status" className="text-sm text-muted-foreground">{doublesRunCount} of {doublesIterations} iterations complete…</p>}
+          {doublesRunError && <p role="alert" className="text-sm text-destructive">{doublesRunError}</p>}
+          {rankedDoubles && <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">{rankedDoubles.length
+              ? `${rankedDoubles.length} distinct lineups in ${doublesRunCount} iterations, ranked by model score.`
+              : 'No complete lineups found. Check player and machine exclusions.'}</p>
+            {rankedDoubles.map((lineup, index) => <div key={index} className="rounded-md border p-3">
+              <h3 className="mb-2 font-medium">#{index + 1} · Score {lineup.score.toFixed(2)}</h3>
+              <ul className="space-y-1 text-sm">
+                {lineup.picks.map(pick => <li key={pick.machine}><span className="font-medium">{getMachineDisplayName(pick.machine)}</span>: {pick.players.join(' & ')}</li>)}
+              </ul>
+            </div>)}
+          </div>}
         </DialogContent>
       </Dialog>
 
