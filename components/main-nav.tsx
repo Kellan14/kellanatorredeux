@@ -52,6 +52,7 @@ export function MainNav() {
   const navItems = [
     { href: '/' as const, label: 'Dashboard' },
     { href: '/stats' as const, label: 'Statistics' },
+    { href: '/matches' as const, label: 'Matches' },
     { href: '/machines' as const, label: 'Machines' },
     { href: '/head-to-head' as const, label: 'Head to Head' },
     { href: '/player-profile' as const, label: 'Player Profile' },
@@ -67,8 +68,8 @@ export function MainNav() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex flex-1 items-center justify-between">
-          <div className="flex items-center space-x-6 text-sm font-medium">
+        <nav className="hidden lg:flex flex-1 items-center justify-between">
+          <div className="flex items-center space-x-4 xl:space-x-6 text-sm font-medium">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -118,7 +119,7 @@ export function MainNav() {
         </nav>
 
         {/* Mobile Navigation Toggle */}
-        <div className="flex flex-1 items-center justify-end md:hidden">
+        <div className="flex flex-1 items-center justify-end lg:hidden">
           <Button
             variant="ghost"
             className="px-2"
@@ -135,7 +136,7 @@ export function MainNav() {
 
       {/* Mobile Navigation Menu */}
       {isOpen && (
-        <div className="md:hidden border-t">
+        <div className="lg:hidden border-t">
           <nav className="flex flex-col space-y-3 p-4">
             {navItems.map((item) => (
               <Link
