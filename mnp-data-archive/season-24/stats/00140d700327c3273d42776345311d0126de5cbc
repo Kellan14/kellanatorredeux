@@ -145,16 +145,88 @@
       "score": 13998310,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 128633110,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 3,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 12510490,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 4,
+      "machine": "KONG",
+      "division": 0,
+      "score": 278046950,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 24000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 162000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 4,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 20000000,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.687",
-      "num_matches": 4,
-      "ppm": "5.500",
+      "pops": "0.604",
+      "num_matches": 6,
+      "ppm": "4.833",
       "points": {
-        "won": 22,
-        "of": 32
+        "won": 29,
+        "of": 48
       }
     },
     "div-1": {

@@ -253,16 +253,88 @@
       "score": 10422870,
       "points": 2,
       "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "TRL",
+      "match": "mnp-24-8-TRL-BAD",
+      "week": "8",
+      "round": 2,
+      "machine": "MB",
+      "division": 0,
+      "score": 16794670,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "TRL",
+      "match": "mnp-24-8-TRL-BAD",
+      "week": "8",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 3438690,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "TRL",
+      "match": "mnp-24-8-TRL-BAD",
+      "week": "8",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 14078980,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "BAD",
+      "opp": "SWL",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 13705780,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BAD",
+      "opp": "SWL",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 3,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 1383182210,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "BAD",
+      "opp": "SWL",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 15469400,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.394",
-      "num_matches": 7,
-      "ppm": "3.214",
+      "pops": "0.367",
+      "num_matches": 9,
+      "ppm": "3.000",
       "points": {
-        "won": 22.5,
-        "of": 57
+        "won": 27,
+        "of": 73.5
       }
     },
     "div-1": {

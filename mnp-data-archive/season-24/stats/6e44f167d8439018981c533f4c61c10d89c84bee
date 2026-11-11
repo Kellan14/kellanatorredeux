@@ -217,16 +217,88 @@
       "score": 105259250,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ZOO",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 58152270,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ZOO",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 1427729530,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ZOO",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 4,
+      "machine": "FOO",
+      "division": 0,
+      "score": 144183510,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SCN",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 108041590,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PBR",
+      "opp": "SCN",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 62863970,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SCN",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 3390122930,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.785",
-      "num_matches": 6,
-      "ppm": "6.416",
+      "pops": "0.809",
+      "num_matches": 8,
+      "ppm": "6.625",
       "points": {
-        "won": 38.5,
-        "of": 49
+        "won": 53,
+        "of": 65.5
       }
     },
     "div-1": {

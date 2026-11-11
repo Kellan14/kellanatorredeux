@@ -145,16 +145,88 @@
       "score": 157503470,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "ADB",
+      "opp": "POW",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 1,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 37786270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "POW",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 2,
+      "machine": "ElviraHouseOfHorrors",
+      "division": 0,
+      "score": 46965740,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "POW",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 23790140,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "TRL",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 1,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 139057240,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ADB",
+      "opp": "TRL",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 2,
+      "machine": "NGG",
+      "division": 0,
+      "score": 6708170,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ADB",
+      "opp": "TRL",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 71907450,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.469",
-      "num_matches": 4,
-      "ppm": "3.875",
+      "pops": "0.484",
+      "num_matches": 6,
+      "ppm": "4.000",
       "points": {
-        "won": 15.5,
-        "of": 33
+        "won": 24,
+        "of": 49.5
       }
     },
     "div-1": {

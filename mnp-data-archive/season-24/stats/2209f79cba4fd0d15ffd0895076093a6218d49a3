@@ -253,16 +253,88 @@
       "score": 90454570,
       "points": 2,
       "pops": "0.800"
+    },
+    {
+      "team": "SSS",
+      "opp": "BLK",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 106129160,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "BLK",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 200625630,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "BLK",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 55626610,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SSS",
+      "opp": "PKT",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 40851130,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "PKT",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 103310000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSS",
+      "opp": "PKT",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 4,
+      "machine": "TargetAlpha",
+      "division": 0,
+      "score": 54780,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.570",
-      "num_matches": 7,
-      "ppm": "4.642",
+      "pops": "0.575",
+      "num_matches": 9,
+      "ppm": "4.666",
       "points": {
-        "won": 32.5,
-        "of": 57
+        "won": 42,
+        "of": 73
       }
     },
     "div-1": {

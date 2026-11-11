@@ -253,16 +253,88 @@
       "score": 123510,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ETB",
+      "match": "mnp-24-8-ETB-TWC",
+      "week": "8",
+      "round": 1,
+      "machine": "TZ",
+      "division": 0,
+      "score": 540000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ETB",
+      "match": "mnp-24-8-ETB-TWC",
+      "week": "8",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 60703330,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ETB",
+      "match": "mnp-24-8-ETB-TWC",
+      "week": "8",
+      "round": 4,
+      "machine": "Tron",
+      "division": 0,
+      "score": 20831660,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "NQG",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 1,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 5624800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "NQG",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 2,
+      "machine": "CA",
+      "division": 0,
+      "score": 51600,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "NQG",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 4,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 18298670,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.592",
-      "num_matches": 7,
-      "ppm": "4.785",
+      "pops": "0.551",
+      "num_matches": 9,
+      "ppm": "4.444",
       "points": {
-        "won": 33.5,
-        "of": 56.5
+        "won": 40,
+        "of": 72.5
       }
     },
     "div-1": {

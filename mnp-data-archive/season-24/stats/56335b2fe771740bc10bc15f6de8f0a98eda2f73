@@ -253,16 +253,88 @@
       "score": 400752590,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 321586480,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 3,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 899000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 4,
+      "machine": "TZ",
+      "division": 0,
+      "score": 136614040,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 1,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 175000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 2,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 225570,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 359510,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.877",
-      "num_matches": 7,
-      "ppm": "7.142",
+      "pops": "0.809",
+      "num_matches": 9,
+      "ppm": "6.611",
       "points": {
-        "won": 50,
-        "of": 57
+        "won": 59.5,
+        "of": 73.5
       }
     },
     "div-1": {

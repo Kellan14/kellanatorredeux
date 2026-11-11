@@ -145,16 +145,88 @@
       "score": 12965310,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "POW",
+      "opp": "ADB",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 1,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 70314730,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ADB",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 3,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 61688360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ADB",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 4,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 7042110,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 1,
+      "machine": "NIGHTMOVES",
+      "division": 0,
+      "score": 178750,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 7295960,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 31071980,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.560",
-      "num_matches": 4,
-      "ppm": "4.625",
+      "pops": "0.469",
+      "num_matches": 6,
+      "ppm": "3.833",
       "points": {
-        "won": 18.5,
-        "of": 33
+        "won": 23,
+        "of": 49
       }
     },
     "div-1": {

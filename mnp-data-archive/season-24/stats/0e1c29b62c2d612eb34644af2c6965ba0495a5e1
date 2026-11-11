@@ -109,16 +109,88 @@
       "score": 46056880,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "DIH",
+      "opp": "SRF",
+      "match": "mnp-24-8-SRF-DIH",
+      "week": "8",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 78131850,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DIH",
+      "opp": "SRF",
+      "match": "mnp-24-8-SRF-DIH",
+      "week": "8",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 50899930,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SRF",
+      "match": "mnp-24-8-SRF-DIH",
+      "week": "8",
+      "round": 4,
+      "machine": "BOPP",
+      "division": 0,
+      "score": 80610,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSD",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 94133740,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSD",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 3,
+      "machine": "Indy",
+      "division": 0,
+      "score": 76481000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSD",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 349617450,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.428",
-      "num_matches": 3,
-      "ppm": "3.500",
+      "pops": "0.395",
+      "num_matches": 5,
+      "ppm": "3.200",
       "points": {
-        "won": 10.5,
-        "of": 24.5
+        "won": 16,
+        "of": 40.5
       }
     },
     "div-1": {

@@ -253,16 +253,88 @@
       "score": 47924080,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "NLT",
+      "opp": "DRK",
+      "match": "mnp-24-8-DRK-NLT",
+      "week": "8",
+      "round": 1,
+      "machine": "TZ",
+      "division": 0,
+      "score": 361723500,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "DRK",
+      "match": "mnp-24-8-DRK-NLT",
+      "week": "8",
+      "round": 3,
+      "machine": "TZ",
+      "division": 0,
+      "score": 135004600,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "DRK",
+      "match": "mnp-24-8-DRK-NLT",
+      "week": "8",
+      "round": 4,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 3084240,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SRF",
+      "match": "mnp-24-9-NLT-SRF",
+      "week": "9",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 35633240,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "NLT",
+      "opp": "SRF",
+      "match": "mnp-24-9-NLT-SRF",
+      "week": "9",
+      "round": 3,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 48060250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SRF",
+      "match": "mnp-24-9-NLT-SRF",
+      "week": "9",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 356221100,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.696",
-      "num_matches": 7,
-      "ppm": "5.571",
+      "pops": "0.694",
+      "num_matches": 9,
+      "ppm": "5.555",
       "points": {
-        "won": 39,
-        "of": 56
+        "won": 50,
+        "of": 72
       }
     },
     "div-1": {

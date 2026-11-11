@@ -217,16 +217,88 @@
       "score": 48922680,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 101138850,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 2,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 10287760,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 239098100,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SSD",
+      "opp": "DIH",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 600616270,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "DIH",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 81071270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "DIH",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 62579290,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.530",
-      "num_matches": 6,
-      "ppm": "4.333",
+      "pops": "0.488",
+      "num_matches": 8,
+      "ppm": "4.000",
       "points": {
-        "won": 26,
-        "of": 49
+        "won": 32,
+        "of": 65.5
       }
     },
     "div-1": {

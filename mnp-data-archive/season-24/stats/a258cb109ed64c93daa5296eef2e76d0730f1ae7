@@ -265,16 +265,88 @@
       "score": 20697220,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 2,
+      "machine": "WCS",
+      "division": 0,
+      "score": 249694660,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 3,
+      "machine": "DialedIn",
+      "division": 0,
+      "score": 36560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 4,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 88527140,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "PBR",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 1944850,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SCN",
+      "opp": "PBR",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 749150180,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "PBR",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 74230,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.338",
-      "num_matches": 7,
-      "ppm": "2.928",
+      "pops": "0.305",
+      "num_matches": 9,
+      "ppm": "2.611",
       "points": {
-        "won": 20.5,
-        "of": 60.5
+        "won": 23.5,
+        "of": 77
       }
     },
     "div-1": {

@@ -253,16 +253,88 @@
       "score": 58690,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 13987880,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 2,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 72388760,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SSD",
+      "opp": "SCN",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 4,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 32499040,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSD",
+      "opp": "DIH",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 1,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 157887570,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSD",
+      "opp": "DIH",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 32890,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SSD",
+      "opp": "DIH",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 4,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 52131810,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.309",
-      "num_matches": 7,
-      "ppm": "2.500",
+      "pops": "0.337",
+      "num_matches": 9,
+      "ppm": "2.722",
       "points": {
-        "won": 17.5,
-        "of": 56.5
+        "won": 24.5,
+        "of": 72.5
       }
     },
     "div-1": {

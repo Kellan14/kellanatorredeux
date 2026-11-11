@@ -253,16 +253,88 @@
       "score": 260000,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "TBT",
+      "opp": "DSV",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 2,
+      "machine": "TZ",
+      "division": 0,
+      "score": 124955420,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TBT",
+      "opp": "DSV",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 3,
+      "machine": "NGG",
+      "division": 0,
+      "score": 3445430,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "DSV",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 97200930,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TBT",
+      "opp": "ICB",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 59000000,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "ICB",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 2,
+      "machine": "007",
+      "division": 0,
+      "score": 31000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "ICB",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 4,
+      "machine": "007",
+      "division": 0,
+      "score": 51911210,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.460",
-      "num_matches": 7,
-      "ppm": "3.785",
+      "pops": "0.479",
+      "num_matches": 9,
+      "ppm": "3.944",
       "points": {
-        "won": 26.5,
-        "of": 57.5
+        "won": 35.5,
+        "of": 74
       }
     },
     "div-1": {

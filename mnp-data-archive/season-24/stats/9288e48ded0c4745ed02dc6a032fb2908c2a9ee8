@@ -253,16 +253,88 @@
       "score": 22878570,
       "points": 0.5,
       "pops": "0.200"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1529815160,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 6520600,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 4,
+      "machine": "SS",
+      "division": 0,
+      "score": 4065290,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PKT",
+      "opp": "SSS",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 15984800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "SSS",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 66837430,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "SSS",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 4,
+      "machine": "CFTBL",
+      "division": 0,
+      "score": 22501250,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.637",
-      "num_matches": 7,
-      "ppm": "5.142",
+      "pops": "0.531",
+      "num_matches": 9,
+      "ppm": "4.277",
       "points": {
-        "won": 36,
-        "of": 56.5
+        "won": 38.5,
+        "of": 72.5
       }
     },
     "div-1": {

@@ -253,16 +253,88 @@
       "score": 174000,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 2,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 62064550,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 3,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 36624370,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 4,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 16411390,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "SSS",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 5212340,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PKT",
+      "opp": "SSS",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 41361220,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "SSS",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 4,
+      "machine": "TargetAlpha",
+      "division": 0,
+      "score": 38150,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.582",
-      "num_matches": 7,
-      "ppm": "4.785",
+      "pops": "0.540",
+      "num_matches": 9,
+      "ppm": "4.444",
       "points": {
-        "won": 33.5,
-        "of": 57.5
+        "won": 40,
+        "of": 74
       }
     },
     "div-1": {

@@ -253,16 +253,88 @@
       "score": 670354700,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 3094100,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 253631990,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 4,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 72042160,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 79855370,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 58134020,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 140610,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.646",
-      "num_matches": 7,
-      "ppm": "5.357",
+      "pops": "0.608",
+      "num_matches": 9,
+      "ppm": "5.000",
       "points": {
-        "won": 37.5,
-        "of": 58
+        "won": 45,
+        "of": 74
       }
     },
     "div-1": {

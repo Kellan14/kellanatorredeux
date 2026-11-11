@@ -181,16 +181,88 @@
       "score": 128163450,
       "points": 0.5,
       "pops": "0.200"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 2,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 6794940,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 3,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 8707200,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 129430,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 2,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 87370,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 203419900,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 34341600,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.573",
-      "num_matches": 5,
-      "ppm": "4.700",
+      "pops": "0.456",
+      "num_matches": 7,
+      "ppm": "3.785",
       "points": {
-        "won": 23.5,
-        "of": 41
+        "won": 26.5,
+        "of": 58
       }
     },
     "div-1": {

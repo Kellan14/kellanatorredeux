@@ -217,16 +217,88 @@
       "score": 113875850,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SRF",
+      "match": "mnp-24-8-SRF-DIH",
+      "week": "8",
+      "round": 1,
+      "machine": "007",
+      "division": 0,
+      "score": 71921130,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DIH",
+      "opp": "SRF",
+      "match": "mnp-24-8-SRF-DIH",
+      "week": "8",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 80228780,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SRF",
+      "match": "mnp-24-8-SRF-DIH",
+      "week": "8",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 6292600,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSD",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 128117880,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSD",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 12656290,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DIH",
+      "opp": "SSD",
+      "match": "mnp-24-9-DIH-SSD",
+      "week": "9",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 92706580,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.377",
-      "num_matches": 6,
-      "ppm": "3.083",
+      "pops": "0.423",
+      "num_matches": 8,
+      "ppm": "3.437",
       "points": {
-        "won": 18.5,
-        "of": 49
+        "won": 27.5,
+        "of": 65
       }
     },
     "div-1": {

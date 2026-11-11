@@ -217,16 +217,88 @@
       "score": 44990290,
       "points": 3,
       "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "RTR",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 10227830,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TTT",
+      "opp": "RTR",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 80655340,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "RTR",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 4,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 33793570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-24-9-TTT-ETB",
+      "week": "9",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 32969150,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-24-9-TTT-ETB",
+      "week": "9",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 3898360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-24-9-TTT-ETB",
+      "week": "9",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 44159010,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.459",
-      "num_matches": 6,
-      "ppm": "3.750",
+      "pops": "0.430",
+      "num_matches": 8,
+      "ppm": "3.500",
       "points": {
-        "won": 22.5,
-        "of": 49
+        "won": 28,
+        "of": 65
       }
     },
     "div-1": {

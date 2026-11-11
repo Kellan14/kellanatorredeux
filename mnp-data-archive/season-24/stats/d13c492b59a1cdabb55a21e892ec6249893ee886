@@ -217,16 +217,88 @@
       "score": 39186880,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "KBZ",
+      "opp": "JMF",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 2,
+      "machine": "BSD",
+      "division": 0,
+      "score": 33586370,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "JMF",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 3,
+      "machine": "BSD",
+      "division": 0,
+      "score": 70149010,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "JMF",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 318610,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "DOG",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 1,
+      "machine": "MB",
+      "division": 0,
+      "score": 6913550,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "DOG",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 2,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 51789070,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "KBZ",
+      "opp": "DOG",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 8917300,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.420",
-      "num_matches": 6,
-      "ppm": "3.500",
+      "pops": "0.473",
+      "num_matches": 8,
+      "ppm": "3.937",
       "points": {
-        "won": 21,
-        "of": 50
+        "won": 31.5,
+        "of": 66.5
       }
     },
     "div-1": {

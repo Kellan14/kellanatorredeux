@@ -217,16 +217,88 @@
       "score": 330893660,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "BAD",
+      "match": "mnp-24-8-TRL-BAD",
+      "week": "8",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 54409260,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "BAD",
+      "match": "mnp-24-8-TRL-BAD",
+      "week": "8",
+      "round": 2,
+      "machine": "MH",
+      "division": 0,
+      "score": 47550,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TRL",
+      "opp": "BAD",
+      "match": "mnp-24-8-TRL-BAD",
+      "week": "8",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 491251520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "ADB",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 1,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 160572410,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "ADB",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 3,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 13046490,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "ADB",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 1,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.377",
-      "num_matches": 6,
-      "ppm": "3.083",
+      "pops": "0.353",
+      "num_matches": 8,
+      "ppm": "2.875",
       "points": {
-        "won": 18.5,
-        "of": 49
+        "won": 23,
+        "of": 65
       }
     },
     "div-1": {

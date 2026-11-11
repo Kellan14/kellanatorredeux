@@ -253,16 +253,88 @@
       "score": 171763900,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "BLK",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 391258650,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "BLK",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 2392150,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "BLK",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 30184550,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SSS",
+      "opp": "PKT",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 152039050,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "PKT",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 2,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 254775680,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSS",
+      "opp": "PKT",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 97224170,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.637",
-      "num_matches": 7,
-      "ppm": "5.142",
+      "pops": "0.655",
+      "num_matches": 9,
+      "ppm": "5.277",
       "points": {
-        "won": 36,
-        "of": 56.5
+        "won": 47.5,
+        "of": 72.5
       }
     },
     "div-1": {

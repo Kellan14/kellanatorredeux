@@ -253,16 +253,88 @@
       "score": 49899470,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 110881700,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 2,
+      "machine": "OuterSpace",
+      "division": 0,
+      "score": 52280,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 50203710,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "PYC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 1,
+      "machine": "T2",
+      "division": 0,
+      "score": 8682490,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "PYC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 498048950,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "PYC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 3187120,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.267",
-      "num_matches": 7,
-      "ppm": "2.214",
+      "pops": "0.317",
+      "num_matches": 9,
+      "ppm": "2.611",
       "points": {
-        "won": 15.5,
-        "of": 58
+        "won": 23.5,
+        "of": 74
       }
     },
     "div-1": {

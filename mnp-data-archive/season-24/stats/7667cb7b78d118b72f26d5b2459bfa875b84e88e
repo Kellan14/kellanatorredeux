@@ -217,16 +217,88 @@
       "score": 2047360,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "RTR",
+      "opp": "TTT",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 1,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 10233020,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TTT",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 32363730,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TTT",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 4,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 1,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "BLK",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 1,
+      "machine": "RollerGames",
+      "division": 0,
+      "score": 1462070,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "BLK",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 125271470,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "BLK",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 3,
+      "machine": "GOT",
+      "division": 0,
+      "score": 58577730,
+      "points": 1,
+      "pops": "0.333"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.505",
-      "num_matches": 6,
-      "ppm": "4.083",
+      "pops": "0.484",
+      "num_matches": 8,
+      "ppm": "3.937",
       "points": {
-        "won": 24.5,
-        "of": 48.5
+        "won": 31.5,
+        "of": 65
       }
     },
     "div-1": {

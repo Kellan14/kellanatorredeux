@@ -73,16 +73,88 @@
       "score": 26757560,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "ZOO",
+      "opp": "PBR",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 1,
+      "machine": "Junkyard",
+      "division": 0,
+      "score": 1920510,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "PBR",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 3,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 26970350,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "PBR",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 4,
+      "machine": "Junkyard",
+      "division": 0,
+      "score": 1736110,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "RMS",
+      "match": "mnp-24-9-ZOO-RMS",
+      "week": "9",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 32584620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "RMS",
+      "match": "mnp-24-9-ZOO-RMS",
+      "week": "9",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 20276300,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ZOO",
+      "opp": "RMS",
+      "match": "mnp-24-9-ZOO-RMS",
+      "week": "9",
+      "round": 4,
+      "machine": "RR",
+      "division": 0,
+      "score": 123732820,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.125",
-      "num_matches": 2,
-      "ppm": "1.000",
+      "pops": "0.171",
+      "num_matches": 4,
+      "ppm": "1.375",
       "points": {
-        "won": 2,
-        "of": 16
+        "won": 5.5,
+        "of": 32
       }
     },
     "div-1": {

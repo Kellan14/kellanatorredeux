@@ -181,16 +181,88 @@
       "score": 168790680,
       "points": 0.5,
       "pops": "0.200"
+    },
+    {
+      "team": "POW",
+      "opp": "ADB",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 1,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 81020790,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ADB",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 2,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 46604880,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ADB",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 4,
+      "machine": "Munsters",
+      "division": 0,
+      "score": 14928850,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 1,
+      "machine": "Congo",
+      "division": 0,
+      "score": 872982920,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 3,
+      "machine": "Frontier",
+      "division": 0,
+      "score": 352160,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 4,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 491633750,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.737",
-      "num_matches": 5,
-      "ppm": "5.900",
+      "pops": "0.696",
+      "num_matches": 7,
+      "ppm": "5.571",
       "points": {
-        "won": 29.5,
-        "of": 40
+        "won": 39,
+        "of": 56
       }
     },
     "div-1": {

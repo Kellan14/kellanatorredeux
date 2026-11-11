@@ -253,16 +253,88 @@
       "score": 49148170,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "CPO",
+      "match": "mnp-24-8-CPO-PYC",
+      "week": "8",
+      "round": 1,
+      "machine": "Metallica",
+      "division": 0,
+      "score": 28895260,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PYC",
+      "opp": "CPO",
+      "match": "mnp-24-8-CPO-PYC",
+      "week": "8",
+      "round": 2,
+      "machine": "JW",
+      "division": 0,
+      "score": 27588670,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "PYC",
+      "opp": "CPO",
+      "match": "mnp-24-8-CPO-PYC",
+      "week": "8",
+      "round": 4,
+      "machine": "JW",
+      "division": 0,
+      "score": 4831090,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PYC",
+      "opp": "NMC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 1,
+      "machine": "T2",
+      "division": 0,
+      "score": 27040600,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "NMC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 2,
+      "machine": "T2",
+      "division": 0,
+      "score": 10000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PYC",
+      "opp": "NMC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 26843810,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.525",
-      "num_matches": 7,
-      "ppm": "4.357",
+      "pops": "0.540",
+      "num_matches": 9,
+      "ppm": "4.444",
       "points": {
-        "won": 30.5,
-        "of": 58
+        "won": 40,
+        "of": 74
       }
     },
     "div-1": {

@@ -145,16 +145,88 @@
       "score": 14308720,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 171872730,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 2,
+      "machine": "WCS",
+      "division": 0,
+      "score": 312702520,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 133860,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 2,
+      "machine": "LOTR",
+      "division": 0,
+      "score": 15224990,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 39452680,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 44615000,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.447",
-      "num_matches": 4,
-      "ppm": "3.750",
+      "pops": "0.500",
+      "num_matches": 6,
+      "ppm": "4.166",
       "points": {
-        "won": 15,
-        "of": 33.5
+        "won": 25,
+        "of": 50
       }
     },
     "div-1": {

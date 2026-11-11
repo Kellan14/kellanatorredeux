@@ -253,16 +253,88 @@
       "score": 89754600,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "DOG",
+      "opp": "ICB",
+      "match": "mnp-24-8-ICB-DOG",
+      "week": "8",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 32110920,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "ICB",
+      "match": "mnp-24-8-ICB-DOG",
+      "week": "8",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 144414610,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DOG",
+      "opp": "ICB",
+      "match": "mnp-24-8-ICB-DOG",
+      "week": "8",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 7103490,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "KBZ",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 1,
+      "machine": "FH",
+      "division": 0,
+      "score": 4225670,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "KBZ",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 21275010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "KBZ",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 4,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 7811720,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.403",
-      "num_matches": 7,
-      "ppm": "3.285",
+      "pops": "0.465",
+      "num_matches": 9,
+      "ppm": "3.777",
       "points": {
-        "won": 23,
-        "of": 57
+        "won": 34,
+        "of": 73
       }
     },
     "div-1": {

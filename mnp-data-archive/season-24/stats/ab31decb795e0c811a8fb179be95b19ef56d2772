@@ -181,16 +181,88 @@
       "score": 450000000,
       "points": 3,
       "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ZOO",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 1,
+      "machine": "DP",
+      "division": 0,
+      "score": 286328020,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ZOO",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 2,
+      "machine": "LZ",
+      "division": 0,
+      "score": 45709680,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ZOO",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 3,
+      "machine": "FOO",
+      "division": 0,
+      "score": 12000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PBR",
+      "opp": "SCN",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 18708560,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PBR",
+      "opp": "SCN",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 2,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 797360,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SCN",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 3,
+      "machine": "JW",
+      "division": 0,
+      "score": 163405440,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.621",
-      "num_matches": 5,
-      "ppm": "5.100",
+      "pops": "0.672",
+      "num_matches": 7,
+      "ppm": "5.571",
       "points": {
-        "won": 25.5,
-        "of": 41
+        "won": 39,
+        "of": 58
       }
     },
     "div-1": {

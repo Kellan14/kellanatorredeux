@@ -253,16 +253,88 @@
       "score": 35346300,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "POW",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 50346290,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ADB",
+      "opp": "POW",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 2,
+      "machine": "VEN",
+      "division": 0,
+      "score": 28510060,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ADB",
+      "opp": "POW",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 4,
+      "machine": "Munsters",
+      "division": 0,
+      "score": 5763050,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "ADB",
+      "opp": "TRL",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 2,
+      "machine": "007",
+      "division": 0,
+      "score": 154399650,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "TRL",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 269173350,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "TRL",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 4,
+      "machine": "007",
+      "division": 0,
+      "score": 17434940,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.547",
-      "num_matches": 7,
-      "ppm": "4.500",
+      "pops": "0.560",
+      "num_matches": 9,
+      "ppm": "4.611",
       "points": {
-        "won": 31.5,
-        "of": 57.5
+        "won": 41.5,
+        "of": 74
       }
     },
     "div-1": {

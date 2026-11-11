@@ -217,16 +217,88 @@
       "score": 251000,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "SKP",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 2,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 10626970,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "SKP",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 3,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 250200,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "SKP",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 47270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "ZOO",
+      "match": "mnp-24-9-ZOO-RMS",
+      "week": "9",
+      "round": 2,
+      "machine": "MarsTrek",
+      "division": 0,
+      "score": 507900,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "ZOO",
+      "match": "mnp-24-9-ZOO-RMS",
+      "week": "9",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 25575280,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "ZOO",
+      "match": "mnp-24-9-ZOO-RMS",
+      "week": "9",
+      "round": 4,
+      "machine": "RR",
+      "division": 0,
+      "score": 173998500,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.333",
-      "num_matches": 6,
-      "ppm": "2.666",
+      "pops": "0.423",
+      "num_matches": 8,
+      "ppm": "3.437",
       "points": {
-        "won": 16,
-        "of": 48
+        "won": 27.5,
+        "of": 65
       }
     },
     "div-1": {

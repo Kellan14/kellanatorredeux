@@ -253,16 +253,88 @@
       "score": 82041770,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 25750610,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 67039960,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 559530,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 24559370,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 91735940,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 4,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 289460,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.582",
-      "num_matches": 7,
-      "ppm": "4.785",
+      "pops": "0.578",
+      "num_matches": 9,
+      "ppm": "4.722",
       "points": {
-        "won": 33.5,
-        "of": 57.5
+        "won": 42.5,
+        "of": 73.5
       }
     },
     "div-1": {

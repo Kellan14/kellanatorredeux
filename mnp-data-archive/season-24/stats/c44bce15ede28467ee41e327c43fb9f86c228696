@@ -253,16 +253,88 @@
       "score": 103983300,
       "points": 3,
       "pops": "1.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "SSS",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 41590130,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "BLK",
+      "opp": "SSS",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 184170,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "SSS",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 187381140,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "RTR",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 276676030,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "BLK",
+      "opp": "RTR",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 103303850,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "RTR",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 4,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 1242250,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.552",
-      "num_matches": 7,
-      "ppm": "4.500",
+      "pops": "0.500",
+      "num_matches": 9,
+      "ppm": "4.055",
       "points": {
-        "won": 31.5,
-        "of": 57
+        "won": 36.5,
+        "of": 73
       }
     },
     "div-1": {

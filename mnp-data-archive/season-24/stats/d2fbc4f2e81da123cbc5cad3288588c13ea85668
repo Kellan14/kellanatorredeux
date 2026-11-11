@@ -145,16 +145,88 @@
       "score": 31011020,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ETB",
+      "match": "mnp-24-8-ETB-TWC",
+      "week": "8",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 163464600,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TWC",
+      "opp": "ETB",
+      "match": "mnp-24-8-ETB-TWC",
+      "week": "8",
+      "round": 2,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 70742870,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ETB",
+      "match": "mnp-24-8-ETB-TWC",
+      "week": "8",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 105997370,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TWC",
+      "opp": "NQG",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 1,
+      "machine": "SDND",
+      "division": 0,
+      "score": 444744040,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "NQG",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 237145370,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TWC",
+      "opp": "NQG",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 253358070,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.742",
-      "num_matches": 4,
-      "ppm": "6.125",
+      "pops": "0.760",
+      "num_matches": 6,
+      "ppm": "6.333",
       "points": {
-        "won": 24.5,
-        "of": 33
+        "won": 38,
+        "of": 50
       }
     },
     "div-1": {

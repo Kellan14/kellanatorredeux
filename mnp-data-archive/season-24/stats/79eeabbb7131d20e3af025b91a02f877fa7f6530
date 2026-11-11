@@ -253,16 +253,88 @@
       "score": 3103380,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 1,
+      "machine": "BOP",
+      "division": 0,
+      "score": 1011430,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 103685470,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 30608360,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 2,
+      "machine": "Tron",
+      "division": 0,
+      "score": 16936340,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 3,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 16116970,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 230050420,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.276",
-      "num_matches": 7,
-      "ppm": "2.214",
+      "pops": "0.303",
+      "num_matches": 9,
+      "ppm": "2.444",
       "points": {
-        "won": 15.5,
-        "of": 56
+        "won": 22,
+        "of": 72.5
       }
     },
     "div-1": {

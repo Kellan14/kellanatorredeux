@@ -253,16 +253,88 @@
       "score": 6109750,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "RTR",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1282673330,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "RTR",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2371746940,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TTT",
+      "opp": "RTR",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 626544510,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-24-9-TTT-ETB",
+      "week": "9",
+      "round": 1,
+      "machine": "Playboy",
+      "division": 0,
+      "score": 33090,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-24-9-TTT-ETB",
+      "week": "9",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 17399340,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TTT",
+      "opp": "ETB",
+      "match": "mnp-24-9-TTT-ETB",
+      "week": "9",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 51774940,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.341",
-      "num_matches": 7,
-      "ppm": "2.857",
+      "pops": "0.375",
+      "num_matches": 9,
+      "ppm": "3.111",
       "points": {
-        "won": 20,
-        "of": 58.5
+        "won": 28,
+        "of": 74.5
       }
     },
     "div-1": {

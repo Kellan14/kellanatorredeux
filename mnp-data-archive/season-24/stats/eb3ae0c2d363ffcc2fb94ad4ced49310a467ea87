@@ -181,16 +181,88 @@
       "score": 114000000,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "TBT",
+      "opp": "DSV",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 7460280,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "DSV",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 27320700,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "DSV",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 4,
+      "machine": "Corvette",
+      "division": 0,
+      "score": 277818900,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TBT",
+      "opp": "ICB",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 2,
+      "machine": "VEN",
+      "division": 0,
+      "score": 20418330,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TBT",
+      "opp": "ICB",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 20000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TBT",
+      "opp": "ICB",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 4,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 8965170,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.246",
-      "num_matches": 5,
-      "ppm": "2.000",
+      "pops": "0.278",
+      "num_matches": 7,
+      "ppm": "2.285",
       "points": {
-        "won": 10,
-        "of": 40.5
+        "won": 16,
+        "of": 57.5
       }
     },
     "div-1": {

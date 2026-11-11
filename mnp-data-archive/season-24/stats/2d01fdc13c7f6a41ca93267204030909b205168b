@@ -145,16 +145,88 @@
       "score": 815250,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 163220,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 3,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 34790880,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 12985690,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 1,
+      "machine": "PlayboyStern",
+      "division": 0,
+      "score": 6999120,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 3,
+      "machine": "PlayboyStern",
+      "division": 0,
+      "score": 5999270,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 4,
+      "machine": "PlayboyStern",
+      "division": 0,
+      "score": 5236220,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.212",
-      "num_matches": 4,
-      "ppm": "1.750",
+      "pops": "0.262",
+      "num_matches": 6,
+      "ppm": "2.166",
       "points": {
-        "won": 7,
-        "of": 33
+        "won": 13,
+        "of": 49.5
       }
     },
     "div-1": {

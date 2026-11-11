@@ -217,16 +217,88 @@
       "score": 56000000,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 1,
+      "machine": "NGG",
+      "division": 0,
+      "score": 5019320,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 3,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 40851970,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 4,
+      "machine": "SpaceInvaders",
+      "division": 0,
+      "score": 173350,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 56865590,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 3,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 866385740,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 4,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 8062150,
+      "points": 0.5,
+      "pops": "0.200"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.585",
-      "num_matches": 6,
-      "ppm": "4.833",
+      "pops": "0.572",
+      "num_matches": 8,
+      "ppm": "4.687",
       "points": {
-        "won": 29,
-        "of": 49.5
+        "won": 37.5,
+        "of": 65.5
       }
     },
     "div-1": {

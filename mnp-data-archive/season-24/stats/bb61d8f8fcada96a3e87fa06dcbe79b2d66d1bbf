@@ -253,16 +253,88 @@
       "score": 107930,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "JMF",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 1,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 146860,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "JMF",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 2,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 216660,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KBZ",
+      "opp": "JMF",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 169310,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "KBZ",
+      "opp": "DOG",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 1,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 156450,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "KBZ",
+      "opp": "DOG",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 50763270,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "DOG",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 4,
+      "machine": "Blackout",
+      "division": 0,
+      "score": 98440,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.474",
-      "num_matches": 7,
-      "ppm": "3.928",
+      "pops": "0.459",
+      "num_matches": 9,
+      "ppm": "3.777",
       "points": {
-        "won": 27.5,
-        "of": 58
+        "won": 34,
+        "of": 74
       }
     },
     "div-1": {

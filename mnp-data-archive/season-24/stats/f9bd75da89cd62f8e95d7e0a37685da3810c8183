@@ -253,16 +253,88 @@
       "score": 219909,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "POW",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 271359270,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "ADB",
+      "opp": "POW",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 2,
+      "machine": "SternWars",
+      "division": 0,
+      "score": 1694129350,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "POW",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 4,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 78744520,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "TRL",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 1,
+      "machine": "TOM",
+      "division": 0,
+      "score": 334200180,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "TRL",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 2,
+      "machine": "TOM",
+      "division": 0,
+      "score": 65725670,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ADB",
+      "opp": "TRL",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 4,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 48870780,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.637",
-      "num_matches": 7,
-      "ppm": "5.142",
+      "pops": "0.641",
+      "num_matches": 9,
+      "ppm": "5.166",
       "points": {
-        "won": 36,
-        "of": 56.5
+        "won": 46.5,
+        "of": 72.5
       }
     },
     "div-1": {

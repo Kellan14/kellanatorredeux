@@ -241,16 +241,88 @@
       "score": 13621650,
       "points": 1.5,
       "pops": "0.600"
+    },
+    {
+      "team": "TBT",
+      "opp": "DSV",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 107782800,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TBT",
+      "opp": "DSV",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 259115000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TBT",
+      "opp": "DSV",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 4,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 151615510,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "ICB",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 2,
+      "machine": "Munsters",
+      "division": 0,
+      "score": 15525930,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TBT",
+      "opp": "ICB",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 34097890,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TBT",
+      "opp": "ICB",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 4,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 99076780,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
       "pops": "0.454",
-      "num_matches": 7,
-      "ppm": "3.571",
+      "num_matches": 9,
+      "ppm": "3.611",
       "points": {
-        "won": 25,
-        "of": 55
+        "won": 32.5,
+        "of": 71.5
       }
     },
     "div-1": {

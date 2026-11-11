@@ -217,16 +217,88 @@
       "score": 29147680,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "JMF",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 1,
+      "machine": "SS",
+      "division": 0,
+      "score": 1270940,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "JMF",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 2,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 6762560,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "JMF",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 4,
+      "machine": "SpaceInvaders",
+      "division": 0,
+      "score": 32000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KBZ",
+      "opp": "DOG",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1014459900,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KBZ",
+      "opp": "DOG",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 3,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 3838870,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KBZ",
+      "opp": "DOG",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 4,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 4746990,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.260",
-      "num_matches": 6,
-      "ppm": "2.166",
+      "pops": "0.225",
+      "num_matches": 8,
+      "ppm": "1.875",
       "points": {
-        "won": 13,
-        "of": 50
+        "won": 15,
+        "of": 66.5
       }
     },
     "div-1": {

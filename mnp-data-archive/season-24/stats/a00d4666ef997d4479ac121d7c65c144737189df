@@ -217,16 +217,88 @@
       "score": 28950070,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 1,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 7797650,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 2,
+      "machine": "SS",
+      "division": 0,
+      "score": 4273430,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 16183610,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 16036420,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 18684700,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 4,
+      "machine": "TAF",
+      "division": 0,
+      "score": 37225460,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.371",
-      "num_matches": 6,
-      "ppm": "3.000",
+      "pops": "0.407",
+      "num_matches": 8,
+      "ppm": "3.312",
       "points": {
-        "won": 18,
-        "of": 48.5
+        "won": 26.5,
+        "of": 65
       }
     },
     "div-1": {

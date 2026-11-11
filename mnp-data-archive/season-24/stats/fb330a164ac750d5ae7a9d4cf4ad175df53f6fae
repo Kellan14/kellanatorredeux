@@ -253,16 +253,88 @@
       "score": 177380960,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "CPO",
+      "match": "mnp-24-8-CPO-PYC",
+      "week": "8",
+      "round": 1,
+      "machine": "TWD",
+      "division": 0,
+      "score": 17000000,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "PYC",
+      "opp": "CPO",
+      "match": "mnp-24-8-CPO-PYC",
+      "week": "8",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 39954980,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "CPO",
+      "match": "mnp-24-8-CPO-PYC",
+      "week": "8",
+      "round": 4,
+      "machine": "UXMEN",
+      "division": 0,
+      "score": 79168110,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "NMC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 1,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 150175510,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "NMC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 2,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 127751810,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PYC",
+      "opp": "NMC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 4,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 89398900,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.477",
-      "num_matches": 7,
-      "ppm": "3.857",
+      "pops": "0.524",
+      "num_matches": 9,
+      "ppm": "4.222",
       "points": {
-        "won": 27,
-        "of": 56.5
+        "won": 38,
+        "of": 72.5
       }
     },
     "div-1": {

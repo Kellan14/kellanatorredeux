@@ -253,16 +253,88 @@
       "score": 550251510,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 1,
+      "machine": "Getaway",
+      "division": 0,
+      "score": 39665110,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 3,
+      "machine": "007",
+      "division": 0,
+      "score": 42826230,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 4,
+      "machine": "Hotdoggin'",
+      "division": 0,
+      "score": 540340,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 2,
+      "machine": "GTF",
+      "division": 0,
+      "score": 881785470,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 3,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 415318700,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 323821350,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.728",
-      "num_matches": 7,
-      "ppm": "5.928",
+      "pops": "0.721",
+      "num_matches": 9,
+      "ppm": "5.888",
       "points": {
-        "won": 41.5,
-        "of": 57
+        "won": 53,
+        "of": 73.5
       }
     },
     "div-1": {

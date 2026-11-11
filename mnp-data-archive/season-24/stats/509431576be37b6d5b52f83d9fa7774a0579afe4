@@ -253,16 +253,88 @@
       "score": 7132790,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "JMF",
+      "opp": "KBZ",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 1,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 236860,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "KBZ",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 2,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 550970,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "KBZ",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 449240,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "KNR",
+      "match": "mnp-24-9-JMF-KNR",
+      "week": "9",
+      "round": 2,
+      "machine": "PULP",
+      "division": 0,
+      "score": 506740,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "JMF",
+      "opp": "KNR",
+      "match": "mnp-24-9-JMF-KNR",
+      "week": "9",
+      "round": 3,
+      "machine": "FT",
+      "division": 0,
+      "score": 48038640,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "KNR",
+      "match": "mnp-24-9-JMF-KNR",
+      "week": "9",
+      "round": 4,
+      "machine": "PULP",
+      "division": 0,
+      "score": 5694600,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.407",
-      "num_matches": 7,
-      "ppm": "3.285",
+      "pops": "0.513",
+      "num_matches": 9,
+      "ppm": "4.166",
       "points": {
-        "won": 23,
-        "of": 56.5
+        "won": 37.5,
+        "of": 73
       }
     },
     "div-1": {

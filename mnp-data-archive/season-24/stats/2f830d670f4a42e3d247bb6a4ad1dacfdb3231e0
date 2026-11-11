@@ -265,16 +265,88 @@
       "score": 1737371010,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "DRK",
+      "match": "mnp-24-8-DRK-NLT",
+      "week": "8",
+      "round": 2,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 21819730,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "DRK",
+      "match": "mnp-24-8-DRK-NLT",
+      "week": "8",
+      "round": 3,
+      "machine": "TWD",
+      "division": 0,
+      "score": 14651590,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "DRK",
+      "match": "mnp-24-8-DRK-NLT",
+      "week": "8",
+      "round": 4,
+      "machine": "BOP2",
+      "division": 0,
+      "score": 10808700,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SRF",
+      "match": "mnp-24-9-NLT-SRF",
+      "week": "9",
+      "round": 2,
+      "machine": "DUNE",
+      "division": 0,
+      "score": 167043550,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NLT",
+      "opp": "SRF",
+      "match": "mnp-24-9-NLT-SRF",
+      "week": "9",
+      "round": 3,
+      "machine": "DUNE",
+      "division": 0,
+      "score": 95623020,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NLT",
+      "opp": "SRF",
+      "match": "mnp-24-9-NLT-SRF",
+      "week": "9",
+      "round": 4,
+      "machine": "DUNE",
+      "division": 0,
+      "score": 81486780,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.666",
-      "num_matches": 7,
-      "ppm": "5.714",
+      "pops": "0.707",
+      "num_matches": 9,
+      "ppm": "6.055",
       "points": {
-        "won": 40,
-        "of": 60
+        "won": 54.5,
+        "of": 77
       }
     },
     "div-1": {

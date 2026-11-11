@@ -253,16 +253,88 @@
       "score": 1239744770,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "RMS",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 1,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 31972710,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "RMS",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 3,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 74140,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "RMS",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 4,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 16072308,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 1,
+      "machine": "TagTeam",
+      "division": 0,
+      "score": 455700,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 3,
+      "machine": "MAGIC",
+      "division": 0,
+      "score": 161710,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 4,
+      "machine": "Baywatch",
+      "division": 0,
+      "score": 91586720,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.539",
-      "num_matches": 7,
-      "ppm": "4.357",
+      "pops": "0.517",
+      "num_matches": 9,
+      "ppm": "4.166",
       "points": {
-        "won": 30.5,
-        "of": 56.5
+        "won": 37.5,
+        "of": 72.5
       }
     },
     "div-1": {

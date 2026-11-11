@@ -253,16 +253,88 @@
       "score": 297850,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 1,
+      "machine": "CF",
+      "division": 0,
+      "score": 39500,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 2,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 4045620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "NQG",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 3,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 33361740,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 2,
+      "machine": "SpaceInvaders",
+      "division": 0,
+      "score": 35300,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 2700000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "CRA",
+      "opp": "DTP",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 4,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 5000000,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.486",
-      "num_matches": 7,
-      "ppm": "3.928",
+      "pops": "0.421",
+      "num_matches": 9,
+      "ppm": "3.444",
       "points": {
-        "won": 27.5,
-        "of": 56.5
+        "won": 31,
+        "of": 73.5
       }
     },
     "div-1": {

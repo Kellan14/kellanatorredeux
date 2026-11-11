@@ -157,16 +157,88 @@
       "score": 38431850,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 1,
+      "machine": "WCS",
+      "division": 0,
+      "score": 329533090,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 2,
+      "machine": "METREM",
+      "division": 0,
+      "score": 38465950,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 3,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 132287300,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SCN",
+      "opp": "PBR",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 28355530,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "PBR",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 2,
+      "machine": "SurfChamp",
+      "division": 0,
+      "score": 50010,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SCN",
+      "opp": "PBR",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1904170050,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.465",
-      "num_matches": 4,
-      "ppm": "4.250",
+      "pops": "0.528",
+      "num_matches": 6,
+      "ppm": "4.666",
       "points": {
-        "won": 17,
-        "of": 36.5
+        "won": 28,
+        "of": 53
       }
     },
     "div-1": {

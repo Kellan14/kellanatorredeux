@@ -253,16 +253,88 @@
       "score": 220668220,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 64739600,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 164594020,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "NMC",
+      "opp": "SHK",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 4,
+      "machine": "Earthshaker",
+      "division": 0,
+      "score": 2217090,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NMC",
+      "opp": "PYC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 135626250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NMC",
+      "opp": "PYC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 2,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 100000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NMC",
+      "opp": "PYC",
+      "match": "mnp-24-9-PYC-NMC",
+      "week": "9",
+      "round": 4,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 88678280,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.422",
-      "num_matches": 7,
-      "ppm": "3.500",
+      "pops": "0.418",
+      "num_matches": 9,
+      "ppm": "3.444",
       "points": {
-        "won": 24.5,
-        "of": 58
+        "won": 31,
+        "of": 74
       }
     },
     "div-1": {

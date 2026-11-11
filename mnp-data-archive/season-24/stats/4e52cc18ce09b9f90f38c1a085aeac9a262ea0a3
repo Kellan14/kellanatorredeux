@@ -253,16 +253,88 @@
       "score": 9215070,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "DOG",
+      "match": "mnp-24-8-ICB-DOG",
+      "week": "8",
+      "round": 1,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 42907340,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "DOG",
+      "match": "mnp-24-8-ICB-DOG",
+      "week": "8",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 5959990,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "ICB",
+      "opp": "DOG",
+      "match": "mnp-24-8-ICB-DOG",
+      "week": "8",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 554534940,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TBT",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 40698010,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TBT",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 2,
+      "machine": "007",
+      "division": 0,
+      "score": 1800000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "ICB",
+      "opp": "TBT",
+      "match": "mnp-24-9-TBT-ICB",
+      "week": "9",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 57410500,
+      "points": 2,
+      "pops": "0.666"
     }
   ],
   "divisions": {
     "all": {
       "pops": "0.394",
-      "num_matches": 7,
-      "ppm": "3.214",
+      "num_matches": 9,
+      "ppm": "3.222",
       "points": {
-        "won": 22.5,
-        "of": 57
+        "won": 29,
+        "of": 73.5
       }
     },
     "div-1": {

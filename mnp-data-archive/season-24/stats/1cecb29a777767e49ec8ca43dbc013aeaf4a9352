@@ -217,16 +217,88 @@
       "score": 27767680,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "DSV",
+      "opp": "TBT",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 2,
+      "machine": "MB",
+      "division": 0,
+      "score": 11664590,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DSV",
+      "opp": "TBT",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 3,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 169389770,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TBT",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 4,
+      "machine": "STTNG",
+      "division": 0,
+      "score": 392942890,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "PGN",
+      "match": "mnp-24-9-PGN-DSV",
+      "week": "9",
+      "round": 1,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 49463920,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "PGN",
+      "match": "mnp-24-9-PGN-DSV",
+      "week": "9",
+      "round": 2,
+      "machine": "FOO",
+      "division": 0,
+      "score": 186491000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "PGN",
+      "match": "mnp-24-9-PGN-DSV",
+      "week": "9",
+      "round": 4,
+      "machine": "Dragonfist",
+      "division": 0,
+      "score": 133713,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.545",
-      "num_matches": 6,
-      "ppm": "4.500",
+      "pops": "0.568",
+      "num_matches": 8,
+      "ppm": "4.687",
       "points": {
-        "won": 27,
-        "of": 49.5
+        "won": 37.5,
+        "of": 66
       }
     },
     "div-1": {

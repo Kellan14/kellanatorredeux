@@ -217,16 +217,88 @@
       "score": 289422130,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "BAD",
+      "match": "mnp-24-8-TRL-BAD",
+      "week": "8",
+      "round": 1,
+      "machine": "JW",
+      "division": 0,
+      "score": 54259160,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "TRL",
+      "opp": "BAD",
+      "match": "mnp-24-8-TRL-BAD",
+      "week": "8",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 44101000,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "TRL",
+      "opp": "BAD",
+      "match": "mnp-24-8-TRL-BAD",
+      "week": "8",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1830490180,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "TRL",
+      "opp": "ADB",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 132061410,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "TRL",
+      "opp": "ADB",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 2,
+      "machine": "FT",
+      "division": 0,
+      "score": 91190800,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TRL",
+      "opp": "ADB",
+      "match": "mnp-24-9-ADB-TRL",
+      "week": "9",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 366880040,
+      "points": 1,
+      "pops": "0.333"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.571",
-      "num_matches": 6,
-      "ppm": "4.666",
+      "pops": "0.587",
+      "num_matches": 8,
+      "ppm": "4.812",
       "points": {
-        "won": 28,
-        "of": 49
+        "won": 38.5,
+        "of": 65.5
       }
     },
     "div-1": {

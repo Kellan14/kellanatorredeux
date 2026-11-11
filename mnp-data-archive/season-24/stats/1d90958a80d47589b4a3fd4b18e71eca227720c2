@@ -217,16 +217,88 @@
       "score": 84250,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 1,
+      "machine": "NGG",
+      "division": 0,
+      "score": 9350040,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 2,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 6291400,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "FBP",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 3,
+      "machine": "NGG",
+      "division": 0,
+      "score": 8217050,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 159147070,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 2,
+      "machine": "Wonka",
+      "division": 0,
+      "score": 836700,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SWL",
+      "opp": "BAD",
+      "match": "mnp-24-9-BAD-SWL",
+      "week": "9",
+      "round": 3,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 6888410,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.640",
-      "num_matches": 6,
-      "ppm": "5.333",
+      "pops": "0.574",
+      "num_matches": 8,
+      "ppm": "4.812",
       "points": {
-        "won": 32,
-        "of": 50
+        "won": 38.5,
+        "of": 67
       }
     },
     "div-1": {

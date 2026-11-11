@@ -217,16 +217,88 @@
       "score": 18739210,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 1,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 46747570,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 3,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 39565010,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "SSD",
+      "match": "mnp-24-8-SSD-SCN",
+      "week": "8",
+      "round": 4,
+      "machine": "Tron",
+      "division": 0,
+      "score": 16408870,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "PBR",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 26395860,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SCN",
+      "opp": "PBR",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 3,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 21957570,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SCN",
+      "opp": "PBR",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 53660,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.673",
-      "num_matches": 6,
-      "ppm": "5.500",
+      "pops": "0.638",
+      "num_matches": 8,
+      "ppm": "5.187",
       "points": {
-        "won": 33,
-        "of": 49
+        "won": 41.5,
+        "of": 65
       }
     },
     "div-1": {

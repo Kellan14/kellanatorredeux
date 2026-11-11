@@ -217,16 +217,88 @@
       "score": 22123970,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "PGN",
+      "opp": "DTP",
+      "match": "mnp-24-8-DTP-PGN",
+      "week": "8",
+      "round": 1,
+      "machine": "EJ",
+      "division": 0,
+      "score": 3929880,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PGN",
+      "opp": "DTP",
+      "match": "mnp-24-8-DTP-PGN",
+      "week": "8",
+      "round": 2,
+      "machine": "TAF",
+      "division": 0,
+      "score": 10000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "DTP",
+      "match": "mnp-24-8-DTP-PGN",
+      "week": "8",
+      "round": 4,
+      "machine": "LOTR",
+      "division": 0,
+      "score": 5000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PGN",
+      "opp": "DSV",
+      "match": "mnp-24-9-PGN-DSV",
+      "week": "9",
+      "round": 1,
+      "machine": "MH",
+      "division": 0,
+      "score": 123530,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "PGN",
+      "opp": "DSV",
+      "match": "mnp-24-9-PGN-DSV",
+      "week": "9",
+      "round": 2,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 178600,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PGN",
+      "opp": "DSV",
+      "match": "mnp-24-9-PGN-DSV",
+      "week": "9",
+      "round": 4,
+      "machine": "BallyTrek",
+      "division": 0,
+      "score": 182250,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.397",
-      "num_matches": 6,
-      "ppm": "3.250",
+      "pops": "0.346",
+      "num_matches": 8,
+      "ppm": "2.812",
       "points": {
-        "won": 19.5,
-        "of": 49
+        "won": 22.5,
+        "of": 65
       }
     },
     "div-1": {

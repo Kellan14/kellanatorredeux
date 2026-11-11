@@ -37,16 +37,88 @@
       "score": 111696530,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 1,
+      "machine": "SNS",
+      "division": 0,
+      "score": 54830,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 62680270,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 18200130,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 1,
+      "machine": "Guardians",
+      "division": 0,
+      "score": 12374810,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 14694860,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 3,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 6641940,
+      "points": 1,
+      "pops": "0.333"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.647",
-      "num_matches": 1,
-      "ppm": "5.500",
+      "pops": "0.372",
+      "num_matches": 3,
+      "ppm": "3.166",
       "points": {
-        "won": 5.5,
-        "of": 8.5
+        "won": 9.5,
+        "of": 25.5
       }
     },
     "div-1": {

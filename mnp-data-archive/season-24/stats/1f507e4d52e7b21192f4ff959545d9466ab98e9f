@@ -253,16 +253,88 @@
       "score": 353060,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "ICB",
+      "match": "mnp-24-8-ICB-DOG",
+      "week": "8",
+      "round": 1,
+      "machine": "HW",
+      "division": 0,
+      "score": 23349460,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "ICB",
+      "match": "mnp-24-8-ICB-DOG",
+      "week": "8",
+      "round": 2,
+      "machine": "SDND",
+      "division": 0,
+      "score": 168001860,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "ICB",
+      "match": "mnp-24-8-ICB-DOG",
+      "week": "8",
+      "round": 4,
+      "machine": "SDND",
+      "division": 0,
+      "score": 190603970,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "KBZ",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 1,
+      "machine": "FH",
+      "division": 0,
+      "score": 619550,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "DOG",
+      "opp": "KBZ",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 2,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 44881400,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DOG",
+      "opp": "KBZ",
+      "match": "mnp-24-9-DOG-KBZ",
+      "week": "9",
+      "round": 4,
+      "machine": "Ghost",
+      "division": 0,
+      "score": 9239580,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.366",
-      "num_matches": 7,
-      "ppm": "2.928",
+      "pops": "0.430",
+      "num_matches": 9,
+      "ppm": "3.444",
       "points": {
-        "won": 20.5,
-        "of": 56
+        "won": 31,
+        "of": 72
       }
     },
     "div-1": {

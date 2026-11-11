@@ -217,16 +217,88 @@
       "score": 19309380,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "CRA",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 80433320,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "CRA",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 7964770,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "CRA",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 4,
+      "machine": "FALLOUT",
+      "division": 0,
+      "score": 47312030,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "TWC",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 2,
+      "machine": "MM",
+      "division": 0,
+      "score": 13374200,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "TWC",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 3,
+      "machine": "MM",
+      "division": 0,
+      "score": 5427510,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "TWC",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 3000000,
+      "points": 0.5,
+      "pops": "0.200"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.510",
-      "num_matches": 6,
-      "ppm": "4.166",
+      "pops": "0.473",
+      "num_matches": 8,
+      "ppm": "3.875",
       "points": {
-        "won": 25,
-        "of": 49
+        "won": 31,
+        "of": 65.5
       }
     },
     "div-1": {

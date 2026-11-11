@@ -109,16 +109,88 @@
       "score": 406910,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "CRA",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 238086190,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NQG",
+      "opp": "CRA",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 3,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 7550240,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "NQG",
+      "opp": "CRA",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 4,
+      "machine": "KONG",
+      "division": 0,
+      "score": 30421310,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "TWC",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 172645910,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "NQG",
+      "opp": "TWC",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 3,
+      "machine": "KONG",
+      "division": 0,
+      "score": 31000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "TWC",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 4,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 93822570,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.800",
-      "num_matches": 3,
-      "ppm": "6.666",
+      "pops": "0.578",
+      "num_matches": 5,
+      "ppm": "4.800",
       "points": {
-        "won": 20,
-        "of": 25
+        "won": 24,
+        "of": 41.5
       }
     },
     "div-1": {

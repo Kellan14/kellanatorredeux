@@ -181,16 +181,88 @@
       "score": 66341390,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "CRA",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 1,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 182150,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "CRA",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 2,
+      "machine": "DRAGON",
+      "division": 0,
+      "score": 143110,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "CRA",
+      "match": "mnp-24-8-NQG-CRA",
+      "week": "8",
+      "round": 3,
+      "machine": "TAF",
+      "division": 0,
+      "score": 22360260,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "TWC",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 1,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 39999280,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "NQG",
+      "opp": "TWC",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 3329250760,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "NQG",
+      "opp": "TWC",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 4,
+      "machine": "CA",
+      "division": 0,
+      "score": 129130,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.571",
-      "num_matches": 5,
-      "ppm": "4.800",
+      "pops": "0.529",
+      "num_matches": 7,
+      "ppm": "4.428",
       "points": {
-        "won": 24,
-        "of": 42
+        "won": 31,
+        "of": 58.5
       }
     },
     "div-1": {

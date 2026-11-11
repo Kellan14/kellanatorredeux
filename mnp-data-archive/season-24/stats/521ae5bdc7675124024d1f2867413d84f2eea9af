@@ -145,16 +145,88 @@
       "score": 7393570,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "KBZ",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 29229520,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "KBZ",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 3,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 2599790,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "KBZ",
+      "match": "mnp-24-8-KBZ-JMF",
+      "week": "8",
+      "round": 4,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 60244930,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "KNR",
+      "match": "mnp-24-9-JMF-KNR",
+      "week": "9",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 44308470,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "KNR",
+      "match": "mnp-24-9-JMF-KNR",
+      "week": "9",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 58000000,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "JMF",
+      "opp": "KNR",
+      "match": "mnp-24-9-JMF-KNR",
+      "week": "9",
+      "round": 4,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 53620370,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.276",
-      "num_matches": 4,
-      "ppm": "2.250",
+      "pops": "0.257",
+      "num_matches": 6,
+      "ppm": "2.083",
       "points": {
-        "won": 9,
-        "of": 32.5
+        "won": 12.5,
+        "of": 48.5
       }
     },
     "div-1": {

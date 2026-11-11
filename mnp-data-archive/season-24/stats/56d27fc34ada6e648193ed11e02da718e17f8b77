@@ -229,16 +229,88 @@
       "score": 137534070,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "KNR",
+      "opp": "PKT",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 1,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 29605370,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "PKT",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 2,
+      "machine": "Spiderman",
+      "division": 0,
+      "score": 61118230,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "KNR",
+      "opp": "PKT",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 4,
+      "machine": "ACDC",
+      "division": 0,
+      "score": 41651240,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "JMF",
+      "match": "mnp-24-9-JMF-KNR",
+      "week": "9",
+      "round": 1,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 53820380,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "JMF",
+      "match": "mnp-24-9-JMF-KNR",
+      "week": "9",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 150000000,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "KNR",
+      "opp": "JMF",
+      "match": "mnp-24-9-JMF-KNR",
+      "week": "9",
+      "round": 3,
+      "machine": "TF",
+      "division": 0,
+      "score": 86770010,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.647",
-      "num_matches": 6,
-      "ppm": "5.666",
+      "pops": "0.666",
+      "num_matches": 8,
+      "ppm": "5.750",
       "points": {
-        "won": 34,
-        "of": 52.5
+        "won": 46,
+        "of": 69
       }
     },
     "div-1": {

@@ -181,16 +181,88 @@
       "score": 1977620,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "RMS",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 1,
+      "machine": "SternPark",
+      "division": 0,
+      "score": 23965940,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "RMS",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 2,
+      "machine": "Firepower",
+      "division": 0,
+      "score": 95600,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SKP",
+      "opp": "RMS",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 4,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 92100,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 1,
+      "machine": "NIGHTMOVES",
+      "division": 0,
+      "score": 1360760,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 3,
+      "machine": "NIGHTMOVES",
+      "division": 0,
+      "score": 1997670,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 4,
+      "machine": "HP",
+      "division": 0,
+      "score": 26443925,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.425",
-      "num_matches": 5,
-      "ppm": "3.400",
+      "pops": "0.464",
+      "num_matches": 7,
+      "ppm": "3.714",
       "points": {
-        "won": 17,
-        "of": 40
+        "won": 26,
+        "of": 56
       }
     },
     "div-1": {

@@ -253,16 +253,88 @@
       "score": 82285030,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ETB",
+      "match": "mnp-24-8-ETB-TWC",
+      "week": "8",
+      "round": 1,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 144460640,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ETB",
+      "match": "mnp-24-8-ETB-TWC",
+      "week": "8",
+      "round": 2,
+      "machine": "GOT",
+      "division": 0,
+      "score": 214553750,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "ETB",
+      "match": "mnp-24-8-ETB-TWC",
+      "week": "8",
+      "round": 4,
+      "machine": "Tron",
+      "division": 0,
+      "score": 21270290,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "NQG",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 1,
+      "machine": "PULP",
+      "division": 0,
+      "score": 2513760,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "TWC",
+      "opp": "NQG",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 2,
+      "machine": "Godzilla",
+      "division": 0,
+      "score": 172371510,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "TWC",
+      "opp": "NQG",
+      "match": "mnp-24-9-TWC-NQG",
+      "week": "9",
+      "round": 4,
+      "machine": "MM",
+      "division": 0,
+      "score": 12000000,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.704",
-      "num_matches": 7,
-      "ppm": "5.785",
+      "pops": "0.721",
+      "num_matches": 9,
+      "ppm": "5.888",
       "points": {
-        "won": 40.5,
-        "of": 57.5
+        "won": 53,
+        "of": 73.5
       }
     },
     "div-1": {

@@ -181,16 +181,88 @@
       "score": 365621000,
       "points": 3,
       "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TTT",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 2,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 112063190,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "TTT",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 3,
+      "machine": "StrangerThings",
+      "division": 0,
+      "score": 87048150,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "RTR",
+      "opp": "TTT",
+      "match": "mnp-24-8-RTR-TTT",
+      "week": "8",
+      "round": 4,
+      "machine": "Whitewater",
+      "division": 0,
+      "score": 61306870,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "RTR",
+      "opp": "BLK",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 2,
+      "machine": "TWD",
+      "division": 0,
+      "score": 56218360,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "BLK",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 3,
+      "machine": "SternTrek",
+      "division": 0,
+      "score": 8557610,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "RTR",
+      "opp": "BLK",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 4,
+      "machine": "TWD",
+      "division": 0,
+      "score": 60730810,
+      "points": 2,
+      "pops": "0.800"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.686",
-      "num_matches": 5,
-      "ppm": "5.700",
+      "pops": "0.666",
+      "num_matches": 7,
+      "ppm": "5.571",
       "points": {
-        "won": 28.5,
-        "of": 41.5
+        "won": 39,
+        "of": 58.5
       }
     },
     "div-1": {

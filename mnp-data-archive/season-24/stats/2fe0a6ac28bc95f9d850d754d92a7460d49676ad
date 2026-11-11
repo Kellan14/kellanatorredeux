@@ -253,16 +253,88 @@
       "score": 228700090,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ADB",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 1,
+      "machine": "KONG",
+      "division": 0,
+      "score": 82990220,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "POW",
+      "opp": "ADB",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 3,
+      "machine": "TMTMTE",
+      "division": 0,
+      "score": 339750700,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "ADB",
+      "match": "mnp-24-8-POW-ADB",
+      "week": "8",
+      "round": 4,
+      "machine": "IronMaiden",
+      "division": 0,
+      "score": 279179440,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 1,
+      "machine": "TagTeam",
+      "division": 0,
+      "score": 432620,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 2,
+      "machine": "EJ",
+      "division": 0,
+      "score": 142420620,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "POW",
+      "opp": "SKP",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 4,
+      "machine": "EJ",
+      "division": 0,
+      "score": 136529640,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.736",
-      "num_matches": 7,
-      "ppm": "6.000",
+      "pops": "0.760",
+      "num_matches": 9,
+      "ppm": "6.166",
       "points": {
-        "won": 42,
-        "of": 57
+        "won": 55.5,
+        "of": 73
       }
     },
     "div-1": {

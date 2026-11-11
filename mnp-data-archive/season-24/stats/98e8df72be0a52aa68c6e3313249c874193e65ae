@@ -253,16 +253,88 @@
       "score": 36273470,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "RMS",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 1,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 1950550,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "SKP",
+      "opp": "RMS",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 2,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 143786010,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "RMS",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 4,
+      "machine": "BlackRose",
+      "division": 0,
+      "score": 8088980,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 1,
+      "machine": "TagTeam",
+      "division": 0,
+      "score": 207640,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 2,
+      "machine": "AIQ",
+      "division": 0,
+      "score": 89033890,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SKP",
+      "opp": "POW",
+      "match": "mnp-24-9-SKP-POW",
+      "week": "9",
+      "round": 4,
+      "machine": "DP",
+      "division": 0,
+      "score": 104395480,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.561",
-      "num_matches": 7,
-      "ppm": "4.571",
+      "pops": "0.568",
+      "num_matches": 9,
+      "ppm": "4.611",
       "points": {
-        "won": 32,
-        "of": 57
+        "won": 41.5,
+        "of": 73
       }
     },
     "div-1": {

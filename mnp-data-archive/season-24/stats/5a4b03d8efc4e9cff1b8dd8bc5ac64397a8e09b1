@@ -253,16 +253,88 @@
       "score": 230660,
       "points": 2,
       "pops": "0.666"
+    },
+    {
+      "team": "SSS",
+      "opp": "BLK",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 1,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 138664250,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SSS",
+      "opp": "BLK",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 2,
+      "machine": "WCS",
+      "division": 0,
+      "score": 478272080,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSS",
+      "opp": "BLK",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 3,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 51158670,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SSS",
+      "opp": "PKT",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 1,
+      "machine": "MM",
+      "division": 0,
+      "score": 25719660,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SSS",
+      "opp": "PKT",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 2,
+      "machine": "SC",
+      "division": 0,
+      "score": 397860,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SSS",
+      "opp": "PKT",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 4,
+      "machine": "007",
+      "division": 0,
+      "score": 98627010,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.487",
-      "num_matches": 7,
-      "ppm": "4.071",
+      "pops": "0.493",
+      "num_matches": 9,
+      "ppm": "4.111",
       "points": {
-        "won": 28.5,
-        "of": 58.5
+        "won": 37,
+        "of": 75
       }
     },
     "div-1": {

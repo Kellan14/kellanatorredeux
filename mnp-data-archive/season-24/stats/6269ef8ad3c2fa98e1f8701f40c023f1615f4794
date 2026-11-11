@@ -217,16 +217,88 @@
       "score": 244101410,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 2,
+      "machine": "Paragon",
+      "division": 0,
+      "score": 48230,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 3,
+      "machine": "NGG",
+      "division": 0,
+      "score": 1111620,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "SWL",
+      "match": "mnp-24-8-SWL-FBP",
+      "week": "8",
+      "round": 4,
+      "machine": "SpaceInvaders",
+      "division": 0,
+      "score": 81850,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 1,
+      "machine": "8Ball",
+      "division": 0,
+      "score": 109210,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 3,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 16963330,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "FBP",
+      "opp": "CPO",
+      "match": "mnp-24-9-FBP-CPO",
+      "week": "9",
+      "round": 4,
+      "machine": "RollerCoaster",
+      "division": 0,
+      "score": 1545790,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.742",
-      "num_matches": 6,
-      "ppm": "6.000",
+      "pops": "0.600",
+      "num_matches": 8,
+      "ppm": "4.875",
       "points": {
-        "won": 36,
-        "of": 48.5
+        "won": 39,
+        "of": 65
       }
     },
     "div-1": {

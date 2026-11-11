@@ -145,16 +145,88 @@
       "score": 461730,
       "points": 2,
       "pops": "0.666"
+    },
+    {
+      "team": "DTP",
+      "opp": "PGN",
+      "match": "mnp-24-8-DTP-PGN",
+      "week": "8",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 151753250,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "PGN",
+      "match": "mnp-24-8-DTP-PGN",
+      "week": "8",
+      "round": 3,
+      "machine": "FT",
+      "division": 0,
+      "score": 13412800,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DTP",
+      "opp": "PGN",
+      "match": "mnp-24-8-DTP-PGN",
+      "week": "8",
+      "round": 4,
+      "machine": "FT",
+      "division": 0,
+      "score": 17000000,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "CRA",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2847721120,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "DTP",
+      "opp": "CRA",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 26000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "DTP",
+      "opp": "CRA",
+      "match": "mnp-24-9-CRA-DTP",
+      "week": "9",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1511750530,
+      "points": 0.5,
+      "pops": "0.200"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.484",
-      "num_matches": 4,
-      "ppm": "4.000",
+      "pops": "0.397",
+      "num_matches": 6,
+      "ppm": "3.250",
       "points": {
-        "won": 16,
-        "of": 33
+        "won": 19.5,
+        "of": 49
       }
     },
     "div-1": {

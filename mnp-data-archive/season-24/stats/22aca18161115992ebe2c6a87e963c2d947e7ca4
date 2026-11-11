@@ -217,16 +217,88 @@
       "score": 43935820,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "SKP",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 1,
+      "machine": "AFM",
+      "division": 0,
+      "score": 4098978850,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "SKP",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 3,
+      "machine": "AFM",
+      "division": 0,
+      "score": 1656610200,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "RMS",
+      "opp": "SKP",
+      "match": "mnp-24-8-RMS-SKP",
+      "week": "8",
+      "round": 4,
+      "machine": "FH",
+      "division": 0,
+      "score": 4615340,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "RMS",
+      "opp": "ZOO",
+      "match": "mnp-24-9-ZOO-RMS",
+      "week": "9",
+      "round": 1,
+      "machine": "RR",
+      "division": 0,
+      "score": 99730850,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "RMS",
+      "opp": "ZOO",
+      "match": "mnp-24-9-ZOO-RMS",
+      "week": "9",
+      "round": 2,
+      "machine": "POKEMON",
+      "division": 0,
+      "score": 54561510,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "RMS",
+      "opp": "ZOO",
+      "match": "mnp-24-9-ZOO-RMS",
+      "week": "9",
+      "round": 3,
+      "machine": "SDND",
+      "division": 0,
+      "score": 159953430,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.295",
-      "num_matches": 6,
-      "ppm": "2.416",
+      "pops": "0.419",
+      "num_matches": 8,
+      "ppm": "3.437",
       "points": {
-        "won": 14.5,
-        "of": 49
+        "won": 27.5,
+        "of": 65.5
       }
     },
     "div-1": {

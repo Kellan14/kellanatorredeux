@@ -253,16 +253,88 @@
       "score": 27142180,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 1,
+      "machine": "Congo",
+      "division": 0,
+      "score": 2027583110,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 2,
+      "machine": "Congo",
+      "division": 0,
+      "score": 533741440,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PKT",
+      "opp": "KNR",
+      "match": "mnp-24-8-KNR-PKT",
+      "week": "8",
+      "round": 3,
+      "machine": "Congo",
+      "division": 0,
+      "score": 499215090,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "SSS",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 1,
+      "machine": "TAF",
+      "division": 0,
+      "score": 40633180,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PKT",
+      "opp": "SSS",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 3,
+      "machine": "TAF",
+      "division": 0,
+      "score": 101000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "PKT",
+      "opp": "SSS",
+      "match": "mnp-24-9-PKT-SSS",
+      "week": "9",
+      "round": 4,
+      "machine": "TargetAlpha",
+      "division": 0,
+      "score": 11310,
+      "points": 0,
+      "pops": "0.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.543",
-      "num_matches": 7,
-      "ppm": "4.500",
+      "pops": "0.523",
+      "num_matches": 9,
+      "ppm": "4.333",
       "points": {
-        "won": 31.5,
-        "of": 58
+        "won": 39,
+        "of": 74.5
       }
     },
     "div-1": {

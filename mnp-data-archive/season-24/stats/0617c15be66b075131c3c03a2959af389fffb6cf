@@ -181,16 +181,88 @@
       "score": 1500000,
       "points": 1,
       "pops": "0.400"
+    },
+    {
+      "team": "BLK",
+      "opp": "SSS",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 2,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 5435660,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "BLK",
+      "opp": "SSS",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 3,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 22000000,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "BLK",
+      "opp": "SSS",
+      "match": "mnp-24-8-SSS-BLK",
+      "week": "8",
+      "round": 4,
+      "machine": "WCS",
+      "division": 0,
+      "score": 135939030,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "BLK",
+      "opp": "RTR",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 1,
+      "machine": "Seawitch",
+      "division": 0,
+      "score": 49710,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "RTR",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 45193630,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "BLK",
+      "opp": "RTR",
+      "match": "mnp-24-9-BLK-RTR",
+      "week": "9",
+      "round": 4,
+      "machine": "Genie",
+      "division": 0,
+      "score": 222000,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.325",
-      "num_matches": 5,
-      "ppm": "2.600",
+      "pops": "0.309",
+      "num_matches": 7,
+      "ppm": "2.500",
       "points": {
-        "won": 13,
-        "of": 40
+        "won": 17.5,
+        "of": 56.5
       }
     },
     "div-1": {

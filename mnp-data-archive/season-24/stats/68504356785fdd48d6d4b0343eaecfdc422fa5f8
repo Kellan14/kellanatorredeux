@@ -253,16 +253,88 @@
       "score": 75477880,
       "points": 0,
       "pops": "0.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 1,
+      "machine": "BOP",
+      "division": 0,
+      "score": 18543290,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 3,
+      "machine": "BOP",
+      "division": 0,
+      "score": 3528260,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "SHK",
+      "opp": "NMC",
+      "match": "mnp-24-8-NMC-SHK",
+      "week": "8",
+      "round": 4,
+      "machine": "Earthshaker",
+      "division": 0,
+      "score": 1461900,
+      "points": 1.5,
+      "pops": "0.600"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 1,
+      "machine": "Tron",
+      "division": 0,
+      "score": 6895230,
+      "points": 1,
+      "pops": "0.400"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 2,
+      "machine": "Jaws",
+      "division": 0,
+      "score": 32150970,
+      "points": 1,
+      "pops": "0.333"
+    },
+    {
+      "team": "SHK",
+      "opp": "DRK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 4,
+      "machine": "Aerosmith",
+      "division": 0,
+      "score": 26079250,
+      "points": 2.5,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.215",
-      "num_matches": 7,
-      "ppm": "1.785",
+      "pops": "0.310",
+      "num_matches": 9,
+      "ppm": "2.555",
       "points": {
-        "won": 12.5,
-        "of": 58
+        "won": 23,
+        "of": 74
       }
     },
     "div-1": {

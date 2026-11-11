@@ -181,16 +181,88 @@
       "score": 15000000,
       "points": 1,
       "pops": "0.333"
+    },
+    {
+      "team": "DRK",
+      "opp": "NLT",
+      "match": "mnp-24-8-DRK-NLT",
+      "week": "8",
+      "round": 1,
+      "machine": "GOT",
+      "division": 0,
+      "score": 21985090,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "NLT",
+      "match": "mnp-24-8-DRK-NLT",
+      "week": "8",
+      "round": 2,
+      "machine": "Indy500",
+      "division": 0,
+      "score": 428426500,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DRK",
+      "opp": "NLT",
+      "match": "mnp-24-8-DRK-NLT",
+      "week": "8",
+      "round": 4,
+      "machine": "GOT",
+      "division": 0,
+      "score": 797961920,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "SHK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 1,
+      "machine": "Tron",
+      "division": 0,
+      "score": 35028210,
+      "points": 2.5,
+      "pops": "1.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "SHK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 2,
+      "machine": "Sopranos",
+      "division": 0,
+      "score": 6516840,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DRK",
+      "opp": "SHK",
+      "match": "mnp-24-9-SHK-DRK",
+      "week": "9",
+      "round": 3,
+      "machine": "Tron",
+      "division": 0,
+      "score": 12634500,
+      "points": 3,
+      "pops": "1.000"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.626",
-      "num_matches": 5,
-      "ppm": "5.200",
+      "pops": "0.620",
+      "num_matches": 7,
+      "ppm": "5.142",
       "points": {
-        "won": 26,
-        "of": 41.5
+        "won": 36,
+        "of": 58
       }
     },
     "div-1": {

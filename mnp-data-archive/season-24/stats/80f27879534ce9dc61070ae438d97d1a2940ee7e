@@ -253,16 +253,88 @@
       "score": 1026470,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TBT",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 9879180,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "TBT",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 3,
+      "machine": "Corvette",
+      "division": 0,
+      "score": 1186921260,
+      "points": 2,
+      "pops": "0.666"
+    },
+    {
+      "team": "DSV",
+      "opp": "TBT",
+      "match": "mnp-24-8-DSV-TBT",
+      "week": "8",
+      "round": 4,
+      "machine": "Corvette",
+      "division": 0,
+      "score": 49317320,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "PGN",
+      "match": "mnp-24-9-PGN-DSV",
+      "week": "9",
+      "round": 1,
+      "machine": "Harlem",
+      "division": 0,
+      "score": 176800,
+      "points": 2,
+      "pops": "0.800"
+    },
+    {
+      "team": "DSV",
+      "opp": "PGN",
+      "match": "mnp-24-9-PGN-DSV",
+      "week": "9",
+      "round": 2,
+      "machine": "Fathom",
+      "division": 0,
+      "score": 1293620,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "DSV",
+      "opp": "PGN",
+      "match": "mnp-24-9-PGN-DSV",
+      "week": "9",
+      "round": 4,
+      "machine": "BKSoR",
+      "division": 0,
+      "score": 82951860,
+      "points": 1,
+      "pops": "0.400"
     }
   ],
   "divisions": {
     "all": {
       "pops": "0.500",
-      "num_matches": 7,
-      "ppm": "4.071",
+      "num_matches": 9,
+      "ppm": "4.055",
       "points": {
-        "won": 28.5,
-        "of": 57
+        "won": 36.5,
+        "of": 73
       }
     },
     "div-1": {

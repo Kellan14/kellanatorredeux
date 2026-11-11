@@ -253,16 +253,88 @@
       "score": 3110383180,
       "points": 2.5,
       "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ZOO",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 1,
+      "machine": "CactusCanyon",
+      "division": 0,
+      "score": 3115120,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ZOO",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 2,
+      "machine": "FOO",
+      "division": 0,
+      "score": 70341230,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "ZOO",
+      "match": "mnp-24-8-PBR-ZOO",
+      "week": "8",
+      "round": 4,
+      "machine": "SWFOTE",
+      "division": 0,
+      "score": 37126020,
+      "points": 0.5,
+      "pops": "0.200"
+    },
+    {
+      "team": "PBR",
+      "opp": "SCN",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 1,
+      "machine": "WhoDunnit",
+      "division": 0,
+      "score": 916340960,
+      "points": 0,
+      "pops": "0.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SCN",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 2,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2144708360,
+      "points": 3,
+      "pops": "1.000"
+    },
+    {
+      "team": "PBR",
+      "opp": "SCN",
+      "match": "mnp-24-9-SCN-PBR",
+      "week": "9",
+      "round": 4,
+      "machine": "AFM",
+      "division": 0,
+      "score": 2290944090,
+      "points": 1.5,
+      "pops": "0.600"
     }
   ],
   "divisions": {
     "all": {
-      "pops": "0.486",
-      "num_matches": 7,
+      "pops": "0.489",
+      "num_matches": 9,
       "ppm": "4.000",
       "points": {
-        "won": 28,
-        "of": 57.5
+        "won": 36,
+        "of": 73.5
       }
     },
     "div-1": {
