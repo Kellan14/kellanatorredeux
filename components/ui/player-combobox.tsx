@@ -13,7 +13,13 @@ interface PlayerComboboxProps {
   placeholder?: string
   disabled?: boolean
   disabledValues?: string[]
+  inputId?: string
+  getOptionLabel?: (value: string) => string
+  emptyMessage?: string
+  browseOnOpen?: boolean
 }
+
+const identityLabel = (value: string) => value
 
 export function PlayerCombobox({
   players,
@@ -22,6 +28,10 @@ export function PlayerCombobox({
   placeholder = 'Search players...',
   disabled = false,
   disabledValues = [],
+  inputId,
+  getOptionLabel = identityLabel,
+  emptyMessage = 'No players found',
+  browseOnOpen = false,
 }: PlayerComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [search, setSearch] = React.useState('')
@@ -33,9 +43,9 @@ export function PlayerCombobox({
     if (!search) return players.slice(0, 50) // Show first 50 when no search
     const lowerSearch = search.toLowerCase()
     return players
-      .filter(p => p.toLowerCase().includes(lowerSearch))
+      .filter(p => p.toLowerCase().includes(lowerSearch) || getOptionLabel(p).toLowerCase().includes(lowerSearch))
       .slice(0, 50) // Limit results for performance
-  }, [players, search])
+  }, [players, search, getOptionLabel])
 
   // Handle click outside to close
   React.useEffect(() => {
@@ -51,13 +61,13 @@ export function PlayerCombobox({
   // When value changes externally, update search display
   React.useEffect(() => {
     if (!open) {
-      setSearch(value || '')
+      setSearch(getOptionLabel(value))
     }
-  }, [value, open])
+  }, [value, open, getOptionLabel])
 
   const handleSelect = (player: string) => {
     onValueChange(player)
-    setSearch(player)
+    setSearch(getOptionLabel(player))
     setOpen(false)
   }
 
@@ -74,6 +84,7 @@ export function PlayerCombobox({
   }
 
   const handleFocus = () => {
+    if (browseOnOpen && !open) setSearch('')
     setOpen(true)
     // Select all text on focus for easy replacement
     inputRef.current?.select()
@@ -82,7 +93,7 @@ export function PlayerCombobox({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       setOpen(false)
-      setSearch(value || '')
+      setSearch(getOptionLabel(value))
     }
     if (e.key === 'Enter' && filteredPlayers.length > 0) {
       e.preventDefault()
@@ -95,10 +106,13 @@ export function PlayerCombobox({
   }
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative" onBlur={e => {
+      if (!e.currentTarget.contains(e.relatedTarget)) setOpen(false)
+    }}>
       <div className="relative">
         <Input
           ref={inputRef}
+          id={inputId}
           type="text"
           inputMode="search"
           autoComplete="off"
@@ -121,6 +135,7 @@ export function PlayerCombobox({
               size="sm"
               className="h-full px-2 hover:bg-transparent"
               onClick={handleClear}
+              aria-label="Clear selection"
               disabled={disabled}
             >
               <X className="h-4 w-4 text-muted-foreground" />
@@ -132,9 +147,12 @@ export function PlayerCombobox({
             size="sm"
             className="h-full px-2 hover:bg-transparent"
             onClick={() => {
+              if (!open && browseOnOpen) setSearch('')
               setOpen(!open)
               if (!open) inputRef.current?.focus()
             }}
+            aria-label="Toggle options"
+            aria-expanded={open}
             disabled={disabled}
           >
             <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
@@ -167,7 +185,7 @@ export function PlayerCombobox({
                       isSelected ? 'opacity-100' : 'opacity-0'
                     )}
                   />
-                  {player}
+                  {getOptionLabel(player)}
                 </button>
               )
             })}
@@ -177,7 +195,7 @@ export function PlayerCombobox({
 
       {open && search && filteredPlayers.length === 0 && (
         <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover p-4 text-center text-sm text-muted-foreground shadow-lg">
-          No players found
+          {emptyMessage}
         </div>
       )}
     </div>

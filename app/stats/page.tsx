@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -36,6 +36,8 @@ import { MachineMappingManager } from '@/components/machine-mapping-manager'
 import { TwcPlayerAvailability } from '@/components/twc-player-availability'
 import { PlayerAvailability } from '@/components/player-availability'
 import { authFetch } from '@/lib/auth-fetch'
+import { PlayerCombobox } from '@/components/ui/player-combobox'
+import { useMachineCanon } from '@/hooks/use-machine-canon'
 
 interface Team {
   key: string
@@ -118,6 +120,13 @@ export default function StatsPage() {
   const [teams, setTeams] = useState<Team[]>([])
   const [selectedVenue, setSelectedVenue] = useState<string>('')
   const [allMachines, setAllMachines] = useState(false)
+  const [selectedMachine, setSelectedMachine] = useState('')
+  const { machines: canonMachines } = useMachineCanon()
+  const machineNames = useMemo(() => new Map(
+    canonMachines.map(machine => [machine.key.toLowerCase(), machine.displayName])
+  ), [canonMachines])
+  const machineLabel = useMemo(() => (key: string) =>
+    key ? machineNames.get(key.toLowerCase()) || key : 'All machines', [machineNames])
   const scopeColumnLabel = (key: string, label: string) => allMachines
     ? ({ venueAverage: 'League Avg', percentOfVenueAvg: '% of League Avg', twcPercentOfVenueAvg: 'TWC % League Avg' } as Record<string, string>)[key] || label
     : label
@@ -562,9 +571,12 @@ export default function StatsPage() {
     }
   }
 
-  const sortedStats = [...machineStats].sort((a, b) => {
-    let aVal: any = sortColumn === 'machine' ? a.machine : (a as any)[sortColumn]
-    let bVal: any = sortColumn === 'machine' ? b.machine : (b as any)[sortColumn]
+  const machineOptions = useMemo(() => ['', ...machineStats.map(stat => stat.machine)
+    .sort((a, b) => machineLabel(a).localeCompare(machineLabel(b)))], [machineStats, machineLabel])
+  const machineFilter = allMachines && machineOptions.includes(selectedMachine) ? selectedMachine : ''
+  const sortedStats = machineStats.filter(stat => !machineFilter || stat.machine === machineFilter).sort((a, b) => {
+    let aVal: any = sortColumn === 'machine' ? machineLabel(a.machine) : (a as any)[sortColumn]
+    let bVal: any = sortColumn === 'machine' ? machineLabel(b.machine) : (b as any)[sortColumn]
 
     // Special handling for comparison columns (% Comparison, POPS Comparison)
     // Order: '+' (best) > numbers > '-' (worst) > 'N/A'
@@ -698,15 +710,27 @@ export default function StatsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full md:flex-1">
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="text-sm font-medium">Venue</span>
+                  <label className="text-sm font-medium" htmlFor={allMachines ? 'stats-machine-picker' : 'stats-venue-picker'}>{allMachines ? 'Machine' : 'Venue'}</label>
                   <label className="flex items-center gap-2 text-sm" htmlFor="stats-all-machines">
                     <Checkbox id="stats-all-machines" checked={allMachines} onCheckedChange={checked => setAllMachines(checked === true)} />
                     All machines
                   </label>
                 </div>
-                {allMachines ? <p className="text-sm text-muted-foreground">Showing league-wide statistics</p> : (
+                {allMachines ? (
+                  <PlayerCombobox
+                    inputId="stats-machine-picker"
+                    players={machineOptions}
+                    value={machineFilter}
+                    onValueChange={setSelectedMachine}
+                    placeholder="Search machines..."
+                    getOptionLabel={machineLabel}
+                    emptyMessage="No machines found"
+                    browseOnOpen
+                    disabled={loading}
+                  />
+                ) : (
                 <Select value={selectedVenue} onValueChange={setSelectedVenue}>
-                  <SelectTrigger>
+                  <SelectTrigger id="stats-venue-picker">
                     <SelectValue placeholder="Select venue" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1129,7 +1153,7 @@ export default function StatsPage() {
                           className={`px-2 md:px-4 py-1.5 md:py-3 whitespace-nowrap ${col.key === 'machine' ? 'font-medium sticky left-0 bg-background' : 'cursor-pointer hover:bg-muted/50'}`}
                           onClick={() => handleCellClick(stat.machine, col.key)}
                         >
-                          <span className="text-[10px] md:text-sm">{getCellValue(stat, col.key)}</span>
+                          <span className="text-[10px] md:text-sm">{col.key === 'machine' ? machineLabel(stat.machine) : getCellValue(stat, col.key)}</span>
                         </TableCell>
                       ))}
                     </TableRow>
@@ -1172,7 +1196,7 @@ export default function StatsPage() {
                 const displayLabel = scopeColumnLabel(selectedCell.column, columnLabel)
                   .replace(/\bTeam\b/g, selectedOpponent)
                   .replace(/\bTWC\b/g, 'The Wrecking Crew')
-                return `${displayLabel} for ${selectedCell.machine}`
+                return `${displayLabel} for ${machineLabel(selectedCell.machine)}`
               })()}
             </DialogTitle>
             <DialogDescription>
