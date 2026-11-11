@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
     const machine = searchParams.get('machine');
     const column = searchParams.get('column');
     const venue = searchParams.get('venue');
+    const allMachines = searchParams.get('allMachines') === 'true';
     const team = searchParams.get('team');
     const twcTeam = searchParams.get('twcTeam') || 'The Wrecking Crew';
     const seasonStart = parseInt(searchParams.get('seasonStart') || '1');
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
       seasonEnd
     });
 
-    if (!machine || !column || !venue) {
+    if (!machine || !column || (!venue && !allMachines)) {
       return NextResponse.json(
         { error: 'Machine, column, and venue are required' },
         { status: 400 }
@@ -68,7 +69,7 @@ export async function GET(request: NextRequest) {
     // Respect venue-specific flags: if the relevant flag is false, query all venues
     const teamVenueSpecific = searchParams.get('teamVenueSpecific') === 'true';
     const twcVenueSpecific = searchParams.get('twcVenueSpecific') === 'true';
-    const useVenueFilter = isVenueAverage || (isTWCColumn ? twcVenueSpecific : teamVenueSpecific);
+    const useVenueFilter = !allMachines && (isVenueAverage || (isTWCColumn ? twcVenueSpecific : teamVenueSpecific));
 
     console.log('[cell-details] Target team:', targetTeam, 'isTWCColumn:', isTWCColumn, 'venueFiltered:', useVenueFilter);
 
@@ -79,7 +80,7 @@ export async function GET(request: NextRequest) {
 
     let gamesData
     try {
-      const venueVariations = getVenueVariations(venue)
+      const venueVariations = venue ? getVenueVariations(venue) : []
       // Use OR filter to match any machine name variation
       const machineFilter = Array.from(machineVariations)
         .map(m => {
@@ -117,7 +118,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         machine,
         column,
-        summary: `No data found for ${machine} at ${venue}`,
+        summary: `No data found for ${machine}${allMachines ? ' league-wide' : ` at ${venue}`}`,
         details: [],
         count: 0
       });

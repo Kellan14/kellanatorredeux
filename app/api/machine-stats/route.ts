@@ -24,7 +24,7 @@ export const dynamic = 'force-dynamic';
  *
  * Query Parameters:
  * - seasons (required): comma-separated list of seasons (e.g., "20,21,22")
- * - venue (required): venue name to filter by
+ * - venue: venue name to filter by (required unless allMachines=true)
  * - teamName (required): team name (usually "The Wrecking Crew")
  * - opponentTeam (optional): opponent team name for "Team" columns
  * - teamVenueSpecific (optional): filter opponent team by venue (default: true)
@@ -34,7 +34,8 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const seasonsParam = searchParams.get('seasons');
-  const venue = searchParams.get('venue');
+  const allMachines = searchParams.get('allMachines') === 'true';
+  const venue = allMachines ? null : searchParams.get('venue');
   const teamName = searchParams.get('teamName');
   const opponentTeam = searchParams.get('opponentTeam');
   const teamVenueSpecific = searchParams.get('teamVenueSpecific') !== 'false'; // default true
@@ -48,10 +49,10 @@ export async function GET(request: NextRequest) {
   // app.py's roster_only=True so retired players / one-off subs don't
   // pollute opponent averages.
   const opponentRosterParam = searchParams.get('opponentRoster');
-  const machinesParam = searchParams.get('machines'); // optional comma-separated machine names from venues.json
+  const machinesParam = allMachines ? null : searchParams.get('machines'); // optional venue inventory
 
   // Validate required parameters
-  if (!seasonsParam || !venue || !teamName) {
+  if (!seasonsParam || (!allMachines && !venue) || !teamName) {
     return NextResponse.json(
       { error: 'Missing required parameters: seasons, venue, and teamName are required' },
       { status: 400 }
@@ -237,7 +238,7 @@ export async function GET(request: NextRequest) {
 function calculateMachineStatsServerSide(
   data: ProcessedScore[],
   teamName: string,
-  venueName: string,
+  venueName: string | null,
   seasons: [number, number],
   options: {
     includeVenueSpecific: boolean;
@@ -257,7 +258,7 @@ function calculateMachineStatsServerSide(
   );
 
   // Get venue-specific data (handles variations like "Ice Box" vs "Icebox")
-  const venueData = seasonData.filter(d =>
+  const venueData = venueName === null ? seasonData : seasonData.filter(d =>
     venuesMatch(d.venue, venueName)
   );
 
@@ -282,7 +283,9 @@ function calculateMachineStatsServerSide(
   // Otherwise fall back to deriving from venue data
   const machinesParam = options.machines;
   let machines: string[];
-  if (machinesParam && machinesParam.length > 0) {
+  if (venueName === null) {
+    machines = Array.from(new Set(seasonData.map(d => d.machine))).sort();
+  } else if (machinesParam && machinesParam.length > 0) {
     machines = machinesParam;
   } else {
     const latestSeason = seasons[1];
@@ -302,7 +305,7 @@ function calculateMachineStatsServerSide(
   // the limit is clearly a glitch and should be excluded from the venue
   // baseline as well as the team's own avg.
   const venueByMachineVenueMap = new Map<string /* `${machine}|${venue}` */, { total: number; count: number }>();
-  for (const d of seasonData) {
+  for (const d of venueName === null ? [] : seasonData) {
     if (!d.venue) continue;
     const limit = options.scoreLimits?.[d.machine.toLowerCase()];
     if (limit !== undefined && d.score > limit) continue;
@@ -337,10 +340,28 @@ function calculateMachineStatsServerSide(
   };
 
   const stats: MachineStats[] = [];
+  const byMachine = (rows: ProcessedScore[]) => {
+    const index = new Map<string, ProcessedScore[]>();
+    for (const row of rows) {
+      const bucket = index.get(row.machine);
+      if (bucket) bucket.push(row);
+      else index.set(row.machine, [row]);
+    }
+    return index;
+  };
+  const baselineByMachine = byMachine(venueData);
+  const teamByMachine = byMachine(teamData);
+  const twcPlayers = options.twcPlayers ? new Set(options.twcPlayers) : null;
+  const twcName = teamName.toLowerCase();
+  const twcByMachine = options.includeTWCStats
+    ? byMachine((options.twcVenueSpecific ? venueData : seasonData).filter(
+        d => d.team_name.toLowerCase() === twcName && (!twcPlayers || twcPlayers.has(d.player_name))
+      ))
+    : null;
 
   machines.forEach(machine => {
-    const machineVenueData = venueData.filter(d => d.machine === machine);
-    const machineTeamData = teamData.filter(d => d.machine === machine);
+    const machineVenueData = baselineByMachine.get(machine) || [];
+    const machineTeamData = teamByMachine.get(machine) || [];
 
     // Get score limit for this machine
     const machineLimit = options.scoreLimits?.[machine.toLowerCase()];
@@ -391,7 +412,9 @@ function calculateMachineStatsServerSide(
     // for the venue it was played at; venue-relative pcts are then pooled.
     // Equivalent to teamAverage/venueAverage when the team's data is all at
     // one venue; differs (correctly) when scope spans multiple venues.
-    const percentOfVenueAvg = computePctOfVenuePerGame(machineTeamData, machine);
+    const percentOfVenueAvg = venueName === null
+      ? (venueAverage > 0 ? teamAverage / venueAverage * 100 : 0)
+      : computePctOfVenuePerGame(machineTeamData, machine);
 
     const machineStats: MachineStats = {
       machine,
@@ -408,19 +431,7 @@ function calculateMachineStatsServerSide(
 
     // Add TWC stats if requested
     if (options.includeTWCStats) {
-      const useTwcVenueSpecific = options.twcVenueSpecific !== undefined ? options.twcVenueSpecific : false;
-
-      const twcPlayerFilter = options.twcPlayers
-        ? (d: ProcessedScore) => options.twcPlayers!.includes(d.player_name)
-        : () => true;
-
-      const twcData = useTwcVenueSpecific
-        ? venueData.filter(d =>
-            d.team_name.toLowerCase() === teamName.toLowerCase() && d.machine === machine && twcPlayerFilter(d)
-          )
-        : seasonData.filter(d =>
-            d.team_name.toLowerCase() === teamName.toLowerCase() && d.machine === machine && twcPlayerFilter(d)
-          );
+      const twcData = twcByMachine?.get(machine) || [];
 
       // Filter TWC scores by limit
       const allTwcScores = twcData.map(d => d.score);
@@ -433,7 +444,9 @@ function calculateMachineStatsServerSide(
       // Per-game-normalized — same definition as above, so subtracting
       // (twcPercentOfVenueAvg − percentOfVenueAvg) is fair regardless of
       // each side's venue scope.
-      machineStats.twcPercentOfVenueAvg = computePctOfVenuePerGame(twcData, machine);
+      machineStats.twcPercentOfVenueAvg = venueName === null
+        ? (venueAverage > 0 ? twcAverage / venueAverage * 100 : 0)
+        : computePctOfVenuePerGame(twcData, machine);
 
       // TWC times played
       const twcUniqueGames = new Set(

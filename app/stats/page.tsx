@@ -117,6 +117,10 @@ export default function StatsPage() {
   const [venues, setVenues] = useState<Venue[]>([])
   const [teams, setTeams] = useState<Team[]>([])
   const [selectedVenue, setSelectedVenue] = useState<string>('')
+  const [allMachines, setAllMachines] = useState(false)
+  const scopeColumnLabel = (key: string, label: string) => allMachines
+    ? ({ venueAverage: 'League Avg', percentOfVenueAvg: '% of League Avg', twcPercentOfVenueAvg: 'TWC % League Avg' } as Record<string, string>)[key] || label
+    : label
   const [selectedOpponent, setSelectedOpponent] = useState<string>('')
   const [seasonRange, setSeasonRange] = useState<[number, number]>([20, 23])
   const [availableSeasons, setAvailableSeasons] = useState<number[]>([])
@@ -338,10 +342,12 @@ export default function StatsPage() {
 
   useEffect(() => {
     // Only load stats when venues data is available (needed for machine list)
-    if (selectedVenue && selectedOpponent && venues.length > 0) {
-      loadStats()
+    if (selectedOpponent && (allMachines || (selectedVenue && venues.length > 0))) {
+      const controller = new AbortController()
+      loadStats(controller.signal)
+      return () => controller.abort()
     }
-  }, [selectedVenue, selectedOpponent, seasonRange, scoreLimits, teamVenueSpecific, twcVenueSpecific, includeManualScores, availablePlayers, opponentAvailablePlayers, venues])
+  }, [allMachines, selectedVenue, selectedOpponent, seasonRange, scoreLimits, teamVenueSpecific, twcVenueSpecific, includeManualScores, availablePlayers, opponentAvailablePlayers, venues])
 
   // Load opponent roster + subs whenever opponent changes; opponent stats are
   // scoped to current roster players so retired players / one-off subs don't
@@ -487,7 +493,7 @@ export default function StatsPage() {
     }
   }
 
-  const loadStats = async () => {
+  const loadStats = async (signal: AbortSignal) => {
     setLoading(true)
     try {
       const seasons = []
@@ -500,14 +506,14 @@ export default function StatsPage() {
       // Get selected TWC players for filtering
       const selectedTwcPlayers = Object.keys(availablePlayers).filter(p => availablePlayers[p])
 
-      const venueMachines = venues.find(v => v.name === selectedVenue)?.machines || []
+      const venueMachines = allMachines ? [] : venues.find(v => v.name === selectedVenue)?.machines || []
       const params = new URLSearchParams({
         seasons: seasons.join(','),
-        venue: selectedVenue,
+        ...(allMachines ? { allMachines: 'true' } : { venue: selectedVenue }),
         teamName: 'The Wrecking Crew',
         opponentTeam: selectedOpponent,
-        teamVenueSpecific: teamVenueSpecific.toString(),
-        twcVenueSpecific: twcVenueSpecific.toString(),
+        teamVenueSpecific: (!allMachines && teamVenueSpecific).toString(),
+        twcVenueSpecific: (!allMachines && twcVenueSpecific).toString(),
         scoreLimits: JSON.stringify(scoreLimits),
         includeManualScores: includeManualScores.toString(),
         ...(venueMachines.length > 0 ? { machines: venueMachines.join(',') } : {})
@@ -528,7 +534,7 @@ export default function StatsPage() {
         params.set('opponentRoster', selectedOpponentPlayers.join(','))
       }
 
-      const response = await fetch(`/api/machine-stats?${params}`)
+      const response = await fetch(`/api/machine-stats?${params}`, { signal })
       const data = await response.json()
 
       if (!response.ok) {
@@ -536,11 +542,14 @@ export default function StatsPage() {
       }
 
       console.log('[stats] Loaded', data.count, 'machine stats from server-side calculation')
-      setMachineStats(data.stats || [])
+      if (!signal.aborted) setMachineStats(data.stats || [])
     } catch (error) {
-      console.error('Error loading stats:', error)
+      if (!signal.aborted) {
+        console.error('Error loading stats:', error)
+        setMachineStats([])
+      }
     } finally {
-      setLoading(false)
+      if (!signal.aborted) setLoading(false)
     }
   }
 
@@ -616,7 +625,7 @@ export default function StatsPage() {
       const cellParams = new URLSearchParams({
         machine,
         column: columnLabel,
-        venue: selectedVenue,
+        ...(allMachines ? { allMachines: 'true' } : { venue: selectedVenue }),
         team: selectedOpponent,
         twcTeam: 'The Wrecking Crew',
         seasonStart: String(seasonRange[0]),
@@ -688,7 +697,14 @@ export default function StatsPage() {
           <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-6 gap-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full md:flex-1">
               <div>
-                <label className="text-sm font-medium mb-2 block">Venue</label>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="text-sm font-medium">Venue</span>
+                  <label className="flex items-center gap-2 text-sm" htmlFor="stats-all-machines">
+                    <Checkbox id="stats-all-machines" checked={allMachines} onCheckedChange={checked => setAllMachines(checked === true)} />
+                    All machines
+                  </label>
+                </div>
+                {allMachines ? <p className="text-sm text-muted-foreground">Showing league-wide statistics</p> : (
                 <Select value={selectedVenue} onValueChange={setSelectedVenue}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select venue" />
@@ -700,7 +716,7 @@ export default function StatsPage() {
                       </SelectItem>
                     ))}
                   </SelectContent>
-                </Select>
+                </Select>)}
               </div>
 
               <div>
@@ -759,7 +775,8 @@ export default function StatsPage() {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="team-venue-specific"
-                    checked={teamVenueSpecific}
+                    checked={!allMachines && teamVenueSpecific}
+                    disabled={allMachines}
                     onCheckedChange={(checked) => setTeamVenueSpecific(!!checked)}
                   />
                   <label
@@ -772,7 +789,8 @@ export default function StatsPage() {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="twc-venue-specific"
-                    checked={twcVenueSpecific}
+                    checked={!allMachines && twcVenueSpecific}
+                    disabled={allMachines}
                     onCheckedChange={(checked) => setTwcVenueSpecific(!!checked)}
                   />
                   <label
@@ -785,6 +803,7 @@ export default function StatsPage() {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="include-historical-venues"
+                    disabled={allMachines}
                     checked={includeHistoricalVenues}
                     onCheckedChange={(checked) => setIncludeHistoricalVenues(!!checked)}
                   />
@@ -873,7 +892,7 @@ export default function StatsPage() {
                     {columns.map((col, index) => (
                       <div key={col.key} className="grid grid-cols-12 gap-2 p-3 border-t items-center hover:bg-muted/50">
                         <div className="col-span-1 text-sm text-muted-foreground">{index + 1}</div>
-                        <div className="col-span-6 text-sm font-medium">{col.label}</div>
+                        <div className="col-span-6 text-sm font-medium">{scopeColumnLabel(col.key, col.label)}</div>
                         <div className="col-span-3">
                           <Checkbox
                             checked={col.visible}
@@ -1096,7 +1115,7 @@ export default function StatsPage() {
                         className="cursor-pointer px-2 md:px-4 py-2 md:py-3 whitespace-nowrap"
                         onClick={() => handleSort(col.key)}
                       >
-                        <span className="text-[10px] md:text-sm">{col.label}</span> <SortIcon column={col.key} />
+                        <span className="text-[10px] md:text-sm">{scopeColumnLabel(col.key, col.label)}</span> <SortIcon column={col.key} />
                       </TableHead>
                     ))}
                   </TableRow>
@@ -1122,7 +1141,7 @@ export default function StatsPage() {
 
           {!loading && machineStats.length === 0 && (
             <div className="text-center p-12 text-muted-foreground">
-              No statistics available for the selected venue and opponent.
+              {allMachines ? 'No league-wide statistics available for the selected seasons.' : 'No statistics available for the selected venue and opponent.'}
             </div>
           )}
         </CardContent>
@@ -1150,7 +1169,7 @@ export default function StatsPage() {
               {selectedCell && (() => {
                 const columnLabel = DEFAULT_COLUMNS.find(c => c.key === selectedCell.column)?.label || selectedCell.column
                 // Replace "Team" with actual team name in the title
-                const displayLabel = columnLabel
+                const displayLabel = scopeColumnLabel(selectedCell.column, columnLabel)
                   .replace(/\bTeam\b/g, selectedOpponent)
                   .replace(/\bTWC\b/g, 'The Wrecking Crew')
                 return `${displayLabel} for ${selectedCell.machine}`
