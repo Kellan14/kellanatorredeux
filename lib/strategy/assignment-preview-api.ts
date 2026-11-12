@@ -27,11 +27,13 @@ export async function handleAssignmentPreview(body: Record<string, unknown>, met
     return fail('Automatic scoring currently supports four-machine doubles rounds only.')
   const players = method === 'greedy' ? body.availablePlayers : body.playerNames
   const { machines, seasonStart, seasonEnd, venue, mustPlay = [], forcedAssignments = [],
-    exclusions: rawExclusions = {}, minMachineGames = 0, lineupLimit = 5 } = body
+    exclusions: rawExclusions = {}, minMachineGames = 0, lineupLimit = 5, requiredMachines = [] } = body
   if (!names(players) || players.length < 8 || players.length > 12 || new Set(players.map(key)).size !== players.length)
     return fail('Choose 8–12 distinct available players.')
   if (!names(machines) || machines.length < 4 || machines.length > 32 || new Set(machines.map(key)).size !== machines.length)
     return fail('Choose 4–32 distinct machine keys.')
+  if (!names(requiredMachines) || requiredMachines.some(m => !machines.includes(m)))
+    return fail('Required machines must be available.')
   if (!name(venue) || typeof seasonStart !== 'number' || typeof seasonEnd !== 'number' ||
     !Number.isInteger(seasonStart) || !Number.isInteger(seasonEnd) || seasonStart < 1 || seasonEnd > 100 ||
     seasonEnd < seasonStart)
@@ -61,7 +63,7 @@ export async function handleAssignmentPreview(body: Record<string, unknown>, met
     if (forced.filter(f => f.machine === machine).length >= 2) return fail('A machine has more than two forced players.')
     forced.push({ player: assignment.player, machine })
   }
-  if (new Set([...mustPlay, ...forced.map(f => f.player)]).size > 8 || new Set(forced.map(f => f.machine)).size > 4)
+  if (new Set([...mustPlay, ...forced.map(f => f.player)]).size > 8 || new Set([...forced.map(f => f.machine), ...requiredMachines]).size > 4)
     return fail('The must-play and forced assignments exceed the available doubles slots.')
 
   signal.throwIfAborted()
@@ -96,7 +98,7 @@ export async function handleAssignmentPreview(body: Record<string, unknown>, met
   const snapshot = estimator
   const estimate = (p: string, m: string) => snapshot.estimate(p, m, venue)
   if (estimate(players[0], machines[0]).score === null) return fail('No usable league score history in this season range.', 422)
-  const result = await solveAssignmentPreview({ players, machines, mustPlay, exclusions, forced,
+  const result = await solveAssignmentPreview({ players, machines, mustPlay, exclusions, forced, requiredMachines,
     minGames: minMachineGames, limit: lineupLimit, method, estimate, signal })
   if (!result.lineups.length) return fail('No complete lineup satisfies the constraints. Check must-play players, exclusions, forced assignments, and minimum history.', 422)
   return NextResponse.json({ assignmentPreview: {

@@ -35,6 +35,7 @@ interface MachinePickerProps {
   onRemoveExclusion?: (machine: string, player: string) => void
   onExcludeMachine?: (machine: string) => void
   sharedForcedAssignments?: ForcedAssignment[]
+  requiredMachines?: string[]
   onForcedAssignmentsChange?: (assignments: ForcedAssignment[]) => void
   onOptimize?: (result: OptimizationResult) => void
   opponent?: string
@@ -394,6 +395,7 @@ export function MachinePicker({
   onRemoveExclusion,
   onExcludeMachine,
   sharedForcedAssignments,
+  requiredMachines,
   onForcedAssignmentsChange,
   onOptimize,
   opponent,
@@ -556,6 +558,7 @@ export function MachinePicker({
           mustPlay,
           useCache: false,
           forcedAssignments: newForced,
+          requiredMachines,
           opponent,
           opponentPlayers,
           opponentWeight,
@@ -628,6 +631,7 @@ export function MachinePicker({
           mustPlay,
           useCache: false,
           forcedAssignments: newForced,
+          requiredMachines,
           opponent,
           opponentPlayers,
           opponentWeight,
@@ -697,6 +701,7 @@ export function MachinePicker({
           mustPlay,
           useCache: false,
           forcedAssignments,
+          requiredMachines,
           opponent,
           opponentPlayers,
           opponentWeight,
@@ -748,7 +753,7 @@ export function MachinePicker({
   // Track dirty state for Apply button
   const currentParamsKey = JSON.stringify({ exclusions, userInputWeight, confidenceBoost, venueWeight, scoreWeights })
   const isParamsDirty = hasOptimizedOnce.current && lastOptimizedParams.current !== null && lastOptimizedParams.current !== currentParamsKey
-  const sharedConstraints = sharedForcedAssignments && JSON.stringify([sharedForcedAssignments, playerNames, machines, exclusions])
+  const sharedConstraints = sharedForcedAssignments && JSON.stringify([sharedForcedAssignments, requiredMachines, playerNames, machines, exclusions])
   useEffect(() => {
     if (sharedConstraints && hasOptimizedOnce.current && !isOptimizing) void handleOptimize()
   }, [sharedConstraints]) // eslint-disable-line react-hooks/exhaustive-deps

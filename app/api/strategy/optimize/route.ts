@@ -93,6 +93,9 @@ export async function POST(request: NextRequest) {
 
     const requiredPlayers = format === '7x7' ? 7 : 8
     const requiredMachines = format === '7x7' ? 7 : 4
+    const lockedMachines: string[] = format === '4x2' ? body.requiredMachines ?? [] : []
+    if (!Array.isArray(lockedMachines) || lockedMachines.some(m => !machines.includes(m)))
+      return NextResponse.json({ error: 'Required machines must be available.' }, { status: 400 })
 
     if (machines.length < requiredMachines) {
       return NextResponse.json(
@@ -695,9 +698,11 @@ export async function POST(request: NextRequest) {
       // the cap (only happens with very large lineups).
       const bonuses = machineEdgeBonuses.size > 0 ? machineEdgeBonuses : undefined
       const hungarianResult = optimizer.optimize4x2Hungarian(
-        players, selectedMachines, statsMap, userInputs, pairStatsMap, exclusions, confidenceBoost, scoreWeights, bonuses, undefined, halfLockedDoublesSeeds
+        players, selectedMachines, statsMap, userInputs, pairStatsMap, exclusions, confidenceBoost, scoreWeights, bonuses, undefined, halfLockedDoublesSeeds,
+        lockedMachines.filter(m => !fullyLockedDoublesMachines.has(m))
       )
       if (hungarianResult !== null) return hungarianResult
+      if (lockedMachines.length) return { format: '4x2' as const, assignments: [], total_score: 0, win_probability: 0, benched: players, suggestions: [] }
       return optimizer.optimize4x2WithStats(players, selectedMachines, statsMap, userInputs, pairStatsMap, exclusions, confidenceBoost, scoreWeights)
     }
 

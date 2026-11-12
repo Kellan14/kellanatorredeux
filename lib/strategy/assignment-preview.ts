@@ -16,6 +16,7 @@ export type PreviewOptions = {
   mustPlay: string[]
   exclusions: Record<string, string[]>
   forced: { player: string; machine: string }[]
+  requiredMachines?: string[]
   minGames: number
   limit: number
   method: 'greedy' | 'hungarian'
@@ -65,7 +66,7 @@ export async function solveAssignmentPreview(options: PreviewOptions) {
   const { players, machines, mustPlay, exclusions, forced, estimate } = options
   const required = new Set([...mustPlay, ...forced.map(f => f.player)])
   const forcedByPlayer = new Map(forced.map(f => [f.player, f.machine]))
-  const forcedMachines = new Set(forced.map(f => f.machine))
+  const forcedMachines = new Set([...forced.map(f => f.machine), ...(options.requiredMachines ?? [])])
   const values = machines.map(machine => players.map(player => estimate(player, machine)))
   const costs = machines.map((machine, m) => players.map((player, p) => {
     const f = forcedByPlayer.get(player)

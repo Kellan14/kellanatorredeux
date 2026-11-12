@@ -538,7 +538,8 @@ export class LineupOptimizer {
     // their partner is chosen from the rest of the player pool. The function
     // enumerates every partner choice × every partition of the remaining
     // players over the remaining machines, picks the globally-best total.
-    fixedSeeds: Array<{ player: string; machine: string }> = []
+    fixedSeeds: Array<{ player: string; machine: string }> = [],
+    requiredMachines: string[] = []
   ): OptimizationResult | null {
     const binom = (n: number, r: number): number => {
       if (r < 0 || r > n) return 0
@@ -567,6 +568,8 @@ export class LineupOptimizer {
     const openMachines = machines.filter(m => !seedMachineSet.has(m))
     const s = fixedSeeds.length
     const innerK = Math.min(openMachines.length, Math.floor((openPlayers.length - s) / 2))
+    const requiredOpenMachines = new Set(requiredMachines.filter(m => !seedMachineSet.has(m)))
+    if (requiredOpenMachines.size > innerK) return null
 
     // Total work: pick s partners (ordered, one per seed) × inner partitions.
     const totalEvals = permutations(openPlayers.length, s) *
@@ -685,6 +688,11 @@ export class LineupOptimizer {
       for (const { pairs, bench } of partitions(remainingPlayers, innerK)) {
         const dim = Math.max(innerK, openMachines.length)
         const matrix: number[][] = Array.from({ length: dim }, () => Array(dim).fill(-1e9))
+        for (let i = innerK; i < dim; i++) {
+          for (let j = 0; j < openMachines.length; j++) {
+            if (requiredOpenMachines.has(openMachines[j])) matrix[i][j] = -1e12
+          }
+        }
         let anyValid = false
         for (let i = 0; i < innerK; i++) {
           for (let j = 0; j < openMachines.length; j++) {
@@ -707,7 +715,7 @@ export class LineupOptimizer {
           machineFor[i] = j
           innerScore += cell
         }
-        if (!valid) continue
+        if (!valid || Array.from(requiredOpenMachines).some(m => !machineFor.includes(openMachines.indexOf(m)))) continue
 
         const total = seedScore + innerScore
         if (!best || total > best.score) {

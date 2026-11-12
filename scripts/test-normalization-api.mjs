@@ -75,6 +75,14 @@ assert.equal(lockedHungarian.assignments.length,4)
 assert(lockedHungarian.assignments.some(a=>a.machine_id==='M4' && [a.player1_id,a.player2_id].includes('P0')))
 assert.equal(new Set(lockedHungarian.assignments.flatMap(a=>[a.player1_id,a.player2_id])).size,8)
 console.log('Manual doubles: shared force honored by Greedy and Hungarian with a complete round.')
+const candidatesWithReplacement = [...machines, 'M5']
+const machineLock = { ...common, machines:candidatesWithReplacement, requiredMachines:['M5'], opponentWeight:0 }
+const machineGreedy = await post(greedy, {...machineLock,format:'doubles',numMachines:4,availablePlayers:players})
+const machineHungarian = await post(hungarian, {...machineLock,format:'4x2',playerNames:players})
+assert.equal(machineGreedy.recommendations.length,4)
+assert.equal(machineHungarian.assignments.length,4)
+assert(machineGreedy.recommendations.some(p=>p.machine==='M5'))
+assert(machineHungarian.assignments.some(p=>p.machine_id==='M5'))
 
 const {buildAssignmentEstimator}=await import('../lib/strategy/assignment-estimator.ts')
 const {invalidateAssignmentHistory}=await import('../lib/strategy/assignment-history-revision.ts')
@@ -133,5 +141,16 @@ for (const [route,format,input] of [[greedy,'doubles',{availablePlayers:roster,n
   assert.equal((await request({exclusions:{M1:['P9']}})).status,400)
   assert.equal((await request({mustPlay:['Unavailable']})).status,400)
   assert.equal((await request({machines:['M1','m1','M2','M3']})).status,400)
+  const edited = await request({machines:['M1','M2','M3','M5'],requiredMachines:['M5'],lineupLimit:1})
+  assert.equal(edited.status,200)
+  const editedLineup = (await edited.json()).assignmentPreview.lineups[0]
+  assert.deepEqual(editedLineup.picks.map(p=>p.machine).sort(),['M1','M2','M3','M5'])
+  const regenerated = await request({machines:candidatesWithReplacement,requiredMachines:['M5'],lineupLimit:5})
+  assert.equal(regenerated.status,200)
+  const regeneratedLineups = (await regenerated.json()).assignmentPreview.lineups
+  assert(regeneratedLineups.every(l=>l.picks.some(p=>p.machine==='M5')))
+  const differentSet = await request({machines:['M1','M2','M4','M5'],requiredMachines:['M5'],lineupLimit:1})
+  assert.equal(differentSet.status,200)
+  assert((await differentSet.json()).assignmentPreview.lineups[0].picks.some(p=>p.machine==='M4'))
 }
 console.log('Both automatic previews passed: shared evidence, constraints, warm reuse, revision and score-limit invalidation.')

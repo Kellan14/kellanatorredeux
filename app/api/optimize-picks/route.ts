@@ -462,6 +462,11 @@ export async function POST(request: Request) {
       }
     }
     const requiredMachines = new Set(forcedByPlayer.values())
+    if (format === 'doubles' && body.requiredMachines !== undefined) {
+      if (!Array.isArray(body.requiredMachines) || body.requiredMachines.some((m: unknown) => !machinesAtVenue.includes(m as string)))
+        return NextResponse.json({ error: 'Required machines must be available.' }, { status: 400 })
+      for (const machine of body.requiredMachines) requiredMachines.add(machine)
+    }
     if (requiredMachines.size > numMachines || (forcedByPlayer.size && mustPlaySet.size > numMachines * playersPerMachine))
       return NextResponse.json({ error: 'Too many forced or must-play placements for this round.' }, { status: 422 })
     const usedPlayers = new Set<string>()
@@ -598,7 +603,8 @@ export async function POST(request: Request) {
       })
     }
 
-    if (forcedByPlayer.size && (recommendations.length !== numMachines ||
+    if (requiredMachines.size && (recommendations.length !== numMachines ||
+      Array.from(requiredMachines).some(machine => !usedMachines.has(machine)) ||
       Array.from(mustPlaySet).some(player => !usedPlayers.has(player)))) {
       return NextResponse.json({ error: 'Greedy could not complete this lineup with the locks. Try Hungarian or adjust the constraints.' }, { status: 422 })
     }
