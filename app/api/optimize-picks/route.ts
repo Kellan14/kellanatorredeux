@@ -449,7 +449,7 @@ export async function POST(request: Request) {
     const playersPerMachine = format === 'doubles' ? 2 : 1
     const mustPlaySet = new Set<string>(mustPlay as string[])
     const forcedByPlayer = new Map<string, string>()
-    if (format === 'doubles' && body.forcedAssignments !== undefined) {
+    if (body.forcedAssignments !== undefined) {
       if (!Array.isArray(body.forcedAssignments)) return NextResponse.json({ error: 'Invalid forced assignments.' }, { status: 400 })
       for (const entry of body.forcedAssignments) {
         if (!availablePlayers.includes(entry?.player) || !machinesAtVenue.includes(entry?.machine) ||
@@ -462,7 +462,7 @@ export async function POST(request: Request) {
       }
     }
     const requiredMachines = new Set(forcedByPlayer.values())
-    if (format === 'doubles' && body.requiredMachines !== undefined) {
+    if (body.requiredMachines !== undefined) {
       if (!Array.isArray(body.requiredMachines) || body.requiredMachines.some((m: unknown) => !machinesAtVenue.includes(m as string)))
         return NextResponse.json({ error: 'Required machines must be available.' }, { status: 400 })
       for (const machine of body.requiredMachines) requiredMachines.add(machine)

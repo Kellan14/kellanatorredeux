@@ -911,6 +911,8 @@ export default function StrategyPage() {
           exclusions: singlesExclusions,
           mustPlay: Array.from(satOutPlayers),
           machines: (venues.find(v => v.name === selectedVenue)?.machines || []).filter(m => !excludedMachines.includes(m)),
+          forcedAssignments: activeSinglesLocks,
+          requiredMachines: requiredSinglesMachines,
         }),
       })
 
@@ -1087,6 +1089,10 @@ export default function StrategyPage() {
   // Generate report text for all machine picks
   const [generatingReport, setGeneratingReport] = useState(false)
   const [doublesGeneratorOpen, setDoublesGeneratorOpen] = useState(false)
+  const [generatorFormat, setGeneratorFormat] = useState<'singles' | 'doubles'>('doubles')
+  const generatingSingles = generatorFormat === 'singles'
+  const generatorLabel = generatingSingles ? 'Singles' : 'Doubles'
+  const [automaticSingles, setAutomaticSingles] = useState(false)
   const [doublesMethod, setDoublesMethod] = useState<'greedy' | 'hungarian'>('greedy')
   const [doublesIterations, setDoublesIterations] = useState('5')
   const [doublesRunCount, setDoublesRunCount] = useState(0)
@@ -1099,22 +1105,33 @@ export default function StrategyPage() {
   const [automaticDoubles, setAutomaticDoubles] = useState(false)
   const [minimumDoublesHistory, setMinimumDoublesHistory] = useState('0')
   const [doublesLocks, setDoublesLocks] = useState<{ player: string; machine: string }[]>([])
-  const [lineupAction, setLineupAction] = useState<{ machine: string; players: string[]; player?: string; machines?: string[] } | null>(null)
+  const [singlesLocks, setSinglesLocks] = useState<typeof doublesLocks>([])
+  const [lineupAction, setLineupAction] = useState<{ machine: string; players: string[]; player?: string; machines?: string[]; format: 'singles' | 'doubles' } | null>(null)
   const [lineupTarget, setLineupTarget] = useState('')
   const [lineupActionError, setLineupActionError] = useState('')
   const [mustPlayBeforeSit, setMustPlayBeforeSit] = useState<string[]>([])
   const [replacementUndos, setReplacementUndos] = useState<{
     from: string; to: string
   }[]>([])
+  const [singlesReplacement, setSinglesReplacement] = useState<typeof replacementUndos>([])
   const replacementSeed = useRef<string[] | null>(null)
   const lineupMachines = (venues.find(v => v.name === selectedVenue)?.machines || []).filter(m => !excludedMachines.includes(m))
   const activeDoublesLocks = doublesLocks.filter(({player,machine}) => availablePlayers[player] && !sitThisRound.has(player) &&
     lineupMachines.includes(machine) && !doublesExclusions[machine]?.includes(player))
   const requiredDoublesMachines = replacementUndos.map(r => r.to).filter(m => lineupMachines.includes(m))
-  const lineupConstraintKey = JSON.stringify([selectedVenue, activeDoublesLocks, requiredDoublesMachines, excludedMachines, doublesExclusions, Array.from(sitThisRound)])
+  const activeSinglesLocks = singlesLocks.filter(({player,machine}) => availablePlayers[player] && !sitThisRound.has(player) &&
+    lineupMachines.includes(machine) && !singlesExclusions[machine]?.includes(player))
+  const requiredSinglesMachines = singlesReplacement.map(r => r.to).filter(m => lineupMachines.includes(m))
+  const generatorLocks = generatingSingles ? activeSinglesLocks : activeDoublesLocks
+  const generatorExclusions = generatingSingles ? singlesExclusions : doublesExclusions
+  const generatorRequired = generatingSingles ? requiredSinglesMachines : requiredDoublesMachines
+  const lineupConstraintKey = JSON.stringify([selectedVenue, generatorFormat, generatorLocks, generatorRequired, excludedMachines,
+    generatorExclusions, Object.keys(availablePlayers).filter(p => availablePlayers[p] && !sitThisRound.has(p)).sort(), Array.from(satOutPlayers)])
   const lastDoublesConstraints = useRef<string | null>(null)
   const [doublesPreview, setDoublesPreview] = useState<AssignmentPreview | null>(null)
   const useAutomaticDoubles = assignmentPreviewAvailable && automaticDoubles
+  const useAutomaticSingles = assignmentPreviewAvailable && automaticSingles
+  const automaticGenerator = generatingSingles ? useAutomaticSingles : useAutomaticDoubles
   const doublesRun = useRef<AbortController | null>(null)
   useEffect(() => () => doublesRun.current?.abort(), [])
   useEffect(() => {
@@ -1125,7 +1142,10 @@ export default function StrategyPage() {
         if (!controller.signal.aborted) {
           setAssignmentPreviewAvailable(data?.assignmentPreviewEnabled === true)
           let saved: string | null = null
-          try { saved = localStorage.getItem('strategy-doubles-scoring') } catch { /* optional preference */ }
+          try {
+            saved = localStorage.getItem('strategy-doubles-scoring')
+            setAutomaticSingles(localStorage.getItem('strategy-singles-scoring') === 'automatic')
+          } catch { /* optional preference */ }
           setAutomaticDoubles(saved === 'automatic' || (saved !== 'manual' && data?.automaticDoublesDefault === true))
         }
       })
@@ -1134,21 +1154,28 @@ export default function StrategyPage() {
   }, [])
 
   const changeDoublesScoring = (automatic: boolean) => {
-    setAutomaticDoubles(automatic)
-    try { localStorage.setItem('strategy-doubles-scoring', automatic ? 'automatic' : 'manual') } catch { /* optional preference */ }
+    if (generatingSingles && doublesGeneratorOpen) {
+      setAutomaticSingles(automatic)
+      try { localStorage.setItem('strategy-singles-scoring', automatic ? 'automatic' : 'manual') } catch { /* optional preference */ }
+    }
+    else {
+      setAutomaticDoubles(automatic)
+      try { localStorage.setItem('strategy-doubles-scoring', automatic ? 'automatic' : 'manual') } catch { /* optional preference */ }
+    }
     setRankedDoubles(null); setDoublesPreview(null); setDoublesMetrics([]); setDoublesRunError('')
   }
 
-  const requestAutomaticDoubles = async (method: 'greedy' | 'hungarian', players: string[], machines: string[], limit: number, signal?: AbortSignal): Promise<AssignmentPreview> => {
+  const requestAutomaticDoubles = async (method: 'greedy' | 'hungarian', players: string[], machines: string[], limit: number, signal?: AbortSignal, singles = false): Promise<AssignmentPreview> => {
     const greedy = method === 'greedy'
     const response = await fetch(greedy ? '/api/optimize-picks' : '/api/strategy/optimize', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, signal,
       body: JSON.stringify({ scoringMode: 'automatic-preview', venue: selectedVenue,
         seasonStart: seasonRange[0], seasonEnd: seasonRange[1],
         machines, mustPlay: Array.from(satOutPlayers).filter(player => players.includes(player)),
-        exclusions: doublesExclusions, forcedAssignments: activeDoublesLocks, requiredMachines: requiredDoublesMachines, minMachineGames: Number(minimumDoublesHistory),
-        lineupLimit: limit, ...(greedy ? { format: 'doubles', numMachines: 4, availablePlayers: players }
-          : { format: '4x2', playerNames: players }) }),
+        exclusions: singles ? singlesExclusions : doublesExclusions, forcedAssignments: singles ? activeSinglesLocks : activeDoublesLocks,
+        requiredMachines: singles ? requiredSinglesMachines : requiredDoublesMachines, minMachineGames: Number(minimumDoublesHistory),
+        lineupLimit: limit, ...(greedy ? { format: singles ? 'singles' : 'doubles', numMachines: singles ? 7 : 4, availablePlayers: players }
+          : { format: singles ? '7x7' : '4x2', playerNames: players }) }),
     })
     const data = await response.json()
     if (!response.ok) throw new Error(data.error || 'Could not generate automatic doubles.')
@@ -1159,8 +1186,9 @@ export default function StrategyPage() {
     lastDoublesConstraints.current = lineupConstraintKey
     const iterations = Number(doublesIterations)
     const greedy = doublesMethod === 'greedy'
-    const automatic = useAutomaticDoubles
-    const roundSize = greedy && !automatic ? numDoublesMachines : 4
+    const automatic = automaticGenerator
+    const roundSize = generatingSingles ? 7 : greedy && !automatic ? numDoublesMachines : 4
+    const playersPerMachine = generatingSingles ? 1 : 2
     const players = Object.keys(availablePlayers).filter(p => availablePlayers[p] && !sitThisRound.has(p))
     const machines = (venues.find(v => v.name === selectedVenue)?.machines || [])
       .filter(machine => !excludedMachines.includes(machine))
@@ -1174,12 +1202,12 @@ export default function StrategyPage() {
       setDoublesRunError(automatic ? 'Choose between 1 and 20 lineups.' : 'Choose between 1 and 20 iterations.')
       return
     }
-    if (!selectedVenue || players.length < roundSize * 2 || machines.length < roundSize) {
-      setDoublesRunError(`Choose a venue with at least ${roundSize} eligible machines and ${roundSize * 2} available players.`)
+    if (!selectedVenue || players.length < roundSize * playersPerMachine || machines.length < roundSize) {
+      setDoublesRunError(`Choose a venue with at least ${roundSize} eligible machines and ${roundSize * playersPerMachine} available players.`)
       return
     }
-    if (mustPlay.length > roundSize * 2) {
-      setDoublesRunError('There are more must-play players than slots in this doubles round.')
+    if (mustPlay.length > roundSize * playersPerMachine) {
+      setDoublesRunError('There are more must-play players than slots in this round.')
       return
     }
     const controller = new AbortController()
@@ -1201,27 +1229,27 @@ export default function StrategyPage() {
       scoreWeights,
       machines,
       mustPlay,
-      forcedAssignments: activeDoublesLocks,
-      requiredMachines: requiredDoublesMachines,
+      forcedAssignments: generatorLocks,
+      requiredMachines: generatorRequired,
     }
     try {
       const seed = replacementSeed.current
       replacementSeed.current = null
       const manualRun = (candidates: string[], count: number) => rankDoublesRuns({
-        iterations: count, machines: roundSize, mustPlay, exclusions: doublesExclusions,
+        iterations: count, machines: roundSize, playersPerMachine, mustPlay, exclusions: generatorExclusions,
         signal: controller.signal,
         onProgress: setDoublesRunCount,
         solve: async (exclusions, signal) => {
-          if (activeDoublesLocks.some(({player,machine}) => exclusions[machine]?.includes(player))) return null
+          if (generatorLocks.some(({player,machine}) => exclusions[machine]?.includes(player))) return null
           const response = await fetch(greedy ? '/api/optimize-picks' : '/api/strategy/optimize', {
             method: 'POST', headers: { 'Content-Type': 'application/json' }, signal,
             body: JSON.stringify({ ...settings, machines: candidates, exclusions, ...(greedy
-              ? { format: 'doubles', numMachines: roundSize, availablePlayers: players, teamVenueSpecific, twcVenueSpecific }
-              : { format: '4x2', playerNames: players, useNashEquilibrium, searchMachineSubsets }) }),
+              ? { format: generatorFormat, numMachines: roundSize, availablePlayers: players, teamVenueSpecific, twcVenueSpecific }
+              : { format: generatingSingles ? '7x7' : '4x2', playerNames: players, useNashEquilibrium, searchMachineSubsets }) }),
           })
           const data = await response.json()
-          if (response.status === 422 && exclusions !== doublesExclusions) return null
-          if (!response.ok) throw new Error(data.error || 'Could not generate doubles.')
+          if (response.status === 422 && exclusions !== generatorExclusions) return null
+          if (!response.ok) throw new Error(data.error || `Could not generate ${generatorFormat}.`)
           if (greedy) {
             const recommendations: { machine: string; players: string[]; stats: { performanceScore: number }[]; assumedOpponents?: { player: string }[] }[] =
               data.recommendations || []
@@ -1235,15 +1263,15 @@ export default function StrategyPage() {
               })),
             }
           }
-          const assignments: { machine_id: string; player1_id: string; player2_id: string }[] = data.assignments || []
+          const assignments: { machine_id: string; player_id: string; player1_id: string; player2_id: string }[] = data.assignments || []
           return { score: data.total_score, picks: assignments.map(p => ({
-            machine: p.machine_id, players: [p.player1_id, p.player2_id],
+            machine: p.machine_id, players: generatingSingles ? [p.player_id] : [p.player1_id, p.player2_id],
             opponents: data.assumedOpponents?.[p.machine_id]?.map((opponent: { player: string }) => opponent.player),
           })) }
         },
       })
       const run = (candidates: string[], count: number) => automatic
-        ? requestAutomaticDoubles(doublesMethod, players, candidates, count, controller.signal)
+        ? requestAutomaticDoubles(doublesMethod, players, candidates, count, controller.signal, generatingSingles)
         : manualRun(candidates, count)
       let seeded: Awaited<ReturnType<typeof run>> | null = null
       if (seed) {
@@ -1280,14 +1308,14 @@ export default function StrategyPage() {
             score, picks: picks.map(({machine, players, opponents}) => ({ machine, players, opponents })),
           })), opponentPlayers: settings.opponentPlayers,
             venue: settings.venue, seasonStart: settings.seasonStart, seasonEnd: settings.seasonEnd,
-            twcVenueSpecific, teamVenueSpecific }),
+            twcVenueSpecific, teamVenueSpecific, format: generatorFormat }),
         })
         const data = await response.json()
-        if (!response.ok) throw new Error(data.error || 'Could not compare doubles metrics.')
+        if (!response.ok) throw new Error(data.error || 'Could not compare lineup metrics.')
         if (!controller.signal.aborted) setDoublesMetrics(data.results)
       }
     } catch (error) {
-      if (!controller.signal.aborted) setDoublesRunError(error instanceof Error ? error.message : 'Could not generate doubles.')
+      if (!controller.signal.aborted) setDoublesRunError(error instanceof Error ? error.message : `Could not generate ${generatorFormat}.`)
     } finally {
       if (doublesRun.current === controller) {
         doublesRun.current = null
@@ -1302,28 +1330,50 @@ export default function StrategyPage() {
         (lastDoublesConstraints.current !== null && lastDoublesConstraints.current !== lineupConstraintKey))) void generateDoubles()
   }, [doublesGeneratorOpen, generatingDoubles, lineupConstraintKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const openLineupAction = (machine: string, players: string[], player?: string, machines?: string[]) => {
-    setLineupTarget(player ? machine : '')
-    setLineupActionError('')
-    setLineupAction({ machine, players, player, machines })
+  const openGenerator = (format: 'singles' | 'doubles') => {
+    if (format !== generatorFormat) {
+      setGeneratorFormat(format)
+      lastDoublesConstraints.current = null
+      replacementSeed.current = null
+      setRankedDoubles(null); setDoublesPreview(null); setDoublesMetrics([]); setDoublesRunError('')
+    }
+    setDoublesGeneratorOpen(true)
   }
 
-  const lockLineupPlayers = (players: string[], machine: string) => {
-    if (!lineupMachines.includes(machine) || players.some(p => doublesExclusions[machine]?.includes(p))) {
+  const openLineupAction = (machine: string, players: string[], player?: string, machines?: string[], format: 'singles' | 'doubles' = 'doubles') => {
+    setLineupTarget(player ? machine : '')
+    setLineupActionError('')
+    setLineupAction({ machine, players, player, machines, format })
+  }
+
+  const lockLineupPlayers = (players: string[], machine: string, singles: boolean) => {
+    if (!lineupMachines.includes(machine) || players.some(p => (singles ? singlesExclusions : doublesExclusions)[machine]?.includes(p))) {
       setLineupActionError('Choose an available machine that does not exclude these players.')
       return false
     }
-    const remaining = doublesLocks.filter(lock => !players.includes(lock.player))
-    if (remaining.filter(lock => lock.machine === machine).length + players.length > 2) {
+    const remaining = (singles ? singlesLocks : doublesLocks).filter(lock => !players.includes(lock.player))
+    if (remaining.filter(lock => lock.machine === machine).length + players.length > (singles ? 1 : 2)) {
       setLineupActionError('That machine already has locked players. Undo a lock first.')
       return false
     }
-    setDoublesLocks([...remaining, ...players.map(player => ({player, machine}))])
+    ;(singles ? setSinglesLocks : setDoublesLocks)([...remaining, ...players.map(player => ({player, machine}))])
     return true
   }
 
   const changeNotice = 'flex items-center justify-between gap-2 rounded border border-amber-200 bg-amber-50 p-2 text-xs text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-300'
   const lineupUndoControls = () => <div className="space-y-1">
+    {singlesReplacement.map(r => <div key={r.from} className={changeNotice}>
+      <span>Singles: {getMachineDisplayName(r.to)} required</span>
+      <Button size="sm" variant="outline" onClick={() => { if (generatingSingles) replacementSeed.current = null; setSinglesReplacement([]) }}>Undo</Button>
+    </div>)}
+    {singlesLocks.map(lock => <div key={lock.player} className={changeNotice}>
+      <span>Singles: {lock.player} forced to {getMachineDisplayName(lock.machine)}{!activeSinglesLocks.includes(lock) ? ' (inactive)' : ''}</span>
+      <Button size="sm" variant="outline" onClick={() => setSinglesLocks(current => current.filter(p => p.player !== lock.player))}>Undo</Button>
+    </div>)}
+    {Object.entries(singlesExclusions).flatMap(([machine, players]) => players.map(player => <div key={JSON.stringify(['singles',machine,player])} className={changeNotice}>
+      <span>Singles: {player} excluded from {getMachineDisplayName(machine)}</span>
+      <Button size="sm" variant="outline" onClick={() => removeExclusion(machine, player, 'singles')}>Undo</Button>
+    </div>))}
     {replacementUndos.map(replacementUndo => <div key={replacementUndo.from} className={changeNotice}>
       <span>{getMachineDisplayName(replacementUndo.to)} required (replaced {getMachineDisplayName(replacementUndo.from)})</span>
       <Button size="sm" variant="outline" onClick={() => {
@@ -1364,7 +1414,8 @@ export default function StrategyPage() {
     const venueData = venues.find(v => v.name === selectedVenue)
     const machinesAtVenue = (venueData?.machines || []).filter(m => !excludedMachines.includes(m))
     const automatic = useAutomaticDoubles
-    const reportDoubles = (method: 'greedy' | 'hungarian') => requestAutomaticDoubles(method, selectedPlayers, machinesAtVenue, 1)
+    const experimentalSingles = useAutomaticSingles
+    const reportAutomatic = (method: 'greedy' | 'hungarian', singles = false) => requestAutomaticDoubles(method, selectedPlayers, machinesAtVenue, 1, undefined, singles)
       .then(preview => ({ preview, error: null })).catch((error: unknown) => ({
         preview: null, error: error instanceof Error ? error.message : 'Automatic doubles failed.',
       }))
@@ -1373,7 +1424,7 @@ export default function StrategyPage() {
     // For the report, assign ALL players (not just the normal round count)
     const [greedySingles, greedyDoubles, hungarianSingles, hungarianDoubles] = await Promise.all([
       // Greedy Singles - use all players (1 per machine)
-      fetch('/api/optimize-picks', {
+      experimentalSingles ? reportAutomatic('greedy', true) : fetch('/api/optimize-picks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1396,13 +1447,15 @@ export default function StrategyPage() {
           opponentWeight: opponentWeight / 100,
           scoreWeights,
           exclusions: singlesExclusions,
+          forcedAssignments: activeSinglesLocks,
+          requiredMachines: requiredSinglesMachines,
           mustPlay: Array.from(satOutPlayers),
           machines: machinesAtVenue,
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
 
       // Automatic is one legal round; manual reports retain the all-player view.
-      automatic ? reportDoubles('greedy') : fetch('/api/optimize-picks', {
+      automatic ? reportAutomatic('greedy') : fetch('/api/optimize-picks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1433,7 +1486,7 @@ export default function StrategyPage() {
       }).then(r => r.ok ? r.json() : null).catch(() => null),
 
       // Hungarian Singles (7x7) - assign all players
-      fetch('/api/strategy/optimize', {
+      experimentalSingles ? reportAutomatic('hungarian', true) : fetch('/api/strategy/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1452,6 +1505,8 @@ export default function StrategyPage() {
           opponentWeight: opponentWeight / 100,
           scoreWeights,
           exclusions: singlesExclusions,
+          forcedAssignments: activeSinglesLocks,
+          requiredMachines: requiredSinglesMachines,
           mustPlay: Array.from(satOutPlayers),
           opponent: selectedOpponent,
           opponentPlayers: getSelectedOpponentPlayers(),
@@ -1462,7 +1517,7 @@ export default function StrategyPage() {
       }).then(r => r.ok ? r.json() : null).catch(() => null),
 
       // Hungarian Doubles (4x2)
-      automatic ? reportDoubles('hungarian') : fetch('/api/strategy/optimize', {
+      automatic ? reportAutomatic('hungarian') : fetch('/api/strategy/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1502,7 +1557,7 @@ export default function StrategyPage() {
     lines.push(`Opponent: ${selectedOpponent}`)
     lines.push(`Seasons: ${seasonRange[0]} - ${seasonRange[1]}`)
     lines.push(`Players: ${selectedPlayers.length} available`)
-    lines.push(`Scoring: singles manual; doubles ${automatic ? 'automatic (one four-machine round per method)' : 'manual'}.`)
+    lines.push(`Scoring: singles ${experimentalSingles ? 'automatic (experimental; one seven-machine round per method)' : 'manual'}; doubles ${automatic ? 'automatic (one four-machine round per method)' : 'manual'}.`)
     lines.push('')
     lines.push('='.repeat(50))
 
@@ -1510,7 +1565,10 @@ export default function StrategyPage() {
     lines.push('')
     lines.push('GREEDY ALGORITHM - SINGLES PICKS')
     lines.push('-'.repeat(40))
-    if (greedySingles?.recommendations?.length > 0) {
+    if (experimentalSingles) {
+      lines.push(...(greedySingles?.preview ? automaticDoublesReport(greedySingles.preview, getMachineDisplayName)
+        : [`Automatic singles unavailable: ${greedySingles?.error ?? 'No result'}`]))
+    } else if (greedySingles?.recommendations?.length > 0) {
       greedySingles.recommendations.forEach((rec: any, i: number) => {
         const machineName = getMachineDisplayName(rec.machine)
         const players = rec.players.join(', ')
@@ -1551,7 +1609,10 @@ export default function StrategyPage() {
     lines.push('')
     lines.push('HUNGARIAN ALGORITHM - SINGLES (7x7)')
     lines.push('-'.repeat(40))
-    if (hungarianSingles?.assignments?.length > 0) {
+    if (experimentalSingles) {
+      lines.push(...(hungarianSingles?.preview ? automaticDoublesReport(hungarianSingles.preview, getMachineDisplayName)
+        : [`Automatic singles unavailable: ${hungarianSingles?.error ?? 'No result'}`]))
+    } else if (hungarianSingles?.assignments?.length > 0) {
       hungarianSingles.assignments.forEach((asn: any, i: number) => {
         const machineName = getMachineDisplayName(asn.machine_id)
         const player = asn.player_id
@@ -1884,7 +1945,7 @@ export default function StrategyPage() {
     if (singlesRecommendations.length > 0) {
       optimizeSinglesPicks()
     }
-  }, [singlesExclusions]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [singlesExclusions, singlesLocks, singlesReplacement, sitThisRound]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (doublesRecommendations.length > 0) {
@@ -2616,7 +2677,10 @@ export default function StrategyPage() {
                     onChange={e => changeDoublesScoring(e.target.checked)} />
                   Automatic doubles picks
                 </label>}
-                <Button variant="outline" size="sm" className="text-xs" onClick={() => setDoublesGeneratorOpen(true)}>
+                <Button variant="outline" size="sm" className="text-xs" onClick={() => openGenerator('singles')}>
+                  Generate Singles
+                </Button>
+                <Button variant="outline" size="sm" className="text-xs" onClick={() => openGenerator('doubles')}>
                   Generate Doubles
                 </Button>
                 <Button
@@ -3337,7 +3401,7 @@ export default function StrategyPage() {
 
                     <TabsContent value="doubles" className="space-y-4">
                       <div className="flex justify-center">
-                        <Button onClick={() => useAutomaticDoubles ? setDoublesGeneratorOpen(true) : optimizeDoublesPicks()}>
+                        <Button onClick={() => useAutomaticDoubles ? openGenerator('doubles') : optimizeDoublesPicks()}>
                           {useAutomaticDoubles ? 'Optimize Automatic Doubles' : 'Optimize Doubles Picks'}
                         </Button>
                       </div>
@@ -5329,11 +5393,14 @@ export default function StrategyPage() {
                     confidenceBoost={confidenceBoost / 100}
                     scoreWeights={scoreWeights}
                     exclusions={optimizationFormat === '7x7' ? singlesExclusions : doublesExclusions}
-                    sharedForcedAssignments={optimizationFormat === '4x2' ? activeDoublesLocks : undefined}
-                    requiredMachines={optimizationFormat === '4x2' ? requiredDoublesMachines : undefined}
-                    onForcedAssignmentsChange={optimizationFormat === '4x2' ? locks =>
-                      setDoublesLocks(current => [...current.filter(lock => !activeDoublesLocks.includes(lock) &&
-                        !locks.some(next => next.player === lock.player)), ...locks]) : undefined}
+                    sharedForcedAssignments={optimizationFormat === '4x2' ? activeDoublesLocks : activeSinglesLocks}
+                    requiredMachines={optimizationFormat === '4x2' ? requiredDoublesMachines : requiredSinglesMachines}
+                    onForcedAssignmentsChange={locks => {
+                      const active = optimizationFormat === '4x2' ? activeDoublesLocks : activeSinglesLocks
+                      const setLocks = optimizationFormat === '4x2' ? setDoublesLocks : setSinglesLocks
+                      setLocks(current => [...current.filter(lock => !active.includes(lock) &&
+                        !locks.some(next => next.player === lock.player)), ...locks])
+                    }}
                     mustPlay={Array.from(satOutPlayers)}
                     onAddExclusion={(machine, player) => addExclusion(machine, player, optimizationFormat === '7x7' ? 'singles' : 'doubles')}
                     onRemoveExclusion={(machine, player) => removeExclusion(machine, player, optimizationFormat === '7x7' ? 'singles' : 'doubles')}
@@ -5503,18 +5570,18 @@ export default function StrategyPage() {
       }}>
         <DialogContent className="max-w-xl max-h-[85dvh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Generate Doubles</DialogTitle>
+            <DialogTitle>Generate {generatorLabel}</DialogTitle>
             <DialogDescription>Try alternate assignments and rank the complete lineups found with your current Strategy settings.</DialogDescription>
           </DialogHeader>
           {lineupUndoControls()}
           {assignmentPreviewAvailable && <div className="space-y-2 rounded-md border p-3">
             <label className="flex items-center gap-2 text-sm font-medium">
-              <input type="checkbox" checked={automaticDoubles} disabled={generatingDoubles || generatingReport}
+              <input type="checkbox" checked={generatingSingles ? automaticSingles : automaticDoubles} disabled={generatingDoubles || generatingReport}
                 onChange={e => changeDoublesScoring(e.target.checked)} />
-              Automatic machine-history weighting
+              Automatic machine-history weighting{generatingSingles ? ' (experimental for singles)' : ''}
             </label>
             <p className="text-xs text-muted-foreground">Uses the selected seasons and normalizes each score at its original venue. Machine history gradually gains weight as scores accumulate. Manual scoring sliders, opponent adjustments, and pair bonuses do not affect preview rankings.</p>
-            {automaticDoubles && <div className="space-y-1">
+            {automaticGenerator && <div className="space-y-1">
               <label htmlFor="doubles-min-history" className="text-sm">Minimum games on assigned machine (optional)</label>
               <Input id="doubles-min-history" className="w-24" type="number" min={0} max={100} step={1}
                 disabled={generatingDoubles} value={minimumDoublesHistory} onChange={e => setMinimumDoublesHistory(e.target.value)} />
@@ -5539,23 +5606,25 @@ export default function StrategyPage() {
               </Select>
             </div>
             <div className="space-y-1">
-              <label htmlFor="doubles-iterations" className="text-sm font-medium">{assignmentPreviewAvailable && automaticDoubles ? 'Maximum lineups' : 'Iterations'}</label>
+              <label htmlFor="doubles-iterations" className="text-sm font-medium">{automaticGenerator && !generatingSingles ? 'Maximum lineups' : 'Iterations'}</label>
               <Input id="doubles-iterations" type="number" min={1} max={20} step={1} value={doublesIterations}
                 disabled={generatingDoubles} onChange={e => setDoublesIterations(e.target.value)} />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">{assignmentPreviewAvailable && automaticDoubles
+          <p className="text-xs text-muted-foreground">{generatingSingles
+            ? 'Seven machines, seven players. Uses your existing availability, must-play, and exclusion settings.'
+            : automaticGenerator
             ? 'Four machines, eight players. Uses your existing available-player, must-play, and exclusion settings.'
             : `Up to one distinct lineup per iteration. ${doublesMethod === 'hungarian' ? 'Hungarian uses four machines.' : `Greedy uses ${numDoublesMachines} machines.`}`}</p>
           <div className="flex flex-wrap items-center gap-2">
             <Button onClick={generateDoubles} disabled={generatingDoubles}>
-              Generate {doublesMethod === 'greedy' ? 'Greedy' : 'Hungarian'} Doubles
+              Generate {doublesMethod === 'greedy' ? 'Greedy' : 'Hungarian'} {generatorLabel}
             </Button>
             {generatingDoubles && <Button variant="outline" onClick={() => doublesRun.current?.abort()}>Stop</Button>}
           </div>
           {generatingDoubles && <p role="status" className="text-sm text-muted-foreground">{calculatingDoublesMetrics
             ? 'Comparing venue averages and POPS…'
-            : assignmentPreviewAvailable && automaticDoubles ? 'Evaluating eligible doubles lineups…'
+            : automaticGenerator ? `Evaluating eligible ${generatorFormat} lineups…`
               : `${doublesRunCount} of ${doublesIterations} iterations complete…`}</p>}
           {doublesRunError && <p role="alert" className="text-sm text-destructive">{doublesRunError}</p>}
           {rankedDoubles && <div className="space-y-3">
@@ -5593,10 +5662,10 @@ export default function StrategyPage() {
               <ul className="space-y-1 text-sm">
                 {lineup.picks.map((pick, i) => <li key={pick.machine}>
                   <button type="button" className="font-medium underline underline-offset-2" disabled={generatingDoubles}
-                    onClick={() => openLineupAction(pick.machine, pick.players, undefined, lineup.picks.map(p => p.machine))}>{getMachineDisplayName(pick.machine)}</button>
+                  onClick={() => openLineupAction(pick.machine, pick.players, undefined, lineup.picks.map(p => p.machine), generatorFormat)}>{getMachineDisplayName(pick.machine)}</button>
                   {': '}{pick.players.map((player, p) => <span key={player}>{p > 0 && ' & '}
                     <button type="button" className="underline underline-offset-2" disabled={generatingDoubles}
-                      onClick={() => openLineupAction(pick.machine, pick.players, player)}>{player}</button>
+                      onClick={() => openLineupAction(pick.machine, pick.players, player, undefined, generatorFormat)}>{player}</button>
                   </span>)}
                   {!!doublesMetrics[index]?.opponents[i]?.length && <span className="text-muted-foreground"> vs {doublesMetrics[index].opponents[i].join(' & ')}</span>}
                 </li>)}
@@ -5606,7 +5675,7 @@ export default function StrategyPage() {
                 {doublesPreview.lineups[index].bench.length > 0 && <p className="mt-2 text-xs text-muted-foreground">
                   Sits this round: {doublesPreview.lineups[index].bench.join(', ')}. Check participation needs from earlier rounds.
                 </p>}
-                <p className="mt-2 text-xs text-muted-foreground">Alternatives reassign the whole team on the same four machines; a change is measured in model units.</p>
+                <p className="mt-2 text-xs text-muted-foreground">Alternatives reassign the team on the same machines; a change is measured in model units.</p>
                 <ul className="mt-2 space-y-2">
                   {doublesPreview.lineups[index].picks.flatMap(pick => pick.players.map((player, p) => {
                     const e = pick.evidence[p]
@@ -5655,7 +5724,7 @@ export default function StrategyPage() {
           </DialogHeader>
           {lineupAction.player ? <>
             <Button variant="outline" onClick={() => {
-              addExclusion(lineupAction.machine, lineupAction.player!, 'doubles')
+              addExclusion(lineupAction.machine, lineupAction.player!, lineupAction.format)
               setLineupAction(null)
             }}>Exclude from this machine</Button>
             <Button variant="outline" onClick={() => {
@@ -5681,16 +5750,16 @@ export default function StrategyPage() {
           <Button disabled={!lineupTarget} onClick={() => {
             const players = lineupAction.player ? [lineupAction.player] : lineupAction.players
             if (lineupAction.player) {
-              if (!lockLineupPlayers(players, lineupTarget)) return
+              if (!lockLineupPlayers(players, lineupTarget, lineupAction.format === 'singles')) return
             } else {
               const original = lineupAction.machines ?? doublesRecommendations.map(p => p.machine)
               if (original.includes(lineupTarget)) {
                 setLineupActionError('Choose a machine that is not already in this lineup.')
                 return
               }
+              openGenerator(lineupAction.format)
               replacementSeed.current = original.map(m => m === lineupAction.machine ? lineupTarget : m)
-              setReplacementUndos([{ from: lineupAction.machine, to: lineupTarget }])
-              setDoublesGeneratorOpen(true)
+              ;(lineupAction.format === 'singles' ? setSinglesReplacement : setReplacementUndos)([{ from: lineupAction.machine, to: lineupTarget }])
             }
             setLineupAction(null)
           }}>{lineupAction.player ? 'Force player' : 'Replace machine'}</Button>

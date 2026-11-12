@@ -154,3 +154,29 @@ for (const [route,format,input] of [[greedy,'doubles',{availablePlayers:roster,n
   assert((await differentSet.json()).assignmentPreview.lineups[0].picks.some(p=>p.machine==='M4'))
 }
 console.log('Both automatic previews passed: shared evidence, constraints, warm reuse, revision and score-limit invalidation.')
+
+const singlesMachines = [...machines, 'M5', 'M6', 'M7', 'M8']
+const singlesBase = { ...common, machines: singlesMachines, requiredMachines: ['M8'],
+  mustPlay: ['P0'], forcedAssignments: [{player:'P1', machine:'M7'}], exclusions: {M8:['P1']},
+  opponentWeight: 0, lineupLimit: 5 }
+for (const [route, options] of [[greedy,{format:'singles',availablePlayers:players,numMachines:7}],
+  [hungarian,{format:'7x7',playerNames:players}]]) {
+  const manual = await post(route, {...singlesBase,...options})
+  const raw = manual.recommendations ?? manual.assignments.map(a=>({machine:a.machine_id,players:[a.player_id]}))
+  assert.equal(raw.length,7)
+  assert(raw.some(p=>p.machine==='M8'))
+  assert(raw.some(p=>p.machine==='M7'&&p.players.includes('P1')))
+  const automatic = await post(route, {...singlesBase,...options,scoringMode:'automatic-preview'})
+  assert(automatic.assignmentPreview.lineups.length>0)
+  for(const {picks,bench} of automatic.assignmentPreview.lineups) {
+    assert.equal(new Set(picks.map(p=>p.machine)).size,7)
+    assert.equal(new Set(picks.flatMap(p=>p.players)).size,7)
+    assert.equal(bench.length,1)
+    assert(!bench.includes('P0'))
+    assert(picks.some(p=>p.machine==='M7'&&p.players[0]==='P1'))
+    assert(picks.some(p=>p.machine==='M8'&&p.players[0]!=='P1'))
+  }
+  const fixed = await post(route,{...singlesBase,...options,scoringMode:'automatic-preview',machines:singlesMachines.slice(1),lineupLimit:1})
+  assert.deepEqual(fixed.assignmentPreview.lineups[0].picks.map(p=>p.machine).sort(), singlesMachines.slice(1).sort())
+}
+console.log('Singles generation passed for both methods and scoring modes, including required replacement sets.')

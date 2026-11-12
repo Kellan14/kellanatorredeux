@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 
     const requiredPlayers = format === '7x7' ? 7 : 8
     const requiredMachines = format === '7x7' ? 7 : 4
-    const lockedMachines: string[] = format === '4x2' ? body.requiredMachines ?? [] : []
+    const lockedMachines: string[] = body.requiredMachines ?? []
     if (!Array.isArray(lockedMachines) || lockedMachines.some(m => !machines.includes(m)))
       return NextResponse.json({ error: 'Required machines must be available.' }, { status: 400 })
 
@@ -690,7 +690,11 @@ export async function POST(request: NextRequest) {
 
     const runOptimize = (players: string[]) => {
       if (format === '7x7') {
-        return optimizer.optimize7x7WithStats(players, selectedMachines, statsMap, userInputs, exclusions, confidenceBoost, scoreWeights, machineEdgeBonuses.size > 0 ? machineEdgeBonuses : undefined)
+        const required = lockedMachines.filter(m => !forcedMachineSet.has(m))
+        const result = optimizer.optimize7x7WithStats(players, selectedMachines, statsMap, userInputs, exclusions, confidenceBoost, scoreWeights,
+          machineEdgeBonuses.size > 0 ? machineEdgeBonuses : undefined, required)
+        return required.every(m => result.assignments.some(a => a.machine_id === m))
+          ? result : { ...result, assignments: [], total_score: 0 }
       }
       // Doubles: try the partition-enumerating Hungarian first (globally optimal
       // pair-to-machine assignment, respects per-(player, machine) edge bonuses

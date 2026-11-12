@@ -76,8 +76,8 @@ export function evaluateDoublesLineups(
     const projectedNames = projected.flat()
     // When the optimizer didn't model an opponent (e.g. zero opponent
     // weight), project one using the strongest non-repeating assignment.
-    if (projected.some(pair => pair.length !== 2) || new Set(projectedNames).size !== projectedNames.length) {
-      const slots = lineup.picks.flatMap((pick, index) => [0, 1].map(() => ({ machine: pick.machine, index })))
+    if (projected.some((pair, i) => pair.length !== lineup.picks[i].players.length) || new Set(projectedNames).size !== projectedNames.length) {
+      const slots = lineup.picks.flatMap((pick, index) => pick.players.map(() => ({ machine: pick.machine, index })))
       projected.forEach(pair => { pair.length = 0 })
       const size = Math.max(slots.length, opponents.length)
       const matrix = Array.from({ length: size }, (_, i) => Array.from({ length: size }, (_, j) =>

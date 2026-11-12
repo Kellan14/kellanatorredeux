@@ -1,5 +1,6 @@
 import { hungarianAlgorithm } from './hungarian'
 import type { buildAssignmentEstimator } from './assignment-estimator'
+import { rankDoublesRuns } from '../ranked-doubles'
 
 export type AssignmentEvidence = ReturnType<ReturnType<typeof buildAssignmentEstimator>['estimate']>
 export type AssignmentPreviewLineup = {
@@ -17,6 +18,7 @@ export type PreviewOptions = {
   exclusions: Record<string, string[]>
   forced: { player: string; machine: string }[]
   requiredMachines?: string[]
+  format?: 'singles' | 'doubles'
   minGames: number
   limit: number
   method: 'greedy' | 'hungarian'
@@ -63,6 +65,7 @@ function greedy(matrix: number[][]) {
 
 export async function solveAssignmentPreview(options: PreviewOptions) {
   options.signal?.throwIfAborted()
+  if (options.format === 'singles') return solveSinglesPreview(options)
   const { players, machines, mustPlay, exclusions, forced, estimate } = options
   const required = new Set([...mustPlay, ...forced.map(f => f.player)])
   const forcedByPlayer = new Map(forced.map(f => [f.player, f.machine]))
@@ -141,4 +144,54 @@ export async function solveAssignmentPreview(options: PreviewOptions) {
     return { score, picks, bench: players.filter((_, p) => slots[p] >= 8), alternatives }
   })
   return { lineups, examined }
+}
+
+async function solveSinglesPreview(options: PreviewOptions) {
+  const { players, machines, forced, mustPlay, estimate, method, minGames } = options
+  const count = 7
+  const playerLocks = new Map(forced.map(f => [f.player, f.machine]))
+  const requiredPlayers = new Set([...mustPlay, ...Array.from(playerLocks.keys())])
+  const requiredMachines = new Set([...(options.requiredMachines ?? []), ...Array.from(playerLocks.values())])
+  const evidence = players.map(p => machines.map(m => estimate(p,m)))
+  const solve = (exclusions: PreviewOptions['exclusions'], fixedSet?: string[]): AssignmentPreviewLineup | null => {
+    const required = new Set([...Array.from(requiredMachines), ...(fixedSet ?? [])])
+    const benchCount = players.length - count
+    const matrix = players.map((p,i) => [
+      ...machines.map((m,j) => exclusions[m]?.includes(p) || (playerLocks.has(p) && playerLocks.get(p) !== m) ||
+        evidence[i][j].machineGames < minGames ? blocked : evidence[i][j].score ?? blocked),
+      ...Array<number>(benchCount).fill(requiredPlayers.has(p) ? blocked : 0),
+    ])
+    for (let i = count; i < machines.length; i++) {
+      matrix.push([...machines.map(m => required.has(m) ? blocked : 0), ...Array<number>(benchCount).fill(blocked)])
+    }
+    const slots = method === 'greedy' ? greedy(matrix) : hungarianAlgorithm(matrix).assignments
+    if (!slots || slots.some((s,i) => s < 0 || matrix[i][s] === blocked)) return null
+    const picks = players.flatMap((p,i) => slots[i] < machines.length
+      ? [{ machine: machines[slots[i]], players: [p], evidence: [evidence[i][slots[i]]] }] : [])
+    return { picks, score: players.reduce((s,_,i) => s + matrix[i][slots[i]], 0),
+      bench: players.filter((_,i) => slots[i] >= machines.length), alternatives: [] }
+  }
+  const signal = options.signal ?? new AbortController().signal
+  const candidates = new Map<Awaited<ReturnType<typeof rankDoublesRuns>>['lineups'][number], PreviewOptions['exclusions']>()
+  const ranked = await rankDoublesRuns({ iterations: options.limit, machines: count, playersPerMachine: 1,
+    mustPlay, exclusions: options.exclusions, signal, solve: async exclusions => {
+      const result = solve(exclusions)
+      if (result) candidates.set(result, exclusions)
+      return result
+    } })
+  return { examined: ranked.completed, lineups: ranked.lineups.map(result => {
+    const lineup = result as AssignmentPreviewLineup
+    const scope = candidates.get(result) ?? options.exclusions
+    const fixed = lineup.picks.map(p => p.machine)
+    for (const {machine, players:[player]} of lineup.picks) {
+      if (playerLocks.has(player)) continue
+      const other = solve({ ...scope, [machine]: [...(scope[machine] ?? []), player] }, fixed)
+      if (!other) continue
+      const placement = (l: AssignmentPreviewLineup, p: string) => l.picks.find(a => a.players.includes(p))?.machine ?? null
+      lineup.alternatives.push({ player, machine, to: placement(other, player), scoreDelta: other.score - lineup.score,
+        changes: players.flatMap(p => p !== player && placement(lineup,p) !== placement(other,p)
+          ? [{ player:p, to:placement(other,p) }] : []) })
+    }
+    return lineup
+  }) }
 }

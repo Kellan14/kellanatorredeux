@@ -209,7 +209,8 @@ export class LineupOptimizer {
     exclusions: Record<string, string[]> = {},
     confidenceBoost: number = 0,
     scoreWeights?: ScoreWeights,
-    machineEdgeBonuses?: Map<string, number>
+    machineEdgeBonuses?: Map<string, number>,
+    requiredMachines: string[] = []
   ): OptimizationResult {
 
     // Helper to get extra fields for an assignment
@@ -225,6 +226,10 @@ export class LineupOptimizer {
 
     // Build cost matrix (automatically padded to square)
     const { matrix: costMatrix, realRows, realCols } = buildCostMatrix(playerNames, machines, statsMap, confidenceBoost, scoreWeights)
+    const requiredColumns = requiredMachines.map(m => machines.indexOf(m)).filter(j => j >= 0)
+    for (let i = realRows; i < costMatrix.length; i++) {
+      for (const j of requiredColumns) costMatrix[i][j] = -1e9
+    }
 
     // Apply per-player-per-machine opponent edge bonuses
     // Each cell gets its own bonus based on how this specific TWC player compares to the assigned opponent

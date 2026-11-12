@@ -13,3 +13,12 @@ assert.deepEqual(result.coverage.twcVenue, { count: 1, total: 2, average: 50 })
 assert.deepEqual(result.coverage.twcPops, { count: 1, total: 2, average: 0 })
 assert.deepEqual(result.coverage.oppVenue, { count: 1, total: 2, average: 150 })
 console.log('Partial metric averages preserve zero, report coverage, and stay out of complete-lineup rankings.')
+
+const [singles] = evaluateDoublesLineups([{
+  machine: 'AFM', venue: 'Arcade', round_number: 2,
+  player_1_name: 'A', player_1_score: 100, player_1_points: 1,
+  player_2_name: 'C', player_2_score: 300, player_2_points: 2,
+}], [{ score: 1, picks: [{ machine: 'AFM', players: ['A'] }] }], ['C'], 'Arcade', false, false, {})
+assert.deepEqual(singles.opponents, [['C']])
+assert.equal(singles.metrics.twcVenue, 50)
+assert.equal(singles.metrics.venueSpread, -100)

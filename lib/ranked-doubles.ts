@@ -50,6 +50,7 @@ function lineupKey(lineup: DoublesLineup) {
 export async function rankDoublesRuns(options: {
   iterations: number
   machines: number
+  playersPerMachine?: number
   mustPlay: string[]
   exclusions: DoublesExclusions
   signal: AbortSignal
@@ -59,6 +60,7 @@ export async function rankDoublesRuns(options: {
   const queue = [{ exclusions: options.exclusions, parentScore: Infinity }]
   const seen = new Set([exclusionKey(options.exclusions)])
   const results = new Map<string, DoublesLineup>()
+  const playersPerMachine = options.playersPerMachine ?? 2
   let completed = 0
   while (completed < options.iterations && queue.length && !options.signal.aborted) {
     const { exclusions } = queue.shift()!
@@ -74,9 +76,9 @@ export async function rankDoublesRuns(options: {
     options.onProgress?.(completed)
     if (!lineup || !Number.isFinite(lineup.score) || lineup.picks.length !== options.machines) continue
     const players = lineup.picks.flatMap(p => p.players)
-    if (lineup.picks.some(p => !p.machine || p.players.length !== 2 || p.players.some(player =>
+    if (lineup.picks.some(p => !p.machine || p.players.length !== playersPerMachine || p.players.some(player =>
       !player || exclusions[p.machine]?.includes(player))) ||
-      new Set(players).size !== options.machines * 2 ||
+      new Set(players).size !== options.machines * playersPerMachine ||
       new Set(lineup.picks.map(p => p.machine)).size !== options.machines ||
       options.mustPlay.some(player => !players.includes(player))) continue
 

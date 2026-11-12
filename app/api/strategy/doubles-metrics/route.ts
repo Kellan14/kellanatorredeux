@@ -11,15 +11,16 @@ const validName = (value: unknown): value is string => typeof value === 'string'
 
 export async function POST(request: Request) {
   try {
-    const { lineups, opponentPlayers, seasonStart, seasonEnd, venue, twcVenueSpecific, teamVenueSpecific } = await request.json()
+    const { lineups, opponentPlayers, seasonStart, seasonEnd, venue, twcVenueSpecific, teamVenueSpecific, format } = await request.json()
+    const slots = format === 'singles' ? 1 : 2
     if (!Array.isArray(lineups) || lineups.length < 1 || lineups.length > 20 ||
       !Array.isArray(opponentPlayers) || opponentPlayers.length > 40 || !opponentPlayers.every(validName) ||
       !validName(venue) || !Number.isInteger(seasonStart) || !Number.isInteger(seasonEnd) ||
       seasonStart < 1 || seasonEnd < seasonStart || seasonEnd > 100 ||
       !lineups.every(lineup => Array.isArray(lineup?.picks) && lineup.picks.length >= 1 && lineup.picks.length <= 12 &&
         lineup.picks.every((pick: DoublesLineup['picks'][number]) => validName(pick?.machine) &&
-          Array.isArray(pick.players) && pick.players.length === 2 && pick.players.every(validName) &&
-          (pick.opponents === undefined || (Array.isArray(pick.opponents) && pick.opponents.length <= 2 && pick.opponents.every(validName)))))) {
+          Array.isArray(pick.players) && pick.players.length === slots && pick.players.every(validName) &&
+          (pick.opponents === undefined || (Array.isArray(pick.opponents) && pick.opponents.length <= slots && pick.opponents.every(validName)))))) {
       return NextResponse.json({ error: 'Invalid doubles lineups or season range' }, { status: 400 })
     }
     const machines = Array.from(new Set<string>((lineups as DoublesLineup[]).flatMap(lineup =>
