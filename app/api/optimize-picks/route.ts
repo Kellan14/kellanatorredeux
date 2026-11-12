@@ -7,8 +7,10 @@ import { calculatePerformanceScore, type ScoreWeights } from '@/lib/strategy/cal
 import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
 import type { PlayerMachineStats } from '@/types/strategy'
 import { buildNormalizationIndex, leagueNormalizationScores } from '@/lib/strategy/normalization'
+import { handleAssignmentPreview } from '@/lib/strategy/assignment-preview-api'
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60
 
 interface AdvantageData {
   twcPctOfVenue: number
@@ -201,6 +203,7 @@ function blendStats(
 export async function POST(request: Request) {
   try {
     const body = await request.json()
+    if (body.scoringMode === 'automatic-preview') return await handleAssignmentPreview(body, 'greedy', request.signal)
     const {
       venue,
       opponent,

@@ -65,6 +65,7 @@ import { PlayerAvailability } from '@/components/player-availability'
 import type { PlayerMachineStats, OptimizationResult } from '@/types/strategy'
 import { authFetch } from '@/lib/auth-fetch'
 import { bestDoublesMetrics, doublesMetricOptions, rankDoublesRuns, type DoublesLineup, type DoublesMetrics } from '@/lib/ranked-doubles'
+import type { AssignmentPreviewLineup } from '@/lib/strategy/assignment-preview'
 
 interface Team {
   key: string
@@ -1091,13 +1092,31 @@ export default function StrategyPage() {
   const [calculatingDoublesMetrics, setCalculatingDoublesMetrics] = useState(false)
   const [doublesRunError, setDoublesRunError] = useState('')
   const [generatingDoubles, setGeneratingDoubles] = useState(false)
+  const [assignmentPreviewAvailable, setAssignmentPreviewAvailable] = useState(false)
+  const [automaticDoubles, setAutomaticDoubles] = useState(false)
+  const [minimumDoublesHistory, setMinimumDoublesHistory] = useState('0')
+  const [doublesPreview, setDoublesPreview] = useState<{
+    lineups: AssignmentPreviewLineup[]; examined: number; modelVersion: string; seasonStart: number; seasonEnd: number
+  } | null>(null)
   const doublesRun = useRef<AbortController | null>(null)
   useEffect(() => () => doublesRun.current?.abort(), [])
+  useEffect(() => {
+    if (!doublesGeneratorOpen) return
+    const controller = new AbortController()
+    fetch('/api/strategy/optimize', { signal: controller.signal, cache: 'no-store' })
+      .then(response => response.ok ? response.json() : null)
+      .then(data => {
+        if (!controller.signal.aborted) setAssignmentPreviewAvailable(data?.assignmentPreviewEnabled === true)
+      })
+      .catch(() => { if (!controller.signal.aborted) setAssignmentPreviewAvailable(false) })
+    return () => controller.abort()
+  }, [doublesGeneratorOpen])
 
   const generateDoubles = async () => {
     const iterations = Number(doublesIterations)
     const greedy = doublesMethod === 'greedy'
-    const roundSize = greedy ? numDoublesMachines : 4
+    const automatic = assignmentPreviewAvailable && automaticDoubles
+    const roundSize = greedy && !automatic ? numDoublesMachines : 4
     const players = Object.keys(availablePlayers).filter(p => availablePlayers[p] && !sitThisRound.has(p))
     const machines = (venues.find(v => v.name === selectedVenue)?.machines || [])
       .filter(machine => !excludedMachines.includes(machine))
@@ -1105,9 +1124,10 @@ export default function StrategyPage() {
     setDoublesRunError('')
     setRankedDoubles(null)
     setDoublesMetrics([])
+    setDoublesPreview(null)
     setDoublesRunCount(0)
     if (!Number.isInteger(iterations) || iterations < 1 || iterations > 20) {
-      setDoublesRunError('Choose between 1 and 20 iterations.')
+      setDoublesRunError(automatic ? 'Choose between 1 and 20 lineups.' : 'Choose between 1 and 20 iterations.')
       return
     }
     if (!selectedVenue || players.length < roundSize * 2 || machines.length < roundSize) {
@@ -1139,7 +1159,21 @@ export default function StrategyPage() {
       mustPlay,
     }
     try {
-      const result = await rankDoublesRuns({
+      const result: { lineups: DoublesLineup[] } = automatic ? await (async () => {
+        const response = await fetch(greedy ? '/api/optimize-picks' : '/api/strategy/optimize', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: controller.signal,
+          body: JSON.stringify({ scoringMode: 'automatic-preview', venue: settings.venue,
+            seasonStart: settings.seasonStart, seasonEnd: settings.seasonEnd,
+            machines, mustPlay, exclusions: doublesExclusions, minMachineGames: Number(minimumDoublesHistory),
+            lineupLimit: iterations, ...(greedy ? { format: 'doubles', numMachines: 4, availablePlayers: players }
+              : { format: '4x2', playerNames: players }) }),
+        })
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.error || 'Could not generate automatic doubles.')
+        const preview: NonNullable<typeof doublesPreview> = data.assignmentPreview
+        if (!controller.signal.aborted) setDoublesPreview(preview)
+        return { lineups: preview.lineups }
+      })() : await rankDoublesRuns({
         iterations, machines: roundSize, mustPlay, exclusions: doublesExclusions,
         signal: controller.signal,
         onProgress: setDoublesRunCount,
@@ -1172,12 +1206,14 @@ export default function StrategyPage() {
           })) }
         },
       })
-      if (doublesRun.current === controller) setRankedDoubles(result.lineups)
+      if ((!automatic || !controller.signal.aborted) && doublesRun.current === controller) setRankedDoubles(result.lineups)
       if (!controller.signal.aborted && result.lineups.length) {
         setCalculatingDoublesMetrics(true)
         const response = await fetch('/api/strategy/doubles-metrics', {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: controller.signal,
-          body: JSON.stringify({ lineups: result.lineups, opponentPlayers: settings.opponentPlayers,
+          body: JSON.stringify({ lineups: result.lineups.map(({score, picks}) => ({
+            score, picks: picks.map(({machine, players, opponents}) => ({ machine, players, opponents })),
+          })), opponentPlayers: settings.opponentPlayers,
             venue: settings.venue, seasonStart: settings.seasonStart, seasonEnd: settings.seasonEnd,
             twcVenueSpecific, teamVenueSpecific }),
         })
@@ -5319,12 +5355,30 @@ export default function StrategyPage() {
             <DialogTitle>Generate Doubles</DialogTitle>
             <DialogDescription>Try alternate assignments and rank the complete lineups found with your current Strategy settings.</DialogDescription>
           </DialogHeader>
+          {assignmentPreviewAvailable && <div className="space-y-2 rounded-md border p-3">
+            <label className="flex items-center gap-2 text-sm font-medium">
+              <input type="checkbox" checked={automaticDoubles} disabled={generatingDoubles}
+                onChange={e => {
+                  setAutomaticDoubles(e.target.checked)
+                  setRankedDoubles(null); setDoublesPreview(null); setDoublesMetrics([]); setDoublesRunError('')
+                }} />
+              Preview automatic machine-history weighting
+            </label>
+            <p className="text-xs text-muted-foreground">Uses the selected seasons and normalizes each score at its original venue. Machine history gradually gains weight as scores accumulate. Manual scoring sliders, opponent adjustments, and pair bonuses do not affect preview rankings.</p>
+            {automaticDoubles && <div className="space-y-1">
+              <label htmlFor="doubles-min-history" className="text-sm">Minimum games on assigned machine (optional)</label>
+              <Input id="doubles-min-history" className="w-24" type="number" min={0} max={100} step={1}
+                disabled={generatingDoubles} value={minimumDoublesHistory} onChange={e => setMinimumDoublesHistory(e.target.value)} />
+              <p className="text-xs text-muted-foreground">0 keeps all eligible placements. Higher minimums can make a lineup impossible.</p>
+            </div>}
+          </div>}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <label htmlFor="doubles-method" className="text-sm font-medium">Method</label>
               <Select value={doublesMethod} disabled={generatingDoubles} onValueChange={value => {
                 setDoublesMethod(value as 'greedy' | 'hungarian')
                 setRankedDoubles(null)
+                setDoublesPreview(null)
                 setDoublesMetrics([])
                 setDoublesRunError('')
               }}>
@@ -5336,12 +5390,14 @@ export default function StrategyPage() {
               </Select>
             </div>
             <div className="space-y-1">
-              <label htmlFor="doubles-iterations" className="text-sm font-medium">Iterations</label>
+              <label htmlFor="doubles-iterations" className="text-sm font-medium">{assignmentPreviewAvailable && automaticDoubles ? 'Maximum lineups' : 'Iterations'}</label>
               <Input id="doubles-iterations" type="number" min={1} max={20} step={1} value={doublesIterations}
                 disabled={generatingDoubles} onChange={e => setDoublesIterations(e.target.value)} />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">Up to one distinct lineup per iteration. {doublesMethod === 'hungarian' ? 'Hungarian uses four machines.' : `Greedy uses ${numDoublesMachines} machines.`}</p>
+          <p className="text-xs text-muted-foreground">{assignmentPreviewAvailable && automaticDoubles
+            ? 'Four machines, eight players. Uses your existing available-player, must-play, and exclusion settings.'
+            : `Up to one distinct lineup per iteration. ${doublesMethod === 'hungarian' ? 'Hungarian uses four machines.' : `Greedy uses ${numDoublesMachines} machines.`}`}</p>
           <div className="flex flex-wrap items-center gap-2">
             <Button onClick={generateDoubles} disabled={generatingDoubles}>
               Generate {doublesMethod === 'greedy' ? 'Greedy' : 'Hungarian'} Doubles
@@ -5350,10 +5406,13 @@ export default function StrategyPage() {
           </div>
           {generatingDoubles && <p role="status" className="text-sm text-muted-foreground">{calculatingDoublesMetrics
             ? 'Comparing venue averages and POPS…'
-            : `${doublesRunCount} of ${doublesIterations} iterations complete…`}</p>}
+            : assignmentPreviewAvailable && automaticDoubles ? 'Evaluating eligible doubles lineups…'
+              : `${doublesRunCount} of ${doublesIterations} iterations complete…`}</p>}
           {doublesRunError && <p role="alert" className="text-sm text-destructive">{doublesRunError}</p>}
           {rankedDoubles && <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">{rankedDoubles.length
+            <p className="text-sm text-muted-foreground">{doublesPreview
+              ? `${rankedDoubles.length} lineups found · ${doublesPreview.examined.toLocaleString()} machine sets checked · seasons ${doublesPreview.seasonStart}–${doublesPreview.seasonEnd}. Scores are model estimates, not match points.`
+              : rankedDoubles.length
               ? `${rankedDoubles.length} distinct lineups in ${doublesRunCount} iterations, ranked by model score.`
               : 'No complete lineups found. Check player and machine exclusions.'}</p>
             {doublesMetrics.length > 0 && <div className="space-y-2 rounded-md border p-3">
@@ -5376,12 +5435,47 @@ export default function StrategyPage() {
             </div>}
             {rankedDoubles.map((lineup, index) => <div key={index} id={`doubles-lineup-${index}`} className="rounded-md border p-3">
               <h3 className="mb-2 font-medium">#{index + 1} · Score {lineup.score.toFixed(2)}</h3>
+              {doublesPreview?.lineups[index].picks.some(p => p.evidence.some(e => !e.machineGames)) &&
+                <p className="mb-2 text-xs text-muted-foreground">Includes placements without recorded machine history.</p>}
+              {doublesPreview && index > 0 && <p className="mb-2 text-xs text-muted-foreground">
+                {(doublesPreview.lineups[0].score - lineup.score).toFixed(3)} model units below #1 · {lineup.picks.reduce((n, pick) =>
+                  n + pick.players.filter(p => !doublesPreview.lineups[0].picks.some(first => first.machine === pick.machine && first.players.includes(p))).length, 0)} changed placements
+              </p>}
               <ul className="space-y-1 text-sm">
                 {lineup.picks.map((pick, i) => <li key={pick.machine}>
                   <span className="font-medium">{getMachineDisplayName(pick.machine)}</span>: {pick.players.join(' & ')}
                   {!!doublesMetrics[index]?.opponents[i]?.length && <span className="text-muted-foreground"> vs {doublesMetrics[index].opponents[i].join(' & ')}</span>}
                 </li>)}
               </ul>
+              {doublesPreview?.lineups[index] && <details className="mt-3 border-t pt-2 text-sm">
+                <summary className="cursor-pointer font-medium">Assignment evidence and tradeoffs</summary>
+                {doublesPreview.lineups[index].bench.length > 0 && <p className="mt-2 text-xs text-muted-foreground">
+                  Sits this round: {doublesPreview.lineups[index].bench.join(', ')}. Check participation needs from earlier rounds.
+                </p>}
+                <p className="mt-2 text-xs text-muted-foreground">Alternatives reassign the whole team on the same four machines; a change is measured in model units.</p>
+                <ul className="mt-2 space-y-2">
+                  {doublesPreview.lineups[index].picks.flatMap(pick => pick.players.map((player, p) => {
+                    const e = pick.evidence[p]
+                    const alt = doublesPreview.lineups[index].alternatives.find(a => a.player === player)
+                    return <li key={player} className="break-words">
+                      <p>{player} · {getMachineDisplayName(pick.machine)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {e.evidence === 'machine'
+                          ? `${e.machineGames} prior scores (${e.venueGames} here) · ${Math.round(e.machineWeight * 100)}% machine-history weight · ${e.normalizedPercent?.toFixed(0)}% historical venue average`
+                          : e.evidence === 'overall' ? 'No machine history — based on overall player strength.'
+                            : 'No player history — based on the league baseline.'}
+                        {e.machineGames > 0 && e.machineGames < 3 ? ' · Limited history' : ''}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{alt
+                        ? `Alternative: ${alt.to ? getMachineDisplayName(alt.to) : 'sit this round'} · ${alt.scoreDelta >= 0 ? '+' : ''}${alt.scoreDelta.toFixed(3)} team model units`
+                        : 'No permitted alternative on this machine set.'}</p>
+                      {!!alt?.changes.length && <p className="text-xs text-muted-foreground">
+                        Also moves {alt.changes.map(change => `${change.player} → ${change.to ? getMachineDisplayName(change.to) : 'bench'}`).join(', ')}.
+                      </p>}
+                    </li>
+                  }))}
+                </ul>
+              </details>}
               {doublesMetrics[index] && <dl className="mt-3 grid grid-cols-2 gap-2 border-t pt-2 text-xs sm:grid-cols-3">
                 {doublesMetricOptions.map(metric => {
                   const value = doublesMetrics[index].metrics[metric.key]

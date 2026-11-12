@@ -7,8 +7,14 @@ import { hungarianAlgorithm } from '@/lib/strategy/hungarian'
 import { buildCostMatrix, calculatePerformanceScore, calculatePairSynergy } from '@/lib/strategy/calculator'
 import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
 import { buildNormalizationIndex, leagueNormalizationScores } from '@/lib/strategy/normalization'
+import { assignmentPreviewEnabled, handleAssignmentPreview } from '@/lib/strategy/assignment-preview-api'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
+
+export function GET() {
+  return NextResponse.json({ assignmentPreviewEnabled: assignmentPreviewEnabled() })
+}
 
 /**
  * Generate all combinations of size k from array
@@ -30,6 +36,7 @@ function combinations<T>(arr: T[], k: number): T[][] {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    if (body.scoringMode === 'automatic-preview') return await handleAssignmentPreview(body, 'hungarian', request.signal)
     const {
       format,
       playerNames,

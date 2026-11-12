@@ -49,3 +49,50 @@ for(const a of h.assignments){
   assert(Math.abs(a.player2_venue_adjusted_avg-expected.player(a.player2_id,a.machine_id).ratio)<1e-12)
 }
 console.log('Both API routes and prefetch passed: cross-venue-only players retained; own ratios agree; manual venue-only mode preserved.')
+
+const {buildAssignmentEstimator}=await import('../lib/strategy/assignment-estimator.ts')
+const roster=[...players,'P8','P9']
+// A game on a non-candidate machine must still contribute to overall strength.
+games.push({...games[1], id:++id, machine:'Other', player_1_name:'P0',player_1_score:1})
+const estimator=buildAssignmentEstimator(leagueNormalizationScores(games,()=>true))
+const preview={...common,scoringMode:'automatic-preview',mustPlay:['P8'],forcedAssignments:[{player:'P9',machine:'m1'}],
+  exclusions:{m1:['P0']},lineupLimit:4}
+for (const [route,format,input] of [[greedy,'doubles',{availablePlayers:roster,numMachines:4}],
+  [hungarian,'4x2',{playerNames:roster}]]) {
+  const request=async body=>route.POST(new Request('http://localhost/test',{method:'POST',
+    headers:{'content-type':'application/json'},body:JSON.stringify({...preview,format,...input,...body})}))
+  process.env.STRATEGY_ASSIGNMENT_PREVIEW='false'
+  assert.equal((await request({})).status,403)
+  process.env.STRATEGY_ASSIGNMENT_PREVIEW='true'
+  const response=await request({})
+  const payload=await response.json()
+  assert.equal(response.status,200,JSON.stringify(payload))
+  const {lineups}=payload.assignmentPreview
+  assert(lineups.length>1 && lineups.length<=4)
+  assert.equal(new Set(lineups.map(l=>JSON.stringify(l.picks.map(p=>[p.machine,p.players])))).size,lineups.length)
+  for(const lineup of lineups){
+    const selected=lineup.picks.flatMap(p=>p.players)
+    assert.equal(new Set(selected).size,8)
+    assert(selected.includes('P8'))
+    assert.equal(lineup.bench.length,2)
+    assert(lineup.picks.find(p=>p.machine==='M1').players.includes('P9'))
+    assert(!lineup.picks.find(p=>p.machine==='M1').players.includes('P0'))
+    let total=0
+    for(const pick of lineup.picks)for(const [i,player] of pick.players.entries()){
+      const expected=estimator.estimate(player,pick.machine,'A')
+      assert.deepEqual(pick.evidence[i],expected)
+      total+=expected.score
+    }
+    assert(Math.abs(total-lineup.score)<1e-12)
+    for(const alt of lineup.alternatives){
+      assert.notEqual(alt.to,alt.machine)
+      assert.notEqual(alt.player,'P9')
+      if(alt.player==='P8')assert.notEqual(alt.to,null)
+    }
+  }
+  assert.equal((await request({minMachineGames:1})).status,422)
+  assert.equal((await request({exclusions:{M1:['P9']}})).status,400)
+  assert.equal((await request({mustPlay:['Unavailable']})).status,400)
+  assert.equal((await request({machines:['M1','m1','M2','M3']})).status,400)
+}
+console.log('Both automatic previews passed: feature gate, shared full-history evidence, must-play, forced placements, exclusions, alternatives and infeasibility.')
