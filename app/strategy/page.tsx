@@ -64,7 +64,7 @@ import { TwcPlayerAvailability } from '@/components/twc-player-availability'
 import { PlayerAvailability } from '@/components/player-availability'
 import type { PlayerMachineStats, OptimizationResult } from '@/types/strategy'
 import { authFetch } from '@/lib/auth-fetch'
-import { bestDoublesMetrics, doublesMetricOptions, rankDoublesRuns, type DoublesLineup, type DoublesMetrics } from '@/lib/ranked-doubles'
+import { bestDoublesMetrics, doublesMetricOptions, rankDoublesRuns, type DoublesLineup, type DoublesMetricComparison } from '@/lib/ranked-doubles'
 import { automaticDoublesReport, type AssignmentPreview } from '@/lib/strategy/assignment-report'
 
 interface Team {
@@ -1089,7 +1089,7 @@ export default function StrategyPage() {
   const [doublesIterations, setDoublesIterations] = useState('5')
   const [doublesRunCount, setDoublesRunCount] = useState(0)
   const [rankedDoubles, setRankedDoubles] = useState<DoublesLineup[] | null>(null)
-  const [doublesMetrics, setDoublesMetrics] = useState<{ metrics: DoublesMetrics; opponents: string[][] }[]>([])
+  const [doublesMetrics, setDoublesMetrics] = useState<DoublesMetricComparison[]>([])
   const [calculatingDoublesMetrics, setCalculatingDoublesMetrics] = useState(false)
   const [doublesRunError, setDoublesRunError] = useState('')
   const [generatingDoubles, setGeneratingDoubles] = useState(false)
@@ -5448,7 +5448,7 @@ export default function StrategyPage() {
               : 'No complete lineups found. Check player and machine exclusions.'}</p>
             {doublesMetrics.length > 0 && <div className="space-y-2 rounded-md border p-3">
               <h3 className="font-medium">Best by metric</h3>
-              <p className="text-xs text-muted-foreground">Among the generated lineups. Uses historical stats for assigned players and projected opponents. Spread is TWC minus opponent, in percentage points.</p>
+              <p className="text-xs text-muted-foreground">Only lineups with full history for a metric are ranked. Lineup cards show partial historical averages where available. Spreads require full history for both sides.</p>
               <dl className="space-y-2 text-sm">
                 {bestDoublesMetrics(doublesMetrics.map(result => result.metrics)).map(metric => (
                   <div key={metric.key} className="flex items-baseline justify-between gap-2">
@@ -5510,8 +5510,13 @@ export default function StrategyPage() {
               {doublesMetrics[index] && <dl className="mt-3 grid grid-cols-2 gap-2 border-t pt-2 text-xs sm:grid-cols-3">
                 {doublesMetricOptions.map(metric => {
                   const value = doublesMetrics[index].metrics[metric.key]
+                  const coverage = doublesMetrics[index].coverage?.[metric.key]
                   return <div key={metric.key}><dt className="text-muted-foreground">{metric.label.replace(/^(Highest|Lowest|Best) /, '')}</dt>
-                    <dd className="tabular-nums">{value === null ? '—' : `${value.toFixed(1)}${metric.spread ? ' pp' : '%'}`}</dd></div>
+                    <dd className="tabular-nums">{value !== null ? `${value.toFixed(1)}${metric.spread ? ' pp' : '%'}`
+                      : coverage ? (coverage.average === null
+                        ? `No history (0/${coverage.total})`
+                        : `${coverage.average.toFixed(1)}% (${coverage.count}/${coverage.total} placements)`)
+                        : metric.spread ? 'Needs full history' : 'Not enough history'}</dd></div>
                 })}
               </dl>}
             </div>)}

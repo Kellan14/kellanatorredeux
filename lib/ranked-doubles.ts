@@ -13,6 +13,11 @@ export const doublesMetricOptions = [
   { key: 'popsSpread', label: 'Best POPS spread', low: false, spread: true },
 ] as const
 export type DoublesMetrics = Record<typeof doublesMetricOptions[number]['key'], number | null>
+export type DoublesMetricComparison = {
+  metrics: DoublesMetrics
+  opponents: string[][]
+  coverage?: Partial<Record<keyof DoublesMetrics, { count: number; total: number; average: number | null }>>
+}
 
 export function bestDoublesMetrics(metrics: DoublesMetrics[]) {
   return doublesMetricOptions.map(option => {

@@ -1,7 +1,7 @@
 import { hungarianAlgorithm } from './hungarian'
 import { standardizeVenueName } from '../venue-mappings'
 import type { Database } from '../supabase'
-import type { DoublesLineup, DoublesMetrics } from '../ranked-doubles'
+import type { DoublesLineup, DoublesMetricComparison } from '../ranked-doubles'
 
 type Game = Database['public']['Tables']['games']['Row']
 type Metric = { venue: number | null; pops: number | null }
@@ -16,7 +16,7 @@ const spread = (ours: number | null, theirs: number | null) =>
 export function evaluateDoublesLineups(
   games: Game[], lineups: DoublesLineup[], opponents: string[], venue: string,
   twcVenueSpecific: boolean, teamVenueSpecific: boolean, limits: Record<string, number>,
-): { metrics: DoublesMetrics; opponents: string[][] }[] {
+): DoublesMetricComparison[] {
   const selectedVenue = venueKey(venue)
   const players = new Set([...opponents, ...lineups.flatMap(lineup => lineup.picks.flatMap(p => p.players))])
   const baseline = new Map<string, { sum: number; count: number }>()
@@ -92,7 +92,14 @@ export function evaluateDoublesLineups(
     const twcPops = mean(ours.map(p => p.pops))
     const oppVenue = theirs.length === ours.length ? mean(theirs.map(p => p.venue)) : null
     const oppPops = theirs.length === ours.length ? mean(theirs.map(p => p.pops)) : null
-    return { opponents: projected, metrics: { twcVenue, oppVenue, venueSpread: spread(twcVenue, oppVenue),
+    const coverage = (values: (number | null)[]) => {
+      const known = values.filter(v => v !== null)
+      return { count: known.length, total: ours.length, average: mean(known) }
+    }
+    return { opponents: projected, coverage: {
+      twcVenue: coverage(ours.map(p => p.venue)), twcPops: coverage(ours.map(p => p.pops)),
+      oppVenue: coverage(theirs.map(p => p.venue)), oppPops: coverage(theirs.map(p => p.pops)),
+    }, metrics: { twcVenue, oppVenue, venueSpread: spread(twcVenue, oppVenue),
       twcPops, oppPops, popsSpread: spread(twcPops, oppPops) } }
   })
 }
