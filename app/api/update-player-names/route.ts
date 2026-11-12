@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/auth'
 import { renamePlayerStats } from '@/lib/apply-name-mappings'
+import { invalidateAssignmentHistory } from '@/lib/strategy/assignment-history-revision'
 
 export const dynamic = 'force-dynamic'
 
@@ -111,6 +112,7 @@ export async function POST(request: Request) {
       }
     }
 
+    if (totalUpdated > 0) invalidateAssignmentHistory()
     return NextResponse.json({
       success: true,
       totalUpdated,

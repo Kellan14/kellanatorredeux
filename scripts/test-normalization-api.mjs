@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict'
 import {register} from 'node:module'
-register('data:text/javascript,'+encodeURIComponent("export async function resolve(s,c,n){return n(s==='next/server'?'next/server.js':s,c)}"),import.meta.url)
+const cacheMock = 'data:text/javascript,' + encodeURIComponent(`
+  let revision=0
+  export function unstable_cache(fn){let current=-1,value;return async()=>{if(current!==revision){value=await fn();current=revision}return value}}
+  export function revalidateTag(){revision++}
+`)
+register('data:text/javascript,'+encodeURIComponent(`export async function resolve(s,c,n){
+  if(s==='next/cache')return {url:${JSON.stringify(cacheMock)},shortCircuit:true}
+  return n(s==='next/server'?'next/server.js':s,c)
+}`),import.meta.url)
 process.env.NEXT_PUBLIC_SUPABASE_URL='https://normalization-test.invalid'
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY='test-only-key'
 process.env.SUPABASE_SERVICE_ROLE_KEY='test-only-key'
@@ -15,11 +23,19 @@ for(const machine of machines)for(let j=0;j<4;j++)for(const venue of ['A','B']){
     g[`player_${slot}_points`]=own?1.5:1;g[`player_${slot}_team`]=own?'TWC':'OPP'
   }games.push(g)
 }
+let gameReads=0, limits=[]
 globalThis.fetch=async input=>{
   const url=new URL(typeof input==='string'||input instanceof URL?input:input.url)
   assert.equal(url.hostname,'normalization-test.invalid','No real network calls allowed')
   const table=url.pathname.split('/').pop()
-  let data=table==='games'?games:table==='teams'?[{team_key:'TWC',team_name:'The Wrecking Crew'},{team_key:'OPP',team_name:'Opponents'}]:[]
+  if(table==='games')gameReads++
+  let data=table==='games'?games:table==='score_limits'?limits:table==='teams'?[{team_key:'TWC',team_name:'The Wrecking Crew'},{team_key:'OPP',team_name:'Opponents'}]:[]
+  for(const filter of url.searchParams.getAll('season')){
+    const [op,value]=filter.split('.')
+    if(op==='eq')data=data.filter(row=>row.season===Number(value))
+    if(op==='gte')data=data.filter(row=>row.season>=Number(value))
+    if(op==='lte')data=data.filter(row=>row.season<=Number(value))
+  }
   for(const field of ['venue','machine']){const filter=url.searchParams.get(field);if(filter?.startsWith('in.(')){
     const values=filter.slice(4,-1).split(',').map(x=>x.replaceAll('"',''));data=data.filter(x=>values.includes(x[field]))
   }}
@@ -51,11 +67,12 @@ for(const a of h.assignments){
 console.log('Both API routes and prefetch passed: cross-venue-only players retained; own ratios agree; manual venue-only mode preserved.')
 
 const {buildAssignmentEstimator}=await import('../lib/strategy/assignment-estimator.ts')
+const {invalidateAssignmentHistory}=await import('../lib/strategy/assignment-history-revision.ts')
 const roster=[...players,'P8','P9']
 // A game on a non-candidate machine must still contribute to overall strength.
-games.push({...games[1], id:++id, machine:'Other', player_1_name:'P0',player_1_score:1})
+games.push({...games[1], id:++id, season:23, machine:'Other', player_1_name:'P0',player_1_score:1})
 const estimator=buildAssignmentEstimator(leagueNormalizationScores(games,()=>true))
-const preview={...common,scoringMode:'automatic-preview',mustPlay:['P8'],forcedAssignments:[{player:'P9',machine:'m1'}],
+const preview={...common,seasonStart:23,scoringMode:'automatic-preview',mustPlay:['P8'],forcedAssignments:[{player:'P9',machine:'m1'}],
   exclusions:{m1:['P0']},lineupLimit:4}
 for (const [route,format,input] of [[greedy,'doubles',{availablePlayers:roster,numMachines:4}],
   [hungarian,'4x2',{playerNames:roster}]]) {
@@ -90,9 +107,21 @@ for (const [route,format,input] of [[greedy,'doubles',{availablePlayers:roster,n
       if(alt.player==='P8')assert.notEqual(alt.to,null)
     }
   }
+  const reads=gameReads
+  const warm=await request({})
+  assert.equal((await warm.json()).assignmentPreview.historyCacheHit,true)
+  assert.equal(gameReads,reads)
+  invalidateAssignmentHistory()
+  const refreshed=await request({})
+  assert.equal((await refreshed.json()).assignmentPreview.historyCacheHit,false)
+  assert(gameReads>reads)
+  limits=[{machine:'M1',max_score:10000}]
+  const changedLimits=await request({})
+  assert.equal((await changedLimits.json()).assignmentPreview.historyCacheHit,false)
+  limits=[]
   assert.equal((await request({minMachineGames:1})).status,422)
   assert.equal((await request({exclusions:{M1:['P9']}})).status,400)
   assert.equal((await request({mustPlay:['Unavailable']})).status,400)
   assert.equal((await request({machines:['M1','m1','M2','M3']})).status,400)
 }
-console.log('Both automatic previews passed: feature gate, shared full-history evidence, must-play, forced placements, exclusions, alternatives and infeasibility.')
+console.log('Both automatic previews passed: shared evidence, constraints, warm reuse, revision and score-limit invalidation.')

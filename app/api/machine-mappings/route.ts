@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { invalidateAssignmentHistory } from '@/lib/strategy/assignment-history-revision'
 import { supabase, fetchAllRecords } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
 import { requireAdmin } from '@/lib/auth'
@@ -112,8 +113,11 @@ export async function POST(request: Request) {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     )
-    if (body.action === 'sync')
-      return NextResponse.json(await syncMnpCanon(client, auth.user.id))
+    if (body.action === 'sync') {
+      const result = await syncMnpCanon(client, auth.user.id)
+      invalidateAssignmentHistory()
+      return NextResponse.json(result)
+    }
     if (
       !Array.isArray(body.rawValues) ||
       body.rawValues.length > 200 ||
@@ -197,6 +201,7 @@ export async function POST(request: Request) {
       reason: body.reason.trim(),
       actor: auth.user.id,
     })
+    invalidateAssignmentHistory()
     return NextResponse.json({ result })
   } catch (error: any) {
     return NextResponse.json(

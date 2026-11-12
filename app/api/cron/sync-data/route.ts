@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { revalidateTag } from 'next/cache'
+import { invalidateAssignmentHistory } from '@/lib/strategy/assignment-history-revision'
 import { STATISTICS_CACHE_TAG } from '@/lib/statistics-cache'
 import { createClient } from '@supabase/supabase-js'
 import { standardizeVenueName } from '@/lib/venue-mappings'
@@ -904,6 +905,7 @@ export async function GET(request: Request) {
     }
 
     revalidateTag(STATISTICS_CACHE_TAG, { expire: 0 })
+    invalidateAssignmentHistory()
     return NextResponse.json({
       success: true,
       seasons,

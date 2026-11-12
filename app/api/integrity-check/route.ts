@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getSessionUser, isAdminUser } from '@/lib/auth'
 import { healEdits, checkCoverage, getDbSeasons } from '@/lib/integrity'
+import { invalidateAssignmentHistory } from '@/lib/strategy/assignment-history-revision'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
@@ -53,6 +54,7 @@ export async function GET(request: Request) {
   try {
     // 1. Auto-heal: re-apply every recorded edit.
     const heal = await healEdits(supabase)
+    if (heal.healedNames || heal.healedKeys || heal.healedSubLinks) invalidateAssignmentHistory()
 
     // 2. Reconcile coverage against the GitHub archive.
     let seasons: number[]

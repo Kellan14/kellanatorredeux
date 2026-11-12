@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 import { fetchAllRecords, supabase } from '../supabase'
-import { getScoreLimits, isScoreValid } from '../score-limits'
-import { buildAssignmentEstimator } from './assignment-estimator'
+import { isScoreValid } from '../score-limits'
+import { ASSIGNMENT_MODEL, buildAssignmentEstimator } from './assignment-estimator'
+import { createAssignmentHistoryCache } from './assignment-history-cache'
+import { getAssignmentHistoryRevision } from './assignment-history-revision'
 import { leagueNormalizationScores } from './normalization'
 import { solveAssignmentPreview, type PreviewOptions } from './assignment-preview'
 
@@ -16,6 +18,7 @@ const names = (value: unknown): value is string[] => Array.isArray(value) && val
 const key = (value: string) => value.toLowerCase()
 const columns = ['id', 'machine', 'venue', 'round_number', 'home_points', 'away_points',
   ...[1, 2, 3, 4].flatMap(i => [`player_${i}_name`, `player_${i}_score`])].join(',')
+const historyCache = createAssignmentHistoryCache<ReturnType<typeof buildAssignmentEstimator>>()
 
 export async function handleAssignmentPreview(body: Record<string, unknown>, method: PreviewOptions['method'], signal: AbortSignal) {
   if (!assignmentPreviewEnabled()) return fail('Automatic scoring preview is disabled.', 403)
@@ -62,20 +65,41 @@ export async function handleAssignmentPreview(body: Record<string, unknown>, met
     return fail('The must-play and forced assignments exceed the available doubles slots.')
 
   signal.throwIfAborted()
-  const [games, limits] = await Promise.all([
-    fetchAllRecords(() => supabase.from('games').select(columns)
-      .gte('season', seasonStart).lte('season', seasonEnd).abortSignal(signal)),
-    getScoreLimits(),
+  const [revision, limitRows] = await Promise.all([
+    getAssignmentHistoryRevision(),
+    supabase.from('score_limits').select('machine,max_score').abortSignal(signal)
+      .overrideTypes<{ machine: string; max_score: number }[], { merge: false }>(),
   ])
+  if (limitRows.error) throw new Error(`Could not load score limits: ${limitRows.error.message}`)
   signal.throwIfAborted()
-  const records = leagueNormalizationScores(games, (m, s) => isScoreValid(m, s, limits))
-  const estimator = buildAssignmentEstimator(records)
-  const estimate = (p: string, m: string) => estimator.estimate(p, m, venue)
+  const limitEntries = (limitRows.data ?? []).map(row => [key(row.machine), Number(row.max_score)] as const)
+    .sort(([a], [b]) => a.localeCompare(b))
+  const cacheKey = JSON.stringify([ASSIGNMENT_MODEL.version, revision, seasonStart, seasonEnd, limitEntries])
+  let estimator = historyCache.get(cacheKey)
+  const historyCacheHit = estimator !== undefined
+  if (!estimator) {
+    // Each season has a stable ID order. Read at most four seasons in
+    // parallel, keeping each season's pagination sequential.
+    const games: unknown[] = []
+    for (let start = seasonStart; start <= seasonEnd; start += 4) {
+      signal.throwIfAborted()
+      const batches = await Promise.all(Array.from({ length: Math.min(4, seasonEnd - start + 1) }, (_, i) =>
+        fetchAllRecords(() => supabase.from('games').select(columns)
+          .eq('season', start + i).abortSignal(signal))))
+      for (const batch of batches) games.push(...batch)
+    }
+    signal.throwIfAborted()
+    const limits = Object.fromEntries(limitEntries)
+    estimator = buildAssignmentEstimator(leagueNormalizationScores(games, (m, s) => isScoreValid(m, s, limits)))
+    historyCache.set(cacheKey, estimator)
+  }
+  const snapshot = estimator
+  const estimate = (p: string, m: string) => snapshot.estimate(p, m, venue)
   if (estimate(players[0], machines[0]).score === null) return fail('No usable league score history in this season range.', 422)
   const result = await solveAssignmentPreview({ players, machines, mustPlay, exclusions, forced,
     minGames: minMachineGames, limit: lineupLimit, method, estimate, signal })
   if (!result.lineups.length) return fail('No complete lineup satisfies the constraints. Check must-play players, exclusions, forced assignments, and minimum history.', 422)
   return NextResponse.json({ assignmentPreview: {
-    ...result, method, seasonStart, seasonEnd, modelVersion: estimator.version, minMachineGames,
+    ...result, method, seasonStart, seasonEnd, modelVersion: snapshot.version, minMachineGames, historyCacheHit,
   } })
 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { refreshMachineIssues } from '@/lib/machine-name-issues'
 import { syncMnpCanon } from '@/lib/manage-machine-canon'
+import { invalidateAssignmentHistory } from '@/lib/strategy/assignment-history-revision'
 
 // Weekly Vercel Cron: rescans every machine-keyed table against the canon and
 // checks the MNP machine list for drift, refreshing machine_name_issues so the
@@ -26,6 +27,7 @@ export async function GET(request: Request) {
   try {
     const supabase = createClient(supabaseUrl, supabaseKey)
     const sync = await syncMnpCanon(supabase, 'cron/scan-machine-names')
+    invalidateAssignmentHistory()
     const issues = await refreshMachineIssues(supabase)
     const scannedAt = new Date().toISOString()
 

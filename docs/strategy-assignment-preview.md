@@ -29,11 +29,15 @@ Per-player alternatives hold the four machines fixed and remove both slots
 on the selected machine. A positive Greedy delta can occur when the
 constraint makes the heuristic find a stronger arrangement.
 
-League history is paginated once per preview request; the computed
-player-machine evidence is reused throughout the search and its explanations.
-No cross-request cache is added yet. The selected season range and model
-version accompany the response. Model score differences are not projected
-match points or statistical confidence intervals.
+Cold requests paginate league history with at most four season reads in
+parallel. A worker retains up to four estimators for two minutes, keyed by
+season range, model version, current score limits, and a shared history
+revision. Game sync, machine-canon updates, and name/integrity corrections
+invalidate the revision. Changes made directly in the database are picked up
+when the short worker entry expires; score limits are checked on every
+request. Roster choices and lineup results are not cached. The selected season
+range and model version accompany the response. Model score differences are
+not projected match points or statistical confidence intervals.
 
 ## Verification and remaining rollout gates
 
@@ -41,14 +45,21 @@ match points or statistical confidence intervals.
 - `node --import ./scripts/strategy/lib/register-alias.mjs scripts/test-assignment-estimator.mjs`
 - `node --import ./scripts/strategy/lib/register-alias.mjs scripts/test-normalization-api.mjs`
 - `node --experimental-strip-types scripts/test-ranked-doubles.mjs`
+- `node --experimental-strip-types scripts/test-assignment-history-cache.mjs`
 - The archived TWC snapshot reproduced both prior Hungarian results (zero
   and three minimum games) across 14,950 machine sets. A separate local
-  invocation against current league history returned five valid lineups in
-  about 5.3 seconds, including database reads and search. This is one
-  measurement, not a production performance guarantee.
+  invocation against current league history returned five valid lineups.
+- The real Next.js development runtime returned identical lineups in 2.34 s
+  cold and 0.39/0.37 s warm after bounded parallel reads. These timings exclude
+  the separate metric comparison and are not production guarantees.
+- At 390 px, the preview generated five lineups, displayed metric comparisons
+  and expanded assignment tradeoffs, and had no horizontal overflow.
+- The frozen shared estimator reproduced all 17,355 retrospective predictions
+  in seasons 22–24 with maximum absolute difference below 1e-15. It reduced
+  mean squared log-score prediction error by 1.88% versus the original
+  overall-strength model. This is parity on previously studied data, not new
+  prospective evidence or an estimate of match-point gains.
 
-Before changing defaults: check the preview in a mobile viewport, measure
-cold/warm production-equivalent requests, design cache invalidation for score
-and canon changes, rerun chronological evaluation against the shared model,
-and decide how to migrate the main Strategy controls and reports. Do not
-automatically apply this doubles model to singles or custom scoring.
+Before changing defaults: test on the deployment, and migrate the main Strategy
+controls and reports so the mode and scoring basis are explicit everywhere.
+Do not automatically apply this doubles model to singles or custom scoring.
