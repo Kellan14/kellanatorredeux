@@ -80,15 +80,16 @@ async function getBlendedStats(
   userInputWeight: number = 0,
   confidenceBoost: number = 0,
   avgMethod: AvgMethod = 'mean',
-  trimPct: number = 0.1
+  trimPct: number = 0.1,
+  usePerGameNormalized: boolean = false
 ): Promise<{ statsMap: Map<string, Map<string, PlayerMachineStats>>; userInputs?: Map<string, Map<string, UserInputData>> }> {
   // Fetch user inputs if user input weight or confidence boost is active
   const userInputs = (userInputWeight > 0 || confidenceBoost > 0)
     ? await fetchUserInputs(playerNames, machines, venue)
     : undefined
 
-  if (!venue) {
-    const statsMap = await calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight, avgMethod, trimPct)
+  if (!venue || usePerGameNormalized) {
+    const statsMap = await calculatePlayerMachineStats(playerNames, machines, seasonStart, seasonEnd, undefined, userInputs, userInputWeight, avgMethod, trimPct, usePerGameNormalized)
     return { statsMap, userInputs }
   }
 
@@ -172,9 +173,10 @@ export class LineupOptimizer {
     userInputWeight: number = 0,
     confidenceBoost: number = 0,
     avgMethod: AvgMethod = 'mean',
-    trimPct: number = 0.1
+    trimPct: number = 0.1,
+    usePerGameNormalized: boolean = false
   ) {
-    return getBlendedStats(playerNames, machines, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost, avgMethod, trimPct)
+    return getBlendedStats(playerNames, machines, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost, avgMethod, trimPct, usePerGameNormalized)
   }
 
   /**

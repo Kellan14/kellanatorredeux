@@ -2,6 +2,7 @@ import { supabase, fetchAllRecords } from '@/lib/supabase'
 import type { PlayerMachineStats, ScoreBreakdown, ScoreEntry } from '@/types/strategy'
 import { getVenueVariations } from '@/lib/venue-mappings'
 import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
+import { buildNormalizationIndex, leagueNormalizationScores, isScoredLeagueGame } from './normalization'
 
 /**
  * Calculate player-machine stats from games table
@@ -52,7 +53,8 @@ export async function calculatePlayerMachineStats(
   userInputs?: Map<string, Map<string, UserInputData>>,
   userInputWeight: number = 0,
   avgMethod: AvgMethod = 'mean',
-  trimPct: number = 0.1
+  trimPct: number = 0.1,
+  usePerGameNormalized: boolean = false
 ): Promise<Map<string, Map<string, PlayerMachineStats>>> {
   // Build a lookup: any machine name variation → original input machine name
   // This ensures DB values like "DP" map back to the input key "DP" even when
@@ -87,6 +89,10 @@ export async function calculatePlayerMachineStats(
 
     return query
   })
+
+  const normalizedLeague = usePerGameNormalized ? buildNormalizationIndex(leagueNormalizationScores(
+    gamesData, (machine, score) => isScoreValid(machine, score, scoreLimits),
+  )) : null
 
   // Fetch user-entered manual scores from user_machine_scores
   // These contribute to the player's average on that machine
@@ -203,6 +209,7 @@ export async function calculatePlayerMachineStats(
 
   // Process each game record (wide format: 4 players per row)
   for (const game of gamesData) {
+    if (usePerGameNormalized && !isScoredLeagueGame(game)) continue
     // Map DB machine name back to the original input machine name
     const rawMachine = game.machine || ''
     const inputMachine = variationToInput.get(rawMachine.toLowerCase().trim())
@@ -216,6 +223,7 @@ export async function calculatePlayerMachineStats(
 
       // Skip if player doesn't exist, not in our target list, or score exceeds limit
       if (!playerName || !playerNames.includes(playerName) || playerScore == null) continue
+      if (usePerGameNormalized && (!Number.isFinite(Number(playerScore)) || Number(playerScore) < 0)) continue
       if (!isScoreValid(inputMachine, playerScore, scoreLimits)) continue
 
       // Get opponent scores (all other players in this same game row)
@@ -289,8 +297,8 @@ export async function calculatePlayerMachineStats(
     for (const g of games) {
       const vKey = `${machine}|${g.venue}`
       const venueEntry = venueScoresByMachine.get(vKey)
-      if (venueEntry && venueEntry.count > 0) {
-        const venueAvg = venueEntry.total / venueEntry.count
+      if (normalizedLeague || (venueEntry && venueEntry.count > 0)) {
+        const venueAvg = normalizedLeague ? normalizedLeague.baseline(machine, g.venue) ?? 0 : venueEntry!.total / venueEntry!.count
         if (venueAvg > 0) {
           const ratio = g.score / venueAvg
           leagueRatios.push(ratio)

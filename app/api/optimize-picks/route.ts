@@ -6,6 +6,7 @@ import { calculatePlayerMachineStats, type UserInputData } from '@/lib/strategy/
 import { calculatePerformanceScore, type ScoreWeights } from '@/lib/strategy/calculator'
 import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
 import type { PlayerMachineStats } from '@/types/strategy'
+import { buildNormalizationIndex, leagueNormalizationScores } from '@/lib/strategy/normalization'
 
 export const dynamic = 'force-dynamic';
 
@@ -29,8 +30,22 @@ function computePlayerAdvantage(
   vw: number,
   teamName: string,
   opponentPlayers?: string[],
-  scoreLimits?: Record<string, number>
+  scoreLimits?: Record<string, number>,
+  normalized?: ReturnType<typeof buildNormalizationIndex> | null
 ): AdvantageData {
+  if (normalized) {
+    const names = opponentPlayers?.length ? opponentPlayers : Array.from(new Set<string>([...venueGames, ...nonVenueGames].flatMap(g =>
+      [1,2,3,4].flatMap(i => teamNameMap[g[`player_${i}_team`]] === opponentName && g[`player_${i}_name`] ? [g[`player_${i}_name`]] : []))))
+    const ours = assignedPlayers.map(p => normalized.player(p, machine)).filter(p => p !== null)
+    const theirs = names.map(p => normalized.player(p, machine)).filter(p => p !== null)
+    const twcPctOfVenue = ours.length ? 100 * ours.reduce((s,p)=>s+p.ratio,0)/ours.length : 0
+    const opponentPctOfVenue = theirs.length ? 100 * theirs.reduce((s,p)=>s+p.ratio,0)/theirs.length : 0
+    const statisticalAdvantage = twcPctOfVenue - opponentPctOfVenue
+    return { twcPctOfVenue, opponentPctOfVenue, statisticalAdvantage,
+      experienceAdvantage: ours.reduce((s,p)=>s+p.count,0)-theirs.reduce((s,p)=>s+p.count,0),
+      advantageLevel: !ours.length || !theirs.length ? 'Insufficient data' : statisticalAdvantage > 10 ? 'High' : statisticalAdvantage > 5 ? 'Medium' : 'Low',
+      compositeScore: statisticalAdvantage, twcPlays: ours.reduce((s,p)=>s+p.count,0) }
+  }
   let twcVenueTotal = 0, twcVenueCount = 0, twcNonVenueTotal = 0, twcNonVenueCount = 0
   let oppVenueTotal = 0, oppVenueCount = 0, oppNonVenueTotal = 0, oppNonVenueCount = 0
 
@@ -195,6 +210,7 @@ export async function POST(request: Request) {
       numMachines,
       availablePlayers,
       venueWeight = 0.7,
+      usePerGameNormalized = true,
       userInputWeight = 0,
       confidenceBoost = 0,
       scoreWeights,
@@ -267,7 +283,7 @@ export async function POST(request: Request) {
     // Calculate stats using the proper stats calculator
     // This includes user_machine_scores, win_rate, recent_form, venue_adjusted_avg, etc.
     const [venueStats, allStats] = await Promise.all([
-      calculatePlayerMachineStats(
+      usePerGameNormalized ? Promise.resolve(new Map<string, Map<string, PlayerMachineStats>>()) : calculatePlayerMachineStats(
         availablePlayers,
         machinesAtVenue,
         seasonStart,
@@ -287,12 +303,13 @@ export async function POST(request: Request) {
         userInputMap,
         uiw,
         avgMethod,
-        trimPct
+        trimPct,
+        usePerGameNormalized
       )
     ])
 
     // Blend venue-specific and all-venue stats
-    const blendedStats = blendStats(venueStats, allStats, vw)
+    const blendedStats = usePerGameNormalized ? allStats : blendStats(venueStats, allStats, vw)
 
     // Fetch venue games for advantage calculation (still need raw games for this)
     let venueGames: any[] = []
@@ -339,6 +356,9 @@ export async function POST(request: Request) {
     // Build team name map for advantage calculation
     const teamKeys = new Set<string>()
     const allGamesForTeams = [...venueGames, ...allVenueGames]
+    const normalized = usePerGameNormalized ? buildNormalizationIndex(leagueNormalizationScores(
+      allGamesForTeams, (machine, score) => isScoreValid(machine, score, scoreLimits),
+    )) : null
     for (const game of allGamesForTeams) {
       for (let i = 1; i <= 4; i++) {
         const teamKey = game[`player_${i}_team`]
@@ -386,6 +406,17 @@ export async function POST(request: Request) {
       collectOppStats(allVenueGames, false)
 
       for (const machine of machinesAtVenue) {
+        if (normalized) {
+          const names = opponentPlayers?.length ? opponentPlayers as string[] : Array.from(new Set<string>(allGamesForTeams.flatMap(g =>
+            [1,2,3,4].flatMap(i => teamNameMap[g[`player_${i}_team`]] === opponent && g[`player_${i}_name`] ? [g[`player_${i}_name`]] : []))))
+          const values = names.map(p => normalized.player(p, machine)).filter(p => p !== null)
+          if (values.length) {
+            const ratio = values.reduce((sum,p)=>sum+p.ratio,0)/values.length
+            oppAvgPerMachine.set(machine, {oppAvg: ratio, venueAvg: 1})
+            oppWeaknessPerMachine.set(machine, Math.max(-0.5, Math.min(0.5, 1-ratio)))
+          }
+          continue
+        }
         const opp = oppMachineStats.get(machine)
         if (!opp) continue
 
@@ -497,7 +528,7 @@ export async function POST(request: Request) {
 
       const playerStatsDisplay = bestPlayers.map(p => {
         const ui = userInputMap.get(p.player)?.get(bestMachine)
-        const pctOfVenue = machineVenueAvg && p.stats?.avg_score
+        const pctOfVenue = usePerGameNormalized ? (p.stats?.venue_adjusted_avg != null ? p.stats.venue_adjusted_avg * 100 : null) : machineVenueAvg && p.stats?.avg_score
           ? (p.stats.avg_score / machineVenueAvg) * 100
           : (p.stats?.venue_adjusted_avg ? p.stats.venue_adjusted_avg * 100 : null)
 
@@ -527,7 +558,8 @@ export async function POST(request: Request) {
         vw,
         teamName,
         opponentPlayers,
-        scoreLimits
+        scoreLimits,
+        normalized
       )
 
       recommendations.push({
@@ -612,7 +644,9 @@ export async function POST(request: Request) {
           })
         }
 
-        eligible.sort((a, b) => b.avgScore - a.avgScore)
+        eligible.sort((a, b) => normalized
+          ? (normalized.player(b.player, machine)?.ratio ?? 0) - (normalized.player(a.player, machine)?.ratio ?? 0)
+          : b.avgScore - a.avgScore)
         const topN = eligible.slice(0, playersPerMachine)
 
         // Backfill with unused opponents if not enough have data on this machine

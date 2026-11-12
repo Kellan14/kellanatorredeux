@@ -6,6 +6,7 @@ import { getVenueVariations } from '@/lib/venue-mappings'
 import { hungarianAlgorithm } from '@/lib/strategy/hungarian'
 import { buildCostMatrix, calculatePerformanceScore, calculatePairSynergy } from '@/lib/strategy/calculator'
 import { getScoreLimits, isScoreValid } from '@/lib/score-limits'
+import { buildNormalizationIndex, leagueNormalizationScores } from '@/lib/strategy/normalization'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,11 +38,8 @@ export async function POST(request: NextRequest) {
       seasonEnd = 22,
       venue,
       venueWeight: rawVenueWeight,
-      // When true (strategy page's default), the venueWeight blend is
-      // bypassed — venueWeight is forced to 1 so prefetchStats /
-      // getBlendedAvg use venue-only data when venue is set, falling back
-      // to non-venue when it isn't. Approximates per-game-normalized at
-      // this layer without rebuilding lib/strategy internals.
+      // Normalize every historical score at its original machine/venue,
+      // retaining cross-venue history symmetrically for both teams.
       usePerGameNormalized = true,
       exclusions = {},
       mustPlay = [],
@@ -152,9 +150,9 @@ export async function POST(request: NextRequest) {
     // Pre-fetch stats for ALL players (including forced ones for merging back)
     const allPlayersForStats = [...allPlayers, ...Array.from(forcedPlayerSet)]
     const allMachinesForStats = [...selectedMachines, ...Array.from(forcedMachineSet)]
-    const venueWeight = usePerGameNormalized ? 1 : rawVenueWeight
+    const venueWeight = rawVenueWeight
     const { statsMap, userInputs } = await optimizer.prefetchStats(
-      allPlayersForStats, allMachinesForStats, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost, avgMethod, trimPct
+      allPlayersForStats, allMachinesForStats, seasonStart, seasonEnd, venue, venueWeight, userInputWeight, confidenceBoost, avgMethod, trimPct, usePerGameNormalized
     )
 
     // Fetch score limits for filtering impossible scores
@@ -285,64 +283,16 @@ export async function POST(request: NextRequest) {
       collectOppStats(venueGames, true)
       collectOppStats(nonVenueGames, false)
 
-      // Per-(opp player, machine, venue) buckets and per-(machine, venue)
-      // baselines, used by the per-game-normalized branch. Same idea as the
-      // machine-advantages perVenueTeamStats / perVenueBaseline maps.
-      const oppPerVenue = new Map<string, Map<string, Map<string, { total: number; count: number }>>>()
-      const venueAvgByMV = new Map<string, Map<string, { total: number; count: number }>>()
-      if (usePerGameNormalized) {
-        for (const game of allGames) {
-          const v = game.venue
-          if (!v) continue
-          for (let i = 1; i <= 4; i++) {
-            const playerName = game[`player_${i}_name`]
-            const teamKey = game[`player_${i}_team`]
-            const score = game[`player_${i}_score`]
-            if (!score) continue
-            if (!isScoreValid(game.machine, score, scoreLimits)) continue
-            // Baselines: every valid score contributes to the venue avg.
-            if (!venueAvgByMV.has(game.machine)) venueAvgByMV.set(game.machine, new Map())
-            const venueMapForMachine = venueAvgByMV.get(game.machine)!
-            const baseEntry = venueMapForMachine.get(v) || { total: 0, count: 0 }
-            baseEntry.total += score
-            baseEntry.count++
-            venueMapForMachine.set(v, baseEntry)
-            // Opponent player buckets.
-            if (!teamKey || !playerName) continue
-            if (!oppPlayerSet.has(playerName)) continue
-            if (teamNameMap[teamKey] !== opponent) continue
-            if (!oppPerVenue.has(playerName)) oppPerVenue.set(playerName, new Map())
-            const machineMap = oppPerVenue.get(playerName)!
-            if (!machineMap.has(game.machine)) machineMap.set(game.machine, new Map())
-            const inner = machineMap.get(game.machine)!
-            const entry = inner.get(v) || { total: 0, count: 0 }
-            entry.total += score
-            entry.count++
-            inner.set(v, entry)
-          }
-        }
-      }
 
       // Per-game-normalized opponent "score" — mean of (score / venueAvg(M, V))
+      const normalizedOpponents = usePerGameNormalized ? buildNormalizationIndex(leagueNormalizationScores(
+        allGames, (machine, score) => isScoreValid(machine, score, scoreLimits),
+      )) : null
       // across the player's games. Returns a ratio centered around 1.0 (so the
       // Hungarian matrix is consistent with the legacy raw-avg path's units;
       // the optimizer just needs comparable values within one matrix).
       const getPgnOppRatio = (player: string, machine: string): number => {
-        const machineMap = oppPerVenue.get(player)
-        if (!machineMap) return 0
-        const venueMap = machineMap.get(machine)
-        if (!venueMap) return 0
-        let sumRatio = 0
-        let games = 0
-        for (const [v, entry] of Array.from(venueMap.entries())) {
-          const baseline = venueAvgByMV.get(machine)?.get(v)
-          if (!baseline || baseline.count === 0) continue
-          const venueAvg = baseline.total / baseline.count
-          if (venueAvg <= 0) continue
-          sumRatio += entry.total / venueAvg
-          games += entry.count
-        }
-        return games > 0 ? sumRatio / games : 0
+        return normalizedOpponents?.player(player, machine)?.ratio ?? 0
       }
 
       // Legacy blended-avg path. Kept so the toggle can fall back cleanly.
