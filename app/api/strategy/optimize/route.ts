@@ -13,7 +13,11 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
 export function GET() {
-  return NextResponse.json({ assignmentPreviewEnabled: assignmentPreviewEnabled() })
+  const enabled = assignmentPreviewEnabled()
+  return NextResponse.json({
+    assignmentPreviewEnabled: enabled,
+    automaticDoublesDefault: enabled && process.env.STRATEGY_ASSIGNMENT_DEFAULT === 'automatic',
+  })
 }
 
 /**

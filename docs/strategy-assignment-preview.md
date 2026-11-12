@@ -2,9 +2,18 @@
 
 The preview is off by default. Set the server environment variable
 `STRATEGY_ASSIGNMENT_PREVIEW=true` in a test deployment to show the opt-in
-checkbox in Strategy → Generate Doubles. Leave it unset to keep legacy scoring
-and hide the preview. Existing reports, singles, slider preferences, and
-default scoring are unchanged.
+checkbox in Strategy and Generate Doubles. Leave it unset to keep legacy
+scoring and hide automatic mode. The two controls share one saved preference.
+In automatic mode, Optimize Doubles Picks opens the automatic generator and
+Create Report uses one four-machine automatic lineup per method, including
+model version and evidence. Report failures are explicit, never substituted
+with manual picks. Singles, opponent-pick response and advanced manual
+optimization retain their existing scoring.
+
+After deployment verification, setting `STRATEGY_ASSIGNMENT_DEFAULT=automatic`
+can default new/unset preferences to automatic when the preview is enabled.
+Explicit manual preferences still win. Unsetting the preview flag is the
+rollback. Neither flag is changed by this commit.
 
 Both generators use the frozen log-normalized model and the selected history
 window, including history on machines outside the venue's candidate list.
@@ -60,6 +69,5 @@ not projected match points or statistical confidence intervals.
   overall-strength model. This is parity on previously studied data, not new
   prospective evidence or an estimate of match-point gains.
 
-Before changing defaults: test on the deployment, and migrate the main Strategy
-controls and reports so the mode and scoring basis are explicit everywhere.
+Before changing defaults: verify the opt-in flow on the deployment.
 Do not automatically apply this doubles model to singles or custom scoring.

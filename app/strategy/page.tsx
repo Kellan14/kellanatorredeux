@@ -65,7 +65,7 @@ import { PlayerAvailability } from '@/components/player-availability'
 import type { PlayerMachineStats, OptimizationResult } from '@/types/strategy'
 import { authFetch } from '@/lib/auth-fetch'
 import { bestDoublesMetrics, doublesMetricOptions, rankDoublesRuns, type DoublesLineup, type DoublesMetrics } from '@/lib/ranked-doubles'
-import type { AssignmentPreviewLineup } from '@/lib/strategy/assignment-preview'
+import { automaticDoublesReport, type AssignmentPreview } from '@/lib/strategy/assignment-report'
 
 interface Team {
   key: string
@@ -935,6 +935,7 @@ export default function StrategyPage() {
   }
 
   const optimizeDoublesPicks = async () => {
+    if (useAutomaticDoubles) return
     const selectedPlayers = Object.keys(availablePlayers).filter(p => availablePlayers[p] && !sitThisRound.has(p))
 
     if (selectedPlayers.length < numDoublesMachines * 2) {
@@ -1095,27 +1096,52 @@ export default function StrategyPage() {
   const [assignmentPreviewAvailable, setAssignmentPreviewAvailable] = useState(false)
   const [automaticDoubles, setAutomaticDoubles] = useState(false)
   const [minimumDoublesHistory, setMinimumDoublesHistory] = useState('0')
-  const [doublesPreview, setDoublesPreview] = useState<{
-    lineups: AssignmentPreviewLineup[]; examined: number; modelVersion: string; seasonStart: number; seasonEnd: number
-  } | null>(null)
+  const [doublesPreview, setDoublesPreview] = useState<AssignmentPreview | null>(null)
+  const useAutomaticDoubles = assignmentPreviewAvailable && automaticDoubles
   const doublesRun = useRef<AbortController | null>(null)
   useEffect(() => () => doublesRun.current?.abort(), [])
   useEffect(() => {
-    if (!doublesGeneratorOpen) return
     const controller = new AbortController()
     fetch('/api/strategy/optimize', { signal: controller.signal, cache: 'no-store' })
       .then(response => response.ok ? response.json() : null)
       .then(data => {
-        if (!controller.signal.aborted) setAssignmentPreviewAvailable(data?.assignmentPreviewEnabled === true)
+        if (!controller.signal.aborted) {
+          setAssignmentPreviewAvailable(data?.assignmentPreviewEnabled === true)
+          let saved: string | null = null
+          try { saved = localStorage.getItem('strategy-doubles-scoring') } catch { /* optional preference */ }
+          setAutomaticDoubles(saved === 'automatic' || (saved !== 'manual' && data?.automaticDoublesDefault === true))
+        }
       })
       .catch(() => { if (!controller.signal.aborted) setAssignmentPreviewAvailable(false) })
     return () => controller.abort()
-  }, [doublesGeneratorOpen])
+  }, [])
+
+  const changeDoublesScoring = (automatic: boolean) => {
+    setAutomaticDoubles(automatic)
+    try { localStorage.setItem('strategy-doubles-scoring', automatic ? 'automatic' : 'manual') } catch { /* optional preference */ }
+    setRankedDoubles(null); setDoublesPreview(null); setDoublesMetrics([]); setDoublesRunError('')
+  }
+
+  const requestAutomaticDoubles = async (method: 'greedy' | 'hungarian', players: string[], machines: string[], limit: number, signal?: AbortSignal): Promise<AssignmentPreview> => {
+    const greedy = method === 'greedy'
+    const response = await fetch(greedy ? '/api/optimize-picks' : '/api/strategy/optimize', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal,
+      body: JSON.stringify({ scoringMode: 'automatic-preview', venue: selectedVenue,
+        seasonStart: seasonRange[0], seasonEnd: seasonRange[1],
+        machines, mustPlay: Array.from(satOutPlayers).filter(player => players.includes(player)),
+        exclusions: doublesExclusions, minMachineGames: Number(minimumDoublesHistory),
+        lineupLimit: limit, ...(greedy ? { format: 'doubles', numMachines: 4, availablePlayers: players }
+          : { format: '4x2', playerNames: players }) }),
+    })
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error || 'Could not generate automatic doubles.')
+    return data.assignmentPreview
+  }
 
   const generateDoubles = async () => {
     const iterations = Number(doublesIterations)
     const greedy = doublesMethod === 'greedy'
-    const automatic = assignmentPreviewAvailable && automaticDoubles
+    const automatic = useAutomaticDoubles
     const roundSize = greedy && !automatic ? numDoublesMachines : 4
     const players = Object.keys(availablePlayers).filter(p => availablePlayers[p] && !sitThisRound.has(p))
     const machines = (venues.find(v => v.name === selectedVenue)?.machines || [])
@@ -1160,17 +1186,7 @@ export default function StrategyPage() {
     }
     try {
       const result: { lineups: DoublesLineup[] } = automatic ? await (async () => {
-        const response = await fetch(greedy ? '/api/optimize-picks' : '/api/strategy/optimize', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: controller.signal,
-          body: JSON.stringify({ scoringMode: 'automatic-preview', venue: settings.venue,
-            seasonStart: settings.seasonStart, seasonEnd: settings.seasonEnd,
-            machines, mustPlay, exclusions: doublesExclusions, minMachineGames: Number(minimumDoublesHistory),
-            lineupLimit: iterations, ...(greedy ? { format: 'doubles', numMachines: 4, availablePlayers: players }
-              : { format: '4x2', playerNames: players }) }),
-        })
-        const data = await response.json()
-        if (!response.ok) throw new Error(data.error || 'Could not generate automatic doubles.')
-        const preview: NonNullable<typeof doublesPreview> = data.assignmentPreview
+        const preview = await requestAutomaticDoubles(doublesMethod, players, machines, iterations, controller.signal)
         if (!controller.signal.aborted) setDoublesPreview(preview)
         return { lineups: preview.lineups }
       })() : await rankDoublesRuns({
@@ -1240,6 +1256,11 @@ export default function StrategyPage() {
     const selectedPlayers = Object.keys(availablePlayers).filter(p => availablePlayers[p] && !sitThisRound.has(p))
     const venueData = venues.find(v => v.name === selectedVenue)
     const machinesAtVenue = (venueData?.machines || []).filter(m => !excludedMachines.includes(m))
+    const automatic = useAutomaticDoubles
+    const reportDoubles = (method: 'greedy' | 'hungarian') => requestAutomaticDoubles(method, selectedPlayers, machinesAtVenue, 1)
+      .then(preview => ({ preview, error: null })).catch((error: unknown) => ({
+        preview: null, error: error instanceof Error ? error.message : 'Automatic doubles failed.',
+      }))
 
     // Run all 4 optimizations in parallel
     // For the report, assign ALL players (not just the normal round count)
@@ -1273,8 +1294,8 @@ export default function StrategyPage() {
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
 
-      // Greedy Doubles - use all players (2 per machine)
-      fetch('/api/optimize-picks', {
+      // Automatic is one legal round; manual reports retain the all-player view.
+      automatic ? reportDoubles('greedy') : fetch('/api/optimize-picks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1331,8 +1352,8 @@ export default function StrategyPage() {
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
 
-      // Hungarian Doubles (4x2) - assign all players
-      fetch('/api/strategy/optimize', {
+      // Hungarian Doubles (4x2)
+      automatic ? reportDoubles('hungarian') : fetch('/api/strategy/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1370,6 +1391,7 @@ export default function StrategyPage() {
     lines.push(`Opponent: ${selectedOpponent}`)
     lines.push(`Seasons: ${seasonRange[0]} - ${seasonRange[1]}`)
     lines.push(`Players: ${selectedPlayers.length} available`)
+    lines.push(`Scoring: singles manual; doubles ${automatic ? 'automatic (one four-machine round per method)' : 'manual'}.`)
     lines.push('')
     lines.push('='.repeat(50))
 
@@ -1397,7 +1419,10 @@ export default function StrategyPage() {
     lines.push('')
     lines.push('GREEDY ALGORITHM - DOUBLES PICKS')
     lines.push('-'.repeat(40))
-    if (greedyDoubles?.recommendations?.length > 0) {
+    if (automatic) {
+      lines.push(...(greedyDoubles?.preview ? automaticDoublesReport(greedyDoubles.preview, getMachineDisplayName)
+        : [`Automatic doubles unavailable: ${greedyDoubles?.error ?? 'No result'}`]))
+    } else if (greedyDoubles?.recommendations?.length > 0) {
       greedyDoubles.recommendations.forEach((rec: any, i: number) => {
         const machineName = getMachineDisplayName(rec.machine)
         const players = rec.players.join(' & ')
@@ -1432,7 +1457,10 @@ export default function StrategyPage() {
     lines.push('')
     lines.push('HUNGARIAN ALGORITHM - DOUBLES (4x2)')
     lines.push('-'.repeat(40))
-    if (hungarianDoubles?.assignments?.length > 0) {
+    if (automatic) {
+      lines.push(...(hungarianDoubles?.preview ? automaticDoublesReport(hungarianDoubles.preview, getMachineDisplayName)
+        : [`Automatic doubles unavailable: ${hungarianDoubles?.error ?? 'No result'}`]))
+    } else if (hungarianDoubles?.assignments?.length > 0) {
       hungarianDoubles.assignments.forEach((asn: any, i: number) => {
         const machineName = getMachineDisplayName(asn.machine_id)
         const players = asn.player1_id && asn.player2_id ? `${asn.player1_id} & ${asn.player2_id}` : asn.player_id
@@ -2470,6 +2498,12 @@ export default function StrategyPage() {
 
               {/* Create Report Button */}
               <div className="flex flex-wrap justify-end gap-2 mb-4">
+                {assignmentPreviewAvailable && <label className="flex items-center gap-2 text-xs">
+                  <input type="checkbox" checked={automaticDoubles}
+                    disabled={generatingDoubles || generatingReport}
+                    onChange={e => changeDoublesScoring(e.target.checked)} />
+                  Automatic doubles picks
+                </label>}
                 <Button variant="outline" size="sm" className="text-xs" onClick={() => setDoublesGeneratorOpen(true)}>
                   Generate Doubles
                 </Button>
@@ -3191,8 +3225,8 @@ export default function StrategyPage() {
 
                     <TabsContent value="doubles" className="space-y-4">
                       <div className="flex justify-center">
-                        <Button onClick={optimizeDoublesPicks}>
-                          Optimize Doubles Picks
+                        <Button onClick={() => useAutomaticDoubles ? setDoublesGeneratorOpen(true) : optimizeDoublesPicks()}>
+                          {useAutomaticDoubles ? 'Optimize Automatic Doubles' : 'Optimize Doubles Picks'}
                         </Button>
                       </div>
 
@@ -3232,7 +3266,7 @@ export default function StrategyPage() {
                         </div>
                       )}
 
-                      {doublesRecommendations.length > 0 && (
+                      {!useAutomaticDoubles && doublesRecommendations.length > 0 && (
                         <div className="mt-4">
                           <div className="flex items-center gap-2 mb-3">
                             <h4 className="font-semibold">Recommended Machine Picks:</h4>
@@ -4317,7 +4351,7 @@ export default function StrategyPage() {
                             onClick={optimizeDoublesAssignments}
                             disabled={doublesOpponentPicks.length === 0}
                           >
-                            Optimize Doubles
+                            Optimize Doubles Response (Manual)
                           </Button>
                         </div>
                       </div>
@@ -5357,12 +5391,9 @@ export default function StrategyPage() {
           </DialogHeader>
           {assignmentPreviewAvailable && <div className="space-y-2 rounded-md border p-3">
             <label className="flex items-center gap-2 text-sm font-medium">
-              <input type="checkbox" checked={automaticDoubles} disabled={generatingDoubles}
-                onChange={e => {
-                  setAutomaticDoubles(e.target.checked)
-                  setRankedDoubles(null); setDoublesPreview(null); setDoublesMetrics([]); setDoublesRunError('')
-                }} />
-              Preview automatic machine-history weighting
+              <input type="checkbox" checked={automaticDoubles} disabled={generatingDoubles || generatingReport}
+                onChange={e => changeDoublesScoring(e.target.checked)} />
+              Automatic machine-history weighting
             </label>
             <p className="text-xs text-muted-foreground">Uses the selected seasons and normalizes each score at its original venue. Machine history gradually gains weight as scores accumulate. Manual scoring sliders, opponent adjustments, and pair bonuses do not affect preview rankings.</p>
             {automaticDoubles && <div className="space-y-1">
@@ -5411,7 +5442,7 @@ export default function StrategyPage() {
           {doublesRunError && <p role="alert" className="text-sm text-destructive">{doublesRunError}</p>}
           {rankedDoubles && <div className="space-y-3">
             <p className="text-sm text-muted-foreground">{doublesPreview
-              ? `${rankedDoubles.length} lineups found · ${doublesPreview.examined.toLocaleString()} machine sets checked · seasons ${doublesPreview.seasonStart}–${doublesPreview.seasonEnd}. Scores are model estimates, not match points.`
+              ? `Automatic · ${doublesPreview.modelVersion} · ${rankedDoubles.length} lineups · ${doublesPreview.examined.toLocaleString()} machine sets checked · seasons ${doublesPreview.seasonStart}–${doublesPreview.seasonEnd}. Scores are model estimates, not match points.`
               : rankedDoubles.length
               ? `${rankedDoubles.length} distinct lineups in ${doublesRunCount} iterations, ranked by model score.`
               : 'No complete lineups found. Check player and machine exclusions.'}</p>
