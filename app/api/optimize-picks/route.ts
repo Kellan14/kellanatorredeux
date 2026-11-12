@@ -448,6 +448,22 @@ export async function POST(request: Request) {
     // Joint machine + player selection using performance scores
     const playersPerMachine = format === 'doubles' ? 2 : 1
     const mustPlaySet = new Set<string>(mustPlay as string[])
+    const forcedByPlayer = new Map<string, string>()
+    if (format === 'doubles' && body.forcedAssignments !== undefined) {
+      if (!Array.isArray(body.forcedAssignments)) return NextResponse.json({ error: 'Invalid forced assignments.' }, { status: 400 })
+      for (const entry of body.forcedAssignments) {
+        if (!availablePlayers.includes(entry?.player) || !machinesAtVenue.includes(entry?.machine) ||
+          forcedByPlayer.has(entry.player) || exclusions[entry.machine]?.includes(entry.player) ||
+          Array.from(forcedByPlayer.values()).filter(m => m === entry.machine).length >= playersPerMachine) {
+          return NextResponse.json({ error: 'A forced assignment conflicts with availability or exclusions.' }, { status: 422 })
+        }
+        forcedByPlayer.set(entry.player, entry.machine)
+        mustPlaySet.add(entry.player)
+      }
+    }
+    const requiredMachines = new Set(forcedByPlayer.values())
+    if (requiredMachines.size > numMachines || (forcedByPlayer.size && mustPlaySet.size > numMachines * playersPerMachine))
+      return NextResponse.json({ error: 'Too many forced or must-play placements for this round.' }, { status: 422 })
     const usedPlayers = new Set<string>()
     const usedMachines = new Set<string>()
     const recommendations = []
@@ -464,10 +480,12 @@ export async function POST(request: Request) {
       const machinesToTry = unusedMachines.length > 0 ? unusedMachines : machinesAtVenue
 
       for (const machine of machinesToTry) {
+        if (Array.from(requiredMachines).some(m => !usedMachines.has(m)) && !requiredMachines.has(machine)) continue
         const machineExclusions: string[] = exclusions[machine] || []
 
         const eligible = (availablePlayers as string[])
-          .filter((p: string) => !usedPlayers.has(p) && !machineExclusions.includes(p))
+          .filter((p: string) => !usedPlayers.has(p) && !machineExclusions.includes(p) &&
+            (!forcedByPlayer.has(p) || forcedByPlayer.get(p) === machine))
           .map((player: string) => {
             const stats = blendedStats.get(player)?.get(machine) || null
             // Calculate performance score using all the weights
@@ -490,6 +508,9 @@ export async function POST(request: Request) {
             }
           })
           .sort((a, b) => {
+            const aForced = forcedByPlayer.get(a.player) === machine
+            const bForced = forcedByPlayer.get(b.player) === machine
+            if (aForced !== bForced) return aForced ? -1 : 1
             // When must-play players remain, prioritize them
             if (hasMustPlayRemaining) {
               if (a.isMustPlay !== b.isMustPlay) return a.isMustPlay ? -1 : 1
@@ -575,6 +596,11 @@ export async function POST(request: Request) {
         opponentWeakness: ow > 0 ? (oppWeaknessPerMachine.get(bestMachine) || 0) : 0,
         opponentWeight: ow,
       })
+    }
+
+    if (forcedByPlayer.size && (recommendations.length !== numMachines ||
+      Array.from(mustPlaySet).some(player => !usedPlayers.has(player)))) {
+      return NextResponse.json({ error: 'Greedy could not complete this lineup with the locks. Try Hungarian or adjust the constraints.' }, { status: 422 })
     }
 
     // Compute assumed opponent assignments for each recommended machine

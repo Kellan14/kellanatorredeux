@@ -141,6 +141,7 @@ export async function POST(request: NextRequest) {
           for (const p of players) fullyLockedDoublesPlayers.add(p)
         } else if (players.length === 1) {
           halfLockedDoublesSeeds.push({ player: players[0], machine: m })
+          mustPlaySet.add(players[0])
         }
       }
     }
@@ -702,8 +703,8 @@ export async function POST(request: NextRequest) {
 
     // Adjust required counts for forced assignments
     // For singles: forced players/machines are removed from pool
-    // For doubles: only forced players are removed (machines stay, partner will be assigned)
-    const adjustedRequiredPlayers = requiredPlayers - forcedPlayerSet.size
+    // A half-locked doubles player remains in the solver pool.
+    const adjustedRequiredPlayers = requiredPlayers - (format === '7x7' ? forcedPlayerSet.size : fullyLockedDoublesPlayers.size)
     const adjustedRequiredMachines = format === '7x7'
       ? requiredMachines - forcedMachineSet.size
       : requiredMachines  // Doubles: machines stay in pool

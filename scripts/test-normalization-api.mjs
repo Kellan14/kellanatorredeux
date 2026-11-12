@@ -66,6 +66,16 @@ for(const a of h.assignments){
 }
 console.log('Both API routes and prefetch passed: cross-venue-only players retained; own ratios agree; manual venue-only mode preserved.')
 
+const sharedLock = [{ player: 'P0', machine: 'M4' }]
+const lockedGreedy = await post(greedy, {...common, format:'doubles', numMachines:4, availablePlayers:players, forcedAssignments:sharedLock})
+assert(lockedGreedy.recommendations.find(r=>r.machine==='M4').players.includes('P0'))
+const lockedHungarian = await post(hungarian, {...common, format:'4x2', playerNames:[...players,'P8'],
+  forcedAssignments:sharedLock, opponentWeight:0, useNashEquilibrium:false})
+assert.equal(lockedHungarian.assignments.length,4)
+assert(lockedHungarian.assignments.some(a=>a.machine_id==='M4' && [a.player1_id,a.player2_id].includes('P0')))
+assert.equal(new Set(lockedHungarian.assignments.flatMap(a=>[a.player1_id,a.player2_id])).size,8)
+console.log('Manual doubles: shared force honored by Greedy and Hungarian with a complete round.')
+
 const {buildAssignmentEstimator}=await import('../lib/strategy/assignment-estimator.ts')
 const {invalidateAssignmentHistory}=await import('../lib/strategy/assignment-history-revision.ts')
 const roster=[...players,'P8','P9']

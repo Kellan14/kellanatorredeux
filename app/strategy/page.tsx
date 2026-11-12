@@ -969,6 +969,7 @@ export default function StrategyPage() {
           exclusions: doublesExclusions,
           mustPlay: Array.from(satOutPlayers),
           machines: (venues.find(v => v.name === selectedVenue)?.machines || []).filter(m => !excludedMachines.includes(m)),
+          forcedAssignments: activeDoublesLocks,
         }),
       })
 
@@ -1096,6 +1097,19 @@ export default function StrategyPage() {
   const [assignmentPreviewAvailable, setAssignmentPreviewAvailable] = useState(false)
   const [automaticDoubles, setAutomaticDoubles] = useState(false)
   const [minimumDoublesHistory, setMinimumDoublesHistory] = useState('0')
+  const [doublesLocks, setDoublesLocks] = useState<{ player: string; machine: string }[]>([])
+  const [lineupAction, setLineupAction] = useState<{ machine: string; players: string[]; player?: string } | null>(null)
+  const [lineupTarget, setLineupTarget] = useState('')
+  const [lineupActionError, setLineupActionError] = useState('')
+  const [mustPlayBeforeSit, setMustPlayBeforeSit] = useState<string[]>([])
+  const [replacementUndos, setReplacementUndos] = useState<{
+    from: string; to: string; players: string[]; previous: typeof doublesLocks
+  }[]>([])
+  const lineupMachines = (venues.find(v => v.name === selectedVenue)?.machines || []).filter(m => !excludedMachines.includes(m))
+  const activeDoublesLocks = doublesLocks.filter(({player,machine}) => availablePlayers[player] && !sitThisRound.has(player) &&
+    lineupMachines.includes(machine) && !doublesExclusions[machine]?.includes(player))
+  const lineupConstraintKey = JSON.stringify([selectedVenue, activeDoublesLocks, excludedMachines, doublesExclusions, Array.from(sitThisRound)])
+  const lastDoublesConstraints = useRef<string | null>(null)
   const [doublesPreview, setDoublesPreview] = useState<AssignmentPreview | null>(null)
   const useAutomaticDoubles = assignmentPreviewAvailable && automaticDoubles
   const doublesRun = useRef<AbortController | null>(null)
@@ -1129,7 +1143,7 @@ export default function StrategyPage() {
       body: JSON.stringify({ scoringMode: 'automatic-preview', venue: selectedVenue,
         seasonStart: seasonRange[0], seasonEnd: seasonRange[1],
         machines, mustPlay: Array.from(satOutPlayers).filter(player => players.includes(player)),
-        exclusions: doublesExclusions, minMachineGames: Number(minimumDoublesHistory),
+        exclusions: doublesExclusions, forcedAssignments: activeDoublesLocks, minMachineGames: Number(minimumDoublesHistory),
         lineupLimit: limit, ...(greedy ? { format: 'doubles', numMachines: 4, availablePlayers: players }
           : { format: '4x2', playerNames: players }) }),
     })
@@ -1139,6 +1153,7 @@ export default function StrategyPage() {
   }
 
   const generateDoubles = async () => {
+    lastDoublesConstraints.current = lineupConstraintKey
     const iterations = Number(doublesIterations)
     const greedy = doublesMethod === 'greedy'
     const automatic = useAutomaticDoubles
@@ -1183,6 +1198,7 @@ export default function StrategyPage() {
       scoreWeights,
       machines,
       mustPlay,
+      forcedAssignments: activeDoublesLocks,
     }
     try {
       const result: { lineups: DoublesLineup[] } = automatic ? await (async () => {
@@ -1194,6 +1210,7 @@ export default function StrategyPage() {
         signal: controller.signal,
         onProgress: setDoublesRunCount,
         solve: async (exclusions, signal) => {
+          if (activeDoublesLocks.some(({player,machine}) => exclusions[machine]?.includes(player))) return null
           const response = await fetch(greedy ? '/api/optimize-picks' : '/api/strategy/optimize', {
             method: 'POST', headers: { 'Content-Type': 'application/json' }, signal,
             body: JSON.stringify({ ...settings, exclusions, ...(greedy
@@ -1201,6 +1218,7 @@ export default function StrategyPage() {
               : { format: '4x2', playerNames: players, useNashEquilibrium, searchMachineSubsets }) }),
           })
           const data = await response.json()
+          if (response.status === 422 && exclusions !== doublesExclusions) return null
           if (!response.ok) throw new Error(data.error || 'Could not generate doubles.')
           if (greedy) {
             const recommendations: { machine: string; players: string[]; stats: { performanceScore: number }[]; assumedOpponents?: { player: string }[] }[] =
@@ -1247,6 +1265,60 @@ export default function StrategyPage() {
       }
     }
   }
+
+  useEffect(() => {
+    if (doublesGeneratorOpen && !generatingDoubles && lastDoublesConstraints.current !== null &&
+        lastDoublesConstraints.current !== lineupConstraintKey) void generateDoubles()
+  }, [doublesGeneratorOpen, generatingDoubles, lineupConstraintKey]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const openLineupAction = (machine: string, players: string[], player?: string) => {
+    setLineupTarget(player ? machine : '')
+    setLineupActionError('')
+    setLineupAction({ machine, players, player })
+  }
+
+  const lockLineupPlayers = (players: string[], machine: string) => {
+    if (!lineupMachines.includes(machine) || players.some(p => doublesExclusions[machine]?.includes(p))) {
+      setLineupActionError('Choose an available machine that does not exclude these players.')
+      return false
+    }
+    const remaining = doublesLocks.filter(lock => !players.includes(lock.player))
+    if (remaining.filter(lock => lock.machine === machine).length + players.length > 2) {
+      setLineupActionError('That machine already has locked players. Undo a lock first.')
+      return false
+    }
+    setDoublesLocks([...remaining, ...players.map(player => ({player, machine}))])
+    return true
+  }
+
+  const lineupUndoControls = () => <div className="space-y-1">
+    {replacementUndos.map(replacementUndo => <div key={replacementUndo.from} className="flex items-center justify-between gap-2 rounded border p-2 text-xs">
+      <span>{getMachineDisplayName(replacementUndo.from)} replaced with {getMachineDisplayName(replacementUndo.to)}</span>
+      <Button size="sm" variant="outline" onClick={() => removeMachineExclusion(replacementUndo.from)}>Undo</Button>
+    </div>)}
+    {doublesLocks.map(lock => <div key={lock.player} className="flex items-center justify-between gap-2 rounded border p-2 text-xs">
+      <span>{lock.player} forced to {getMachineDisplayName(lock.machine)}{!activeDoublesLocks.includes(lock) ? ' (inactive)' : ''}</span>
+      <Button size="sm" variant="outline" onClick={() => setDoublesLocks(current => current.filter(p => p.player !== lock.player))}>Undo</Button>
+    </div>)}
+    {Array.from(sitThisRound).map(player => <div key={player} className="flex items-center justify-between gap-2 rounded border p-2 text-xs">
+      <span>{player} must sit this round</span>
+      <Button size="sm" variant="outline" onClick={() => {
+        toggleSitThisRound(player)
+        if (mustPlayBeforeSit.includes(player)) {
+          setSatOutPlayers(current => new Set([...Array.from(current), player]))
+          setMustPlayBeforeSit(current => current.filter(p => p !== player))
+        }
+      }}>Undo</Button>
+    </div>)}
+    {Object.entries(doublesExclusions).flatMap(([machine, players]) => players.map(player => <div key={JSON.stringify([machine,player])} className="flex items-center justify-between gap-2 rounded border p-2 text-xs">
+      <span>{player} excluded from {getMachineDisplayName(machine)}</span>
+      <Button size="sm" variant="outline" onClick={() => removeExclusion(machine, player, 'doubles')}>Undo</Button>
+    </div>))}
+    {excludedMachines.filter(machine => !replacementUndos.some(r => r.from === machine)).map(machine => <div key={machine} className="flex items-center justify-between gap-2 rounded border p-2 text-xs">
+      <span>{getMachineDisplayName(machine)} excluded from all results</span>
+      <Button size="sm" variant="outline" onClick={() => removeMachineExclusion(machine)}>Undo</Button>
+    </div>)}
+  </div>
 
   const generateReport = async () => {
     setGeneratingReport(true)
@@ -1320,6 +1392,7 @@ export default function StrategyPage() {
           exclusions: doublesExclusions,
           mustPlay: Array.from(satOutPlayers),
           machines: machinesAtVenue,
+          forcedAssignments: activeDoublesLocks,
         }),
       }).then(r => r.ok ? r.json() : null).catch(() => null),
 
@@ -1358,6 +1431,7 @@ export default function StrategyPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           format: '4x2',
+          forcedAssignments: activeDoublesLocks,
           playerNames: selectedPlayers,
           machines: machinesAtVenue,
           seasonStart: seasonRange[0],
@@ -1734,6 +1808,12 @@ export default function StrategyPage() {
 
   const removeMachineExclusion = (machine: string) => {
     setExcludedMachines(prev => prev.filter(m => m !== machine))
+    const replacement = replacementUndos.find(r => r.from === machine)
+    if (replacement) {
+      setDoublesLocks(current => current.flatMap(lock => lock.machine === replacement.to && replacement.players.includes(lock.player)
+        ? replacement.previous.filter(p => p.player === lock.player) : [lock]))
+      setReplacementUndos(current => current.filter(r => r !== replacement))
+    }
   }
 
   // Save exclusions to localStorage
@@ -1779,7 +1859,7 @@ export default function StrategyPage() {
     if (doublesRecommendations.length > 0) {
       optimizeDoublesPicks()
     }
-  }, [doublesExclusions]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [doublesExclusions, doublesLocks, sitThisRound]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Assignment exclusion helpers
   const addAssignExclusion = (machine: string, player: string, format: 'singles' | 'doubles') => {
@@ -2497,6 +2577,7 @@ export default function StrategyPage() {
               </div>
 
               {/* Create Report Button */}
+              {lineupUndoControls()}
               <div className="flex flex-wrap justify-end gap-2 mb-4">
                 {assignmentPreviewAvailable && <label className="flex items-center gap-2 text-xs">
                   <input type="checkbox" checked={automaticDoubles}
@@ -3389,18 +3470,18 @@ export default function StrategyPage() {
                                             variant="outline"
                                             size="sm"
                                             className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3"
-                                            onClick={() => addExclusion(rec.machine, player, 'doubles')}
+                                            onClick={() => openLineupAction(rec.machine, rec.players, player)}
                                           >
-                                            Exclude {player}
+                                            {player}
                                           </Button>
                                         ))}
                                         <Button
                                           variant="outline"
                                           size="sm"
                                           className="text-[10px] md:text-xs h-7 md:h-8 px-2 md:px-3 text-destructive border-destructive/50 hover:bg-destructive/10"
-                                          onClick={() => addMachineExclusion(rec.machine)}
+                                          onClick={() => openLineupAction(rec.machine, rec.players)}
                                         >
-                                          Exclude Machine
+                                          {getMachineDisplayName(rec.machine)}
                                         </Button>
                                       </div>
 
@@ -5217,6 +5298,10 @@ export default function StrategyPage() {
                     confidenceBoost={confidenceBoost / 100}
                     scoreWeights={scoreWeights}
                     exclusions={optimizationFormat === '7x7' ? singlesExclusions : doublesExclusions}
+                    sharedForcedAssignments={optimizationFormat === '4x2' ? activeDoublesLocks : undefined}
+                    onForcedAssignmentsChange={optimizationFormat === '4x2' ? locks =>
+                      setDoublesLocks(current => [...current.filter(lock => !activeDoublesLocks.includes(lock) &&
+                        !locks.some(next => next.player === lock.player)), ...locks]) : undefined}
                     mustPlay={Array.from(satOutPlayers)}
                     onAddExclusion={(machine, player) => addExclusion(machine, player, optimizationFormat === '7x7' ? 'singles' : 'doubles')}
                     onRemoveExclusion={(machine, player) => removeExclusion(machine, player, optimizationFormat === '7x7' ? 'singles' : 'doubles')}
@@ -5389,6 +5474,7 @@ export default function StrategyPage() {
             <DialogTitle>Generate Doubles</DialogTitle>
             <DialogDescription>Try alternate assignments and rank the complete lineups found with your current Strategy settings.</DialogDescription>
           </DialogHeader>
+          {lineupUndoControls()}
           {assignmentPreviewAvailable && <div className="space-y-2 rounded-md border p-3">
             <label className="flex items-center gap-2 text-sm font-medium">
               <input type="checkbox" checked={automaticDoubles} disabled={generatingDoubles || generatingReport}
@@ -5474,7 +5560,12 @@ export default function StrategyPage() {
               </p>}
               <ul className="space-y-1 text-sm">
                 {lineup.picks.map((pick, i) => <li key={pick.machine}>
-                  <span className="font-medium">{getMachineDisplayName(pick.machine)}</span>: {pick.players.join(' & ')}
+                  <button type="button" className="font-medium underline underline-offset-2" disabled={generatingDoubles}
+                    onClick={() => openLineupAction(pick.machine, pick.players)}>{getMachineDisplayName(pick.machine)}</button>
+                  {': '}{pick.players.map((player, p) => <span key={player}>{p > 0 && ' & '}
+                    <button type="button" className="underline underline-offset-2" disabled={generatingDoubles}
+                      onClick={() => openLineupAction(pick.machine, pick.players, player)}>{player}</button>
+                  </span>)}
                   {!!doublesMetrics[index]?.opponents[i]?.length && <span className="text-muted-foreground"> vs {doublesMetrics[index].opponents[i].join(' & ')}</span>}
                 </li>)}
               </ul>
@@ -5522,6 +5613,55 @@ export default function StrategyPage() {
             </div>)}
           </div>}
         </DialogContent>
+      </Dialog>
+
+      <Dialog open={lineupAction !== null} onOpenChange={open => { if (!open) setLineupAction(null) }}>
+        {lineupAction && <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{lineupAction.player ?? getMachineDisplayName(lineupAction.machine)}</DialogTitle>
+            <DialogDescription>{lineupAction.player ? getMachineDisplayName(lineupAction.machine) : 'A replacement keeps this pair together on the new machine.'}</DialogDescription>
+          </DialogHeader>
+          {lineupAction.player ? <>
+            <Button variant="outline" onClick={() => {
+              addExclusion(lineupAction.machine, lineupAction.player!, 'doubles')
+              setLineupAction(null)
+            }}>Exclude from this machine</Button>
+            <Button variant="outline" onClick={() => {
+              const player = lineupAction.player!
+              if (!sitThisRound.has(player)) {
+                if (satOutPlayers.has(player)) setMustPlayBeforeSit(current => [...current, player])
+                toggleSitThisRound(player)
+              }
+              setLineupAction(null)
+            }}>Must sit</Button>
+          </> : <Button variant="outline" onClick={() => {
+            addMachineExclusion(lineupAction.machine)
+            setLineupAction(null)
+          }}>Exclude machine</Button>}
+          <label className="grid gap-1 text-sm">
+            {lineupAction.player ? 'Force to machine' : 'Replace with'}
+            <select className="rounded border bg-background p-2" value={lineupTarget} onChange={e => setLineupTarget(e.target.value)}>
+              <option value="">Choose a machine</option>
+              {lineupMachines.filter(machine => lineupAction.player || machine !== lineupAction.machine)
+                .map(machine => <option key={machine} value={machine}>{getMachineDisplayName(machine)}</option>)}
+            </select>
+          </label>
+          <Button disabled={!lineupTarget} onClick={() => {
+            const players = lineupAction.player ? [lineupAction.player] : lineupAction.players
+            if (!lineupAction.player && replacementUndos.some(r => r.from === lineupAction.machine ||
+              r.to === lineupAction.machine || r.players.some(p => players.includes(p)))) {
+              setLineupActionError('Undo the related replacement before replacing this pair again.')
+              return
+            }
+            if (!lockLineupPlayers(players, lineupTarget)) return
+            if (!lineupAction.player) {
+              setReplacementUndos(current => [...current, { from: lineupAction.machine, to: lineupTarget, players, previous: doublesLocks }])
+              addMachineExclusion(lineupAction.machine)
+            }
+            setLineupAction(null)
+          }}>{lineupAction.player ? 'Force player' : 'Replace machine'}</Button>
+          {lineupActionError && <p role="alert" className="text-sm text-destructive">{lineupActionError}</p>}
+        </DialogContent>}
       </Dialog>
 
       {/* Report Dialog */}

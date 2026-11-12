@@ -34,6 +34,8 @@ interface MachinePickerProps {
   onAddExclusion?: (machine: string, player: string) => void
   onRemoveExclusion?: (machine: string, player: string) => void
   onExcludeMachine?: (machine: string) => void
+  sharedForcedAssignments?: ForcedAssignment[]
+  onForcedAssignmentsChange?: (assignments: ForcedAssignment[]) => void
   onOptimize?: (result: OptimizationResult) => void
   opponent?: string
   opponentPlayers?: string[]
@@ -391,6 +393,8 @@ export function MachinePicker({
   onAddExclusion,
   onRemoveExclusion,
   onExcludeMachine,
+  sharedForcedAssignments,
+  onForcedAssignmentsChange,
   onOptimize,
   opponent,
   opponentPlayers,
@@ -405,7 +409,9 @@ export function MachinePicker({
   const [isOptimizing, setIsOptimizing] = useState(false)
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [forcedAssignments, setForcedAssignments] = useState<ForcedAssignment[]>([])
+  const [localForcedAssignments, setLocalForcedAssignments] = useState<ForcedAssignment[]>([])
+  const forcedAssignments = sharedForcedAssignments ?? localForcedAssignments
+  const setForcedAssignments = onForcedAssignmentsChange ?? setLocalForcedAssignments
 
   useEffect(() => {
     const newAssignments = new Map<string, string[]>()
@@ -742,6 +748,10 @@ export function MachinePicker({
   // Track dirty state for Apply button
   const currentParamsKey = JSON.stringify({ exclusions, userInputWeight, confidenceBoost, venueWeight, scoreWeights })
   const isParamsDirty = hasOptimizedOnce.current && lastOptimizedParams.current !== null && lastOptimizedParams.current !== currentParamsKey
+  const sharedConstraints = sharedForcedAssignments && JSON.stringify([sharedForcedAssignments, playerNames, machines, exclusions])
+  useEffect(() => {
+    if (sharedConstraints && hasOptimizedOnce.current && !isOptimizing) void handleOptimize()
+  }, [sharedConstraints]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const unassignedPlayers = getUnassignedPlayers()
 
