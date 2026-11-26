@@ -69,6 +69,19 @@ export async function handleAssignmentPreview(body: Record<string, unknown>, met
   if (new Set([...mustPlay, ...forced.map(f => f.player)]).size > slots || new Set([...forced.map(f => f.machine), ...requiredMachines]).size > roundSize)
     return fail('The must-play and forced assignments exceed the available round slots.')
 
+  const { estimator, historyCacheHit } = await loadAssignmentEstimator(seasonStart, seasonEnd, signal)
+  const snapshot = estimator
+  const estimate = (p: string, m: string) => snapshot.estimate(p, m, venue)
+  if (estimate(players[0], machines[0]).score === null) return fail('No usable league score history in this season range.', 422)
+  const result = await solveAssignmentPreview({ players, machines, mustPlay, exclusions, forced, requiredMachines,
+    minGames: minMachineGames, limit: lineupLimit, method, estimate, signal, format: singles ? 'singles' : 'doubles' })
+  if (!result.lineups.length) return fail('No complete lineup satisfies the constraints. Check must-play players, exclusions, forced assignments, and minimum history.', 422)
+  return NextResponse.json({ assignmentPreview: {
+    ...result, method, seasonStart, seasonEnd, modelVersion: snapshot.version, minMachineGames, historyCacheHit,
+  } })
+}
+
+export async function loadAssignmentEstimator(seasonStart: number, seasonEnd: number, signal: AbortSignal) {
   signal.throwIfAborted()
   const [revision, limitRows] = await Promise.all([
     getAssignmentHistoryRevision(),
@@ -98,13 +111,5 @@ export async function handleAssignmentPreview(body: Record<string, unknown>, met
     estimator = buildAssignmentEstimator(leagueNormalizationScores(games, (m, s) => isScoreValid(m, s, limits)))
     historyCache.set(cacheKey, estimator)
   }
-  const snapshot = estimator
-  const estimate = (p: string, m: string) => snapshot.estimate(p, m, venue)
-  if (estimate(players[0], machines[0]).score === null) return fail('No usable league score history in this season range.', 422)
-  const result = await solveAssignmentPreview({ players, machines, mustPlay, exclusions, forced, requiredMachines,
-    minGames: minMachineGames, limit: lineupLimit, method, estimate, signal, format: singles ? 'singles' : 'doubles' })
-  if (!result.lineups.length) return fail('No complete lineup satisfies the constraints. Check must-play players, exclusions, forced assignments, and minimum history.', 422)
-  return NextResponse.json({ assignmentPreview: {
-    ...result, method, seasonStart, seasonEnd, modelVersion: snapshot.version, minMachineGames, historyCacheHit,
-  } })
+  return { estimator, historyCacheHit }
 }

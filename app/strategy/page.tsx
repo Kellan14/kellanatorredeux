@@ -60,6 +60,8 @@ import {
 import { getMachineImagePath } from '@/lib/machine-images'
 import { useMachineCanon } from '@/hooks/use-machine-canon'
 import { MachinePicker } from '@/components/strategy/MachinePicker'
+import { AnnouncedResponse } from '@/components/strategy/AnnouncedResponse'
+import { useStrategyLiveMatch } from '@/hooks/use-strategy-live-match'
 import { TwcPlayerAvailability } from '@/components/twc-player-availability'
 import { PlayerAvailability } from '@/components/player-availability'
 import type { PlayerMachineStats, OptimizationResult } from '@/types/strategy'
@@ -138,6 +140,22 @@ export default function StrategyPage() {
   const [teams, setTeams] = useState<Team[]>([])
   const [selectedVenue, setSelectedVenue] = useState<string>('')
   const [selectedOpponent, setSelectedOpponent] = useState<string>('')
+  const [liveFixture,setLiveFixture]=useState<{matchKey:string;matchDate:string;opponent:string;venue:string}>()
+  const venueKey=(v:string)=>v.toLowerCase().replace(/\s+/g,'')
+  const sameFixture=!!liveFixture&&liveFixture.opponent===selectedOpponent&&venueKey(liveFixture.venue)===venueKey(selectedVenue)
+  const {snapshot,status:liveStatus}=useStrategyLiveMatch(sameFixture?liveFixture.matchKey:undefined,sameFixture?liveFixture.matchDate:undefined)
+  const live=snapshot&&(snapshot.venueKey===venues.find(v=>v.name===selectedVenue)?.key||
+    venueKey(snapshot.venue)===venueKey(selectedVenue))?snapshot:null
+  const [strategyTab,setStrategyTab]=useState('picking')
+  const [responseTab,setResponseTab]=useState('singles')
+  const [jumpToLiveReply,setJumpToLiveReply]=useState(false)
+  const liveFormat=live?.picks?.format
+  useEffect(()=>{if(liveFormat)setResponseTab(liveFormat)},[liveFormat])
+  useEffect(()=>{
+    if(!jumpToLiveReply||strategyTab!=='assignment')return
+    document.getElementById('announced-response-'+responseTab)?.scrollIntoView({block:'start'})
+    setJumpToLiveReply(false)
+  },[jumpToLiveReply,strategyTab,responseTab])
   const [seasonRange, setSeasonRange] = useState<[number, number]>([20, 23])
   const [availableSeasons, setAvailableSeasons] = useState<number[]>([])
   const [loading, setLoading] = useState(false)
@@ -237,71 +255,60 @@ export default function StrategyPage() {
   })
 
   // Sat-out tracking - players who have already sat out must play
-  const [satOutPlayers, setSatOutPlayers] = useState<Set<string>>(() => {
+  const [manualSatOut, setManualSatOut] = useState<Set<string>>(() => {
     if (typeof window === 'undefined') return new Set()
     try {
       const saved = localStorage.getItem('satOutPlayers')
       return saved ? new Set(JSON.parse(saved)) : new Set()
     } catch { return new Set() }
   })
+  const [satOverrides,setSatOverrides]=useState<{key:string;values:Map<string,boolean>}>()
+  const currentOverrides=satOverrides?.key===live?.key?satOverrides?.values:undefined
+  const mergeSat=(names:string[])=>{
+    const set=new Set(names.map(name=>Object.keys(availablePlayers).find(p=>p.toLowerCase()===name.toLowerCase())??name))
+    currentOverrides?.forEach((on,p)=>{if(on)set.add(p);else set.delete(p)})
+    return set
+  }
+  const satOutPlayers=live?mergeSat(live.completed?[]:live.sat):manualSatOut
+  const setSatOutPlayers=(update:Set<string>|((before:Set<string>)=>Set<string>))=>{
+    if(!live){setManualSatOut(update);return}
+    const next=typeof update==='function'?update(satOutPlayers):update
+    const values=new Map(currentOverrides)
+    const compared=new Set([...Array.from(satOutPlayers),...Array.from(next),...Array.from(mergeSat(live.satBeforeRound))])
+    compared.forEach(p=>{if(satOutPlayers.has(p)!==next.has(p))values.set(p,next.has(p))})
+    setSatOverrides({key:live.key,values})
+  }
 
   // Persist sat-out to localStorage
   useEffect(() => {
     try {
-      if (satOutPlayers.size > 0) {
-        localStorage.setItem('satOutPlayers', JSON.stringify(Array.from(satOutPlayers)))
+      if (manualSatOut.size > 0) {
+        localStorage.setItem('satOutPlayers', JSON.stringify(Array.from(manualSatOut)))
       } else {
         localStorage.removeItem('satOutPlayers')
       }
     } catch { /* ignore */ }
-  }, [satOutPlayers])
+  }, [manualSatOut])
 
   // When a player is marked as sat out, ensure they're toggled on in availablePlayers
   const toggleSatOut = (player: string) => {
-    setSatOutPlayers(prev => {
-      const next = new Set(prev)
-      if (next.has(player)) {
-        next.delete(player)
-      } else {
-        next.add(player)
-        // Force them available since they must play
-        if (!availablePlayers[player]) {
-          setAvailablePlayers(prev2 => ({ ...prev2, [player]: true }))
-        }
-        // Can't both sit and have sat
-        if (sitThisRound.has(player)) {
-          setSitThisRound(prev2 => {
-            const next2 = new Set(prev2)
-            next2.delete(player)
-            return next2
-          })
-        }
-      }
-      return next
-    })
+    const next=new Set(satOutPlayers)
+    if(next.delete(player)){setSatOutPlayers(next);return}
+    next.add(player);setSatOutPlayers(next)
+    if(!availablePlayers[player])setAvailablePlayers(prev=>({...prev,[player]:true}))
+    if(sitThisRound.has(player))setSitThisRound(prev=>{const n=new Set(prev);n.delete(player);return n})
   }
 
   // Sit this round - players excluded from current round (not persistent)
   const [sitThisRound, setSitThisRound] = useState<Set<string>>(new Set())
 
   const toggleSitThisRound = (player: string) => {
-    setSitThisRound(prev => {
-      const next = new Set(prev)
-      if (next.has(player)) {
-        next.delete(player)
-      } else {
-        next.add(player)
-        // Can't both sit and have sat — remove from satOut if present
-        if (satOutPlayers.has(player)) {
-          setSatOutPlayers(prev2 => {
-            const next2 = new Set(prev2)
-            next2.delete(player)
-            return next2
-          })
-        }
-      }
-      return next
-    })
+    const next=new Set(sitThisRound)
+    if(!next.delete(player)){
+      next.add(player)
+      if(satOutPlayers.has(player))setSatOutPlayers(prev=>{const n=new Set(prev);n.delete(player);return n})
+    }
+    setSitThisRound(next)
   }
 
   // Machine picking state
@@ -659,14 +666,22 @@ export default function StrategyPage() {
   }, [selectedVenue, selectedOpponent, seasonRange, teamVenueSpecific, twcVenueSpecific, avgMethod, trimPct]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load opponent roster when opponent changes
+  const [loadedOpponent, setLoadedOpponent] = useState('')
+  useEffect(() => {
+    setSinglesOpponentPicks([]); setDoublesOpponentPicks([])
+    setSinglesAssignments([]); setDoublesAssignments([])
+  }, [selectedVenue, selectedOpponent])
   useEffect(() => {
     if (!selectedOpponent) return
+    let cancelled = false
     const loadOpponentRoster = async () => {
       try {
         const maxSeason = availableSeasons.length > 0 ? Math.max(...availableSeasons) : 22
         const response = await fetch(`/api/opponent-roster?team=${encodeURIComponent(selectedOpponent)}&currentSeason=${maxSeason}`)
         if (response.ok) {
           const data = await response.json()
+          if (cancelled) return
+          setLoadedOpponent(selectedOpponent)
           const roster = data.rosterPlayers || []
           const subs = [...(data.subPlayers || []), ...opponentAddedSubs.filter((s: string) => !roster.includes(s) && !(data.subPlayers || []).includes(s))]
           setOpponentRosterPlayers(roster)
@@ -689,6 +704,7 @@ export default function StrategyPage() {
       }
     }
     loadOpponentRoster()
+    return () => { cancelled = true }
   }, [selectedOpponent, availableSeasons]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Persist added subs to localStorage
@@ -739,6 +755,7 @@ export default function StrategyPage() {
       // Get the most recent TWC match to set defaults
       const latestMatchResponse = await fetch('/api/latest-twc-match')
       const latestMatch = await latestMatchResponse.json()
+      if(latestMatch.matchKey&&latestMatch.matchDate&&latestMatch.opponent&&latestMatch.venue)setLiveFixture(latestMatch)
 
       // Set venue from latest match
       if (latestMatch.venue) {
@@ -2514,6 +2531,14 @@ export default function StrategyPage() {
 
           {!loading && selectedVenue && selectedOpponent && (
             <>
+              {sameFixture&&liveStatus!=='idle'&&<div className="mb-3 rounded border bg-muted/40 p-2 text-xs" aria-live="polite">
+                {liveStatus==='live'&&live ? <>
+                  <strong>{live.completed?'Match complete':live.round?`Live match · Round ${live.round}`:'Live match · waiting for picks'}</strong>
+                  {!live.completed&&live.entered.length>0&&<span> · TWC lineups entered through round {live.entered.at(-1)}. Sat: {live.sat.join(', ')||'none'}.</span>}
+                  {live.picks&&<Button size="sm" variant="ghost" onClick={()=>{setStrategyTab('assignment');setResponseTab(live.picks!.format);setJumpToLiveReply(true)}}>View announced picks &amp; reply</Button>}
+                  {currentOverrides?.size ? <Button size="sm" variant="ghost" onClick={()=>setSatOverrides(undefined)}>Use live sat-out list</Button>:null}
+                </>:<span>{liveStatus==='retry'?'Live match feed unavailable; retrying.':'Waiting for the live match sheet…'}</span>}
+              </div>}
               {/* Player Availability Section */}
               <PlayerAvailability
                 storageKey="twcPlayerAvailability"
@@ -2702,7 +2727,7 @@ export default function StrategyPage() {
               </div>
 
               {/* Strategic Planning Tabs */}
-              <Tabs defaultValue="picking" className="w-full">
+              <Tabs value={strategyTab} onValueChange={setStrategyTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-3 mb-4 md:mb-6">
                   <TabsTrigger value="picking" className="text-[10px] md:text-sm px-1 md:px-3"><span className="md:hidden">Picking</span><span className="hidden md:inline">Machine Picking</span></TabsTrigger>
                   <TabsTrigger value="assignment" className="text-[10px] md:text-sm px-1 md:px-3"><span className="md:hidden">Assignment</span><span className="hidden md:inline">Player Assignment</span></TabsTrigger>
@@ -4085,7 +4110,7 @@ export default function StrategyPage() {
                     )}
                   </div>
 
-                  <Tabs defaultValue="singles" className="w-full">
+                  <Tabs value={responseTab} onValueChange={setResponseTab} className="w-full">
                     <TabsList className="w-full grid grid-cols-2">
                       <TabsTrigger value="singles">Singles</TabsTrigger>
                       <TabsTrigger value="doubles">Doubles</TabsTrigger>
@@ -4095,23 +4120,23 @@ export default function StrategyPage() {
                       <div>
                         <label className="text-xs md:text-sm font-medium mb-2 block">Select machines picked by opponent:</label>
                         <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-1.5 md:gap-2 mb-3">
-                          {machineAdvantages.map(m => {
-                            const isSelected = singlesOpponentPicks.includes(m.machine)
+                          {(venues.find(v => v.name === selectedVenue)?.machines ?? []).map(machine => {
+                            const isSelected = singlesOpponentPicks.includes(machine)
                             return (
                               <button
-                                key={m.machine}
-                                onClick={() => toggleMachine(m.machine, 'singles')}
+                                key={machine}
+                                onClick={() => toggleMachine(machine, 'singles')}
                                 className={`relative rounded-lg overflow-hidden border-2 transition-all ${
                                   isSelected ? 'border-primary ring-2 ring-primary/50 scale-[1.02]' : 'border-muted/40 opacity-50 hover:opacity-90'
                                 }`}
                               >
                                 <img
-                                  src={getImagePath(m.machine)}
-                                  alt={m.machine}
+                                  src={getImagePath(machine)}
+                                  alt={machine}
                                   className="w-full aspect-[3/4] object-cover"
                                 />
                                 <div className="absolute bottom-0 inset-x-0 bg-black/70 px-0.5 py-0.5 text-[8px] md:text-[10px] text-white text-center truncate">
-                                  {m.machine}
+                                  {getMachineDisplayName(machine)}
                                 </div>
                                 {isSelected && (
                                   <div className="absolute top-0.5 right-0.5 bg-primary text-primary-foreground rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center">
@@ -4132,10 +4157,19 @@ export default function StrategyPage() {
                             onClick={optimizeSinglesAssignments}
                             disabled={singlesOpponentPicks.length === 0}
                           >
-                            Optimize Singles
+                            Optimize Singles Response (Manual)
                           </Button>
                         </div>
                       </div>
+
+                      <AnnouncedResponse key={JSON.stringify([selectedOpponent,selectedVenue])}
+                        format="singles" venue={selectedVenue} seasonStart={seasonRange[0]} seasonEnd={seasonRange[1]}
+                        machines={singlesOpponentPicks} roster={loadedOpponent===selectedOpponent?getSelectedOpponentPlayers():[]} display={getMachineDisplayName}
+                        livePicks={live?.picks?.format==='singles'?live.picks.games:undefined}
+                        liveMustPlay={live?Array.from(mergeSat(live.satBeforeRound)).filter(p=>availablePlayers[p]&&!sitThisRound.has(p)):undefined}
+                        players={Object.keys(availablePlayers).filter(p=>availablePlayers[p]&&!sitThisRound.has(p))}
+                        mustPlay={Array.from(satOutPlayers).filter(p=>availablePlayers[p]&&!sitThisRound.has(p))}
+                        excludedMachines={excludedMachines} exclusions={[singlesExclusions,singlesAssignExclusions]} locks={activeSinglesLocks} />
 
                       {/* Active machine exclusions */}
                       {excludedMachines.length > 0 && (
@@ -4490,23 +4524,23 @@ export default function StrategyPage() {
                       <div>
                         <label className="text-xs md:text-sm font-medium mb-2 block">Select machines picked by opponent:</label>
                         <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-1.5 md:gap-2 mb-3">
-                          {machineAdvantages.map(m => {
-                            const isSelected = doublesOpponentPicks.includes(m.machine)
+                          {(venues.find(v => v.name === selectedVenue)?.machines ?? []).map(machine => {
+                            const isSelected = doublesOpponentPicks.includes(machine)
                             return (
                               <button
-                                key={m.machine}
-                                onClick={() => toggleMachine(m.machine, 'doubles')}
+                                key={machine}
+                                onClick={() => toggleMachine(machine, 'doubles')}
                                 className={`relative rounded-lg overflow-hidden border-2 transition-all ${
                                   isSelected ? 'border-primary ring-2 ring-primary/50 scale-[1.02]' : 'border-muted/40 opacity-50 hover:opacity-90'
                                 }`}
                               >
                                 <img
-                                  src={getImagePath(m.machine)}
-                                  alt={m.machine}
+                                  src={getImagePath(machine)}
+                                  alt={machine}
                                   className="w-full aspect-[3/4] object-cover"
                                 />
                                 <div className="absolute bottom-0 inset-x-0 bg-black/70 px-0.5 py-0.5 text-[8px] md:text-[10px] text-white text-center truncate">
-                                  {m.machine}
+                                  {getMachineDisplayName(machine)}
                                 </div>
                                 {isSelected && (
                                   <div className="absolute top-0.5 right-0.5 bg-primary text-primary-foreground rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center">
@@ -4531,6 +4565,15 @@ export default function StrategyPage() {
                           </Button>
                         </div>
                       </div>
+
+                      <AnnouncedResponse key={JSON.stringify([selectedOpponent,selectedVenue])}
+                        format="doubles" venue={selectedVenue} seasonStart={seasonRange[0]} seasonEnd={seasonRange[1]}
+                        machines={doublesOpponentPicks} roster={loadedOpponent===selectedOpponent?getSelectedOpponentPlayers():[]} display={getMachineDisplayName}
+                        livePicks={live?.picks?.format==='doubles'?live.picks.games:undefined}
+                        liveMustPlay={live?Array.from(mergeSat(live.satBeforeRound)).filter(p=>availablePlayers[p]&&!sitThisRound.has(p)):undefined}
+                        players={Object.keys(availablePlayers).filter(p=>availablePlayers[p]&&!sitThisRound.has(p))}
+                        mustPlay={Array.from(satOutPlayers).filter(p=>availablePlayers[p]&&!sitThisRound.has(p))}
+                        excludedMachines={excludedMachines} exclusions={[doublesExclusions,doublesAssignExclusions]} locks={activeDoublesLocks} />
 
                       {/* Active machine exclusions */}
                       {excludedMachines.length > 0 && (

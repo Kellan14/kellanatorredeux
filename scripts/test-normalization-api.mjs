@@ -180,3 +180,31 @@ for (const [route, options] of [[greedy,{format:'singles',availablePlayers:playe
   assert.deepEqual(fixed.assignmentPreview.lineups[0].picks.map(p=>p.machine).sort(), singlesMachines.slice(1).sort())
 }
 console.log('Singles generation passed for both methods and scoring modes, including required replacement sets.')
+
+const respond=await import('../app/api/strategy/respond/route.ts')
+for(const format of ['singles','doubles']){
+ const q=format==='singles'?1:2
+ const body={format,venue:'A',seasonStart:24,seasonEnd:24,players:['P0','P1','P2','P3','P4'],mustPlay:['P4'],
+  games:['M1','M2'].map((machine,i)=>({machine,opponents:opponents.slice(i*q,(i+1)*q),forced:i===0?['P1']:[],excluded:i===1?['P2']:[]}))}
+ const reply=await post(respond,body)
+ const reads=gameReads
+ assert.deepEqual(await post(respond,body),reply)
+ assert.equal(gameReads,reads,'Repeat live updates reuse the normalized history cache')
+ const assigned=reply.assignments.flatMap(g=>g.players.map(p=>p.name))
+ assert(assigned.includes('P4'));assert.equal(new Set(assigned).size,2*q)
+ assert(reply.assignments[0].players.some(p=>p.name==='P1'))
+ assert(!reply.assignments[1].players.some(p=>p.name==='P2'))
+ assert.deepEqual(reply.assignments.map(g=>g.opponents.map(p=>p.name)),body.games.map(g=>g.opponents))
+ assert(reply.total+1e-9>=reply.baseline)
+ const impossible={...body,games:body.games.map(g=>({...g,excluded:[...g.excluded,'P4']}))}
+ const bad=await respond.POST(new Request('http://test/api/strategy/respond',{method:'POST',body:JSON.stringify(impossible)}))
+ assert.equal(bad.status,422)
+}
+const {announcedReply}=await import('../lib/strategy/announced-response.ts')
+const values={A:{M1:.9,M2:.7},B:{M1:.5,M2:.4},Strong:{M1:4,M2:4},Even:{M1:.65,M2:.65}}
+const neutral={format:'singles',venue:'A',seasonStart:24,seasonEnd:24,players:['A','B'],mustPlay:[],
+ games:[{machine:'M1',opponents:['Strong'],excluded:[],forced:[]},{machine:'M2',opponents:['Even'],excluded:[],forced:[]}]}
+const evaluate=body=>announcedReply(body,(p,m)=>({blendedLogRatio:values[p][m],machineGames:10}))
+assert.equal(evaluate(neutral).assignments[0].players[0].name,'B','Save A where the matchup swing is larger')
+assert.equal(evaluate({...neutral,games:neutral.games.map((g,i)=>({...g,opponents:neutral.games[1-i].opponents}))}).assignments[0].players[0].name,'A')
+console.log('Announced singles and doubles: shared history, exact opponents, must-play, forced, excluded and infeasible replies passed.')

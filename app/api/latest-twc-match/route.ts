@@ -102,6 +102,8 @@ export async function GET() {
     if (seasonData?.teams?.TWC?.schedule) {
       const schedule = seasonData.teams.TWC.schedule
       const pacificNow = getPacificDate()
+      // Keep tonight's fixture selected through the live window after midnight.
+      if (pacificNow.getHours() < 1) pacificNow.setDate(pacificNow.getDate() - 1)
 
       // Set to start of today (midnight)
       const today = new Date(pacificNow.getFullYear(), pacificNow.getMonth(), pacificNow.getDate())
@@ -189,11 +191,12 @@ export async function GET() {
       away_team: string
       venue_name: string | null
       state: string
+      matchDate?: string | null
     } | null = null
 
     const { data: pregameMatches } = await supabase
       .from('matches')
-      .select('match_key, season, week, home_team, away_team, venue_name, state')
+      .select('match_key, season, week, home_team, away_team, venue_name, state, matchDate:data->>date')
       .or('home_team.eq.TWC,away_team.eq.TWC')
       .eq('state', 'pregame')
       .order('season', { ascending: false })
@@ -207,7 +210,7 @@ export async function GET() {
     if (!matchData) {
       const { data: recentMatches } = await supabase
         .from('matches')
-        .select('match_key, season, week, home_team, away_team, venue_name, state')
+        .select('match_key, season, week, home_team, away_team, venue_name, state, matchDate:data->>date')
         .or('home_team.eq.TWC,away_team.eq.TWC')
         .order('season', { ascending: false })
         .order('week', { ascending: false })
@@ -250,6 +253,7 @@ export async function GET() {
       week: matchData.week,
       season: matchData.season,
       state: matchData.state,
+      matchDate: matchData.matchDate,
       isUpcoming: matchData.state !== 'complete'
     })
   } catch (error) {
