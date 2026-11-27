@@ -3,6 +3,8 @@ export const dynamic = 'force-dynamic';
 // API route to serve venue data from mnp-data-archive
 import { NextResponse } from 'next/server';
 import { fetchMNPData } from '@/lib/fetch-mnp-data';
+import { fetchMNPText } from '@/lib/fetch-mnp-text';
+import { parseLineupVenueKeys } from '@/lib/player-pops-inventory';
 import { supabase, fetchAllRecords } from '@/lib/supabase';
 import { standardizeVenueName } from '@/lib/venue-mappings';
 import { applyVenueMachineListOverrides } from '@/lib/venue-machine-lists';
@@ -13,6 +15,14 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const season = searchParams.get('season');
+    const lineupSeason = searchParams.get('currentLineupSeason');
+    if (lineupSeason !== null && !/^[1-9]\d{0,2}$/.test(lineupSeason)) {
+      return NextResponse.json({ error: 'Invalid lineup season' }, { status: 400 })
+    }
+    const currentVenueKeysPromise = lineupSeason
+      ? fetchMNPText(`season-${lineupSeason}/venues.csv`).then(parseLineupVenueKeys)
+        .then(keys => keys.length > 0 ? keys : null).catch(() => null)
+      : null
 
     // Local development, venue play, and the picker must not become unusable
     // just because GitHub is unavailable. The repository snapshot is the same
@@ -75,7 +85,8 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json({ venues });
+    return NextResponse.json({ venues, ...(currentVenueKeysPromise
+      ? { currentVenueKeys: await currentVenueKeysPromise } : {}) });
   } catch (error) {
     console.error('Error loading venues data:', error);
     return NextResponse.json(

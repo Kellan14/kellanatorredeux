@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
@@ -20,10 +20,12 @@ import {
 } from '@/components/ui/dialog'
 import { Trophy, Target, Calendar, BarChart3, Percent, ChevronRight, ChevronDown, Users, LayoutDashboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useRouter } from 'next/navigation'
 import { getMachineImagePath } from '@/lib/machine-images'
 import { useMachineCanon } from '@/hooks/use-machine-canon'
 import { usePlayerNames } from '@/hooks/use-player-names'
+import { currentPopsMachines } from '@/lib/player-pops-inventory'
 
 interface Top10Entry {
   rank: number
@@ -81,11 +83,13 @@ interface MachinePops {
 interface Venue {
   key: string
   name: string
+  machines: string[]
 }
 
 export default function PlayerProfilePage() {
   // Long form is the sitewide display name; the canon lives in the DB.
-  const { display: getMachineDisplayName } = useMachineCanon()
+  const { display: getMachineDisplayName, machines: canonMachines } = useMachineCanon()
+  const popsMachineNames = useMemo(() => new Map(canonMachines.map(m => [m.key.toLowerCase(), m.displayName])), [canonMachines])
   const router = useRouter()
   const { players } = usePlayerNames()
   const [selectedPlayer, setSelectedPlayer] = useState<string>('')
@@ -109,9 +113,15 @@ export default function PlayerProfilePage() {
   const [popsSeasonStart, setPopsSeasonStart] = useState<number>(1)
   const [popsSeasonEnd, setPopsSeasonEnd] = useState<number>(99)
   const [popsVenue, setPopsVenue] = useState<string>('all')
+  const [historicalPopsMachines, setHistoricalPopsMachines] = useState(false)
+  const [currentVenueKeys, setCurrentVenueKeys] = useState<string[] | null>(null)
+  const [loadingInventory, setLoadingInventory] = useState(true)
   const [venues, setVenues] = useState<Venue[]>([])
   const [loadingPops, setLoadingPops] = useState(false)
   const [availableSeasons, setAvailableSeasons] = useState<number[]>([])
+  const currentMachines = useMemo(() => currentPopsMachines(venues, currentVenueKeys ?? [], popsVenue), [venues, currentVenueKeys, popsVenue])
+  const visibleMachinePops = historicalPopsMachines ? machinePops : machinePops.filter(m => currentMachines.has(m.machine.toLowerCase()))
+  const loadingVisiblePops = loadingPops || (!historicalPopsMachines && loadingInventory)
 
   // TWC roster state for dashboard switch
   const [twcRosterPlayers, setTwcRosterPlayers] = useState<string[]>([])
@@ -134,11 +144,14 @@ export default function PlayerProfilePage() {
 
   // Load POPS by machine when player or filters change
   useEffect(() => {
+    const request = new AbortController()
     if (selectedPlayer) {
-      loadMachinePops()
+      void loadMachinePops(request.signal)
     } else {
       setMachinePops([])
+      setLoadingPops(false)
     }
+    return () => request.abort()
   }, [selectedPlayer, popsSeasonStart, popsSeasonEnd, popsVenue])
 
   // Load player data and their machines when selected
@@ -185,31 +198,29 @@ export default function PlayerProfilePage() {
 
   const loadVenuesAndSeasons = async () => {
     try {
-      const [venuesRes, seasonsRes] = await Promise.all([
-        fetch('/api/venues'),
-        fetch('/api/seasons')
-      ])
-
+      const seasonsRes = await fetch('/api/seasons').catch(() => null)
+      const seasonData = seasonsRes?.ok ? await seasonsRes.json() : null
+      const seasons: number[] = seasonData?.seasons ?? []
+      setAvailableSeasons(seasons)
+      if (seasons.length > 0) {
+        setPopsSeasonStart(Math.min(...seasons))
+        setPopsSeasonEnd(Math.max(...seasons))
+      }
+      const latest = seasons.length ? Math.max(...seasons) : null
+      const venuesRes = await fetch(latest ? `/api/venues?currentLineupSeason=${latest}` : '/api/venues')
       if (venuesRes.ok) {
         const data = await venuesRes.json()
         setVenues(data.venues || [])
-      }
-
-      if (seasonsRes.ok) {
-        const data = await seasonsRes.json()
-        const seasons = data.seasons || []
-        setAvailableSeasons(seasons)
-        if (seasons.length > 0) {
-          setPopsSeasonStart(Math.min(...seasons))
-          setPopsSeasonEnd(Math.max(...seasons))
-        }
+        setCurrentVenueKeys(data.currentVenueKeys ?? null)
       }
     } catch (error) {
       console.error('Error loading venues/seasons:', error)
+    } finally {
+      setLoadingInventory(false)
     }
   }
 
-  const loadMachinePops = async () => {
+  const loadMachinePops = async (signal: AbortSignal) => {
     if (!selectedPlayer) return
     setLoadingPops(true)
 
@@ -221,15 +232,20 @@ export default function PlayerProfilePage() {
         venue: popsVenue
       })
 
-      const response = await fetch(`/api/player-pops-by-machine?${params}`)
+      const response = await fetch(`/api/player-pops-by-machine?${params}`, { signal })
       if (response.ok) {
         const data = await response.json()
-        setMachinePops(data.machines || [])
+        if (!signal.aborted) setMachinePops(data.machines || [])
+      } else if (!signal.aborted) {
+        setMachinePops([])
       }
     } catch (error) {
-      console.error('Error loading machine POPS:', error)
+      if (!signal.aborted) {
+        setMachinePops([])
+        console.error('Error loading machine POPS:', error)
+      }
     } finally {
-      setLoadingPops(false)
+      if (!signal.aborted) setLoadingPops(false)
     }
   }
 
@@ -569,13 +585,18 @@ export default function PlayerProfilePage() {
                       </SelectContent>
                     </Select>
                   </div>
+                  <label className="flex cursor-pointer items-center gap-2 text-sm">
+                    <Checkbox checked={historicalPopsMachines}
+                      onCheckedChange={checked => setHistoricalPopsMachines(checked === true)} />
+                    Include historical machines
+                  </label>
                 </div>
 
-                {loadingPops && (
+                {loadingVisiblePops && (
                   <p className="text-muted-foreground">Loading POPS data...</p>
                 )}
 
-                {!loadingPops && machinePops.length > 0 && (
+                {!loadingVisiblePops && visibleMachinePops.length > 0 && (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
@@ -588,9 +609,9 @@ export default function PlayerProfilePage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {machinePops.map((m) => (
+                        {visibleMachinePops.map((m) => (
                           <tr key={m.machine} className="border-b hover:bg-muted/50">
-                            <td className="p-2 font-medium">{getMachineDisplayName(m.machine)}</td>
+                            <td className="p-2 font-medium">{popsMachineNames.get(m.machine.toLowerCase()) ?? m.machine}</td>
                             <td className="p-2 text-right">{m.games}</td>
                             <td className="p-2 text-right">{m.totalPoints}</td>
                             <td className="p-2 text-right">{m.totalPossible}</td>
@@ -608,9 +629,13 @@ export default function PlayerProfilePage() {
                   </div>
                 )}
 
-                {!loadingPops && machinePops.length === 0 && (
+                {!loadingVisiblePops && visibleMachinePops.length === 0 && (
                   <p className="text-muted-foreground">
-                    No POPS data found for the selected filters.
+                    {!historicalPopsMachines && currentVenueKeys === null
+                      ? 'Current machine lineups are unavailable. Check “Include historical machines” to see your recorded results.'
+                      : !historicalPopsMachines && machinePops.length > 0
+                        ? 'No POPS data on current machines for these filters. Check “Include historical machines” to see older machines.'
+                        : 'No POPS data found for the selected filters.'}
                   </p>
                 )}
               </CardContent>
