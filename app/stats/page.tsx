@@ -122,6 +122,8 @@ export default function StatsPage() {
   const [selectedVenue, setSelectedVenue] = useState<string>('')
   const [allMachines, setAllMachines] = useState(false)
   const [selectedMachine, setSelectedMachine] = useState('')
+  const [checkedMachines, setCheckedMachines] = useState<Set<string>>(() => new Set())
+  const [onlyShowSelected, setOnlyShowSelected] = useState(false)
   const { machines: canonMachines } = useMachineCanon()
   const machineNames = useMemo(() => new Map(
     canonMachines.map(machine => [machine.key.toLowerCase(), machine.displayName])
@@ -584,8 +586,20 @@ export default function StatsPage() {
 
   const machineOptions = useMemo(() => ['', ...machineStats.map(stat => stat.machine)
     .sort((a, b) => machineLabel(a).localeCompare(machineLabel(b)))], [machineStats, machineLabel])
-  const machineFilter = allMachines && machineOptions.includes(selectedMachine) ? selectedMachine : ''
-  const sortedStats = machineStats.filter(stat => !machineFilter || stat.machine === machineFilter).sort((a, b) => {
+  const machineFilter = allMachines && !onlyShowSelected && machineOptions.includes(selectedMachine) ? selectedMachine : ''
+  const checkedInScope = machineStats.filter(stat => checkedMachines.has(stat.machine.toLowerCase())).length
+  const setMachineChecked = (machine: string, checked: boolean) => {
+    setCheckedMachines(previous => {
+      const next = new Set(previous)
+      const key = machine.toLowerCase()
+      if (checked) next.add(key)
+      else next.delete(key)
+      return next
+    })
+  }
+  const sortedStats = machineStats.filter(stat => onlyShowSelected
+    ? checkedMachines.has(stat.machine.toLowerCase())
+    : !machineFilter || stat.machine === machineFilter).sort((a, b) => {
     let aVal: any = sortColumn === 'machine' ? machineLabel(a.machine) : (a as any)[sortColumn]
     let bVal: any = sortColumn === 'machine' ? machineLabel(b.machine) : (b as any)[sortColumn]
 
@@ -737,7 +751,7 @@ export default function StatsPage() {
                     getOptionLabel={machineLabel}
                     emptyMessage="No machines found"
                     browseOnOpen
-                    disabled={loading}
+                    disabled={loading || onlyShowSelected}
                   />
                 ) : (
                 <Select value={selectedVenue} onValueChange={setSelectedVenue}>
@@ -1140,6 +1154,36 @@ export default function StatsPage() {
           )}
 
           {!loading && machineStats.length > 0 && (
+            <>
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <Button type="button" size="sm" variant={onlyShowSelected ? 'default' : 'outline'}
+                  aria-pressed={onlyShowSelected}
+                  disabled={!onlyShowSelected && checkedInScope === 0}
+                  onClick={() => {
+                    if (!onlyShowSelected) setSelectedMachine('')
+                    setOnlyShowSelected(!onlyShowSelected)
+                  }}>
+                  {onlyShowSelected ? 'Show all' : 'Only show selected'}
+                </Button>
+                <span aria-live="polite" className="text-xs text-muted-foreground">
+                  {checkedInScope > 0
+                    ? `${checkedInScope} selected`
+                    : 'Check machines to compare them.'}
+                </span>
+                {checkedMachines.size > 0 && (
+                  <Button type="button" size="sm" variant="ghost" onClick={() => {
+                    setCheckedMachines(new Set())
+                    setOnlyShowSelected(false)
+                  }}>
+                    Clear selection
+                  </Button>
+                )}
+              </div>
+              {sortedStats.length === 0 ? (
+                <div className="py-8 text-center text-sm text-muted-foreground">
+                  No selected machines in these results. Choose “Show all” to pick more machines.
+                </div>
+              ) : (
               <Table
                 className="text-xs md:text-sm"
                 containerProps={{
@@ -1171,13 +1215,26 @@ export default function StatsPage() {
                           className={`px-2 md:px-4 py-1.5 md:py-3 whitespace-nowrap ${col.key === 'machine' ? 'font-medium sticky left-0 z-10 bg-background' : 'cursor-pointer hover:bg-muted/50'}`}
                           onClick={() => handleCellClick(stat.machine, col.key)}
                         >
-                          <span className="text-[10px] md:text-sm">{col.key === 'machine' ? machineLabel(stat.machine) : getCellValue(stat, col.key)}</span>
+                          {col.key === 'machine' ? (
+                            <label className="inline-flex cursor-pointer items-center gap-2 text-[10px] md:text-sm">
+                              <Checkbox
+                                aria-label={`Select ${machineLabel(stat.machine)}`}
+                                checked={checkedMachines.has(stat.machine.toLowerCase())}
+                                onCheckedChange={value => setMachineChecked(stat.machine, value === true)}
+                              />
+                              {machineLabel(stat.machine)}
+                            </label>
+                          ) : (
+                            <span className="text-[10px] md:text-sm">{getCellValue(stat, col.key)}</span>
+                          )}
                         </TableCell>
                       ))}
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+              )}
+            </>
           )}
 
           {!loading && machineStats.length === 0 && (
