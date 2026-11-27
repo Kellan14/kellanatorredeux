@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, fetchAllRecords } from '@/lib/supabase';
+import { summarizeLeastUniqueSet } from '@/lib/least-unique-machine-swap';
 
 
 export const dynamic = 'force-dynamic';
@@ -255,20 +256,7 @@ export async function GET(request: NextRequest) {
       allPlayers: string[];
     }> = [];
 
-    const formatSet = (selected: typeof set1) => {
-      const setPlayers = new Set<string>();
-      selected.forEach(m => m.players.forEach(p => setPlayers.add(p)));
-      return {
-        machines: selected.map(m => ({
-          machine: m.machine,
-          playerCount: m.players.length,
-          addedPlayers: m.addedPlayers,
-          players: m.players
-        })),
-        totalUniquePlayers: setPlayers.size,
-        allPlayers: Array.from(setPlayers)
-      };
-    };
+    const formatSet = summarizeLeastUniqueSet;
 
     sets.push(formatSet(set1));
 
@@ -305,6 +293,7 @@ export async function GET(request: NextRequest) {
       playersByMachine,
       rosterPlayers: Array.from(rosterPlayers),
       activePlayers: Array.from(activePlayers),
+      candidateMachines: machinePlayersList.map(({ machine, players }) => ({ machine, players: Array.from(players) })),
       sets
     });
   } catch (error) {

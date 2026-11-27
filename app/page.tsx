@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, Suspense } from 'react'
+import { useEffect, useMemo, useRef, useState, Suspense } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Trophy, Target, TrendingUp, Users, Calendar, BarChart3, Percent, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, ArrowUpDown, ArrowUp, ArrowDown, LineChart, Loader2, Check, Send } from 'lucide-react'
 import { AlexLoader } from '@/components/alex-loader'
@@ -30,6 +30,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { getMachineImagePath } from '@/lib/machine-images'
 import { useMachineCanon } from '@/hooks/use-machine-canon'
 import { defaultDashboardRange, changeSeasonRange, type SeasonRange } from '@/lib/dashboard-seasons'
+import { leastUniqueReplacements, type LeastUniqueResult, type LeastUniqueSet } from '@/lib/least-unique-machine-swap'
 import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts'
 
 function DashboardSeasonSelectors({ label, range, seasons, onChange, onReset }: {
@@ -54,7 +55,9 @@ function DashboardSeasonSelectors({ label, range, seasons, onChange, onReset }: 
 
 function HomePageContent() {
   // Long form is the sitewide display name; the canon lives in the DB.
-  const { display: getMachineDisplayName } = useMachineCanon()
+  const { display: getMachineDisplayName, machines: machineCanon } = useMachineCanon()
+  const canonicalKeys = useMemo(() => new Map(machineCanon.map(({ key }) => [key.toLowerCase(), key])), [machineCanon])
+  const leastUniqueMachineName = (m: string) => getMachineDisplayName(canonicalKeys.get(m.toLowerCase()) ?? m)
   const searchParams = useSearchParams()
   const viewPlayerParam = searchParams.get('viewPlayer')
 
@@ -142,7 +145,7 @@ function HomePageContent() {
   const [perfSortDirection, setPerfSortDirection] = useState<'asc' | 'desc'>('desc')
 
   // Least unique players section
-  const [leastUniquePlayers, setLeastUniquePlayers] = useState<any>(null)
+  const [leastUniquePlayers, setLeastUniquePlayers] = useState<LeastUniqueResult | null>(null)
   const [loadingLeastUnique, setLoadingLeastUnique] = useState(false)
   const [leastUniqueCollapsed, setLeastUniqueCollapsed] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
@@ -154,6 +157,14 @@ function HomePageContent() {
 
   // Least unique players pagination
   const [luSetIndex, setLuSetIndex] = useState(0)
+  const [luEdits, setLuEdits] = useState<Record<number, LeastUniqueSet[]>>({})
+  const [luSwapMachine, setLuSwapMachine] = useState<string | null>(null)
+  const baseLuSet = leastUniquePlayers?.sets?.[luSetIndex]
+  const luHistory = luEdits[luSetIndex] ?? []
+  const currentLuSet = luHistory[luHistory.length - 1] ?? baseLuSet
+  const luOptions = useMemo(() => currentLuSet && luSwapMachine && leastUniquePlayers
+    ? leastUniqueReplacements(currentLuSet, luSwapMachine, leastUniquePlayers) : [],
+  [currentLuSet, luSwapMachine, leastUniquePlayers])
 
   // Discord send state for least unique players
   const [luDiscordSending, setLuDiscordSending] = useState(false)
@@ -539,12 +550,19 @@ function HomePageContent() {
   // Fetch least unique players when opponent, venue, or season filters change
   useEffect(() => {
     if (matchSeason && opponent && opponent !== 'Loading...' && opponent !== 'Schedule unavailable' && venue && venue !== 'Loading...' && venueMachines.length > 0) {
-      fetchLeastUniquePlayers()
+      const request = new AbortController()
+      void fetchLeastUniquePlayers(request.signal)
+      return () => request.abort()
     }
+    setLeastUniquePlayers(null)
+    setLoadingLeastUnique(false)
+    setLuSwapMachine(null)
   }, [opponent, venue, leastUniqueSeasonStart, leastUniqueSeasonEnd, venueMachines, excludedPlayers, includedPlayers, matchSeason])
 
-  const fetchLeastUniquePlayers = async () => {
+  const fetchLeastUniquePlayers = async (signal: AbortSignal) => {
     setLoadingLeastUnique(true)
+    setLuSwapMachine(null)
+    setLuDiscordConfirm(false)
     try {
       let url = `/api/least-unique-players?` +
         `venue=${encodeURIComponent(venue)}` +
@@ -560,35 +578,49 @@ function HomePageContent() {
         url += `&includedPlayers=${encodeURIComponent(Array.from(includedPlayers).join(','))}`
       }
 
-      const response = await fetch(url)
-      if (response.ok) {
-        const data = await response.json()
-        setLeastUniquePlayers(data)
-        setLuSetIndex(0)
-      }
+      const response = await fetch(url, { signal })
+      if (!response.ok) throw new Error(`Least unique players: ${response.status}`)
+      const data = await response.json() as LeastUniqueResult
+      if (signal.aborted) return
+      setLeastUniquePlayers(data)
+      setLuSetIndex(0)
+      setLuEdits({})
     } catch (error) {
+      if (signal.aborted) return
       console.error('Error fetching least unique players:', error)
       setLeastUniquePlayers(null)
     } finally {
-      setLoadingLeastUnique(false)
+      if (!signal.aborted) setLoadingLeastUnique(false)
     }
   }
 
+  const changeLuSet = (index: number) => {
+    setLuSetIndex(index)
+    setLuSwapMachine(null)
+    setLuDiscordConfirm(false)
+    setLuDiscordSent(false)
+    setLuDiscordError('')
+  }
+
+  const updateLuMachines = (set?: LeastUniqueSet) => {
+    setLuEdits(prev => ({ ...prev, [luSetIndex]: set ? [...(prev[luSetIndex] ?? []), set] : (prev[luSetIndex] ?? []).slice(0, -1) }))
+    changeLuSet(luSetIndex)
+  }
+
   const sendLeastUniqueToDiscord = async () => {
-    if (!leastUniquePlayers || !leastUniquePlayers.sets) return
-    const currentSet = leastUniquePlayers.sets[luSetIndex] || leastUniquePlayers.sets[0]
-    if (!currentSet || !currentSet.machines) return
+    const currentSet = currentLuSet
+    if (!currentSet || !leastUniquePlayers?.sets) return
     setLuDiscordSending(true)
     setLuDiscordError('')
     setLuDiscordSent(false)
     try {
       const lines: string[] = []
       lines.push(`LEAST UNIQUE PLAYERS — ${opponent} @ ${venue}`)
-      lines.push(`Seasons ${leastUniqueSeasonStart}–${leastUniqueSeasonEnd}${leastUniquePlayers.sets.length > 1 ? ` (option ${luSetIndex + 1} of ${leastUniquePlayers.sets.length})` : ''}`)
-      lines.push(`${currentSet.totalUniquePlayers} unique player${currentSet.totalUniquePlayers !== 1 ? 's' : ''} across 4 machines`)
+      lines.push(`Seasons ${leastUniqueSeasonStart}–${leastUniqueSeasonEnd}${leastUniquePlayers.sets.length > 1 ? ` (option ${luSetIndex + 1} of ${leastUniquePlayers.sets.length})` : ''}${luHistory.length ? ' · customized machines' : ''}`)
+      lines.push(`${currentSet.totalUniquePlayers} unique player${currentSet.totalUniquePlayers !== 1 ? 's' : ''} across ${currentSet.machines.length} machines`)
       lines.push('')
       for (const m of currentSet.machines) {
-        const displayName = getMachineDisplayName(m.machine)
+        const displayName = leastUniqueMachineName(m.machine)
         lines.push(`${displayName} — ${m.playerCount} player${m.playerCount !== 1 ? 's' : ''}${m.players.length > 0 ? ': ' + m.players.join(', ') : ''}`)
       }
       if (currentSet.allPlayers && currentSet.allPlayers.length > 0) {
@@ -1493,7 +1525,7 @@ function HomePageContent() {
                   <div className="flex-1">
                     <CardTitle className="text-base">Least Unique Players</CardTitle>
                     <CardDescription className="text-xs">
-                      4 machines with fewest {opponent} players who have played them
+                      4 machines with fewest {opponent} players who have played them. Click a machine to swap it.
                     </CardDescription>
                   </div>
                 </button>
@@ -1540,14 +1572,14 @@ function HomePageContent() {
 
                   {loadingLeastUnique ? (
                     <div className="text-center py-4 text-muted-foreground">Loading...</div>
-                  ) : leastUniquePlayers && leastUniquePlayers.sets && leastUniquePlayers.sets.length > 0 ? (
+                  ) : currentLuSet && leastUniquePlayers?.sets ? (
                     <div className="space-y-3">
                       {(() => {
-                        const currentSet = leastUniquePlayers.sets[luSetIndex] || leastUniquePlayers.sets[0];
-                        const totalSets = leastUniquePlayers.sets.length;
+                        const currentSet = currentLuSet
+                        const totalSets = leastUniquePlayers.sets.length
                         return (<>
-                          <div className="text-sm font-medium text-center p-2 bg-muted/50 rounded">
-                            {currentSet.totalUniquePlayers} unique player{currentSet.totalUniquePlayers !== 1 ? 's' : ''} across these 4 machines
+                          <div className="text-sm font-medium text-center p-2 bg-muted/50 rounded" aria-live="polite">
+                            {currentSet.totalUniquePlayers} unique player{currentSet.totalUniquePlayers !== 1 ? 's' : ''} across {currentSet.machines.length} machines
                             {totalSets > 1 && (
                               <span className="text-muted-foreground ml-1">({luSetIndex + 1} of {totalSets})</span>
                             )}
@@ -1555,11 +1587,23 @@ function HomePageContent() {
                               <span className="text-yellow-600 ml-1">(modified roster)</span>
                             )}
                           </div>
+                          {luHistory.length > 0 && (
+                            <div className="flex flex-wrap items-center justify-between gap-2 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-sm text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                              <span>Machine set customized</span>
+                              <Button type="button" variant="outline" size="sm" onClick={() => updateLuMachines()}>
+                                Undo last swap
+                              </Button>
+                            </div>
+                          )}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {currentSet.machines.map((m: any, index: number) => (
+                            {currentSet.machines.map((m, index) => (
                               <div key={m.machine} className="border rounded-lg p-3">
-                                <div className="flex items-center justify-between mb-2">
-                                  <div className="font-medium">{getMachineDisplayName(m.machine)}</div>
+                                <div className="flex items-center justify-between gap-2 mb-2">
+                                  <button type="button" onClick={() => setLuSwapMachine(m.machine)}
+                                    aria-label={`Replace ${leastUniqueMachineName(m.machine)}`}
+                                    className="min-h-8 text-left font-medium text-primary underline underline-offset-2 hover:no-underline">
+                                    {leastUniqueMachineName(m.machine)}
+                                  </button>
                                   <div className="text-xs text-muted-foreground">
                                     {m.playerCount} player{m.playerCount !== 1 ? 's' : ''}
                                     {index > 0 && m.addedPlayers > 0 && (
@@ -1587,7 +1631,7 @@ function HomePageContent() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => setLuSetIndex(luSetIndex - 1)}
+                                  onClick={() => changeLuSet(luSetIndex - 1)}
                                   className="text-xs"
                                 >
                                   <ChevronLeft className="h-3 w-3 mr-1" />Back
@@ -1597,7 +1641,7 @@ function HomePageContent() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => setLuSetIndex(luSetIndex + 1)}
+                                  onClick={() => changeLuSet(luSetIndex + 1)}
                                   className="text-xs"
                                 >
                                   Next<ChevronRight className="h-3 w-3 ml-1" />
@@ -2407,6 +2451,30 @@ function HomePageContent() {
                   Loading IPR history...
                 </div>
               )}
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={luSwapMachine !== null} onOpenChange={open => { if (!open) setLuSwapMachine(null) }}>
+            <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Replace {luSwapMachine ? leastUniqueMachineName(luSwapMachine) : 'machine'}</DialogTitle>
+                <DialogDescription>
+                  The other machines stay put. Options are ranked by the total number of unique opponent players across the resulting set.
+                </DialogDescription>
+              </DialogHeader>
+              {luOptions.length === 0
+                ? <p className="text-sm text-muted-foreground">No other machines are available for this set.</p>
+                : <ul className="space-y-2">
+                  {luOptions.map(({ machine, playerCount, set }) => (
+                    <li key={machine}>
+                      <Button type="button" variant="outline" onClick={() => updateLuMachines(set)}
+                        className="flex h-auto w-full flex-wrap items-center justify-between gap-x-3 gap-y-1 py-2 text-left whitespace-normal">
+                        <span className="min-w-0 break-words">{leastUniqueMachineName(machine)}</span>
+                        <span className="text-xs text-muted-foreground">{playerCount} on machine · {set.totalUniquePlayers} unique across set</span>
+                      </Button>
+                    </li>
+                  ))}
+                </ul>}
             </DialogContent>
           </Dialog>
 
